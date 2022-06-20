@@ -6,10 +6,23 @@ import cors from 'cors';
 import { PeerServer } from 'peer';
 import { Socket, Server as SocketServer } from 'socket.io';
 import path from 'path';
-import { AppDataSource } from './dbConnection/dbConn';
 
 dotenv.config();
-AppDataSource;
+
+import sequelize from "./database"
+const User = require("./models/User")
+const Server = require("./models/Server")
+const Channel = require("./models/Channel")
+const ChannelMessage = require("./models/ChannelMessage")
+const PrivateMessage = require("./models/PrivateMessage")
+const Permission = require('./models/Permission')
+const Role = require('./models/Role')
+const RolePermission = require('./models/RolePermission')
+const UserRole = require('./models/UserRole')
+
+sequelize.authenticate().then(function(errors) {console.log(errors)})
+sequelize.sync().catch((errs) => {console.log(errs)})
+
 
 const app: Express = express(),
   port: string = process.env.PORT || '5001';

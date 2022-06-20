@@ -7,10 +7,10 @@ const UserRole = sequelize.define('UserRole', {
 
 });
 
-UserRole.hasOne(Role, {
+UserRole.belongsTo(Role, {
     foreignKey: "role_id"
 })
-UserRole.hasOne(User, {
+UserRole.belongsTo(User, {
     foreignKey: "user_id"
 })
 

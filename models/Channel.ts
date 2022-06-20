@@ -7,7 +7,7 @@ const Channel = sequelize.define('Channel', {
     hidden: DataTypes.BOOLEAN,
 });
 
-Channel.hasOne(Server, {
+Channel.belongsTo(Server, {
     foreignKey: "server_id"
 })
 

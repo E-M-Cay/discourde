@@ -8,9 +8,10 @@ const Role = sequelize.define('Role', {
 
 });
 
-Role.hasOne(Server, {
+Role.belongsTo(Server, {
     foreignKey: "server_id"
 })
+
 
 
 export default Role

@@ -9,10 +9,10 @@ const ChannelMessage = sequelize.define('ChannelMessage', {
 
 });
 
-Channel.hasOne(Channel, {
+ChannelMessage.belongsTo(Channel, {
     foreignKey: "channel_id"
 })
-Channel.hasOne(User, {
+ChannelMessage.belongsTo(User, {
     foreignKey: "user_id"
 })
 

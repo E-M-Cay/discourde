@@ -7,13 +7,13 @@ const PrivateMessage =  sequelize.define('PrivateMessage', {
     send_time: DataTypes.DATE
 });
 
-PrivateMessage.hasMany(User, {
+PrivateMessage.belongsTo(User, {
     foreignKey: {
         name: 'author_id',
         allowNull: false
     }
 })
-PrivateMessage.hasMany(User, {
+PrivateMessage.belongsTo(User, {
     foreignKey: {
         name: 'receiver_id',
         allowNull: false

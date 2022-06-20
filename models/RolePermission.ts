@@ -7,11 +7,11 @@ const RolePermission = sequelize.define('RolePermission', {
 
 });
 
-Role.hasOne(Role, {
+Role.belongsTo(Role, {
     foreignKey: "role_id"
 })
 
-Role.hasOne(Permission, {
+Role.belongsTo(Permission, {
     foreignKey: "permission_id"
 })
 

@@ -1,17 +1,15 @@
-const { Sequelize, Model, DataTypes } = require("sequelize")
-import sequelize from "../database"
-import Server from "./Server"
-import User from './User'
+const { Sequelize, Model, DataTypes } = require('sequelize');
+import sequelize from '../database';
+import Permission from './Permission';
+import Server from './Server';
+import User from './User';
 
 const Role = sequelize.define('Role', {
-    name: DataTypes.STRING,
-
+  name: DataTypes.STRING,
 });
 
 Role.belongsTo(Server, {
-    foreignKey: "server_id"
-})
+  foreignKey: 'server_id',
+});
 
-
-
-export default Role
+export default Role;

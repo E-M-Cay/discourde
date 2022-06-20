@@ -9,20 +9,22 @@ import path from 'path';
 
 dotenv.config();
 
-import sequelize from "./database"
-const User = require("./models/User")
-const Server = require("./models/Server")
-const Channel = require("./models/Channel")
-const ChannelMessage = require("./models/ChannelMessage")
-const PrivateMessage = require("./models/PrivateMessage")
-const Permission = require('./models/Permission')
-const Role = require('./models/Role')
-const RolePermission = require('./models/RolePermission')
-const UserRole = require('./models/UserRole')
+import sequelize from './database';
+const User = require('./models/User');
+const Server = require('./models/Server');
+const Channel = require('./models/Channel');
+const ChannelMessage = require('./models/ChannelMessage');
+const PrivateMessage = require('./models/PrivateMessage');
+const Permission = require('./models/Permission');
+const Role = require('./models/Role');
+const UserRole = require('./models/UserRole');
 
-sequelize.authenticate().then(function(errors) {console.log(errors)})
-sequelize.sync().catch((errs) => {console.log(errs)})
-
+sequelize.authenticate().then(function (errors) {
+  console.log(errors);
+});
+sequelize.sync().catch((errs) => {
+  console.log(errs);
+});
 
 const app: Express = express(),
   port: string = process.env.PORT || '5001';

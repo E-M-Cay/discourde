@@ -6,6 +6,7 @@ import axios from 'axios';
 import { host, peerServerHost } from './env/host';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
 import { joinRoomSuccess, setUsername } from './redux/userSlice';
+import { Home } from './Home/Home';
 
 interface UserInfo {
   username: string;
@@ -162,29 +163,32 @@ const App = () => {
     });
   };
 
+  // return (
+  //   <div className='App'>
+  //     <button onClick={toggleMicrophone}>Open mic</button>
+  //     <div>{message}</div>
+  //     <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
+  //     <div>{displayUserList()}</div>
+  //     <button onClick={fetchMessage}>Fetch message</button>
+  //     <audio id='audio' />
+  //     {user != '' && (
+  //       <>
+  //         <div>{user}</div>
+  //         <form onSubmit={(e) => onSubmitHandler(e)}>
+  //           <input
+  //             type='text'
+  //             id='usernameInput'
+  //             onChange={(e) => onChangeHandler(e)}
+  //             defaultValue={user}
+  //           />
+  //           <input type='submit' />
+  //         </form>
+  //       </>
+  //     )}
+  //   </div>
+  // );
   return (
-    <div className='App'>
-      <button onClick={toggleMicrophone}>Open mic</button>
-      <div>{message}</div>
-      <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
-      <div>{displayUserList()}</div>
-      <button onClick={fetchMessage}>Fetch message</button>
-      <audio id='audio' />
-      {user != '' && (
-        <>
-          <div>{user}</div>
-          <form onSubmit={(e) => onSubmitHandler(e)}>
-            <input
-              type='text'
-              id='usernameInput'
-              onChange={(e) => onChangeHandler(e)}
-              defaultValue={user}
-            />
-            <input type='submit' />
-          </form>
-        </>
-      )}
-    </div>
+    <Home />
   );
 };
 

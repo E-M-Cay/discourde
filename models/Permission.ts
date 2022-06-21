@@ -9,3 +9,4 @@ const Permission = sequelize.define('Permission', {
 
 
 export default Permission
+

@@ -16,7 +16,10 @@ body {
 
 .scrollIssue::-webkit-scrollbar {display:none;}
 
-
+.ant-tooltip-inner {
+  font-size: 14px;
+  font-weight: bold;
+}
 
 .App {
   text-align: center;

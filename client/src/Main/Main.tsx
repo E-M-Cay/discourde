@@ -6,9 +6,9 @@ export const Main = () => {
     return (
         <Row style={{height: "100vh",width: "100%", marginLeft: "0 !important"}} className="main">
         
-        <Col style={{backgroundColor: "grey"}} span={4}>hjqdshjld</Col>
-        <Col span={16}>qdsdsqdqd</Col>
-        <Col style={{backgroundColor: "grey"}} span={4}>ksqkhjds</Col>
+        <Col style={{backgroundColor: "grey"}} flex={6}>hjqdshjld</Col>
+        <Col flex={36}>qdsdsqdqd</Col>
+        <Col style={{backgroundColor: "grey"}} flex={6}>ksqkhjds</Col>
         </Row>
     )
 }

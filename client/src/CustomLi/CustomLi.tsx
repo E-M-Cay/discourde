@@ -5,7 +5,7 @@ import {useState} from "react";
 export const CustomLimage = ({obj}: any) => {
     const [isFocused, setFocus] = useState(false);
     return (
-        <Tooltip placement="left" title={obj.first_name}>
+        <Tooltip mouseLeaveDelay={0.3} placement="left" style={{fontSize: "32px"}} title={obj.first_name}>
             <img
                 onMouseEnter={() => setFocus(true)}
                 onMouseLeave={() => setFocus(false)}

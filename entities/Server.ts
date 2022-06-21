@@ -12,6 +12,7 @@ import { Channel } from './Channel';
 import { Role } from './Role';
 import { ServerUser } from './ServerUser';
 import { User } from './User';
+import { VocalChannel } from './VocalChannel';
 
 @Entity()
 export class Server {
@@ -48,6 +49,8 @@ export class Server {
   @OneToMany(() => Channel, (channel) => channel.server)
   channels: Channel[];
 
+  @OneToMany(() => VocalChannel, (vocalChannel) => vocalChannel.server)
+  vocalChannels: VocalChannel[];
   @OneToMany(() => Role, (role) => role.server)
   roles: Role[];
 }

@@ -6,10 +6,11 @@ import cors from 'cors';
 import { PeerServer } from 'peer';
 import { Socket, Server as SocketServer } from 'socket.io';
 import path from 'path';
+import AppDataSource from './db/AppDataSource';
 
 dotenv.config();
 
-import sequelize from './database';
+/*import sequelize from './database';
 const User = require('./models/User');
 const Server = require('./models/Server');
 const Channel = require('./models/Channel');
@@ -24,7 +25,9 @@ sequelize.authenticate().then(function (errors) {
 });
 sequelize.sync().catch((errs) => {
   console.log(errs);
-});
+});*/
+
+AppDataSource;
 
 const app: Express = express(),
   port: string = process.env.PORT || '5001';

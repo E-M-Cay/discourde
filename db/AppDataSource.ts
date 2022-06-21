@@ -7,6 +7,16 @@ const AppDataSource = new DataSource({
   username: 'oxoql4kfui8g6j06',
   password: 'p52uj1cxaa204dll',
   database: 't5ipem5ur4w70u2m',
+  entities: ['entities/*{.js,.ts}'],
+  migrations: ['migrations/*{.js,.ts}'],
 });
+
+AppDataSource.initialize()
+  .then(() => {
+    console.log('Data Source has been initialized!');
+  })
+  .catch((err) => {
+    console.error('Error during Data Source initialization', err);
+  });
 
 export default AppDataSource;

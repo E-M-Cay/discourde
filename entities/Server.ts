@@ -49,5 +49,5 @@ export class Server {
   channels: Channel[];
 
   @OneToMany(() => Role, (role) => role.server)
-  roles: Role;
+  roles: Role[];
 }

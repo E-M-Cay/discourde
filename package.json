@@ -10,6 +10,9 @@
     "client": "npm start --prefix client",
     "watch": "concurrently \"npm run dev\" \"npm run client\" ",
     "heroku-postbuild": "npm install --prefix client && npm run build --prefix client",
+    "typeorm": "ts-node ./node_modules/typeorm/cli.js",
+    "generate:migration": "ts-node ./node_modules/typeorm/cli.js migration:generate ./migrations/discourde -d ./db/AppDataSource.ts",
+    "run:migration": "ts-node ./node_modules/typeorm/cli.js migration:run -d ./db/AppDataSource.ts",
     "tsc": "tsc"
   },
   "author": "",

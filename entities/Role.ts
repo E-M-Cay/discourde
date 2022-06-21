@@ -25,7 +25,7 @@ export class Role {
   @ManyToOne(() => Server, (server) => server.roles)
   server: Server;
 
-  @ManyToOne(() => RolePermission, (rolePermission) => rolePermission.role)
+  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role)
   permissions: RolePermission[];
 
   @OneToMany(() => ServerUserRole, (serverUserRole) => serverUserRole.role)

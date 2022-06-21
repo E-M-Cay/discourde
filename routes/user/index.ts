@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 import {Request, Response} from "express"
 import AppDataSource from "../../db/AppDataSource"
-const bcrypt = require('bcrypt');
+import bcrypt from "bcrypt";
 import {User} from "../../entities/User"
 
 const userRepository = AppDataSource.getRepository(User)
@@ -22,16 +22,18 @@ router.get('/login', async (req: Request, res: Response) => {
             return 
         }
 
-        if(bcrypt.compare(password, user.password)){
+        if(await bcrypt.compare(password, user.password)){
             res.send('Succes')
+            return
         }
+        return res.send('Wrong username/password')
 
     }
-    res.send(req.body)
+    res.send("FAIL")
 });
 
 router.post('/register',async (req: Request, res: Response) =>{
-
+    
     if("username" in req.body && "email" in req.body && "password" in req.body){
         const email:string = req.body.email
         const existing_user = await userRepository.findOneBy({email: email})
@@ -39,17 +41,21 @@ router.post('/register',async (req: Request, res: Response) =>{
             return res.status(400).send('User already exist')
         }
 
-        const password:string = req.body.password
+        const password:string = bcrypt.hashSync(req.body.password, 10)
         const username:string = req.body.username
 
         const date = Date.now()
 
-        userRepository.create({
+        const user = userRepository.create({
             username: username,
             email: email,
             password: password,
             join_date: date
         })
+
+        userRepository.save(user)
+
+        return res.status(201).send('User created succesfully')
     }
   
 });

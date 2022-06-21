@@ -39,10 +39,10 @@ export class User {
   email: string;
 
   @Column({
-    type: 'datetime',
+    type: 'bigint',
     nullable: false,
   })
-  join_date: Date;
+  join_date: number;
 
   @OneToMany(() => Server, (server) => server.owner)
   owned_servers: Server[];

@@ -1,67 +1,82 @@
 var express = require('express');
 var router = express.Router();
-import {Request, Response} from "express"
-import AppDataSource from "../../db/AppDataSource"
-import bcrypt from "bcrypt";
-import {User} from "../../entities/User"
+import { Request, Response } from 'express';
+import AppDataSource from '../../db/AppDataSource';
+import bcrypt from 'bcrypt';
+import { User } from '../../entities/User';
+import jwt from 'jsonwebtoken';
+import { Secret } from 'jsonwebtoken';
 
-const userRepository = AppDataSource.getRepository(User)
-
+const userRepository = AppDataSource.getRepository(User);
 
 router.get('/login', async (req: Request, res: Response) => {
-    if("username" in req.body && "password" in req.body){
-        const email:string = req.body.email
-        const password:string = req.body.password
-        
-        const user = await userRepository.findOneBy({
-            email: email
-        })
+  if ('email' in req.body && 'password' in req.body) {
+    const email: string = req.body.email;
+    const password: string = req.body.password;
 
-        if(!user){
-            res.send('Error user not found')
-            return 
-        }
+    const user = await userRepository.findOneBy({
+      email: email,
+    });
 
-        if(await bcrypt.compare(password, user.password)){
-            res.send('Succes')
-            return
-        }
-        return res.send('Wrong username/password')
-
+    if (!user) {
+      res.send('Error user not found');
+      return;
     }
-    res.send("FAIL")
-});
 
-router.post('/register',async (req: Request, res: Response) =>{
-    
-    if("username" in req.body && "email" in req.body && "password" in req.body){
-        const email:string = req.body.email
-        const existing_user = await userRepository.findOneBy({email: email})
-        if(existing_user){
-            return res.status(400).send('User already exist')
+    if (await bcrypt.compare(password, user.password)) {
+      let payload = {
+        user: {
+          id: user.id,
+        },
+      };
+
+      return jwt.sign(
+        payload,
+        process.env.SECRET_TOKEN || '',
+        { expiresIn: 36000 },
+        function (err, token) {
+          if (err) throw err;
+
+          return res.status(200).json({
+            msg: 'Got token',
+            token,
+          });
         }
-
-        const password:string = bcrypt.hashSync(req.body.password, 10)
-        const username:string = req.body.username
-
-        const date = Date.now()
-
-        const user = userRepository.create({
-            username: username,
-            email: email,
-            password: password,
-            join_date: date
-        })
-
-        userRepository.save(user)
-
-        return res.status(201).send('User created succesfully')
+      );
     }
-  
+    return res.send('Wrong username/password');
+  }
+  res.send('FAIL');
 });
 
-router.get('/home', (req:Request, res:Response) => {
-    res.send('Hello fdp')
+router.post('/register', async (req: Request, res: Response) => {
+  if ('username' in req.body && 'email' in req.body && 'password' in req.body) {
+    const email: string = req.body.email;
+    const existing_user = await userRepository.findOneBy({ email: email });
+    if (existing_user) {
+      return res.status(400).send('User already exist');
+    }
+
+    const password: string = bcrypt.hashSync(req.body.password, 10);
+    const username: string = req.body.username;
+
+    const date = Date.now();
+
+    const user = userRepository.create({
+      username: username,
+      email: email,
+      password: password,
+      join_date: date,
+    });
+
+    userRepository.save(user);
+
+    return res.status(201).send('User created succesfully');
+  }
 });
- 
-module.exports = router
+
+router.get('/home', (req: Request, res: Response) => {
+  res.send('Hello fdp');
+});
+
+module.exports = router;

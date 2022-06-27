@@ -5,7 +5,7 @@ interface UserState {
   rooms: string[];
   username: string;
   token?: string;
-  peer?: Peer;
+  stream?: MediaStream;
 }
 
 const initialUserState: UserState = {
@@ -26,9 +26,13 @@ export const userSlice = createSlice({
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
     },
+    setStream: (state, action: PayloadAction<MediaStream>) => {
+      state.stream = action.payload;
+    },
   },
 });
 
-export const { joinRoomSuccess, setUsername, setToken } = userSlice.actions;
+export const { joinRoomSuccess, setUsername, setToken, setStream } =
+  userSlice.actions;
 
 export default userSlice.reducer;

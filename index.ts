@@ -6,12 +6,10 @@ import cors from 'cors';
 import { PeerServer } from 'peer';
 import { Socket, Server as SocketServer } from 'socket.io';
 import { createClient } from 'redis';
-import { connectRedisClient, redisClient } from './db/RedisConnection';
+import { redisClient } from './db/RedisConnection';
 import path from 'path';
 
 dotenv.config();
-
-connectRedisClient();
 
 const app: Express = express(),
   port: string = process.env.PORT || '5001';

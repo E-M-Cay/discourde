@@ -11,16 +11,13 @@ import { Server } from './Server';
 import { User } from './User';
 
 @Entity()
-export class Friends {
+export class Friendship {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(
-    () => User,
-    (user) => user.friends
-  )
-  friend: User
+  @ManyToOne(() => User, (user) => user.friendships)
+  user1: User;
 
-  
-  
+  @ManyToOne(() => User, (user) => user.friendships)
+  user2: User;
 }

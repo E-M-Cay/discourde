@@ -26,13 +26,9 @@ export const userSlice = createSlice({
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
     },
-    setPeer: (state, action: PayloadAction<Peer>) => {
-      state.peer = action.payload;
-    },
   },
 });
 
-export const { joinRoomSuccess, setUsername, setToken, setPeer } =
-  userSlice.actions;
+export const { joinRoomSuccess, setUsername, setToken } = userSlice.actions;
 
 export default userSlice.reducer;

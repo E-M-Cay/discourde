@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface PeerState {
   isConnecting: boolean;
   isConnected: boolean;
+  peerId?: string;
 }
 
 const initialState: PeerState = {
@@ -22,9 +23,13 @@ const peerSlice = createSlice({
       state.isConnected = true;
       state.isConnecting = false;
     },
+    setPeerId: (state, action: PayloadAction<string>) => {
+      state.peerId = action.payload;
+    },
   },
 });
 
-export const { startConnecting, connectionEstablished } = peerSlice.actions;
+export const { startConnecting, connectionEstablished, setPeerId } =
+  peerSlice.actions;
 
 export default peerSlice.reducer;

@@ -8,8 +8,7 @@ redisClient.on('error', (err: any) => console.log('Redis Client Error', err));
 
 const connectRedisClient = async () => {
   await redisClient.connect();
-
-  await redisClient.set('key', 'value');
+  console.log(redisClient);
 };
 
 export { connectRedisClient, redisClient };

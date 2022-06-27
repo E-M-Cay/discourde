@@ -1,5 +1,5 @@
 import { Middleware } from 'redux';
-import { startConnecting, connectionEstablished } from './peerSlice';
+import { startConnecting, connectionEstablished, setPeerId } from './peerSlice';
 import { Peer } from 'peerjs';
 import { RootState } from './store';
 import { peerPort, peerServerHost } from '../env/host';
@@ -30,7 +30,30 @@ const peerMiddleware: Middleware<{}, RootState> = (store) => {
       } catch (e) {
         throw e;
       }
+      /*peer.on('open', (id) => {
+        socket.emit('peerId', id);
+      });*/
+
+      /*peer.on('call', (call) => {
+        const audioNode = new Audio();
+        // eslint-disable-next-line no-restricted-globals
+        if (confirm(`Call incoming`)) {
+          console.log('streamref.current:', streamRef.current);
+          call.answer(streamRef.current);
+
+          call.on('stream', (stream) => {
+            audioNode.srcObject = stream;
+            console.log('receiving stream');
+            audioNode.play();
+          });
+
+          call.on('close', () => {
+            audioNode.remove();
+          });
+        }*/
+
       store.dispatch(connectionEstablished());
+      store.dispatch(setPeerId(peer.id));
     }
     next(action);
   };

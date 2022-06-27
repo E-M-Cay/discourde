@@ -1,11 +1,9 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import './App.css';
-import Peer from 'peerjs';
 import { SocketContext } from './context/socket';
 import axios from 'axios';
-import { host, peerServerHost, peerPort } from './env/host';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { joinRoomSuccess, setUsername, setPeer } from './redux/userSlice';
+import { joinRoomSuccess, setUsername } from './redux/userSlice';
 import { startConnecting } from './redux/peerSlice';
 
 interface UserInfo {
@@ -21,6 +19,7 @@ const App = () => {
   const streamRef = useRef<MediaStream>();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.userReducer);
+  const peer = useAppSelector((state) => state.peerReducer);
   const registerUsernameRef = useRef<string>('');
   const registerEmailRef = useRef<string>('');
   const loginEmailRef = useRef<string>('');

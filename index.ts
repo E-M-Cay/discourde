@@ -11,6 +11,8 @@ import path from 'path';
 
 dotenv.config();
 
+connectRedisClient();
+
 const app: Express = express(),
   port: string = process.env.PORT || '5001';
 

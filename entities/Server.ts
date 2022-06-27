@@ -8,6 +8,7 @@ import {
   OneToMany,
   ManyToOne,
 } from 'typeorm';
+import { BannedUser } from './BannedUser';
 import { Channel } from './Channel';
 import { Role } from './Role';
 import { ServerUser } from './ServerUser';
@@ -53,4 +54,7 @@ export class Server {
   vocalChannels: VocalChannel[];
   @OneToMany(() => Role, (role) => role.server)
   roles: Role[];
+
+  @OneToMany(() => BannedUser, (bannedUser) => bannedUser.server)
+  bannedUsers: BannedUser[]
 }

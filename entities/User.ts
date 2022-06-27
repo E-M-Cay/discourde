@@ -8,9 +8,14 @@ import {
   JoinTable,
   OneToMany,
 } from 'typeorm';
+import { BannedUser } from './BannedUser';
 import { ChannelMessage } from './ChannelMessage';
+import { FriendRequest } from './FriendRequest';
+import { Friendship } from './Friendship';
 import { Server } from './Server';
 import { ServerUser } from './ServerUser';
+
+
 
 @Entity()
 export class User {
@@ -52,4 +57,16 @@ export class User {
 
   @OneToMany(() => ChannelMessage, (channelMessage) => channelMessage.author)
   channel_messages: ChannelMessage[];
+
+  @OneToMany(() => Friendship, (friendship) => friendship.user1)
+  friendships: Friendship[];
+
+  @OneToMany(() => BannedUser, (bannedUser) => bannedUser.user)
+  bannedFrom: Server[];
+
+  @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.sender)
+  sentFriendRequests: FriendRequest[];
+
+  @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.receiver)
+  receivedFriendRequest: FriendRequest[];
 }

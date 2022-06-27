@@ -4,8 +4,13 @@ import AppDataSource from '../../db/AppDataSource';
 import bcrypt from 'bcrypt';
 import { User } from '../../entities/User';
 import jwt from 'jsonwebtoken';
+<<<<<<< HEAD
 
 const router = express.Router();
+=======
+import { Secret } from 'jsonwebtoken';
+const isAuth = require('../../MiddleWares/isAuth')
+>>>>>>> beb194e6f8ca0847c6a18a18bd03b646fc05c8ff
 
 const userRepository = AppDataSource.getRepository(User);
 
@@ -76,7 +81,10 @@ router.post('/register', async (req: Request, res: Response) => {
   res.send('FAIL');
 });
 
-router.get('/home', (req: Request, res: Response) => {
+
+
+
+router.get('/home', isAuth, (req: Request, res: Response) => {
   res.send('Hello fdp');
 });
 

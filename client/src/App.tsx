@@ -3,9 +3,10 @@ import './App.css';
 import Peer from 'peerjs';
 import { SocketContext } from './context/socket';
 import axios from 'axios';
-import { host, peerServerHost } from './env/host';
+import { host, peerServerHost, peerPort } from './env/host';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { joinRoomSuccess, setUsername } from './redux/userSlice';
+import { joinRoomSuccess, setUsername, setPeer } from './redux/userSlice';
+import { startConnecting } from './redux/peerSlice';
 
 interface UserInfo {
   username: string;
@@ -18,10 +19,13 @@ const App = () => {
   const [userList, setUserList] = useState<UserInfo[]>([]);
   const [message, setMessage] = useState<string>();
   const streamRef = useRef<MediaStream>();
-  const peerRef = useRef<Peer>();
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.user.username);
-  const usernameRef = useRef<string>(user);
+  const user = useAppSelector((state) => state.userReducer);
+  const registerUsernameRef = useRef<string>('');
+  const registerEmailRef = useRef<string>('');
+  const loginEmailRef = useRef<string>('');
+  const registerPasswordRef = useRef<string>('');
+  const loginPasswordRef = useRef<string>('');
 
   const toggleMicrophone = () => {
     if (!streamRef.current) {
@@ -49,6 +53,7 @@ const App = () => {
   }, [socket]);
 
   const hello = (data: { username: string; id: string }) => {
+    console.log('hello');
     setUserList((prevUserList) => [
       ...prevUserList,
       { username: data.username, id: data.id },
@@ -58,60 +63,19 @@ const App = () => {
   const fetchMessage = () => {
     if (!message) {
       console.log('axios');
-      axios.get(`https://${host}/toto`).then((res) => setMessage(res.data));
+      axios.get(`/toto`).then((res) => setMessage(res.data));
     }
   };
 
-  const updateUsername = (newUsername: string) => {
-    dispatch(setUsername(newUsername));
-  };
+  const updateUsername = useCallback(
+    (newUsername: string) => {
+      dispatch(setUsername(newUsername));
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
-    let secure: boolean = false;
-    let port: number = 9000;
-
-    if (process.env.NODE_ENV === 'production') {
-      secure = true;
-      port = 443;
-    }
-    if (!peerRef.current) {
-      const peer = new Peer({
-        config: {
-          iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-          sdpSemantics: 'unified-plan',
-        },
-        port: port,
-        host: peerServerHost,
-        path: '/',
-        debug: 1,
-        secure: secure,
-      });
-
-      peer.on('open', (id) => {
-        socket.emit('peerId', id);
-      });
-
-      peer.on('call', (call) => {
-        const audioNode = new Audio();
-        // eslint-disable-next-line no-restricted-globals
-        if (confirm(`Call incoming`)) {
-          console.log('streamref.current:', streamRef.current);
-          call.answer(streamRef.current);
-
-          call.on('stream', (stream) => {
-            audioNode.srcObject = stream;
-            console.log('receiving stream');
-            audioNode.play();
-          });
-
-          call.on('close', () => {
-            audioNode.remove();
-          });
-        }
-      });
-
-      peerRef.current = peer;
-    }
+    dispatch(startConnecting());
 
     socket.on('connect', onConnection);
     socket.on('hello', hello);
@@ -121,13 +85,13 @@ const App = () => {
       socket.off('connect', onConnection);
       socket.off('hello', hello);
     };
-  }, [socket, onConnection]);
+  }, [socket, onConnection, updateUsername, dispatch]);
 
   const callUser = (id: string) => {
     const audioNode = new Audio();
     if (streamRef.current) {
       console.log(id);
-      const call = peerRef.current?.call(id, streamRef.current);
+      const call = user.peer?.call(id, streamRef.current);
 
       call?.on('stream', (stream) => {
         audioNode.srcObject = stream;
@@ -142,13 +106,28 @@ const App = () => {
     }
   };
 
-  const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    usernameRef.current = e.target.value;
+  const onChangeHandler = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    ref: React.MutableRefObject<string>
+  ) => {
+    ref.current = e.target.value;
   };
 
-  const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmitRegister = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    socket.emit('username', usernameRef.current);
+    axios.post(`/user/register`, {
+      email: registerEmailRef.current,
+      password: registerPasswordRef.current,
+      username: registerUsernameRef.current,
+    });
+  };
+
+  const onSubmitLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    axios.post(`/user/login`, {
+      email: loginEmailRef.current,
+      password: loginPasswordRef.current,
+    });
   };
 
   const displayUserList = () => {
@@ -170,20 +149,55 @@ const App = () => {
       <div>{displayUserList()}</div>
       <button onClick={fetchMessage}>Fetch message</button>
       <audio id='audio' />
-      {user != '' && (
-        <>
-          <div>{user}</div>
-          <form onSubmit={(e) => onSubmitHandler(e)}>
+      <>
+        <form onSubmit={(e) => onSubmitRegister(e)}>
+          <div>Register</div>
+          <label>
+            email
             <input
               type='text'
-              id='usernameInput'
-              onChange={(e) => onChangeHandler(e)}
-              defaultValue={user}
+              id='registerEmail'
+              onChange={(e) => onChangeHandler(e, registerEmailRef)}
             />
-            <input type='submit' />
-          </form>
-        </>
-      )}
+          </label>
+          <label>
+            password
+            <input
+              type='password'
+              id='registerPassword'
+              onChange={(e) => onChangeHandler(e, registerPasswordRef)}
+            />
+          </label>
+          <label>
+            username
+            <input
+              type='text'
+              id='registerUsername'
+              onChange={(e) => onChangeHandler(e, registerUsernameRef)}
+            />
+          </label>
+          <input type='submit' />
+        </form>
+        <form onSubmit={(e) => onSubmitLogin(e)}>
+          <div>Login</div>
+          <label>
+            email
+            <input
+              type='text'
+              id='loginPassword'
+              onChange={(e) => onChangeHandler(e, loginEmailRef)}
+            />
+          </label>
+          <label>
+            password
+            <input
+              type='password'
+              id='loginPassword'
+              onChange={(e) => onChangeHandler(e, loginPasswordRef)}></input>
+          </label>
+          <input type='submit' />
+        </form>
+      </>
     </div>
   );
 };

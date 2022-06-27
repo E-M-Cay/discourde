@@ -1,10 +1,14 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import userReducer from './userSlice';
+import peerReducer from './peerSlice';
+import PeerMiddleware from './peerMiddleware';
+const rootReducer = combineReducers({ userReducer, peerReducer });
+export type RootState = ReturnType<typeof rootReducer>;
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 
 export const store = configureStore({
-  reducer: { user: userReducer },
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(PeerMiddleware),
 });
-
-export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;

@@ -1,15 +1,15 @@
-var express = require('express');
-var router = express.Router();
+import express from 'express';
 import { Request, Response } from 'express';
 import AppDataSource from '../../db/AppDataSource';
 import bcrypt from 'bcrypt';
 import { User } from '../../entities/User';
 import jwt from 'jsonwebtoken';
-import { Secret } from 'jsonwebtoken';
+
+const router = express.Router();
 
 const userRepository = AppDataSource.getRepository(User);
 
-router.get('/login', async (req: Request, res: Response) => {
+router.post('/login', async (req: Request, res: Response) => {
   if ('email' in req.body && 'password' in req.body) {
     const email: string = req.body.email;
     const password: string = req.body.password;
@@ -73,6 +73,7 @@ router.post('/register', async (req: Request, res: Response) => {
 
     return res.status(201).send('User created succesfully');
   }
+  res.send('FAIL');
 });
 
 router.get('/home', (req: Request, res: Response) => {

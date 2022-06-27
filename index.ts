@@ -5,8 +5,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import { PeerServer } from 'peer';
 import { Socket, Server as SocketServer } from 'socket.io';
+import { createClient } from 'redis';
+import { connectRedisClient, redisClient } from './db/RedisConnection';
 import path from 'path';
-import AppDataSource from './db/AppDataSource';
 
 dotenv.config();
 
@@ -15,17 +16,20 @@ const app: Express = express(),
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 const httpServer = createServer(app);
 
 app.get('/toto', (_req: Request, res: Response) => {
+  redisClient.setEx(
+    'message',
+    3600,
+    JSON.stringify({ message: 'Express + TypeScript Server' })
+  );
   res.send('Express + TypeScript Server');
 });
 
-
-
-app.use('/user', require('./routes/user'))
+app.use('/user', require('./routes/user'));
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.resolve(__dirname, 'client/build')));
@@ -67,6 +71,7 @@ interface ISocket extends Socket {
 }
 
 io.on('connection', (socket: ISocket) => {
+  console.log('connection');
   socket.username = 'user#' + Math.floor(Math.random() * 999999);
   socket.join('test');
 

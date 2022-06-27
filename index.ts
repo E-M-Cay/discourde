@@ -24,7 +24,7 @@ app.get('/toto', (_req: Request, res: Response) => {
 });
 
 
-
+app.use('/server', require('./routes/server'))
 app.use('/user', require('./routes/user'))
 
 if (process.env.NODE_ENV === 'production') {

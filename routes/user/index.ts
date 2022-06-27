@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import { User } from '../../entities/User';
 import jwt from 'jsonwebtoken';
 import { Secret } from 'jsonwebtoken';
+const isAuth = require('../../MiddleWares/isAuth')
 
 const userRepository = AppDataSource.getRepository(User);
 
@@ -75,7 +76,10 @@ router.post('/register', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/home', (req: Request, res: Response) => {
+
+
+
+router.get('/home', isAuth, (req: Request, res: Response) => {
   res.send('Hello fdp');
 });
 

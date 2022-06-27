@@ -15,6 +15,8 @@ import { Friends } from './Friends';
 import { Server } from './Server';
 import { ServerUser } from './ServerUser';
 
+
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -67,4 +69,5 @@ export class User {
 
   @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.receiver)
   receivedFriendRequest: FriendRequest[]
+
 }

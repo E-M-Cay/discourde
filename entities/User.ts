@@ -11,7 +11,7 @@ import {
 import { BannedUser } from './BannedUser';
 import { ChannelMessage } from './ChannelMessage';
 import { FriendRequest } from './FriendRequest';
-import { Friends } from './Friends';
+import { Friendship } from './Friendship';
 import { Server } from './Server';
 import { ServerUser } from './ServerUser';
 
@@ -58,16 +58,15 @@ export class User {
   @OneToMany(() => ChannelMessage, (channelMessage) => channelMessage.author)
   channel_messages: ChannelMessage[];
 
-  @OneToMany(() => Friends, (friend) => friend.friend)
-  friends: Friends[];
+  @OneToMany(() => Friendship, (friendship) => friendship.user1)
+  friendships: Friendship[];
 
   @OneToMany(() => BannedUser, (bannedUser) => bannedUser.user)
   bannedFrom: Server[];
 
   @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.sender)
-  sentFriendRequests: FriendRequest[]
+  sentFriendRequests: FriendRequest[];
 
   @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.receiver)
-  receivedFriendRequest: FriendRequest[]
-
+  receivedFriendRequest: FriendRequest[];
 }

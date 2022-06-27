@@ -9,7 +9,7 @@ import { Secret } from 'jsonwebtoken';
 
 const userRepository = AppDataSource.getRepository(User);
 
-router.get('/login', async (req: Request, res: Response) => {
+router.post('/login', async (req: Request, res: Response) => {
   if ('email' in req.body && 'password' in req.body) {
     const email: string = req.body.email;
     const password: string = req.body.password;

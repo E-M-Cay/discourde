@@ -15,7 +15,7 @@ export class RolePermission {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Permission, (permission) => permission.roles)
+  @ManyToOne(() => Permission, (permission) => permission.roles, {cascade: true})
   permission: Permission;
 
   @ManyToOne(() => Role, (role) => role.permissions)

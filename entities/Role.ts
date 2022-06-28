@@ -22,12 +22,12 @@ export class Role {
   })
   name: string;
 
-  @ManyToOne(() => Server, (server) => server.roles)
+  @ManyToOne(() => Server, (server) => server.roles, {cascade: true})
   server: Server;
 
-  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role)
+  @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role, {cascade: true})
   permissions: RolePermission[];
 
-  @OneToMany(() => ServerUserRole, (serverUserRole) => serverUserRole.role)
+  @OneToMany(() => ServerUserRole, (serverUserRole) => serverUserRole.role, {cascade: true})
   users: ServerUserRole[];
 }

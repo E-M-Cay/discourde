@@ -27,6 +27,6 @@ export class Channel {
   @ManyToOne(() => Server, (server) => server.channels)
   server: Server;
 
-  @OneToMany(() => ChannelMessage, (message) => message.channel)
+  @OneToMany(() => ChannelMessage, (message) => message.channel, {cascade: true})
   messages: ChannelMessage[];
 }

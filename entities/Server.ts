@@ -44,17 +44,17 @@ export class Server {
   @ManyToOne(() => User, (user) => user.owned_servers)
   owner: User;
 
-  @OneToMany(() => ServerUser, (ServerUser) => ServerUser.server)
+  @OneToMany(() => ServerUser, (ServerUser) => ServerUser.server, {cascade: true})
   users: ServerUser[];
 
-  @OneToMany(() => Channel, (channel) => channel.server)
+  @OneToMany(() => Channel, (channel) => channel.server, {cascade: true})
   channels: Channel[];
 
-  @OneToMany(() => VocalChannel, (vocalChannel) => vocalChannel.server)
+  @OneToMany(() => VocalChannel, (vocalChannel) => vocalChannel.server, {cascade: true})
   vocalChannels: VocalChannel[];
   @OneToMany(() => Role, (role) => role.server)
   roles: Role[];
 
-  @OneToMany(() => BannedUser, (bannedUser) => bannedUser.server)
+  @OneToMany(() => BannedUser, (bannedUser) => bannedUser.server, {cascade: true})
   bannedUsers: BannedUser[]
 }

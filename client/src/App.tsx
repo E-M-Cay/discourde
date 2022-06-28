@@ -7,7 +7,8 @@ import { joinRoomSuccess, setUsername, setStream } from './redux/userSlice';
 import VocalChannel from './components/VocalChannel';
 
 const App = () => {
-  const { socket, peer } = useContext(PeerSocketContext);
+  const { socket, peer, connectPeer, connectSocket } =
+    useContext(PeerSocketContext);
   const [micStatus, setMicStatus] = useState<boolean>(false);
 
   const [message, setMessage] = useState<string>();
@@ -37,12 +38,15 @@ const App = () => {
     } else {
       try {
         streamRef.current = undefined;
-      } catch {}
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
   const onConnection = useCallback(() => {
-    socket.emit('connected', socket.id);
+    socket?.emit('connected', socket.id);
+    connectPeer();
   }, [socket]);
 
   const fetchMessage = () => {
@@ -60,11 +64,11 @@ const App = () => {
   );
 
   useEffect(() => {
-    socket.on('connect', onConnection);
-    socket.on('username', updateUsername);
+    socket?.on('connect', onConnection);
+    socket?.on('username', updateUsername);
     return () => {
-      socket.off('username', updateUsername);
-      socket.off('connect', onConnection);
+      socket?.off('username', updateUsername);
+      socket?.off('connect', onConnection);
     };
   }, [socket, onConnection, updateUsername, dispatch]);
 
@@ -86,10 +90,16 @@ const App = () => {
 
   const onSubmitLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    axios.post(`/user/login`, {
-      email: loginEmailRef.current,
-      password: loginPasswordRef.current,
-    });
+    axios
+      .post(`/user/login`, {
+        email: loginEmailRef.current,
+        password: loginPasswordRef.current,
+      })
+      .then((data) => {
+        if (data.data.token) {
+          connectSocket();
+        }
+      });
   };
 
   return (

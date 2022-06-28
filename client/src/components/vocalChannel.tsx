@@ -16,7 +16,7 @@ const VocalChannel = (props: { channelName: string }) => {
 
   const openPeer = (id: string) => {
     console.log('peerid:', id);
-    socket.emit('peerId', id);
+    socket?.emit('peerId', id);
   };
 
   const callEvent = (call: MediaConnection) => {
@@ -39,20 +39,20 @@ const VocalChannel = (props: { channelName: string }) => {
   };
 
   useEffect(() => {
-    peer.on('call', callEvent);
-    peer.on('open', openPeer);
-    socket.on('hello', hello);
+    peer?.on('call', callEvent);
+    peer?.on('open', openPeer);
+    socket?.on('hello', hello);
     return () => {
-      peer.off('call', callEvent);
-      peer.off('open', openPeer);
-      socket.off('hello', hello);
+      peer?.off('call', callEvent);
+      peer?.off('open', openPeer);
+      socket?.off('hello', hello);
     };
   });
   const callUser = (id: string) => {
     const audioNode = new Audio();
     if (user.stream) {
       console.log(id);
-      const call = peer.call(id, user.stream);
+      const call = peer?.call(id, user.stream);
 
       call?.on('stream', (stream) => {
         audioNode.srcObject = stream;

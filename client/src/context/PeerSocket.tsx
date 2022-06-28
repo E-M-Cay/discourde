@@ -1,43 +1,73 @@
-import { createContext, Context } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { host, socketPort } from '../env/host';
 import { peerPort, peerServerHost } from '../env/host';
 import Peer from 'peerjs';
 
 interface PeerSocket {
-  peer: Peer;
-  socket: Socket;
+  peer?: Peer;
+  socket?: Socket;
+  connectPeer: () => void;
+  connectSocket: () => void;
 }
 
-interface ISocket extends Socket {
-  username?: string;
-}
-let socket: ISocket;
-let secure = false;
-let peer: Peer;
-
-if (process.env.NODE_ENV === 'production') {
-  secure = true;
-  socket = io(`wss://${host}:${socketPort}/`);
-} else {
-  socket = io(`ws://${host}:${socketPort}/`);
-}
-
-peer = new Peer({
-  config: {
-    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-    sdpSemantics: 'unified-plan',
+const PeerSocketContext = createContext<PeerSocket>({
+  connectPeer: () => {
+    throw new Error('connectPeer not correctly overriden');
   },
-  port: peerPort,
-  host: peerServerHost,
-  path: '/',
-  debug: 1,
-  secure: secure,
+  connectSocket: () => {
+    throw new Error('connectSocket not correctly overriden');
+  },
 });
 
-const PeerSocketContext: Context<PeerSocket> = createContext<PeerSocket>({
-  socket,
-  peer,
-});
+interface Props {
+  children: React.ReactNode;
+}
 
-export { socket, PeerSocketContext, peer };
+const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
+  interface ISocket extends Socket {
+    username?: string;
+  }
+
+  const [socket, setSocket] = useState<ISocket>();
+  const [peer, setPeer] = useState<Peer>();
+
+  let secure = false;
+
+  const connectSocket = () => {
+    if (process.env.NODE_ENV === 'production') {
+      secure = true;
+      setSocket(io(`wss://${host}:${socketPort}/`));
+    } else {
+      setSocket(io(`ws://${host}:${socketPort}/`));
+    }
+  };
+
+  const connectPeer = () => {
+    setPeer(
+      new Peer({
+        config: {
+          iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+          sdpSemantics: 'unified-plan',
+        },
+        port: peerPort,
+        host: peerServerHost,
+        path: '/',
+        debug: 1,
+        secure: secure,
+      })
+    );
+  };
+
+  useEffect(() => {}, [socket]);
+  return (
+    <PeerSocketContext.Provider
+      value={{ peer, socket, connectPeer, connectSocket }}>
+      {children}
+    </PeerSocketContext.Provider>
+  );
+};
+
+export default PeerSocketProvider;
+
+export { PeerSocketContext };

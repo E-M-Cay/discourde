@@ -3,20 +3,20 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { PeerSocketContext, socket, peer } from './context/PeerSocket';
+import PeerSocketProvider from './context/PeerSocket';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
-let toto: Record<string, string[]>;
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <PeerSocketContext.Provider value={{ socket, peer }}>
+    <PeerSocketProvider>
       <Provider store={store}>
         <App />
       </Provider>
-    </PeerSocketContext.Provider>
+    </PeerSocketProvider>
   </React.StrictMode>
 );
 

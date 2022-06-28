@@ -33,7 +33,7 @@ router.get('/list', isAuth,  async (req:IRequest, res:Response) => {
     return res.send(server_object_list)
 })
 
-router.create('/create_server', isAuth, async (req:IRequest, res:Response) => {
+router.post('/create_server', isAuth, async (req:IRequest, res:Response) => {
     if('name' in req.body && 'main_img' in req.body){
         const name:string = req.body.name
         const main_img:string = req.body.main_img
@@ -53,7 +53,7 @@ router.create('/create_server', isAuth, async (req:IRequest, res:Response) => {
     
 })
 
-router.create('/update_server', isAuth, async (req:IRequest, res:Response) => {
+router.post('/update_server', isAuth, async (req:IRequest, res:Response) => {
     if(('main_img' in req.body || 'logo' in req.body) && 'server_id' in req.body){
         const server = await ServerRepository.findOneBy({id: Number(req.body.server_id)})
         const logo:string = ('logo' in req.body) ? req.body.name : null

@@ -1,13 +1,12 @@
 import express, { Express, Request, Response } from 'express';
-//import { createServer } from 'https';
 import { createServer } from 'http';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { PeerServer } from 'peer';
 import { Socket, Server as SocketServer } from 'socket.io';
-import { createClient } from 'redis';
-import { redisClient } from './db/RedisConnection';
 import path from 'path';
+
+let usersStatus: { id: number; status: string; socketId: string }[] = [];
 
 dotenv.config();
 
@@ -21,11 +20,6 @@ app.use(express.urlencoded({ extended: true }));
 const httpServer = createServer(app);
 
 app.get('/toto', (_req: Request, res: Response) => {
-  redisClient.setEx(
-    'message',
-    3600,
-    JSON.stringify({ message: 'Express + TypeScript Server' })
-  );
   res.send('Express + TypeScript Server');
 });
 
@@ -44,7 +38,7 @@ httpServer.listen(port, () => {
   if (process.env.NODE_ENV === 'production') {
     console.log('App running at https://discourde.herokuapp.com');
   } else {
-    console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
+    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
   }
 });
 
@@ -84,6 +78,17 @@ io.on('connection', (socket: ISocket) => {
     socket.emit('username', socket.username);
   });
   socket.on('peerId', (id) => {
-    socket.to('test').emit('hello', { username: socket.username, id });
+    usersStatus.push({ id: id, status: 'online', socketId: socket.id });
+    socket.to('test').emit('hello', { socketId: socket.id, id });
+    console.table(usersStatus);
+    socket.emit('users', usersStatus);
+  });
+
+  socket.on('getUsers', () => {
+    console.log('users request');
+  });
+
+  socket.on('disconnecting', (reason) => {
+    usersStatus = usersStatus.filter((u) => u.socketId !== socket.id);
   });
 });

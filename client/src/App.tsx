@@ -10,7 +10,6 @@ const App = () => {
   const { socket, peer, connectPeer, connectSocket } =
     useContext(PeerSocketContext);
   const [micStatus, setMicStatus] = useState<boolean>(false);
-
   const [message, setMessage] = useState<string>();
   const streamRef = useRef<MediaStream>();
   const dispatch = useAppDispatch();
@@ -22,7 +21,7 @@ const App = () => {
   const loginPasswordRef = useRef<string>('');
 
   const toggleMicrophone = () => {
-    if (!user.stream) {
+    if (!user.stream?.active) {
       navigator.mediaDevices
         .getUserMedia({ audio: true })
         .then((stream) => {
@@ -45,6 +44,7 @@ const App = () => {
   };
 
   const onConnection = useCallback(() => {
+    console.log('socket con');
     socket?.emit('connected', socket.id);
     connectPeer();
   }, [socket]);

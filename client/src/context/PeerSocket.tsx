@@ -35,6 +35,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
   let secure = false;
 
   const connectSocket = () => {
+    socket?.close();
     if (process.env.NODE_ENV === 'production') {
       secure = true;
       setSocket(io(`wss://${host}:${socketPort}/`));
@@ -44,19 +45,21 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
   };
 
   const connectPeer = () => {
-    setPeer(
-      new Peer({
-        config: {
-          iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-          sdpSemantics: 'unified-plan',
-        },
-        port: peerPort,
-        host: peerServerHost,
-        path: '/',
-        debug: 1,
-        secure: secure,
-      })
-    );
+    peer?.destroy();
+    console.log('peer connecting');
+
+    const newPeer = new Peer({
+      config: {
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+        sdpSemantics: 'unified-plan',
+      },
+      port: peerPort,
+      host: peerServerHost,
+      path: '/',
+      debug: 1,
+      secure: secure,
+    });
+    setPeer(newPeer);
   };
 
   useEffect(() => {}, [socket]);

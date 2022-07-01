@@ -1,10 +1,10 @@
 import { MediaConnection } from 'peerjs';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { useAppSelector } from '../redux/hooks';
 
 interface UserInfo {
-  username: string;
+  socketId: string;
   id: string;
 }
 
@@ -13,17 +13,49 @@ const VocalChannel = (props: { channelName: string }) => {
   const { channelName } = props;
   const user = useAppSelector((state) => state.userReducer);
   const [userList, setUserList] = useState<UserInfo[]>([]);
+  const streamRef = useRef<MediaStream>();
 
-  const openPeer = (id: string) => {
-    console.log('peerid:', id);
-    socket?.emit('peerId', id);
+  const toggleMicrophone = async () => {
+    if (!streamRef.current?.active) {
+      await navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then((stream) => {
+          stream.getAudioTracks().forEach((track) => {
+            console.log(track.getSettings());
+          });
+          streamRef.current = stream;
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    } else {
+      try {
+        streamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
-  const callEvent = (call: MediaConnection) => {
-    const audioNode = new Audio();
-    // eslint-disable-next-line no-restricted-globals
-    if (confirm(`Call incoming`)) {
-      console.log('streamref.current:', user.stream);
+  const openPeer = useCallback(
+    (id: string) => {
+      console.log('peerid:', id);
+      socket?.emit('peerId', id);
+      socket?.emit('getUsers');
+    },
+    [socket]
+  );
+
+  const callEvent = useCallback(
+    async (call: MediaConnection) => {
+      console.log('call');
+      const audioNode = new Audio();
+      // eslint-disable-next-line no-restricted-globals
+      //if (confirm(`Call incoming`)) {
+      //console.log('streamref.current:', user.stream);
+      await toggleMicrophone();
       call.answer(user.stream);
 
       call.on('stream', (stream) => {
@@ -35,51 +67,68 @@ const VocalChannel = (props: { channelName: string }) => {
       call.on('close', () => {
         audioNode.remove();
       });
-    }
+      //}
+    },
+    [user.stream]
+  );
+
+  const receiveUsers = (userList: UserInfo[]) => {
+    setUserList([...userList]);
   };
 
-  useEffect(() => {
-    peer?.on('call', callEvent);
-    peer?.on('open', openPeer);
-    socket?.on('hello', hello);
-    return () => {
-      peer?.off('call', callEvent);
-      peer?.off('open', openPeer);
-      socket?.off('hello', hello);
-    };
-  });
-  const callUser = (id: string) => {
-    const audioNode = new Audio();
-    if (user.stream) {
+  const callUser = useCallback(
+    (id: string) => {
+      const audioNode = new Audio();
+      if (!streamRef.current?.active) {
+        return;
+      }
       console.log(id);
-      const call = peer?.call(id, user.stream);
+      const call = peer?.call(id, streamRef.current);
 
       call?.on('stream', (stream) => {
         audioNode.srcObject = stream;
         console.log('receiving stream');
         audioNode.play();
-        //audioNode.remove();
       });
 
       call?.on('close', () => {
         audioNode.remove();
       });
-    }
-  };
+    },
+    [peer, user.stream]
+  );
 
-  const hello = (data: { username: string; id: string }) => {
-    console.log('hello');
-    setUserList((prevUserList) => [
-      ...prevUserList,
-      { username: data.username, id: data.id },
-    ]);
-  };
+  const hello = useCallback(
+    async (data: { socketId: string; id: string }) => {
+      console.log('hello');
+      setUserList((prevUserList) => [
+        ...prevUserList,
+        { socketId: data.socketId, id: data.id },
+      ]);
+      await toggleMicrophone();
+      callUser(data.id);
+    },
+    [callUser]
+  );
+
+  useEffect(() => {
+    peer?.on('call', callEvent);
+    peer?.on('open', openPeer);
+    socket?.on('hello', hello);
+    socket?.on('users', receiveUsers);
+    return () => {
+      peer?.off('call', callEvent);
+      peer?.off('open', openPeer);
+      socket?.off('hello', hello);
+      socket?.off('users', receiveUsers);
+    };
+  }, [peer, socket, callEvent, openPeer, hello]);
 
   const displayUserList = () => {
     return userList.map((u) => {
       return (
         <div>
-          {u.username}, {u.id}
+          {u.socketId}, {u.id}
           <button onClick={() => callUser(u.id)}></button>
         </div>
       );

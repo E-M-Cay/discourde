@@ -62,6 +62,7 @@ const VocalChannel = (props: { channelName: string }) => {
       call.on('stream', (stream) => {
         audioNode.srcObject = stream;
         console.log('receiving stream 2');
+        console.log(stream);
         audioNode.play();
       });
 
@@ -86,6 +87,7 @@ const VocalChannel = (props: { channelName: string }) => {
       call?.on('stream', (stream) => {
         audioNode.srcObject = stream;
         console.log('receiving stream 1');
+        console.log(stream);
         audioNode.play();
       });
 

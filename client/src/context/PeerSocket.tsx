@@ -52,18 +52,13 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
     const newPeer = new Peer({
       config: {
         iceServers: [
+          { urls: ['stun:stun.l.google.com:19302'] },
           {
-            urls: [
-              'stun:stun.l.google.com:19302',
-              {
-                url: 'turn:turn.bistri.com:80',
-                credential: 'homeo',
-                username: 'homeo',
-              },
-            ],
+            urls: 'turn:turn.bistri.com:80',
+            credential: 'homeo',
+            username: 'homeo',
           },
         ],
-
         sdpSemantics: 'unified-plan',
       },
       port: peerPort,

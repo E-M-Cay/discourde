@@ -4,7 +4,7 @@ import { PeerSocketContext } from './context/PeerSocket';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
 import { joinRoomSuccess, setUsername, setStream } from './redux/userSlice';
-import VocalChannel from './components/VocalChannel';
+import VocalChannel from './components/VocalChannel.js';
 
 const App = () => {
   const { socket, peer, connectPeer, connectSocket } =

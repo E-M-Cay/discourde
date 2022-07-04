@@ -80,10 +80,10 @@ const VocalChannel = (props: { channelName: string }) => {
     (id: string) => {
       const audioNode = new Audio();
       if (!streamRef.current?.active) {
-        return;
+        toggleMicrophone();
       }
       console.log(id);
-      const call = peer?.call(id, streamRef.current);
+      const call = peer?.call(id, streamRef.current as MediaStream);
 
       call?.on('stream', (stream) => {
         audioNode.srcObject = stream;

@@ -54,9 +54,9 @@ const VocalChannel = (props: { channelName: string }) => {
       const audioNode = new Audio();
       // eslint-disable-next-line no-restricted-globals
       //if (confirm(`Call incoming`)) {
-      //console.log('streamref.current:', user.stream);
-
-      await toggleMicrophone();
+      if (!streamRef.current?.active) {
+        await toggleMicrophone();
+      }
       call.answer(streamRef.current as MediaStream);
 
       call.on('stream', (stream) => {
@@ -80,9 +80,6 @@ const VocalChannel = (props: { channelName: string }) => {
   const callUser = useCallback(
     async (id: string) => {
       const audioNode = new Audio();
-      if (!streamRef.current?.active) {
-        await toggleMicrophone();
-      }
       console.log(id);
       const call = peer?.call(id, streamRef.current as MediaStream);
 

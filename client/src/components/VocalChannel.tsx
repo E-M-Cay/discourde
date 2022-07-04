@@ -57,7 +57,7 @@ const VocalChannel = (props: { channelName: string }) => {
       //console.log('streamref.current:', user.stream);
 
       await toggleMicrophone();
-      call.answer(user.stream);
+      call.answer(streamRef.current as MediaStream);
 
       call.on('stream', (stream) => {
         audioNode.srcObject = stream;

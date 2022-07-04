@@ -47,7 +47,7 @@ const App = () => {
     console.log('socket con');
     socket?.emit('connected', socket.id);
     connectPeer();
-  }, [socket]);
+  }, [socket, connectPeer]);
 
   const fetchMessage = () => {
     if (!message) {

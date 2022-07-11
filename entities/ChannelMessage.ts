@@ -19,7 +19,7 @@ export class ChannelMessage {
   content: string;
 
   @Column({ type: 'datetime', nullable: false })
-  send_time: Date;
+  send_time: number;
 
   @ManyToOne(() => Channel, (channel) => channel.messages)
   channel: Channel;

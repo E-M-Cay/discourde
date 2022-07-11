@@ -26,6 +26,6 @@ export class ServerUser {
   @ManyToOne(() => Server, (server) => server.users)
   server: Server;
 
-  @OneToMany(() => ServerUserRole, (serverUserRole) => serverUserRole.user)
+  @OneToMany(() => ServerUserRole, (serverUserRole) => serverUserRole.user, {cascade: true})
   roles: ServerUserRole[];
 }

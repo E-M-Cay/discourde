@@ -16,7 +16,7 @@ const UserRepository = AppDataSource.getRepository(User);
 const ServerRepository = AppDataSource.getRepository(Server);
 const ServerUserRepository = AppDataSource.getRepository(ServerUser);
 
-router.get('/list', isAuth, async (req: IRequest, res: Response) => {
+router.get('/list', async (req: IRequest, res: Response) => {
   const user = await UserRepository.findOne({
     where: {
       id: req.id,

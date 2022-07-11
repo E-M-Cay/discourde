@@ -5,6 +5,12 @@ import axios from 'axios';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
 import { joinRoomSuccess, setUsername } from './redux/userSlice';
 import VocalChannel from './components/VocalChannel';
+import { Home } from './Home/Home';
+
+interface UserInfo {
+  username: string;
+  id: string;
+}
 
 const App = () => {
   const { socket, peer, connectPeer, connectSocket } =
@@ -79,7 +85,32 @@ const App = () => {
       });
   };
 
+  // return (
+  //   <div className='App'>
+  //     <button onClick={toggleMicrophone}>Open mic</button>
+  //     <div>{message}</div>
+  //     <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
+  //     <div>{displayUserList()}</div>
+  //     <button onClick={fetchMessage}>Fetch message</button>
+  //     <audio id='audio' />
+  //     {user != '' && (
+  //       <>
+  //         <div>{user}</div>
+  //         <form onSubmit={(e) => onSubmitHandler(e)}>
+  //           <input
+  //             type='text'
+  //             id='usernameInput'
+  //             onChange={(e) => onChangeHandler(e)}
+  //             defaultValue={user}
+  //           />
+  //           <input type='submit' />
+  //         </form>
+  //       </>
+  //     )}
+  //   </div>
+  // );
   return (
+    <>
     <div className='App'>
       <div>{message}</div>
       <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
@@ -135,6 +166,7 @@ const App = () => {
         </form>
       </>
     </div>
+    <Home /></>
   );
 };
 

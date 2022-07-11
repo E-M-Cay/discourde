@@ -10,7 +10,6 @@ export const LeftBar= () => {
     }
     return (
         <Sider  className="site-layout-background">
-
             <div className={"scrollIssue"} style={{ height: '100vh', borderRight: 0, padding: 0, width: "70px", display: "flex", justifyContent: "center", flexWrap: "wrap", overflowY: "scroll"  }}>
                 {
                     fake.map((object: any, i: any) => <CustomLimage obj={object} key={i} />)

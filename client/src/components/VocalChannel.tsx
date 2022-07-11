@@ -1,7 +1,7 @@
 import { MediaConnection } from 'peerjs';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { PeerSocketContext } from '../context/PeerSocket.js';
-import { useAppSelector } from '../redux/hooks.js';
+import { PeerSocketContext } from '../context/PeerSocket';
+import { useAppSelector } from '../redux/hooks';
 
 interface UserInfo {
   socketId: string;
@@ -109,16 +109,24 @@ const VocalChannel = (props: { channelName: string }) => {
     [callUser]
   );
 
+  const userDisconnected = (id: string) => {
+    setUserList((prevUserList) => {
+      return prevUserList.filter((u) => u.socketId !== id);
+    });
+  };
+
   useEffect(() => {
     peer?.on('call', callEvent);
     peer?.on('open', openPeer);
     socket?.on('hello', hello);
     socket?.on('users', receiveUsers);
+    socket?.on('disconnected', userDisconnected);
     return () => {
       peer?.off('call', callEvent);
       peer?.off('open', openPeer);
       socket?.off('hello', hello);
       socket?.off('users', receiveUsers);
+      socket?.off('disconnected', userDisconnected);
     };
   }, [peer, socket, callEvent, openPeer, hello]);
 

@@ -1,0 +1,49 @@
+.headerPanel {
+    font-size: medium;
+}
+.panelContent {
+    font-size: medium;
+    padding: 5px 10px;
+    border-radius: 8px;
+    color:#b2b2b2;
+}
+.panelContent:hover {
+   
+    color:#e5e5e5 !important;
+    background-color: #4c4c4c;
+}
+.serverName {
+    font-size: larger !important;
+    text-align: center !important;
+}
+.avatarCard{
+    position: fixed;
+    width: 13vw !important;
+    background-color: #1F1F1F;
+    border: none;
+    bottom: 0;
+}
+.microOn {
+    color: green !important;
+    font-size: larger;
+    padding: 3px;
+}
+.microOff {
+    color: red ! important;
+    font-size: larger;
+    padding: 3px;
+}
+.menuIcon {
+    color: white !important;
+    font-size: larger !important;
+}
+.menu {
+    background-color: #060606 !important;
+    border-radius: 8px;
+    position: relative;
+}
+.iconChan {
+    font-style: italic !important;
+}
+
+

@@ -6,7 +6,7 @@ import fake from "../mock";
 
 export const LeftBar= () => {
     for (const prop in fake){
-    console.log(`${prop}: ${fake[prop].first_name}`);
+    // console.log(`${prop}: ${fake[prop].first_name}`);
     }
     return (
         <Sider  className="site-layout-background">

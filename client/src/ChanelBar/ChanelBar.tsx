@@ -34,10 +34,8 @@ export const ChanelBar= (serveur: any) => {
             } 
 
             const onChange = (key: any) => {
-                console.log(key);
             }
             const onClick = (e: any) => {
-                console.log('click ', e);
               }
             
             const [stateMic, setmicState] = useState(true);

@@ -29,7 +29,6 @@ export const CustomLimage = ({ obj }: any) => {
   );
 };
 export const CustomImage = ({ obj }: any) => {
-  console.log(obj);
   const [isFocused, setFocus] = useState(false);
   return (
     <img
@@ -49,7 +48,6 @@ export const CustomImage = ({ obj }: any) => {
   );
 };
 export const CustomImageMess = ({ obj }: any) => {
-  console.log(obj);
   const [isFocused, setFocus] = useState(false);
   return (
     <img

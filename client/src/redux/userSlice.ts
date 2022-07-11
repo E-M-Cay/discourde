@@ -3,11 +3,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface UserState {
   rooms: string[];
   username: string;
+  token: string;
 }
 
 const initialUserState: UserState = {
   rooms: [],
   username: '',
+  token: '',
 };
 
 export const userSlice = createSlice({
@@ -21,6 +23,9 @@ export const userSlice = createSlice({
     },
     setUsername: (state, action: PayloadAction<string>) => {
       state.username = action.payload;
+    },
+    setToken: (state, action: PayloadAction<string>) => {
+      state.token = action.payload;
     },
   },
 });

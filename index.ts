@@ -6,6 +6,7 @@ import cors from 'cors';
 import { PeerServer } from 'peer';
 import { Socket, Server as SocketServer } from 'socket.io';
 import path from 'path';
+import AppDataSource from './db/AppDataSource';
 
 dotenv.config();
 
@@ -13,11 +14,18 @@ const app: Express = express(),
   port: string = process.env.PORT || '5001';
 
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
 const httpServer = createServer(app);
 
 app.get('/toto', (_req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
 });
+
+
+app.use('/server', require('./routes/server'))
+app.use('/user', require('./routes/user'))
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.resolve(__dirname, 'client/build')));

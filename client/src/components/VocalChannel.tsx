@@ -1,7 +1,7 @@
 import { MediaConnection } from 'peerjs';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { PeerSocketContext } from '../context/PeerSocket';
-import { useAppSelector } from '../redux/hooks';
+import { PeerSocketContext } from '../context/PeerSocket.js';
+import { useAppSelector } from '../redux/hooks.js';
 
 interface UserInfo {
   socketId: string;
@@ -43,36 +43,32 @@ const VocalChannel = (props: { channelName: string }) => {
     (id: string) => {
       console.log('peerid:', id);
       socket?.emit('peerId', id);
-      socket?.emit('getUsers');
     },
     [socket]
   );
 
-  const callEvent = useCallback(
-    async (call: MediaConnection) => {
-      console.log('call');
-      const audioNode = new Audio();
-      // eslint-disable-next-line no-restricted-globals
-      //if (confirm(`Call incoming`)) {
-      if (!streamRef.current?.active) {
-        await toggleMicrophone();
-      }
-      call.answer(streamRef.current as MediaStream);
+  const callEvent = useCallback(async (call: MediaConnection) => {
+    console.log('call');
+    const audioNode = new Audio();
+    // eslint-disable-next-line no-restricted-globals
+    //if (confirm(`Call incoming`)) {
+    if (!streamRef.current?.active) {
+      await toggleMicrophone();
+    }
+    call.answer(streamRef.current as MediaStream);
 
-      call.on('stream', (stream) => {
-        audioNode.srcObject = stream;
-        console.log('receiving stream 2');
-        console.log(stream);
-        audioNode.play();
-      });
+    call.on('stream', (stream) => {
+      audioNode.srcObject = stream;
+      console.log('receiving stream 2');
+      console.log(stream);
+      audioNode.play();
+    });
 
-      call.on('close', () => {
-        audioNode.remove();
-      });
-      //}
-    },
-    [user.stream]
-  );
+    call.on('close', () => {
+      audioNode.remove();
+    });
+    //}
+  }, []);
 
   const receiveUsers = (userList: UserInfo[]) => {
     setUserList([...userList]);
@@ -95,7 +91,7 @@ const VocalChannel = (props: { channelName: string }) => {
         audioNode.remove();
       });
     },
-    [peer, user.stream]
+    [peer]
   );
 
   const hello = useCallback(

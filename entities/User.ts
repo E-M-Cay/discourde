@@ -15,8 +15,6 @@ import { Friendship } from './Friendship';
 import { Server } from './Server';
 import { ServerUser } from './ServerUser';
 
-
-
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()

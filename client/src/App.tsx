@@ -3,7 +3,7 @@ import './App.css';
 import { PeerSocketContext } from './context/PeerSocket';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { joinRoomSuccess, setUsername, setStream } from './redux/userSlice';
+import { joinRoomSuccess, setUsername } from './redux/userSlice';
 import VocalChannel from './components/VocalChannel';
 
 const App = () => {
@@ -19,29 +19,6 @@ const App = () => {
   const loginEmailRef = useRef<string>('');
   const registerPasswordRef = useRef<string>('');
   const loginPasswordRef = useRef<string>('');
-
-  const toggleMicrophone = () => {
-    if (!user.stream?.active) {
-      navigator.mediaDevices
-        .getUserMedia({ audio: true })
-        .then((stream) => {
-          stream.getAudioTracks().forEach((track) => {
-            console.log(track.getSettings());
-          });
-          dispatch(setStream(stream));
-          setMicStatus(true);
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    } else {
-      try {
-        streamRef.current = undefined;
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  };
 
   const onConnection = useCallback(() => {
     console.log('socket con');
@@ -104,7 +81,6 @@ const App = () => {
 
   return (
     <div className='App'>
-      <button onClick={toggleMicrophone}>Open mic</button>
       <div>{message}</div>
       <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
       <button onClick={fetchMessage}>Fetch message</button>

@@ -5,8 +5,34 @@ import cors from 'cors';
 import { PeerServer } from 'peer';
 import { Socket, Server as SocketServer } from 'socket.io';
 import path from 'path';
+import AppDataSource from './db/AppDataSource';
+import { Server } from './entities/Server';
 
-let usersStatus: { id: number; status: string; socketId: string }[] = [];
+interface userStatus {
+  id: number;
+  status: string;
+  socketId: string;
+}
+
+interface ServerStatus {
+  id: number;
+  name: string;
+  users: string[];
+}
+
+const serversStatus: ServerStatus[] = [];
+
+const serverRepository = AppDataSource.getRepository(Server);
+
+const servers = await serverRepository.find();
+
+//console.table(servers);
+
+let usersStatus: {
+  id: number;
+  status: string;
+  socketId: string;
+}[] = [];
 
 dotenv.config();
 
@@ -52,7 +78,7 @@ if (process.env.NODE_ENV === 'development') {
     console.log('peer client', client.getId());
   });
 
-  peerServer.on('disconnect', (client) => {
+  peerServer.on('disconnect', (_client) => {
     console.log('peer client leave');
   });
 }
@@ -74,21 +100,19 @@ io.on('connection', (socket: ISocket) => {
     socket.username = newUsername;
     socket.emit('username', newUsername);
   });
+
   socket.on('connected', (id: string) => {
     socket.emit('username', socket.username);
   });
+
   socket.on('peerId', (id) => {
     usersStatus.push({ id: id, status: 'online', socketId: socket.id });
     socket.to('test').emit('hello', { socketId: socket.id, id });
-    console.table(usersStatus);
+    //console.table(usersStatus);
     socket.emit('users', usersStatus);
   });
 
-  socket.on('getUsers', () => {
-    console.log('users request');
-  });
-
-  socket.on('disconnecting', (reason) => {
+  socket.on('disconnecting', (_reason) => {
     usersStatus = usersStatus.filter((u) => u.socketId !== socket.id);
   });
 });

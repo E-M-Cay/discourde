@@ -15,18 +15,9 @@ export class BannedUser {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(
-    () => Server,
-    (server) => server.bannedUsers
-  )
-  server: Server
+  @ManyToOne(() => Server, (server) => server.bannedUsers)
+  server: Server;
 
-  @ManyToOne(
-      () => User,
-      (user) => user.bannedFrom
-
-  )
-  user: User
-  
-  
+  @ManyToOne(() => User, (user) => user.bannedFrom)
+  user: User;
 }

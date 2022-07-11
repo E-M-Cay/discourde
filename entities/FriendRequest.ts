@@ -15,18 +15,9 @@ export class FriendRequest {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(
-    () => User,
-    (user) => user.sentFriendRequests
-  )
-  sender: User
+  @ManyToOne(() => User, (user) => user.sentFriendRequests)
+  sender: User;
 
-  @ManyToOne(
-    () => User,
-    (user) => user.receivedFriendRequest
-  )
-  receiver: User
-
-  
-  
+  @ManyToOne(() => User, (user) => user.receivedFriendRequest)
+  receiver: User;
 }

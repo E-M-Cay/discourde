@@ -56,5 +56,5 @@ export class Server {
   roles: Role[];
 
   @OneToMany(() => BannedUser, (bannedUser) => bannedUser.server)
-  bannedUsers: BannedUser[]
+  bannedUsers: BannedUser[];
 }

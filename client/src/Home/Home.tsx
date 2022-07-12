@@ -4,11 +4,13 @@ import { Main } from "../Main/Main";
 import { Col, Row } from "antd";
 import { ChanelBar } from "../ChanelBar/ChanelBar";
 import axios from "axios";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { setActiveServer } from "../redux/userSlice";
 
 
 interface ServerResponse {
     id: number;
-    nickName: string;
+    nickname: string;
     server: Server
 }
 
@@ -28,6 +30,7 @@ export const Home = () => {
     if (servers.length === 0) {
       axios.get("server/list").then((res) => {
         setServers(res.data);
+        setActiveServer(res.data[0].server.id);
         console.log(res.data, "res.data");
       });
     }

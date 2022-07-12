@@ -189,7 +189,7 @@ router.put('/update_message/', isAuth, async (req:IRequest, res:Response) => {
 
 
 
-module.exports = router;
+
 
 router.delete('/delete_message/:message_id', isAuth, async (req:IRequest, res:Response) => {
     const message_id = Number(req.params.message_id)
@@ -207,3 +207,5 @@ router.delete('/delete_message/:message_id', isAuth, async (req:IRequest, res:Re
         return res.status(400).send(error)
     }
 })
+
+module.exports = router;

@@ -12,10 +12,16 @@ import { Modal } from 'antd';
 
 
 interface ServerResponse {
-    id: number;
-    logo: string;
-    main_img: string;
-    name: string
+  id: number;
+  nickname: string;
+  server: Server
+}
+
+interface Server {
+  id: number;
+  logo: string;
+  main_img: string;
+  name: string;
 }
 
 
@@ -47,6 +53,9 @@ export const LeftBar= (props: {servers: ServerResponse[], setServers: React.Disp
         const [isFocused, setFocus] = useState(false);
         const [serverName, setServerName] = useState("");
         const [serverLogo, setServerLogo] = useState("");
+        
+
+
         const createServer = (e: React.FormEvent<HTMLFormElement>) => {
           e.preventDefault();
           axios.post("server/create_server", {name: serverName, main_img: serverLogo}, { headers: { access_token:  localStorage.getItem("token") as string },  } ).then((res) => {

@@ -22,6 +22,7 @@ module.exports = async function (
   res: Response,
   next: NextFunction
 ) {
+  console.log(req.headers, " guidkf");
   // On récupère le token
   const token: any = req.headers?.access_token;
 

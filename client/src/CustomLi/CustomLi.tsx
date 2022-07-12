@@ -9,10 +9,10 @@ export const CustomLimage = ({ obj }: any) => {
       mouseLeaveDelay={0.3}
       placement="left"
       style={{ fontSize: "32px" }}
-      title={obj.first_name}
+      title={obj.server.name}
     >
       <img
-        alt={obj.first_name}
+        alt={obj.server.name}
         onMouseEnter={() => setFocus(true)}
         onMouseLeave={() => setFocus(false)}
         className={"imgS"}
@@ -23,7 +23,7 @@ export const CustomLimage = ({ obj }: any) => {
           borderRadius: "30px",
           cursor: "pointer",
         }}
-        src={obj.img}
+        src={obj.server.main_img}
       />
     </Tooltip>
   );

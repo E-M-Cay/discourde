@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from './redux/hooks';
 import { joinRoomSuccess, setUsername } from './redux/userSlice';
 import VocalChannel from './components/VocalChannel';
 import { Home } from './Home/Home';
+import { Modal } from 'antd';
 
 interface UserInfo {
   username: string;
@@ -25,6 +26,20 @@ const App = () => {
   const loginEmailRef = useRef<string>('');
   const registerPasswordRef = useRef<string>('');
   const loginPasswordRef = useRef<string>('');
+
+  const [isModalVisible, setIsModalVisible] = useState(localStorage.getItem("token") ? false : true);
+
+  // const showModal = () => {
+  //   setIsModalVisible(true);
+  // };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
 
   const onConnection = useCallback(() => {
     console.log('socket con');
@@ -81,8 +96,11 @@ const App = () => {
       .then((data) => {
         if (data.data.token) {
           connectSocket();
+          localStorage.setItem('token', data.data.token);
+          handleOk();
         }
       });
+      
   };
 
   // return (
@@ -111,6 +129,7 @@ const App = () => {
   // );
   return (
     <>
+    <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
     <div className='App'>
       <div>{message}</div>
       <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
@@ -166,6 +185,7 @@ const App = () => {
         </form>
       </>
     </div>
+    </Modal>
     <Home /></>
   );
 };

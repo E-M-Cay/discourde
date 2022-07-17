@@ -47,24 +47,34 @@ export class User {
   })
   join_date: number;
 
-  @OneToMany(() => Server, (server) => server.owner, {cascade: true})
+  @OneToMany(() => Server, (server) => server.owner, { cascade: true })
   owned_servers: Server[];
 
-  @OneToMany(() => ServerUser, (ServerUser) => ServerUser.server, {cascade: true})
+  @OneToMany(() => ServerUser, (ServerUser) => ServerUser.server, {
+    cascade: true,
+  })
   servers: ServerUser[];
 
   @OneToMany(() => ChannelMessage, (channelMessage) => channelMessage.author)
   channel_messages: ChannelMessage[];
 
-  @OneToMany(() => Friendship, (friendship) => friendship.user1, {cascade: true})
+  @OneToMany(() => Friendship, (friendship) => friendship.user1, {
+    cascade: true,
+  })
   friendships: Friendship[];
 
-  @OneToMany(() => BannedUser, (bannedUser) => bannedUser.user, {cascade: true})
+  @OneToMany(() => BannedUser, (bannedUser) => bannedUser.user, {
+    cascade: true,
+  })
   bannedFrom: Server[];
 
-  @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.sender, {cascade: true})
+  @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.sender, {
+    cascade: true,
+  })
   sentFriendRequests: FriendRequest[];
 
-  @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.receiver, {cascade: true})
+  @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.receiver, {
+    cascade: true,
+  })
   receivedFriendRequest: FriendRequest[];
 }

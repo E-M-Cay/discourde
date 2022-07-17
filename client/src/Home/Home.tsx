@@ -7,9 +7,10 @@ import axios from "axios";
 
 
 interface ServerResponse {
-    id: number;
-    nickName: string;
-    server: Server
+  id: number;
+  logo: string;
+  main_img: string;
+  name: string;
 }
 
 interface Server {

@@ -4,13 +4,21 @@ import { Main } from "../Main/Main";
 import { Col, Row } from "antd";
 import { ChanelBar } from "../ChanelBar/ChanelBar";
 import axios from "axios";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { setActiveServer } from "../redux/userSlice";
 
 
 interface ServerResponse {
+<<<<<<< HEAD
   id: number;
   logo: string;
   main_img: string;
   name: string;
+=======
+    id: number;
+    nickname: string;
+    server: Server
+>>>>>>> ded4d8e85d6cded76d2b70da4230e173d79a4f01
 }
 
 interface Server {
@@ -29,6 +37,7 @@ export const Home = () => {
     if (servers.length === 0) {
       axios.get("server/list").then((res) => {
         setServers(res.data);
+        setActiveServer(res.data[0].server.id);
         console.log(res.data, "res.data");
       });
     }

@@ -31,6 +31,7 @@ app.get('/toto', (_req: Request, res: Response) => {
 
 app.use('/server', require('./routes/server'));
 app.use('/user', require('./routes/user'));
+app.use('/channel', require('./routes/channel'));
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.resolve(__dirname, 'client/build')));

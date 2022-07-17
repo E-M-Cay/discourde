@@ -1,20 +1,21 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import Peer from 'peerjs';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import Peer from "peerjs";
 
 interface UserState {
   rooms: string[];
   username: string;
   token?: string;
+  activeServer?: string;
 }
 
 const initialUserState: UserState = {
   rooms: [],
-  username: '',
+  username: "",
 };
 
 export const userSlice = createSlice({
   initialState: initialUserState,
-  name: 'user',
+  name: "user",
   reducers: {
     joinRoomSuccess: (state, action: PayloadAction<string>) => {
       state.rooms = [...state.rooms, action.payload];
@@ -25,9 +26,13 @@ export const userSlice = createSlice({
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
     },
+    setActiveServer: (state, action: PayloadAction<string>) => {
+      console.log("pipi");
+      state.activeServer = action.payload;
+    },
   },
 });
 
-export const { joinRoomSuccess, setUsername, setToken } = userSlice.actions;
+export const { joinRoomSuccess, setUsername, setToken, setActiveServer } = userSlice.actions;
 
 export default userSlice.reducer;

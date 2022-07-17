@@ -1,9 +1,18 @@
 import { Image, Typography, Tooltip } from "antd";
 import React from "react";
 import { useState } from "react";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { setActiveServer } from "../redux/userSlice";
+
+
+const test = (dsds: any) => {
+  console.log(dsds)
+  setActiveServer(dsds)
+}
 
 export const CustomLimage = ({ obj }: any) => {
   const [isFocused, setFocus] = useState(false);
+  const dispatch = useAppDispatch();
   return (
     <Tooltip
       mouseLeaveDelay={0.3}
@@ -15,6 +24,7 @@ export const CustomLimage = ({ obj }: any) => {
         alt={obj.server.name}
         onMouseEnter={() => setFocus(true)}
         onMouseLeave={() => setFocus(false)}
+        onClick={() => dispatch(setActiveServer(obj.server.id))}
         className={"imgS"}
         style={{
           margin: "5px auto",

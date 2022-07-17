@@ -11,6 +11,15 @@ import { Modal } from 'antd';
 
 interface ServerResponse {
   id: number;
+<<<<<<< HEAD
+=======
+  nickname: string;
+  server: Server
+}
+
+interface Server {
+  id: number;
+>>>>>>> ded4d8e85d6cded76d2b70da4230e173d79a4f01
   logo: string;
   main_img: string;
   name: string;
@@ -69,6 +78,7 @@ export const LeftBar = (props: {
       });
   };
 
+<<<<<<< HEAD
   return (
     <Sider className='site-layout-background'>
       <Modal
@@ -94,6 +104,64 @@ export const LeftBar = (props: {
       </Modal>
       <div
         className={'scrollIssue'}
+=======
+        const showModal = () => {
+          setIsModalVisible(true);
+        };
+      
+        const handleOk = () => {
+          setIsModalVisible(false);
+        };
+      
+        const handleCancel = () => {
+          setIsModalVisible(false);
+        };
+        
+        const [isFocused, setFocus] = useState(false);
+        const [serverName, setServerName] = useState("");
+        const [serverLogo, setServerLogo] = useState("");
+        
+
+
+        const createServer = (e: React.FormEvent<HTMLFormElement>) => {
+          e.preventDefault();
+          axios.post("server/create_server", {name: serverName, main_img: serverLogo}, { headers: { access_token:  localStorage.getItem("token") as string },  } ).then((res) => {
+                             console.log(res, "gdhdhdhdg");
+                             setIsModalVisible(false);
+                             props.setServers((prevServerList) => [...prevServerList, {id: res.data.id, nickname: "", server: {id: res.data.id, logo: res.data.logo, main_img: res.data.main_img, name: res.data.name}}]);
+                     });
+        }
+    
+        
+      
+      
+    
+    return (
+        <Sider  className="site-layout-background">
+          <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+            <form onSubmit={e => createServer(e)} >
+            <input type="text" defaultValue={serverName} onChange={(e) => setServerName(e.target.value)} placeholder="Enter server name" />
+            <input type="text" defaultValue={serverLogo} onChange={(e) => setServerLogo(e.target.value)} placeholder="Enter server logo" />
+            <input type="submit" value="Create" />
+            </form>
+          </Modal>
+            <div className={"scrollIssue"} style={{ height: '100vh', borderRight: 0, padding: 0, width: "70px", display: "flex", justifyContent: "center", flexWrap: "wrap", overflowY: "scroll"  }}>
+                {
+                    props.servers.map((object: any, i: any) => <CustomLimage obj={object} key={i} />)
+                }
+                <Tooltip
+      mouseLeaveDelay={0.3}
+      placement="left"
+      style={{ fontSize: "32px" }}
+      title={"add a server"}
+      
+    >
+      <PlusOutlined
+      onMouseEnter={() => setFocus(true)}
+        onMouseLeave={() => setFocus(false)}
+        onClick={showModal}
+        className={"imgS"}
+>>>>>>> ded4d8e85d6cded76d2b70da4230e173d79a4f01
         style={{
           height: '100vh',
           borderRight: 0,

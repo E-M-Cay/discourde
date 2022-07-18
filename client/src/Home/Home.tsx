@@ -9,9 +9,8 @@ import { setActiveServer } from '../redux/userSlice';
 
 interface ServerResponse {
   id: number;
-  logo: string;
-  main_img: string;
-  name: string;
+  nickname: string;
+  server: Server;
 }
 
 interface Server {
@@ -29,6 +28,7 @@ export const Home = () => {
   const getServers = () => {
     if (servers.length === 0) {
       axios.get('server/list').then((res) => {
+        console.log(res.data, 'data');
         setServers(res.data);
         setActiveServer(res.data[0].server.id);
         console.log(res.data, 'res.data');

@@ -11,6 +11,12 @@ import { Modal } from 'antd';
 
 interface ServerResponse {
   id: number;
+  nickname: string;
+  server: Server;
+}
+
+interface Server {
+  id: number;
   logo: string;
   main_img: string;
   name: string;
@@ -57,15 +63,17 @@ export const LeftBar = (props: {
       .then((res) => {
         console.log(res, 'gdhdhdhdg');
         setIsModalVisible(false);
-        props.setServers((prevServerList) => [
-          ...prevServerList,
-          {
-            id: res.data.id,
-            logo: res.data.logo,
-            main_img: res.data.main_img,
-            name: res.data.name,
-          },
-        ]);
+
+        props.setServers((prevServerList) => {
+          return [
+            ...prevServerList,
+            {
+              id: res.data.id,
+              nickname: res.data.nickname,
+              server: res.data.server,
+            },
+          ];
+        });
       });
   };
 
@@ -104,7 +112,7 @@ export const LeftBar = (props: {
           flexWrap: 'wrap',
           overflowY: 'scroll',
         }}>
-        {props.servers.map((object: any, i: any) => (
+        {props.servers.map((object: ServerResponse, i: number) => (
           <CustomLimage obj={object} key={i} />
         ))}
         <Tooltip

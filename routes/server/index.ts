@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { text } from 'express';
 const router = express.Router();
 import { Request, Response } from 'express';
 import AppDataSource from '../../db/AppDataSource';
@@ -9,11 +9,15 @@ import jwt from 'jsonwebtoken';
 import IRequest from '../../Interfaces/IRequest';
 import { In } from 'typeorm';
 import { ServerUser } from '../../entities/ServerUser';
+import { VocalChannel } from '../../entities/VocalChannel';
+import { Channel } from '../../entities/Channel';
 
 const isAuth = require('../../MiddleWares/isAuth');
 
 const UserRepository = AppDataSource.getRepository(User);
 const ServerRepository = AppDataSource.getRepository(Server);
+const vocalChannelRepository = AppDataSource.getRepository(VocalChannel);
+const channelRepository = AppDataSource.getRepository(Channel);
 const ServerUserRepository = AppDataSource.getRepository(ServerUser);
 
 router.get('/list', async (req: IRequest, res: Response) => {
@@ -52,6 +56,16 @@ router.post('/create_server', isAuth, async (req: IRequest, res: Response) => {
         owner: owner,
       });
       await ServerRepository.save(server);
+      const vocalChan = vocalChannelRepository.create({
+        name: 'Forum',
+        server: server,
+      });
+      await vocalChannelRepository.save(vocalChan);
+      const textChan: Channel = channelRepository.create({
+        name: 'Général',
+        server: server,
+      });
+      await channelRepository.save(textChan);
 
       const serverUser: ServerUser = ServerUserRepository.create({
         server: server,
@@ -59,8 +73,9 @@ router.post('/create_server', isAuth, async (req: IRequest, res: Response) => {
         nickname: owner.username,
       });
       await ServerUserRepository.save(serverUser);
-
-      return res.status(200).send(server);
+      return res
+        .status(200)
+        .send({ id: serverUser.id, nickname: owner.username, server });
     } catch (error) {
       console.log(error);
       return res.status(400).send('Error');

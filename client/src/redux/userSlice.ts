@@ -5,7 +5,7 @@ interface UserState {
   rooms: string[];
   username: string;
   token?: string;
-  activeServer?: string;
+  activeServer?: number;
 }
 
 const initialUserState: UserState = {
@@ -26,7 +26,7 @@ export const userSlice = createSlice({
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
     },
-    setActiveServer: (state, action: PayloadAction<string>) => {
+    setActiveServer: (state, action: PayloadAction<number>) => {
       state.activeServer = action.payload;
     },
   },

@@ -1,37 +1,44 @@
-import { Image, Typography, Tooltip } from "antd";
-import React from "react";
-import { useState } from "react";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { setActiveServer } from "../redux/userSlice";
+import { Image, Typography, Tooltip } from 'antd';
+import React from 'react';
+import { useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { setActiveServer } from '../redux/userSlice';
 
-
-const test = (dsds: any) => {
-  console.log(dsds)
-  setActiveServer(dsds)
+interface ServerResponse {
+  id: number;
+  nickname: string;
+  server: Server;
 }
 
-export const CustomLimage = ({ obj }: any) => {
+interface Server {
+  id: number;
+  logo: string;
+  main_img: string;
+  name: string;
+}
+
+export const CustomLimage = (props: { obj: ServerResponse }) => {
+  const obj = props.obj;
   const [isFocused, setFocus] = useState(false);
   const dispatch = useAppDispatch();
   return (
     <Tooltip
       mouseLeaveDelay={0.3}
-      placement="left"
-      style={{ fontSize: "32px" }}
-      title={obj.server.name}
-    >
+      placement='left'
+      style={{ fontSize: '32px' }}
+      title={obj.server.name}>
       <img
-        alt={obj.server.name}
         onMouseEnter={() => setFocus(true)}
+        alt={obj.server.name}
         onMouseLeave={() => setFocus(false)}
         onClick={() => dispatch(setActiveServer(obj.server.id))}
-        className={"imgS"}
+        className={'imgS'}
         style={{
-          margin: "5px auto",
-          width: "auto",
-          backgroundColor: isFocused ? "#4b4b4b" : "#353535",
-          borderRadius: "30px",
-          cursor: "pointer",
+          margin: '5px auto',
+          width: 'auto',
+          backgroundColor: isFocused ? '#4b4b4b' : '#353535',
+          borderRadius: '30px',
+          cursor: 'pointer',
         }}
         src={obj.server.main_img}
       />
@@ -45,13 +52,13 @@ export const CustomImage = ({ obj }: any) => {
       alt={obj.first_name}
       onMouseEnter={() => setFocus(true)}
       onMouseLeave={() => setFocus(false)}
-      className={"imgS2"}
+      className={'imgS2'}
       style={{
-        margin: "5px auto",
-        width: "auto",
-        backgroundColor: "#4b4b4b",
-        borderRadius: "30px",
-        cursor: "pointer",
+        margin: '5px auto',
+        width: 'auto',
+        backgroundColor: '#4b4b4b',
+        borderRadius: '30px',
+        cursor: 'pointer',
       }}
       src={obj.img}
     />
@@ -65,14 +72,14 @@ export const CustomImageMess = ({ obj }: any) => {
       onMouseEnter={() => setFocus(true)}
       onMouseLeave={() => setFocus(false)}
       style={{
-        backgroundColor: "#535353",
-        margin: "5px auto",
-        width: "auto",
-        borderRadius: "22px",
-        cursor: "pointer",
-        height: "45px",
-        marginRight: "17px",
-        marginLeft: "10px",
+        backgroundColor: '#535353',
+        margin: '5px auto',
+        width: 'auto',
+        borderRadius: '22px',
+        cursor: 'pointer',
+        height: '45px',
+        marginRight: '17px',
+        marginLeft: '10px',
       }}
       src={obj.photo}
     />

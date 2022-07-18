@@ -122,6 +122,8 @@ function get_user_status_list(user_id_list:number[]){
   user_id_list.forEach((user_id) => {
     res.set(user_id, get_user_status(user_id) as number)
   })
+
+  return res
 }
 
 

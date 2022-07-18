@@ -221,27 +221,24 @@ router.delete(
   }
 );
 
-<<<<<<< HEAD
-module.exports = router;
-=======
+router.delete(
+  '/delete_message/:message_id',
+  isAuth,
+  async (req: IRequest, res: Response) => {
+    const message_id = Number(req.params.message_id);
+    if (message_id == NaN)
+      return res.status(400).send('Error server not found');
+    const message = await ChannelRepository.findOneBy({ id: message_id });
+    if (message == null) return res.status(400).send('Error server not found');
 
+    try {
+      await ChannelMessageRepository.delete(message_id);
 
-router.delete('/delete_message/:message_id', isAuth, async (req:IRequest, res:Response) => {
-    const message_id = Number(req.params.message_id)
-    if(message_id == NaN)
-        return res.status(400).send('Error server not found')
-    const message = await ChannelRepository.findOneBy({id: message_id})
-    if(message == null)
-        return res.status(400).send('Error server not found')
-
-    try{
-        await ChannelMessageRepository.delete(message_id)
-
-        return res.status(200).send(message)
-    }catch(error){
-        return res.status(400).send(error)
+      return res.status(200).send(message);
+    } catch (error) {
+      return res.status(400).send(error);
     }
-})
+  }
+);
 
 module.exports = router;
->>>>>>> ded4d8e85d6cded76d2b70da4230e173d79a4f01

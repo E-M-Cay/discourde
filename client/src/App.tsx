@@ -3,7 +3,7 @@ import './App.css';
 import { PeerSocketContext } from './context/PeerSocket';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { joinRoomSuccess, setUsername } from './redux/userSlice';
+import { joinRoomSuccess, setUsername, setUserId } from './redux/userSlice';
 import VocalChannel from './components/VocalChannel';
 import { Home } from './Home/Home';
 import { Modal } from 'antd';
@@ -97,6 +97,7 @@ const App = () => {
         if (data.data.token) {
           connectSocket();
           localStorage.setItem('token', data.data.token);
+          dispatch(setUserId(data.data.user_id))
           handleOk();
         }
       });

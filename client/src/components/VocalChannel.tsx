@@ -42,7 +42,7 @@ const VocalChannel = (props: { channelName: string }) => {
   const openPeer = useCallback(
     (id: string) => {
       console.log('peerid:', id);
-      socket?.emit('peerId', id);
+      socket?.emit('peerId', {id, user_id: user.user_id});
     },
     [socket]
   );

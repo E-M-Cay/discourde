@@ -23,6 +23,18 @@ interface userStatus {
 
 let usersStatus: userStatus[] = [];
 
+export let user_id_to_peer_id = new Map<number, string>()
+export let peer_to_status = new Map<string, number>()
+
+
+const user_status = new Map<number, string>()
+
+user_status.set(0, "Disconected")
+user_status.set(1, "Connected")
+user_status.set(2, "Away")
+user_status.set(3, "Do not disturb")
+
+
 const httpServer = createServer(app);
 
 app.get('/toto', (_req: Request, res: Response) => {
@@ -57,6 +69,7 @@ if (process.env.NODE_ENV === 'development') {
 
   peerServer.on('connection', (client) => {
     console.log('peer client', client.getId());
+
   });
 
   peerServer.on('disconnect', (_client) => {
@@ -70,6 +83,8 @@ const io: SocketServer = new SocketServer(httpServer, {
 
 interface ISocket extends Socket {
   username?: string;
+  peer_id?: string;
+  user_id?: number
 }
 
 io.on('connection', (socket: ISocket) => {
@@ -82,18 +97,35 @@ io.on('connection', (socket: ISocket) => {
     socket.emit('username', newUsername);
   });
 
-  socket.on('connected', (id: string) => {
-    socket.emit('username', socket.username);
-  });
+  socket.on('peerId', (data:{peer_id:string, user_id:number}) => {
 
-  socket.on('peerId', (id) => {
-    usersStatus.push({ id: id, status: 'online', socketId: socket.id });
-    socket.to('test').emit('hello', { socketId: socket.id, id });
-    socket.emit('users', usersStatus);
+    socket.peer_id = data.peer_id
+    user_id_to_peer_id.set(data.user_id, data.peer_id)
+    peer_to_status.set(data.peer_id, 1)
+    
+    socket.to('test').emit('hello', { socketId: socket.id, peer_id: data.peer_id });
+    socket.emit('users', get_user_status_list([]));
   });
 
   socket.on('disconnecting', (_reason) => {
+    user_id_to_peer_id.delete(socket.user_id as number)
+    peer_to_status.delete(socket.peer_id as string)
+
     socket.to('test').emit('disconnected', socket.id);
-    usersStatus = usersStatus.filter((u) => u.socketId !== socket.id);
   });
+
 });
+
+function get_user_status_list(user_id_list:number[]){
+  user_id_list = (user_id_list.length == 0) ? [...user_id_to_peer_id.keys()] : user_id_list
+  let res = new Map<number, number>()
+  user_id_list.forEach((user_id) => {
+    res.set(user_id, get_user_status(user_id) as number)
+  })
+}
+
+
+function get_user_status(user_id: number){
+  return (user_id_to_peer_id.has(user_id)) ? peer_to_status.get(user_id_to_peer_id.get(user_id) as string) : 0
+}
+

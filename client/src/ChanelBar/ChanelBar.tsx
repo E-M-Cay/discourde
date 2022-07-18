@@ -20,7 +20,7 @@ export const ChanelBar= (serveur: any) => {
         const headerVoc: string = "SALONS VOCAUX"
         const serverName: string = "TEEEST SERVEUR"
         var micro: boolean = true;
-        
+
         
             for (let index = 0; index < chanelData.length; index++) {
                 if(chanelData[index].is_audio == false) {

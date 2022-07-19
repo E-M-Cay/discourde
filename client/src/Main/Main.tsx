@@ -1,6 +1,8 @@
 import { Content } from "antd/es/layout/layout";
 import { Col, Input, Layout, Row } from "antd";
 import Sider from "antd/es/layout/Sider";
+import {StatusBar} from "../statusBar/StatusBar"
+import Chat from "../Chat/Chat";
 import { ChanelBar } from "../ChanelBar/ChanelBar";
 import chanelData from "../mock1";
 import { FriendPanel } from "../FriendPanel/FriendPanel";

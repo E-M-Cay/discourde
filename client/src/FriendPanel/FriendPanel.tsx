@@ -38,6 +38,7 @@ export const FriendPanel= (serveur: any) => {
                 const useer = friendsData[index].nickname; 
                 allFriends.push(useer);
             }
+            console.log(onlineUsers)
         } 
 
         const onChange = (key: any) => {
@@ -50,20 +51,29 @@ export const FriendPanel= (serveur: any) => {
     return (
                   
         <Tabs onChange={onChange} type="card">
-            <TabPane tab="En ligne" key="1" className={"scrollIssue"}>
-                <a>
-                    {onlineUsers.map((nickname) => <li onClick={onClick} className="panelContent">  {nickname} <a href=""><MessageOutlined className="iconChan" /></a> <a href=""><MenuOutlined className="iconChan"/></a></li> )}
-                </a>
+            <TabPane tab="En ligne" key="1" >
+                <p style={{ position: 'fixed', fontSize: 'large'}}> 
+                    En ligne - {onlineUsers.length}
+                </p><br /><br />
+                <li className={"scrollIssue"} style={{ height: '87vh', width: "100%", borderRight: 0, padding: 0, flexWrap: "wrap", overflowY: "scroll"}}>
+                    {onlineUsers.map((nickname) => <div onClick={onClick} className="panelContent" style={{margin: 0, padding: 0, height: '8vh', fontWeight:'bold' }}><Divider style={{margin: 0}} /> {nickname}   <div className="iconFriend"> <a><MessageOutlined /></a> <a><MenuOutlined /></a></div> </div> )}
+                </li>
             </TabPane>
-            <TabPane tab="Tous" key="2" className={"scrollIssue"}>
-                <a>
-                    {allFriends.map((nickname) => <li onClick={onClick} className="panelContent">  {nickname} <a href=""><MessageOutlined className="iconChan" /></a>  <a href=""><MenuOutlined className="iconChan"/></a></li> )}
-                </a>
+            <TabPane tab="Tous" key="2">
+                <p style={{ position: 'fixed', fontSize: 'large'}}>
+                    Tous les amis - {allFriends.length}
+                </p><br /><br />
+                <li className={"scrollIssue"} style={{ height: '87vh', width: "100%", borderRight: 0, padding: 0, flexWrap: "wrap", overflowY: "scroll"}}>
+                    {allFriends.map((nickname) => <li onClick={onClick} className="panelContent" style={{margin: 0, padding: 0, height: '8vh', fontWeight:'bold'}}><Divider style={{margin: 0}} /> {nickname} <MessageOutlined className="iconFriend" />  <MenuOutlined className="iconFriend"/></li>  )}
+                </li>
             </TabPane>
-            <TabPane tab="En attente" key="3" className={"scrollIssue"}>
-                <a>
-                    {onRequestUsers.map((nickname) => <li onClick={onClick} className="panelContent">  {nickname} <a href=""><CloseCircleOutlined className="iconChan" style={{ textAlign: "right" }}/></a>  </li> )}
-                </a>
+            <TabPane tab="En attente" key="3">
+                <p style={{ position: 'fixed', fontSize: 'large'}}>
+                    En attente - {onRequestUsers.length}
+                </p><br /><br />
+                <li className={"scrollIssue"} style={{ height: '87vh', width: "100%", borderRight: 0, padding: 0, flexWrap: "wrap", overflowY: "scroll"}}>
+                    {onRequestUsers.map((nickname) => <li onClick={onClick} className="panelContent" style={{margin: 0, padding: 0, height: '8vh', fontWeight:'bold'}}><Divider style={{margin: 0}} /> {nickname} <CloseCircleOutlined className="iconFriend" /> </li>  )}
+                </li>
             </TabPane>
             <TabPane tab="Ajouter un ami" key="4">
                 Ajout amis

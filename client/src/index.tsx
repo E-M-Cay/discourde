@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { SocketContext, socket } from './context/socket';
+import PeerSocketProvider from './context/PeerSocket';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 
@@ -12,11 +12,11 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <SocketContext.Provider value={socket}>
+    <PeerSocketProvider>
       <Provider store={store}>
         <App />
       </Provider>
-    </SocketContext.Provider>
+    </PeerSocketProvider>
   </React.StrictMode>
 );
 

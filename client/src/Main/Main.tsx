@@ -4,14 +4,16 @@ import Sider from "antd/es/layout/Sider";
 import {StatusBar} from "../statusBar/StatusBar"
 import Chat from "../Chat/Chat";
 import { ChanelBar } from "../ChanelBar/ChanelBar";
+import chanelData from "../mock1";
+import { FriendPanel } from "../FriendPanel/FriendPanel";
 
 export const Main = () => {
     return (
-        <Row style={{height: "100vh",width: "100%", marginLeft: "0 !important"  }} className="main">
-        
-        <Col style={{backgroundColor: "grey", minWidth: "13vw"}} flex={6}><ChanelBar /></Col>
-        <Col flex={30}><Chat /></Col>
-        <Col style={{backgroundColor: "rgb(53, 53, 53)", maxWidth: "250px"}} flex={6} ><StatusBar /></Col>
+        <Row style={{ height: "100vh", width: "100%", marginLeft: "0 !important" }} className="main">
+
+            <Col style={{ backgroundColor: "#535151" }} span={3.5}><ChanelBar></ChanelBar></Col>
+            <Col span={16}><FriendPanel></FriendPanel></Col>
+            <Col style={{ backgroundColor: "grey" }} span={4}>ksqkhjds</Col>
         </Row>
     )
 }

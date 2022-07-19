@@ -24,7 +24,7 @@ export const ChanelBar= (serveur: any) => {
         const serverName: string = "TEEEST SERVEUR"
         const activeServer = useAppSelector(state => state.userReducer.activeServer);
         var micro: boolean = true;
-        
+
         
             for (let index = 0; index < chanelData.length; index++) {
                 if(chanelData[index].is_audio == false) {
@@ -76,29 +76,29 @@ export const ChanelBar= (serveur: any) => {
             <Menu className="menu"
                 items={[
                     {
-                      label: <a href=""><UserAddOutlined style={{ color: "darkgrey", fontSize: "small" }} /> Inviter des gens </a>,
+                      label: <li ><UserAddOutlined style={{ color: "darkgrey", fontSize: "small" }} /> Inviter des gens </li>,
                       key: '0',
                     },
                     {
-                      label: <a href=""><TeamOutlined style={{ color: "darkgrey", fontSize: "small" }} /> Gestion des membres </a>,
+                      label: <li ><TeamOutlined style={{ color: "darkgrey", fontSize: "small" }} /> Gestion des membres </li>,
                       key: '1',
                     },
                     {
                       type: 'divider',
                     },
                     {
-                      label: <a href=""><SettingOutlined style={{ color: "darkgrey", fontSize: "small" }} /> Paramètres du serveur  </a>,
+                      label: <li ><SettingOutlined style={{ color: "darkgrey", fontSize: "small" }} /> Paramètres du serveur  </li>,
                       key: '3',
                     },
                     {
-                        label: <a href=""><PlusCircleOutlined style={{ color: "darkgrey", fontSize: "small" }} /> Créer un salon  </a>,
+                        label: <li onClick={showModal}><PlusCircleOutlined style={{ color: "darkgrey", fontSize: "small" }}  /> Créer un salon  </li>,
                         key: '4',
                     },
                     {
                         type: 'divider',
                     },
                     {
-                        label: <a href=""><BellOutlined style={{ color: "darkgrey", fontSize: "small" }} /> Notifications </a>,
+                        label: <li ><BellOutlined style={{ color: "darkgrey", fontSize: "small" }} /> Notifications </li>,
                         key: '5',
                     },
                     {
@@ -114,20 +114,7 @@ export const ChanelBar= (serveur: any) => {
     return (
                 
         <div style={{width: "100%", backgroundColor: "#1F1F1F"}} className="site-layout-background">
-             <PlusOutlined
-      onMouseEnter={() => setFocus(true)}
-        onMouseLeave={() => setFocus(false)}
-        onClick={showModal}
-        className={"imgS"}
-        style={{
-          margin: "5px auto",
-          width: "100%",
-          height: "40px",
-          backgroundColor: isFocused ? "#4b4b4b" : "#353535",
-          borderRadius: "30px",
-          cursor: "pointer",
-        }}
-      />
+
              <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
             <form onSubmit={e => createChannel(e)} >
             <input type="text" defaultValue={channelName} onChange={(e) => setChannelName(e.target.value)} placeholder="Enter server name"/>
@@ -151,7 +138,7 @@ export const ChanelBar= (serveur: any) => {
             <Collapse ghost defaultActiveKey={['1','2']} onChange={onChange} style={{ backgroundColor: "#1F1F1F" }}>
                 
                 <Panel className="headerPanel"  header={headerTxt} key="1">
-                    {txtListChanel.map((nameChan) => <li onClick={onClick} className="panelContent"> <BorderlessTableOutlined className="iconChan" />  {nameChan}</li> )}
+                    {txtListChanel.map((nameChan) => <li onClick={onClick} className="panelContent"> <BorderlessTableOutlined />  {nameChan}</li> )}
                 </Panel>
                 
                 <Panel className="headerPanel" header={headerVoc} key="2">

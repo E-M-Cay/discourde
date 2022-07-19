@@ -1,7 +1,5 @@
 import React, {useEffect} from "react";
 import 'antd/dist/antd.css';
-import {message} from "antd/es";
-import Avatar from "antd/es/avatar/avatar";
 import Message from "./Message";
 import ChatBar from "./ChatBar";
 

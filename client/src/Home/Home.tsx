@@ -25,6 +25,7 @@ export const Home = () => {
   useEffect(() => {
     getServers();
   }, []);
+
   const getServers = () => {
     if (servers.length === 0) {
       axios.get('server/list').then((res) => {
@@ -34,6 +35,7 @@ export const Home = () => {
         console.log(res.data, 'res.data');
       });
     }
+    
   };
 
   return (

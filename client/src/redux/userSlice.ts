@@ -6,6 +6,7 @@ interface UserState {
   username: string;
   token?: string;
   activeServer?: number;
+  user_id?: number;
 }
 
 const initialUserState: UserState = {
@@ -29,10 +30,15 @@ export const userSlice = createSlice({
     setActiveServer: (state, action: PayloadAction<number>) => {
       state.activeServer = action.payload;
     },
+
+    setUserId: (state, action: PayloadAction<number>) => {
+      state.user_id = action.payload
+    }
+  
   },
 });
 
-export const { joinRoomSuccess, setUsername, setToken, setActiveServer } =
+export const { joinRoomSuccess, setUsername, setToken, setActiveServer, setUserId } =
   userSlice.actions;
 
 export default userSlice.reducer;

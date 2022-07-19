@@ -3,7 +3,7 @@ import './App.css';
 import { PeerSocketContext } from './context/PeerSocket';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { joinRoomSuccess, setUsername } from './redux/userSlice';
+import { joinRoomSuccess, setUsername, setUserId } from './redux/userSlice';
 import VocalChannel from './components/VocalChannel';
 import { Home } from './Home/Home';
 import { Modal } from 'antd';
@@ -61,14 +61,23 @@ const App = () => {
     [dispatch]
   );
 
+  const onMessage = useCallback(
+    (message: string) => {
+      console.log(message);
+    }
+    , []
+  );
+
   useEffect(() => {
     socket?.on('connect', onConnection);
     socket?.on('username', updateUsername);
+    socket?.on('message', onMessage);
     return () => {
       socket?.off('username', updateUsername);
       socket?.off('connect', onConnection);
+      socket?.off('message', onMessage);
     };
-  }, [socket, onConnection, updateUsername, dispatch]);
+  }, [socket, onConnection, updateUsername, dispatch, onMessage]);
 
   const onChangeHandler = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -97,6 +106,7 @@ const App = () => {
         if (data.data.token) {
           connectSocket();
           localStorage.setItem('token', data.data.token);
+          dispatch(setUserId(data.data.user_id))
           handleOk();
         }
       });

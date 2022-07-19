@@ -105,7 +105,8 @@ io.on('connection', (socket: ISocket) => {
             .to('test')
             .emit('hello', { socketId: socket.id, peer_id: data.peer_id });
         const toto = get_user_status_list([]);
-        socket.emit('users', toto);
+        console.log(toto);
+        socket.emit('users', Array.from(toto));
     });
 
     socket.on('disconnecting', (_reason) => {

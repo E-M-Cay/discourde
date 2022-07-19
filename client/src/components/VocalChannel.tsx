@@ -75,7 +75,7 @@ const VocalChannel = (props: { channelName: string }) => {
     // };
 
     const receiveUsers = (userList: any) => {
-        console.log(userList);
+        console.log(new Map(userList), 'toto');
     };
 
     const callUser = useCallback(

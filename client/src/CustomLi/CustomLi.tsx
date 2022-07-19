@@ -36,11 +36,13 @@ export const CustomLimage = (props: { obj: ServerResponse }) => {
         style={{
           margin: '5px auto',
           width: 'auto',
+          maxWidth: "50px",
           backgroundColor: isFocused ? '#4b4b4b' : '#353535',
           borderRadius: '30px',
           cursor: 'pointer',
+          height: "50px",
         }}
-        src={obj.server.main_img}
+        src={obj.server.main_img[0] === 'h' ? obj.server.main_img : 'https://robohash.org/etdoloremvoluptas.png?size=50x50&set=set1'}
       />
     </Tooltip>
   );

@@ -128,13 +128,12 @@ export const ChanelBar= (serveur: any) => {
           cursor: "pointer",
         }}
       />
-             <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+          <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
             <form onSubmit={e => createChannel(e)} >
             <input type="text" defaultValue={channelName} onChange={(e) => setChannelName(e.target.value)} placeholder="Enter server name"/>
             <input type="submit" value="Create" />
             </form>
           </Modal>
-
                 <Dropdown  overlay={menu} trigger={['click']}>
                     <ul onClick={(e) => e.preventDefault()} >
                       <Space >

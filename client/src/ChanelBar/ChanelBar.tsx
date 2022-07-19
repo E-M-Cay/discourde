@@ -114,14 +114,26 @@ export const ChanelBar= (serveur: any) => {
     return (
                 
         <div style={{width: "100%", backgroundColor: "#1F1F1F"}} className="site-layout-background">
-
-             <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+             {/* <PlusOutlined
+      onMouseEnter={() => setFocus(true)}
+        onMouseLeave={() => setFocus(false)}
+        onClick={showModal}
+        className={"imgS"}
+        style={{
+          margin: "5px auto",
+          width: "100%",
+          height: "40px",
+          backgroundColor: isFocused ? "#4b4b4b" : "#353535",
+          borderRadius: "30px",
+          cursor: "pointer",
+        }}
+      /> */}
+          <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
             <form onSubmit={e => createChannel(e)} >
             <input type="text" defaultValue={channelName} onChange={(e) => setChannelName(e.target.value)} placeholder="Enter server name"/>
             <input type="submit" value="Create" />
             </form>
           </Modal>
-
                 <Dropdown  overlay={menu} trigger={['click']}>
                     <ul onClick={(e) => e.preventDefault()} >
                       <Space >

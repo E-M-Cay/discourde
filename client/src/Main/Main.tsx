@@ -12,8 +12,8 @@ export const Main = () => {
         <Row style={{ height: "100vh", width: "100%", marginLeft: "0 !important" }} className="main">
 
             <Col style={{ backgroundColor: "#535151" }} span={3.5}><ChanelBar></ChanelBar></Col>
-            <Col span={16}><FriendPanel></FriendPanel></Col>
-            <Col style={{ backgroundColor: "grey" }} span={4}>ksqkhjds</Col>
+            <Col span={16}><Chat /></Col>
+            <Col style={{ backgroundColor: "grey" }} span={4}><StatusBar /></Col>
         </Row>
     )
 }

@@ -104,7 +104,8 @@ io.on('connection', (socket: ISocket) => {
         socket
             .to('test')
             .emit('hello', { socketId: socket.id, peer_id: data.peer_id });
-        socket.emit('users', get_user_status_list([]));
+        const toto = get_user_status_list([]);
+        socket.emit('users', toto);
     });
 
     socket.on('disconnecting', (_reason) => {
@@ -122,8 +123,11 @@ function get_user_status_list(user_id_list: number[]) {
             : user_id_list;
     let res = new Map<number, number>();
     user_id_list.forEach((user_id) => {
+        console.log(user_id);
         res.set(user_id, get_user_status(user_id) as number);
     });
+    console.log(res);
+    return res;
 }
 
 function get_user_status(user_id: number) {

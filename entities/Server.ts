@@ -45,7 +45,7 @@ export class Server {
   owner: User;
 
   @OneToMany(() => ServerUser, (ServerUser) => ServerUser.server, {
-    cascade: true,
+    cascade: ["insert", "update", "remove", "soft-remove", "recover"],
   })
   users: ServerUser[];
 
@@ -53,14 +53,16 @@ export class Server {
   channels: Channel[];
 
   @OneToMany(() => VocalChannel, (vocalChannel) => vocalChannel.server, {
-    cascade: true,
+    onDelete: 'CASCADE',
   })
   vocalChannels: VocalChannel[];
-  @OneToMany(() => Role, (role) => role.server)
+  @OneToMany(() => Role, (role) => role.server, {
+    onDelete: 'CASCADE',
+  })
   roles: Role[];
 
   @OneToMany(() => BannedUser, (bannedUser) => bannedUser.server, {
-    cascade: true,
+    onDelete: 'CASCADE',
   })
   bannedUsers: BannedUser[];
 }

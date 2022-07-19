@@ -22,7 +22,7 @@ export class Role {
   })
   name: string;
 
-  @ManyToOne(() => Server, (server) => server.roles, {cascade: true})
+  @ManyToOne(() => Server, (server) => server.roles)
   server: Server;
 
   @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role, {cascade: true})

@@ -1,53 +1,54 @@
 {
-  "name": "revocal",
-  "version": "0.0.1",
-  "description": "discourde",
-  "main": "index.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm install && ts-node index.ts",
-    "dev": "nodemon index.ts",
-    "client": "npm start --prefix client",
-    "watch": "concurrently \"npm run dev\" \"npm run client\" ",
-    "heroku-postbuild": "npm install && npm install --prefix client && npm install --prefix client && npm run build --prefix client",
-    "typeorm": "ts-node ./node_modules/typeorm/cli.js",
-    "migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate ./migrations/discourde -d ./db/AppDataSource.ts",
-    "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run -d ./db/AppDataSource.ts",
-    "tsc": "tsc"
-  },
-  "engines": {
-    "node": "16.13.2",
-    "npm": "8.12.2"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@types/bcrypt": "^5.0.0",
-    "@types/cors": "^2.8.12",
-    "@types/express": "^4.17.13",
-    "@types/jsonwebtoken": "^8.5.8",
-    "@ant-design/icons": "^4.7.0",
-    "@fortawesome/free-regular-svg-icons": "^6.1.1",
-    "@fortawesome/free-solid-svg-icons": "^6.1.1",
-    "@fortawesome/react-fontawesome": "^0.1.18",
-    "babel-plugin-macros": "^3.1.0",
-    "bcrypt": "^5.0.1",
-    "cors": "^2.8.5",
-    "discourde": "file:..",
-    "dotenv": "^16.0.1",
-    "express": "^4.18.1",
-    "jsonwebtoken": "^8.5.1",
-    "mysql2": "^2.3.3",
-    "peer": "^0.6.1",
-    "redis": "^4.2.0",
-    "react-icons": "^4.4.0",
-    "reflect-metadata": "^0.1.13",
-    "socket.io": "^4.5.1",
-    "ts-node": "^10.8.2",
-    "typeorm": "^0.3.7"
-  },
-  "devDependencies": {
-    "concurrently": "^7.2.2",
-    "nodemon": "^2.0.19"
-  }
+    "name": "revocal",
+    "version": "0.0.1",
+    "description": "discourde",
+    "main": "index.ts",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "npm install && ts-node index.ts",
+        "dev": "nodemon index.ts",
+        "client": "npm start --prefix client",
+        "watch": "concurrently \"npm run dev\" \"npm run client\" ",
+        "heroku-postbuild": "npm install && npm install --prefix client && npm install --prefix client && npm run build --prefix client",
+        "typeorm": "ts-node ./node_modules/typeorm/cli.js",
+        "migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create ./migrations/discourde -d ./db/AppDataSource.ts",
+        "migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate ./migrations/discourde -d ./db/AppDataSource.ts",
+        "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run -d ./db/AppDataSource.ts",
+        "tsc": "tsc"
+    },
+    "engines": {
+        "node": "16.13.2",
+        "npm": "8.12.2"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@types/bcrypt": "^5.0.0",
+        "@types/cors": "^2.8.12",
+        "@types/express": "^4.17.13",
+        "@types/jsonwebtoken": "^8.5.8",
+        "@ant-design/icons": "^4.7.0",
+        "@fortawesome/free-regular-svg-icons": "^6.1.1",
+        "@fortawesome/free-solid-svg-icons": "^6.1.1",
+        "@fortawesome/react-fontawesome": "^0.1.18",
+        "babel-plugin-macros": "^3.1.0",
+        "bcrypt": "^5.0.1",
+        "cors": "^2.8.5",
+        "discourde": "file:..",
+        "dotenv": "^16.0.1",
+        "express": "^4.18.1",
+        "jsonwebtoken": "^8.5.1",
+        "mysql2": "^2.3.3",
+        "peer": "^0.6.1",
+        "redis": "^4.2.0",
+        "react-icons": "^4.4.0",
+        "reflect-metadata": "^0.1.13",
+        "socket.io": "^4.5.1",
+        "ts-node": "^10.8.2",
+        "typeorm": "^0.3.7"
+    },
+    "devDependencies": {
+        "concurrently": "^7.2.2",
+        "nodemon": "^2.0.19"
+    }
 }

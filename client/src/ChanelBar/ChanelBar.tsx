@@ -28,7 +28,7 @@ import {
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Sider from 'antd/lib/layout/Sider';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 //import chanelData from '../mock1';
 import './ChanelBar.css';
 import axios from 'axios';
@@ -116,6 +116,12 @@ export const ChanelBar = () => {
             });
     };
 
+    const deleteServer = useCallback(() => {
+        axios.delete(`/server/delete_server/${activeServer}`, {
+            headers: { access_token: localStorage.getItem('token') as string },
+        });
+    }, [activeServer]);
+
     const menu = (
         <Menu
             className='menu'
@@ -168,6 +174,17 @@ export const ChanelBar = () => {
                     key: '4',
                 },
                 {
+                    label: (
+                        <li onClick={() => deleteServer()}>
+                            <PlusCircleOutlined
+                                style={{ color: 'darkgrey', fontSize: 'small' }}
+                            />{' '}
+                            Supprimer serveur{' '}
+                        </li>
+                    ),
+                    key: '5',
+                },
+                {
                     type: 'divider',
                 },
                 {
@@ -179,7 +196,7 @@ export const ChanelBar = () => {
                             Notifications{' '}
                         </li>
                     ),
-                    key: '5',
+                    key: '6',
                 },
                 {
                     type: 'divider',
@@ -193,7 +210,7 @@ export const ChanelBar = () => {
                             Quitter le serveur{' '}
                         </a>
                     ),
-                    key: '6',
+                    key: '7',
                 },
             ]}
         />

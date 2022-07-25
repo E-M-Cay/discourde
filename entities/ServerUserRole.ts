@@ -5,12 +5,16 @@ import { ServerUser } from './ServerUser';
 
 @Entity()
 export class ServerUserRole {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @ManyToOne(() => ServerUser, (serverUser) => serverUser.roles)
-  user: ServerUser;
+    @ManyToOne(() => ServerUser, (serverUser) => serverUser.roles, {
+        onDelete: 'CASCADE',
+    })
+    user: ServerUser;
 
-  @ManyToOne(() => Role, (role) => role.users)
-  role: Role;
+    @ManyToOne(() => Role, (role) => role.users, {
+        onDelete: 'CASCADE',
+    })
+    role: Role;
 }

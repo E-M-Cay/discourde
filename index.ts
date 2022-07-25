@@ -34,7 +34,7 @@ interface userStatus {
 interface Message {
     channel: number;
     content: string;
-    send_time: string;
+    send_time: Date;
     author: number;
     token: string;
 }
@@ -136,21 +136,21 @@ io.on('connection', (socket: ISocket) => {
 
         if (channel && user) {
             try {
-                let time = new Date().getTime();
+                let time: Date = new Date((new Date()).getTime());
                 const channel_message: any = 
                     ChannelMessageRepository.create({
                         channel: channel,
                         content: content.content,
                         send_time: time,
                     });
-
                 ChannelMessageRepository.save(channel_message);
+                io.emit(`message`, content);
             } catch (e) {
                 console.log(e);
             }
         }
     
-        io.emit(`message`, content);
+        
     });
 
 

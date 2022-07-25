@@ -64,7 +64,8 @@ const App = () => {
     );
 
     useEffect(() => {
-        if (localStorage.getItem('token') && !socket) connectSocket();
+        const token = localStorage.getItem('token');
+        if (token && !socket) connectSocket(token);
         socket?.on('connect', onConnection);
         socket?.on('username', updateUsername);
         return () => {
@@ -96,11 +97,11 @@ const App = () => {
                 email: loginEmailRef.current,
                 password: loginPasswordRef.current,
             })
-            .then((data) => {
-                if (data.data.token) {
-                    connectSocket();
-                    localStorage.setItem('token', data.data.token);
-                    dispatch(setUserId(data.data.user_id));
+            .then((res) => {
+                if (res.data.token) {
+                    connectSocket(res.data.token);
+                    localStorage.setItem('token', res.data.token);
+                    dispatch(setUserId(res.data.user_id));
                     handleOk();
                 }
             });

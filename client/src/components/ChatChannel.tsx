@@ -16,7 +16,7 @@ const ChatChannel = (name: string) => {
     }
 
     useEffect(() => {
-        socket?.on(`chatmessage:${name}`, incomingMessage)
+        socket?.on(`chatmessage`, incomingMessage)
         return(() => {
             socket?.off(`chatmessage:${name}`, incomingMessage)
         })

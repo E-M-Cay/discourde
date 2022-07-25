@@ -48,6 +48,6 @@ module.exports = async function (
         // On laisse la requête originale continuer
         next();
     } catch (e) {
-        return res.status(401).json({ err: 'fail' });
+        return res.status(401).json({ err: 'fail:', e });
     }
 };

@@ -9,36 +9,34 @@ import path from 'path';
 dotenv.config();
 
 const app: Express = express(),
-  port: string = process.env.PORT || '5001';
+    port: string = process.env.PORT || '5001';
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 interface userStatus {
-  id: string;
-  status: string;
-  socketId: string;
+    id: string;
+    status: string;
+    socketId: string;
 }
 
 let usersStatus: userStatus[] = [];
 
-export let user_id_to_peer_id = new Map<number, string>()
-export let peer_to_status = new Map<string, number>()
+export let user_id_to_peer_id = new Map<number, string>();
+export let peer_to_status = new Map<string, number>();
 
+const user_status = new Map<number, string>();
 
-const user_status = new Map<number, string>()
-
-user_status.set(0, "Disconected")
-user_status.set(1, "Connected")
-user_status.set(2, "Away")
-user_status.set(3, "Do not disturb")
-
+user_status.set(0, 'Disconected');
+user_status.set(1, 'Connected');
+user_status.set(2, 'Away');
+user_status.set(3, 'Do not disturb');
 
 const httpServer = createServer(app);
 
 app.get('/toto', (_req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
+    res.send('Express + TypeScript Server');
 });
 
 app.use('/server', require('./routes/server'));
@@ -46,99 +44,109 @@ app.use('/user', require('./routes/user'));
 app.use('/channel', require('./routes/channel'));
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.resolve(__dirname, 'client/build')));
+    app.use(express.static(path.resolve(__dirname, 'client/build')));
 
-  app.get('*', (_req, res) => {
-    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
-  });
+    app.get('*', (_req, res) => {
+        res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+    });
 }
 
 httpServer.listen(port, () => {
-  if (process.env.NODE_ENV === 'production') {
-    console.log('App running at https://discourde.herokuapp.com');
-  } else {
-    console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-  }
+    if (process.env.NODE_ENV === 'production') {
+        console.log('App running at https://discourde.herokuapp.com');
+    } else {
+        console.log(
+            `⚡️[server]: Server is running at http://localhost:${port}`
+        );
+    }
 });
 
 if (process.env.NODE_ENV === 'development') {
-  const peerServer = PeerServer({
-    port: 9000,
-    path: '/',
-  });
+    const peerServer = PeerServer({
+        port: 9000,
+        path: '/',
+    });
 
-  peerServer.on('connection', (client) => {
-    console.log('peer client', client.getId());
+    peerServer.on('connection', (client) => {
+        console.log('peer client', client.getId());
+    });
 
-  });
-
-  peerServer.on('disconnect', (_client) => {
-    console.log('peer client leave');
-  });
+    peerServer.on('disconnect', (_client) => {
+        console.log('peer client leave');
+    });
 }
 
 const io: SocketServer = new SocketServer(httpServer, {
-  cors: { origin: '*', methods: ['GET', 'POST'] },
+    cors: { origin: '*', methods: ['GET', 'POST'] },
 });
 
 interface ISocket extends Socket {
-  username?: string;
-  peer_id?: string;
-  user_id?: number
+    username?: string;
+    peer_id?: string;
+    user_id?: number;
 }
 
 io.on('connection', (socket: ISocket) => {
-  console.log('connection');
-  socket.username = 'user#' + Math.floor(Math.random() * 999999);
-  socket.join('test');
+    console.log('connection');
+    socket.username = 'user#' + Math.floor(Math.random() * 999999);
+    socket.join('test');
 
-  socket.on('username', (newUsername) => {
-    socket.username = newUsername;
-    socket.emit('username', newUsername);
-  });
+    socket.on('username', (newUsername) => {
+        socket.username = newUsername;
+        socket.emit('username', newUsername);
+    });
 
-  socket.on('peerId', (data:{peer_id:string, user_id:number}) => {
+    socket.on('peerId', (data: { peer_id: string; user_id: number }) => {
+        socket.peer_id = data.peer_id;
+        user_id_to_peer_id.set(data.user_id, data.peer_id);
+        peer_to_status.set(data.peer_id, 1);
 
-    socket.peer_id = data.peer_id
-    user_id_to_peer_id.set(data.user_id, data.peer_id)
-    peer_to_status.set(data.peer_id, 1)
-    
-    socket.to('test').emit('hello', { socketId: socket.id, peer_id: data.peer_id });
-    socket.emit('users', get_user_status_list([]));
-  });
+        socket
+            .to('test')
+            .emit('hello', { socketId: socket.id, peer_id: data.peer_id });
+        const toto = get_user_status_list([]);
+        console.log(toto);
+        socket.emit('users', Array.from(toto));
+    });
 
-  socket.on('disconnecting', (_reason) => {
-    user_id_to_peer_id.delete(socket.user_id as number)
-    peer_to_status.delete(socket.peer_id as string)
+    socket.on('message', (message) => {
+        console.log(message);
+    });
 
-    socket.to('test').emit('disconnected', socket.id);
-  });
+    socket.on('disconnecting', (_reason) => {
+        user_id_to_peer_id.delete(socket.user_id as number);
+        peer_to_status.delete(socket.peer_id as string);
 
-  socket.on('inactif', (peer_id:string) => {
-    peer_to_status.delete(peer_id)
-    peer_to_status.set(peer_id, 2)
-  })
+        socket.to('test').emit('disconnected', socket.id);
+    });
 
-  socket.on('dnd', (peer_id:string) => {
-    peer_to_status.delete(peer_id)
-    peer_to_status.set(peer_id, 3)
-  })
-
+    socket.on('inactif', (peer_id:string) => {
+      peer_to_status.delete(peer_id)
+      peer_to_status.set(peer_id, 2)
+    })
+  
+    socket.on('dnd', (peer_id:string) => {
+      peer_to_status.delete(peer_id)
+      peer_to_status.set(peer_id, 3)
+    })
 });
 
-function get_user_status_list(user_id_list:number[]){
-  user_id_list = (user_id_list.length == 0) ? [...user_id_to_peer_id.keys()] : user_id_list
-  let res = new Map<number, number>()
-
-  user_id_list.forEach((user_id) => {
-    res.set(user_id, get_user_status(user_id) as number)
-  })
-
-  return res
+function get_user_status_list(user_id_list: number[]) {
+    user_id_list =
+        user_id_list.length == 0
+            ? [...user_id_to_peer_id.keys()]
+            : user_id_list;
+    let res = new Map<number, number>();
+    user_id_list.forEach((user_id) => {
+        console.log(user_id);
+        res.set(user_id, get_user_status(user_id) as number);
+    });
+    console.log(res);
+    return res;
 }
 
-
-function get_user_status(user_id: number){
-  return (user_id_to_peer_id.has(user_id)) ? peer_to_status.get(user_id_to_peer_id.get(user_id) as string) : 0
+function get_user_status(user_id: number) {
+    return user_id_to_peer_id.has(user_id)
+        ? peer_to_status.get(user_id_to_peer_id.get(user_id) as string)
+        : 0;
 }
-

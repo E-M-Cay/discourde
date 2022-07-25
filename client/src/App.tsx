@@ -9,195 +9,203 @@ import { Home } from './Home/Home';
 import { Modal } from 'antd';
 
 interface UserInfo {
-  username: string;
-  id: string;
+    username: string;
+    id: string;
 }
 
 const App = () => {
-  const { socket, peer, connectPeer, connectSocket } =
-    useContext(PeerSocketContext);
-  const [micStatus, setMicStatus] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>();
-  const streamRef = useRef<MediaStream>();
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.userReducer);
-  const registerUsernameRef = useRef<string>('');
-  const registerEmailRef = useRef<string>('');
-  const loginEmailRef = useRef<string>('');
-  const registerPasswordRef = useRef<string>('');
-  const loginPasswordRef = useRef<string>('');
+    const { socket, peer, connectPeer, connectSocket } =
+        useContext(PeerSocketContext);
+    const [micStatus, setMicStatus] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>();
+    const streamRef = useRef<MediaStream>();
+    const dispatch = useAppDispatch();
+    const user = useAppSelector((state) => state.userReducer);
+    const registerUsernameRef = useRef<string>('');
+    const registerEmailRef = useRef<string>('');
+    const loginEmailRef = useRef<string>('');
+    const registerPasswordRef = useRef<string>('');
+    const loginPasswordRef = useRef<string>('');
 
-  const [isModalVisible, setIsModalVisible] = useState(localStorage.getItem("token") ? false : true);
+    const [isModalVisible, setIsModalVisible] = useState(
+        localStorage.getItem('token') ? false : true
+    );
 
-  // const showModal = () => {
-  //   setIsModalVisible(true);
-  // };
+    // const showModal = () => {
+    //   setIsModalVisible(true);
+    // };
 
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
-
-  const onConnection = useCallback(() => {
-    console.log('socket con');
-    socket?.emit('connected', socket.id);
-    connectPeer();
-  }, [socket, connectPeer]);
-
-  const fetchMessage = () => {
-    if (!message) {
-      console.log('axios');
-      axios.get(`/toto`).then((res) => setMessage(res.data));
-    }
-  };
-
-  const updateUsername = useCallback(
-    (newUsername: string) => {
-      dispatch(setUsername(newUsername));
-    },
-    [dispatch]
-  );
-
-  const onMessage = useCallback(
-    (message: string) => {
-      console.log(message);
-    }
-    , []
-  );
-
-  useEffect(() => {
-    socket?.on('connect', onConnection);
-    socket?.on('username', updateUsername);
-    socket?.on('message', onMessage);
-    return () => {
-      socket?.off('username', updateUsername);
-      socket?.off('connect', onConnection);
-      socket?.off('message', onMessage);
+    const handleOk = () => {
+        setIsModalVisible(false);
     };
-  }, [socket, onConnection, updateUsername, dispatch, onMessage]);
 
-  const onChangeHandler = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    ref: React.MutableRefObject<string>
-  ) => {
-    ref.current = e.target.value;
-  };
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
 
-  const onSubmitRegister = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    axios.post(`/user/register`, {
-      email: registerEmailRef.current,
-      password: registerPasswordRef.current,
-      username: registerUsernameRef.current,
-    });
-  };
+    const onConnection = useCallback(() => {
+        console.log('socket con');
+        socket?.emit('connected', socket.id);
+        connectPeer();
+    }, [socket, connectPeer]);
 
-  const onSubmitLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    axios
-      .post(`/user/login`, {
-        email: loginEmailRef.current,
-        password: loginPasswordRef.current,
-      })
-      .then((data) => {
-        if (data.data.token) {
-          connectSocket();
-          localStorage.setItem('token', data.data.token);
-          dispatch(setUserId(data.data.user_id))
-          handleOk();
+    const fetchMessage = () => {
+        if (!message) {
+            console.log('axios');
+            axios.get(`/toto`).then((res) => setMessage(res.data));
         }
-      });
-      
-  };
+    };
 
-  // return (
-  //   <div className='App'>
-  //     <button onClick={toggleMicrophone}>Open mic</button>
-  //     <div>{message}</div>
-  //     <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
-  //     <div>{displayUserList()}</div>
-  //     <button onClick={fetchMessage}>Fetch message</button>
-  //     <audio id='audio' />
-  //     {user != '' && (
-  //       <>
-  //         <div>{user}</div>
-  //         <form onSubmit={(e) => onSubmitHandler(e)}>
-  //           <input
-  //             type='text'
-  //             id='usernameInput'
-  //             onChange={(e) => onChangeHandler(e)}
-  //             defaultValue={user}
-  //           />
-  //           <input type='submit' />
-  //         </form>
-  //       </>
-  //     )}
-  //   </div>
-  // );
-  return (
-    <>
-    <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-    <div className='App'>
-      <div>{message}</div>
-      <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
-      <button onClick={fetchMessage}>Fetch message</button>
-      <VocalChannel channelName='toto' />
-      <>
-        <form onSubmit={(e) => onSubmitRegister(e)}>
-          <div>Register</div>
-          <label>
-            email
-            <input
-              type='text'
-              id='registerEmail'
-              onChange={(e) => onChangeHandler(e, registerEmailRef)}
-            />
-          </label>
-          <label>
-            password
-            <input
-              type='password'
-              id='registerPassword'
-              onChange={(e) => onChangeHandler(e, registerPasswordRef)}
-            />
-          </label>
-          <label>
-            username
-            <input
-              type='text'
-              id='registerUsername'
-              onChange={(e) => onChangeHandler(e, registerUsernameRef)}
-            />
-          </label>
-          <input type='submit' />
-        </form>
-        <form onSubmit={(e) => onSubmitLogin(e)}>
-          <div>Login</div>
-          <label>
-            email
-            <input
-              type='text'
-              id='loginPassword'
-              onChange={(e) => onChangeHandler(e, loginEmailRef)}
-            />
-          </label>
-          <label>
-            password
-            <input
-              type='password'
-              id='loginPassword'
-              onChange={(e) => onChangeHandler(e, loginPasswordRef)}></input>
-          </label>
-          <input type='submit' />
-        </form>
-      </>
-    </div>
-    </Modal>
-    <Home /></>
-  );
+    const updateUsername = useCallback(
+        (newUsername: string) => {
+            dispatch(setUsername(newUsername));
+        },
+        [dispatch]
+    );
+
+    useEffect(() => {
+        if (localStorage.getItem('token') && !socket) connectSocket();
+        socket?.on('connect', onConnection);
+        socket?.on('username', updateUsername);
+        return () => {
+            socket?.off('username', updateUsername);
+            socket?.off('connect', onConnection);
+        };
+    }, [socket, onConnection, updateUsername, dispatch]);
+
+    const onChangeHandler = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        ref: React.MutableRefObject<string>
+    ) => {
+        ref.current = e.target.value;
+    };
+
+    const onSubmitRegister = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        axios.post(`/user/register`, {
+            email: registerEmailRef.current,
+            password: registerPasswordRef.current,
+            username: registerUsernameRef.current,
+        });
+    };
+
+    const onSubmitLogin = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        axios
+            .post(`/user/login`, {
+                email: loginEmailRef.current,
+                password: loginPasswordRef.current,
+            })
+            .then((data) => {
+                if (data.data.token) {
+                    connectSocket();
+                    localStorage.setItem('token', data.data.token);
+                    dispatch(setUserId(data.data.user_id));
+                    handleOk();
+                }
+            });
+    };
+
+    // return (
+    //   <div className='App'>
+    //     <button onClick={toggleMicrophone}>Open mic</button>
+    //     <div>{message}</div>
+    //     <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
+    //     <div>{displayUserList()}</div>
+    //     <button onClick={fetchMessage}>Fetch message</button>
+    //     <audio id='audio' />
+    //     {user != '' && (
+    //       <>
+    //         <div>{user}</div>
+    //         <form onSubmit={(e) => onSubmitHandler(e)}>
+    //           <input
+    //             type='text'
+    //             id='usernameInput'
+    //             onChange={(e) => onChangeHandler(e)}
+    //             defaultValue={user}
+    //           />
+    //           <input type='submit' />
+    //         </form>
+    //       </>
+    //     )}
+    //   </div>
+    // );
+    return (
+        <>
+            <Modal
+                title='Basic Modal'
+                visible={isModalVisible}
+                onOk={handleOk}
+                onCancel={handleCancel}>
+                <div className='App'>
+                    <div>{message}</div>
+                    <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
+                    <button onClick={fetchMessage}>Fetch message</button>
+                    <VocalChannel channelName='toto' />
+                    <>
+                        <form onSubmit={(e) => onSubmitRegister(e)}>
+                            <div>Register</div>
+                            <label>
+                                email
+                                <input
+                                    type='text'
+                                    id='registerEmail'
+                                    onChange={(e) =>
+                                        onChangeHandler(e, registerEmailRef)
+                                    }
+                                />
+                            </label>
+                            <label>
+                                password
+                                <input
+                                    type='password'
+                                    id='registerPassword'
+                                    onChange={(e) =>
+                                        onChangeHandler(e, registerPasswordRef)
+                                    }
+                                />
+                            </label>
+                            <label>
+                                username
+                                <input
+                                    type='text'
+                                    id='registerUsername'
+                                    onChange={(e) =>
+                                        onChangeHandler(e, registerUsernameRef)
+                                    }
+                                />
+                            </label>
+                            <input type='submit' />
+                        </form>
+                        <form onSubmit={(e) => onSubmitLogin(e)}>
+                            <div>Login</div>
+                            <label>
+                                email
+                                <input
+                                    type='text'
+                                    id='loginPassword'
+                                    onChange={(e) =>
+                                        onChangeHandler(e, loginEmailRef)
+                                    }
+                                />
+                            </label>
+                            <label>
+                                password
+                                <input
+                                    type='password'
+                                    id='loginPassword'
+                                    onChange={(e) =>
+                                        onChangeHandler(e, loginPasswordRef)
+                                    }></input>
+                            </label>
+                            <input type='submit' />
+                        </form>
+                    </>
+                </div>
+            </Modal>
+            <Home />
+        </>
+    );
 };
 
 export default App;

@@ -20,7 +20,7 @@ const vocalChannelRepository = AppDataSource.getRepository(VocalChannel);
 const channelRepository = AppDataSource.getRepository(Channel);
 const ServerUserRepository = AppDataSource.getRepository(ServerUser);
 
-router.get('/list', async (req: IRequest, res: Response) => {
+router.get('/list', isAuth, async (req: IRequest, res: Response) => {
     const user = await UserRepository.findOne({
         where: {
             id: req.id,
@@ -47,7 +47,7 @@ router.get('/list', async (req: IRequest, res: Response) => {
             return serv;
         })
     );
-    console.log(tempList);
+    console.log(tempList[0]);
     return res.send(tempList);
 });
 

@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import express, { Express, Request, Response } from 'express';
 import { createServer } from 'http';
 import dotenv from 'dotenv';
@@ -5,6 +6,11 @@ import cors from 'cors';
 import { PeerServer } from 'peer';
 import { Socket, Server as SocketServer } from 'socket.io';
 import path from 'path';
+import { ChannelMessage } from './entities/ChannelMessage';
+import AppDataSource from './db/AppDataSource';
+import { Channel } from './entities/Channel';
+import { User } from './entities/User';
+
 
 dotenv.config();
 
@@ -15,6 +21,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+const ChannelMessageRepository = AppDataSource.getRepository(ChannelMessage);
+const ChannelRepository = AppDataSource.getRepository(Channel);
+const userRepository = AppDataSource.getRepository(User);
 interface userStatus {
     id: string;
     status: string;
@@ -23,9 +32,11 @@ interface userStatus {
 
 
 interface Message {
-    username: string;
-    chanel: string;
-    message: string;
+    channel: number;
+    content: string;
+    send_time: string;
+    author: number;
+    token: string;
 }
 
 let usersStatus: userStatus[] = [];
@@ -103,10 +114,45 @@ io.on('connection', (socket: ISocket) => {
         socket.emit('username', newUsername);
     });
 
-    socket.on('message', (content: Message) => {
+    socket.on('message', async (content: Message) => {
+
         console.log("fdgdfdf");
-        io.emit('message', content);
+
+        const decoded: any = jwt.verify(content.token, process.env.SECRET_TOKEN || '');
+
+        // On ajoute l'utilisateur à la requête
+        const user_id: string = decoded.user.id;
+        const user: any = await userRepository.findOneBy({
+            id: Number(user_id),
+        });
+
+        
+
+        // const userId = Number(user_id);
+
+        const channel = await ChannelRepository.findOneBy({
+            id: content.channel,
+        });
+
+        if (channel && user) {
+            try {
+                let time = new Date().getTime();
+                const channel_message: any = 
+                    ChannelMessageRepository.create({
+                        channel: channel,
+                        content: content.content,
+                        send_time: time,
+                    });
+
+                ChannelMessageRepository.save(channel_message);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    
+        io.emit(`message`, content);
     });
+
 
     socket.on('peerId', (data: { peer_id: string; user_id: number }) => {
         socket.peer_id = data.peer_id;
@@ -119,6 +165,10 @@ io.on('connection', (socket: ISocket) => {
         const toto = get_user_status_list([]);
         console.log(toto);
         socket.emit('users', Array.from(toto));
+    });
+
+    socket.on('message', (message) => {
+        console.log(message);
     });
 
     socket.on('disconnecting', (_reason) => {

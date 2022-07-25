@@ -6,6 +6,7 @@ import Chat from '../Chat/Chat';
 import { ChanelBar } from '../ChanelBar/ChanelBar';
 import chanelData from '../mock1';
 import { FriendPanel } from '../FriendPanel/FriendPanel';
+import { useAppSelector } from '../redux/hooks';
 
 export const Main = () => {
     return (
@@ -17,7 +18,7 @@ export const Main = () => {
             }}
             className='main'>
             <Col style={{ backgroundColor: '#535151' }} span={3.5}>
-                <ChanelBar></ChanelBar>
+                <ChanelBar />
             </Col>
             <Col span={16}>
                 <Chat />

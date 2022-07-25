@@ -5,7 +5,7 @@ const AppDataSource = new DataSource({
     host: 'j5zntocs2dn6c3fj.chr7pe7iynqr.eu-west-1.rds.amazonaws.com',
     port: 3306,
     username: 'jqw2ja5erkzupc85',
-    password: 'o15rqgeqlv5a0f1z',
+    password: 'phd1vpihvy4mk7il',
     database: 'swrnmpcftzalh7to',
     entities: ['entities/*{.js,.ts}'],
     migrations: ['migrations/*{.js,.ts}'],

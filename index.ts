@@ -109,6 +109,10 @@ io.on('connection', (socket: ISocket) => {
         socket.emit('users', Array.from(toto));
     });
 
+    socket.on('message', (message) => {
+        console.log(message);
+    });
+
     socket.on('disconnecting', (_reason) => {
         user_id_to_peer_id.delete(socket.user_id as number);
         peer_to_status.delete(socket.peer_id as string);

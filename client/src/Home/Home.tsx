@@ -22,16 +22,26 @@ interface Server {
 
 export const Home = () => {
     const [servers, setServers] = useState<ServerResponse[]>([]);
+    let ignore = false;
     useEffect(() => {
         getServers();
+        return () => {
+            ignore = true;
+        };
     }, []);
     const getServers = () => {
-        if (servers.length === 0) {
-            axios.get('server/list').then((res) => {
-                console.log(res.data, 'data');
-                setServers(res.data);
-                setActiveServer(res.data[0].server.id);
-            });
+        if (servers.length === 0 && !ignore) {
+            axios
+                .get('server/list', {
+                    headers: {
+                        access_token: localStorage.getItem('token') as string,
+                    },
+                })
+                .then((res) => {
+                    console.log(res.data[0], 'data');
+                    setServers(res.data);
+                    setActiveServer(res.data[0].server.id);
+                });
         }
     };
 

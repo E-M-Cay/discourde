@@ -114,11 +114,22 @@ io.on('connection', (socket: ISocket) => {
     socket.to('test').emit('disconnected', socket.id);
   });
 
+  socket.on('inactif', (peer_id:string) => {
+    peer_to_status.delete(peer_id)
+    peer_to_status.set(peer_id, 2)
+  })
+
+  socket.on('dnd', (peer_id:string) => {
+    peer_to_status.delete(peer_id)
+    peer_to_status.set(peer_id, 3)
+  })
+
 });
 
 function get_user_status_list(user_id_list:number[]){
   user_id_list = (user_id_list.length == 0) ? [...user_id_to_peer_id.keys()] : user_id_list
   let res = new Map<number, number>()
+
   user_id_list.forEach((user_id) => {
     res.set(user_id, get_user_status(user_id) as number)
   })

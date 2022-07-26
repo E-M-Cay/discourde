@@ -34,7 +34,7 @@ router.post('/login', async (req: Request, res: Response) => {
       return jwt.sign(
         payload,
         process.env.SECRET_TOKEN || '',
-        { expiresIn: 36000 },
+        { expiresIn: 3600000 },
         function (err, token) {
           if (err) throw err;
           return res.status(200).json({

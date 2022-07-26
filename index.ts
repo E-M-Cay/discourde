@@ -126,7 +126,8 @@ io.on('connection', (socket: ISocket) => {
         console.log('fdgdfdf');
 
         const decoded: any = jwt.verify(
-            content.token,
+            // content.token,
+            socket.handshake.auth.token,
             process.env.SECRET_TOKEN || ''
         );
 
@@ -136,7 +137,7 @@ io.on('connection', (socket: ISocket) => {
             id: Number(user_id),
         });
 
-        if (!user) return;
+        // if (!user) return;
 
         // const userId = Number(user_id);
 
@@ -157,7 +158,11 @@ io.on('connection', (socket: ISocket) => {
                     author: user,
                 });
                 ChannelMessageRepository.save(channel_message);
-                io.emit(`message:${channel.id}`, content);
+                io.emit(`message:${channel.id}`, {
+                    id: content.channel,
+                    content: content.content,
+                    send_time: time
+                });
             } catch (e) {
                 console.log(e);
             }

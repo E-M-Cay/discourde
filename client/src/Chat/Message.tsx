@@ -44,7 +44,8 @@ const Message = () => {
     }, [socket, activeChannel]);
 
     const receiveMessage = (message: Message) => {
-        setMessages([...messages, message]);
+        setMessages(prev => [...prev, message]);
+        console.log(message, 'message');
     };
 
     return (

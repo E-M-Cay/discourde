@@ -44,7 +44,14 @@
 }
 .iconFriend {
     text-align: right !important;
-    font-size: larger;
+    font-size: x-large;
 }
-
-
+.iconFriend:hover {
+    text-align: right !important;
+    font-size: x-large;
+}
+.searchBar {
+    margin-left: 3vw;
+    font-size: x-large;
+    background-color: black !important;
+}

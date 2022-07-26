@@ -5,6 +5,7 @@ import {
     BorderlessTableOutlined,
     CloseOutlined,
     CustomerServiceOutlined,
+    DeleteOutlined,
     DownOutlined,
     LogoutOutlined,
     PlusCircleOutlined,
@@ -174,17 +175,6 @@ export const ChanelBar = () => {
                     key: '4',
                 },
                 {
-                    label: (
-                        <li onClick={() => deleteServer()}>
-                            <PlusCircleOutlined
-                                style={{ color: 'darkgrey', fontSize: 'small' }}
-                            />{' '}
-                            Supprimer serveur{' '}
-                        </li>
-                    ),
-                    key: '5',
-                },
-                {
                     type: 'divider',
                 },
                 {
@@ -196,10 +186,21 @@ export const ChanelBar = () => {
                             Notifications{' '}
                         </li>
                     ),
-                    key: '6',
+                    key: '5',
                 },
                 {
                     type: 'divider',
+                },
+                {
+                    label: (
+                        <li onClick={() => deleteServer()}>
+                            <DeleteOutlined
+                                style={{ color: 'red', fontSize: 'small' }}
+                            />{' '}
+                            Supprimer serveur{' '}
+                        </li>
+                    ),
+                    key: '6',
                 },
                 {
                     label: (

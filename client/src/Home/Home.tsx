@@ -41,6 +41,10 @@ export const Home = () => {
                     },
                 })
                 .then((res) => {
+                    if (res.data.length === 0) {
+                        console.log('no servers');
+                        return;
+                    }
                     console.log(res.data[0], 'data');
                     setServers(res.data);
                     setActiveServer(res.data[0].server.id);

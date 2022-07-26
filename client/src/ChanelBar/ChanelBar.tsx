@@ -94,6 +94,7 @@ export const ChanelBar = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isFocused, setFocus] = useState(false);
     const [channelName, setChannelName] = useState('');
+    const [serverId, setServerId] = useState(0);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -123,6 +124,27 @@ export const ChanelBar = () => {
             .then((res) => {
                 console.log(res, 'gdhdhdhdg');
                 setIsModalVisible(false);
+            });
+    };
+
+    //get User id from dispach
+    const userId = useAppSelector((state) => state.userReducer.user_id);
+
+    //function joinChannel with axios request
+    const joinServer = () => {
+        axios
+            .post(
+                '/server/add_user',
+                { server_id: serverId, id: userId },
+                {
+                    headers: {
+                        access_token: localStorage.getItem('token') as string,
+                    },
+                }
+            )
+            .then((res) => {
+                console.log(res, 'gdhdhdhdg');
+                // dispatch(setActiveChannel(id));
             });
     };
 
@@ -240,6 +262,15 @@ export const ChanelBar = () => {
                         type='text'
                         defaultValue={channelName}
                         onChange={(e) => setChannelName(e.target.value)}
+                        placeholder='Enter channel name'
+                    />
+                    <input type='submit' value='Create' />
+                </form>
+                <form onSubmit={(e) => joinServer()}>
+                    <input
+                        type='number'
+                        defaultValue={channelName}
+                        onChange={(e) => setServerId(+e.target.value)}
                         placeholder='Enter server name'
                     />
                     <input type='submit' value='Create' />

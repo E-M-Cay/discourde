@@ -15,7 +15,6 @@ const ChatBar = () => {
         socket?.emit('message', {
             content: input,
             channel: activeChannel,
-            token: localStorage.getItem('token') as string,
         });
 
         setInput('');
@@ -25,22 +24,18 @@ const ChatBar = () => {
 
     // const { peer, socket } = useContext(PeerSocketContext);
 
-
-    const [message, setMessage] = useState<string>();
-
-
     // function handleKeyDown(e: any) {
     //     if (e.key === 'Enter') {
     //         console.log(message);
     //         setMessage('')
     //       socket?.emit('message', {message: message, username: 'toto', channel: 'toto'});
-          
+
     //     }
     // }
 
     return (
         <div className='chatbar'>
-            <Form style={{width: "100%"}} onSubmitCapture={onSubmitHandler}>
+            <Form style={{ width: '100%' }} onSubmitCapture={onSubmitHandler}>
                 <Input
                     bordered={false}
                     className='inputMain'

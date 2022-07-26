@@ -37,10 +37,9 @@ interface Message {
     token: string;
 }
 
-let usersStatus: userStatus[] = [];
-
 export let user_id_to_peer_id = new Map<number, string>();
 export let peer_to_status = new Map<string, number>();
+export let user_id_to_vocal_channel = new Map<number, number>();
 
 const user_status = new Map<number, string>();
 
@@ -123,8 +122,6 @@ io.on('connection', (socket: ISocket) => {
     });
 
     socket.on('message', async (content: Message) => {
-        console.log('fdgdfdf');
-
         const decoded: any = jwt.verify(
             // content.token,
             socket.handshake.auth.token,
@@ -136,10 +133,6 @@ io.on('connection', (socket: ISocket) => {
         const user = await userRepository.findOneBy({
             id: Number(user_id),
         });
-
-        // if (!user) return;
-
-        // const userId = Number(user_id);
 
         const channel = await ChannelRepository.findOneBy({
             id: content.channel,
@@ -162,6 +155,7 @@ io.on('connection', (socket: ISocket) => {
                     id: content.channel,
                     content: content.content,
                     send_time: time,
+                    author: user.id,
                 });
             } catch (e) {
                 console.log(e);

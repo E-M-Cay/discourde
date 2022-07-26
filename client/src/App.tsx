@@ -206,8 +206,7 @@ const App = () => {
                                     }></input>
                             </label>
                             <input type='submit' />
-                        </form>
-                    </>
+                        </form>                    </>
                 </div>
             </Modal>
             <Home />

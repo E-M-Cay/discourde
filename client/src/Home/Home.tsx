@@ -33,7 +33,7 @@ export const Home = () => {
     }, [token]);
 
     const getServers = useCallback(() => {
-        if (servers.length === 0 && !ignore && token) {
+        if (!ignore && token) {
             axios
                 .get('server/list', {
                     headers: {

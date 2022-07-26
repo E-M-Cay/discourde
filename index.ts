@@ -161,7 +161,7 @@ io.on('connection', (socket: ISocket) => {
                 io.emit(`message:${channel.id}`, {
                     id: content.channel,
                     content: content.content,
-                    send_time: time
+                    send_time: time,
                 });
             } catch (e) {
                 console.log(e);

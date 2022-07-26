@@ -42,6 +42,9 @@ export const ChanelBar = () => {
     const activeServer = useAppSelector(
         (state) => state.userReducer.activeServer
     );
+    const activeChannel = useAppSelector(
+        (state) => state.userReducer.activeChannel
+    );
     const dispatch = useAppDispatch();
     const headerTxt: string = 'SALONS TEXTUELS';
     const headerVoc: string = 'SALONS VOCAUX';
@@ -58,7 +61,12 @@ export const ChanelBar = () => {
     }
 
     useEffect(() => {
-        console.log('active server:', activeServer);
+        console.log(
+            'active server:',
+            activeServer,
+            'activeChannel:',
+            activeChannel
+        );
         if (activeServer)
             axios
                 .get(`/channel/list/${activeServer}`, {
@@ -69,6 +77,8 @@ export const ChanelBar = () => {
                 .then((res) => {
                     setVocalChannelList(res.data.vocal);
                     setTextChannelList(res.data.text);
+                    console.log(res.data.text[0]);
+                    dispatch(setActiveChannel(res.data.text[0].id));
                 });
     }, [activeServer]);
 

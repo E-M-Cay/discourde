@@ -11,6 +11,9 @@ interface UserState {
 }
 
 const initialUserState: UserState = {
+    token: localStorage.getItem('token')
+        ? (localStorage.getItem('token') as string)
+        : undefined,
     rooms: [],
     username: '',
 };

@@ -83,7 +83,7 @@ export const CustomImageMess = ({ obj }: any) => {
         marginRight: '17px',
         marginLeft: '10px',
       }}
-      src={obj.photo}
+      src={"https://robohash.org/sapienteateveniet.png?size=50x50&set=set1"}
     />
   );
 };

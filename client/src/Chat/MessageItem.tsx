@@ -21,10 +21,9 @@ export const MessageItem = (props: { obj: Message }) => {
             <div className='messageItemContent'>
                 <div className='messageItemContentName'>
                     {obj.author}
-
                     <span className='time'> {obj.send_time}</span>
                 </div>
-                <div className='messageItemContentText'>{obj.content}</div>
+                <div className='messageItemContentText' style={{maxWidth: "100%", wordBreak: 'break-word'}}>{obj.content}</div>
             </div>
         </div>
     );

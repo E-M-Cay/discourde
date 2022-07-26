@@ -148,7 +148,7 @@ const App = () => {
                     <div>{message}</div>
                     <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
                     <button onClick={fetchMessage}>Fetch message</button>
-                    <VocalChannel channelName='toto' />
+                    <VocalChannel />
                     <>
                         <form onSubmit={(e) => onSubmitRegister(e)}>
                             <div>Register</div>
@@ -206,7 +206,8 @@ const App = () => {
                                     }></input>
                             </label>
                             <input type='submit' />
-                        </form>                    </>
+                        </form>{' '}
+                    </>
                 </div>
             </Modal>
             <Home />

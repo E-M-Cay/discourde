@@ -8,12 +8,14 @@ interface UserInfo {
     id: string;
 }
 
-const VocalChannel = (props: { channelName: string }) => {
+const VocalChannel = () => {
     const { peer, socket } = useContext(PeerSocketContext);
-    const { channelName } = props;
-    const user = useAppSelector((state) => state.userReducer);
+    const activeVocalChannel = useAppSelector(
+        (state) => state.userReducer.activeVocalChannel
+    );
     const [userList, setUserList] = useState<UserInfo[]>([]);
     const streamRef = useRef<MediaStream>();
+    const [activeCalls, setActiveCalls] = useState<MediaConnection[]>([]);
 
     const toggleMicrophone = async () => {
         if (!streamRef.current?.active) {
@@ -40,15 +42,14 @@ const VocalChannel = (props: { channelName: string }) => {
     };
 
     const openPeer = useCallback(
-        (id: string) => {
-            console.log('peerid:', id);
-            socket?.emit('peerId', { id, user_id: user.user_id });
+        (peer_id: string) => {
+            console.log('peerid:', peer_id);
+            socket?.emit('peerId', { peer_id });
         },
         [socket]
     );
 
     const callEvent = useCallback(async (call: MediaConnection) => {
-        console.log('call');
         const audioNode = new Audio();
         // eslint-disable-next-line no-restricted-globals
         //if (confirm(`Call incoming`)) {
@@ -57,6 +58,7 @@ const VocalChannel = (props: { channelName: string }) => {
         }
         call.answer(streamRef.current as MediaStream);
 
+        setActiveCalls((prevState) => [...prevState, call]);
         call.on('stream', (stream) => {
             audioNode.srcObject = stream;
             console.log('receiving stream 2');
@@ -84,6 +86,9 @@ const VocalChannel = (props: { channelName: string }) => {
             console.log(id);
             const call = peer?.call(id, streamRef.current as MediaStream);
 
+            if (!call) return;
+            setActiveCalls((prevState) => [...prevState, call]);
+
             call?.on('stream', (stream) => {
                 audioNode.srcObject = stream;
                 console.log('receiving stream 1');
@@ -94,21 +99,19 @@ const VocalChannel = (props: { channelName: string }) => {
             call?.on('close', () => {
                 audioNode.remove();
             });
+            call?.close();
         },
         [peer]
     );
 
     const hello = useCallback(
-        async (data: { socketId: string; id: string }) => {
+        async (data: { user_id: number; peer_id: string }) => {
             console.log('hello');
-            setUserList((prevUserList) => [
-                ...prevUserList,
-                { socketId: data.socketId, id: data.id },
-            ]);
+
             if (!streamRef.current?.active) {
                 await toggleMicrophone();
             }
-            callUser(data.id);
+            callUser(data.peer_id);
         },
         [callUser]
     );
@@ -120,15 +123,21 @@ const VocalChannel = (props: { channelName: string }) => {
     };
 
     useEffect(() => {
+        activeCalls.forEach((call) => call.close());
+        socket?.on(`joiningvocalchannel:${activeVocalChannel}`, hello);
+        return () => {
+            socket?.off(`joiningvocalchannel:${activeVocalChannel}`, hello);
+        };
+    }, [activeVocalChannel, socket, peer]);
+
+    useEffect(() => {
         peer?.on('call', callEvent);
         peer?.on('open', openPeer);
-        socket?.on('hello', hello);
         socket?.on('users', receiveUsers);
         socket?.on('disconnected', userDisconnected);
         return () => {
             peer?.off('call', callEvent);
             peer?.off('open', openPeer);
-            socket?.off('hello', hello);
             socket?.off('users', receiveUsers);
             socket?.off('disconnected', userDisconnected);
         };

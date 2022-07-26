@@ -28,13 +28,14 @@ import {
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Sider from 'antd/lib/layout/Sider';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 //import chanelData from '../mock1';
 import './ChanelBar.css';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setActiveChannel } from '../redux/userSlice';
+import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
 import { act } from 'react-dom/test-utils';
+import { PeerSocketContext } from '../context/PeerSocket';
 
 const { Panel } = Collapse;
 
@@ -45,6 +46,7 @@ export const ChanelBar = () => {
     const activeChannel = useAppSelector(
         (state) => state.userReducer.activeChannel
     );
+    const { peer, socket } = useContext(PeerSocketContext);
     const dispatch = useAppDispatch();
     const headerTxt: string = 'SALONS TEXTUELS';
     const headerVoc: string = 'SALONS VOCAUX';
@@ -61,12 +63,6 @@ export const ChanelBar = () => {
     }
 
     useEffect(() => {
-        console.log(
-            'active server:',
-            activeServer,
-            'activeChannel:',
-            activeChannel
-        );
         if (activeServer)
             axios
                 .get(`/channel/list/${activeServer}`, {
@@ -86,7 +82,12 @@ export const ChanelBar = () => {
     const onTextChannelClick = (id: number) => {
         dispatch(setActiveChannel(id));
     };
-    const onVocalChannelClick = (id: number) => {};
+    const onVocalChannelClick = useCallback(
+        (id: number) => {
+            socket?.emit('joinvocalchannel', id);
+        },
+        [socket]
+    );
 
     const [stateMic, setmicState] = useState(true);
     const [stateHead, setheadState] = useState(true);

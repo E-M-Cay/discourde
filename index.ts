@@ -10,6 +10,7 @@ import { ChannelMessage } from './entities/ChannelMessage';
 import AppDataSource from './db/AppDataSource';
 import { Channel } from './entities/Channel';
 import { User } from './entities/User';
+import { Permission } from './entities/Permission';
 
 dotenv.config();
 
@@ -38,7 +39,7 @@ interface Message {
 }
 
 export let user_id_to_peer_id = new Map<number, string>();
-export let peer_to_status = new Map<string, number>();
+export let user_id_to_status = new Map<number, number>();
 export let user_id_to_vocal_channel = new Map<number, number>();
 
 const user_status = new Map<number, string>();
@@ -104,13 +105,20 @@ interface ISocket extends Socket {
 io.use((socket: ISocket, next) => {
     const token = socket.handshake.auth?.token;
     if (!token) return;
+
+    const decoded: any = jwt.verify(
+        // content.token,
+        socket.handshake.auth.token,
+        process.env.SECRET_TOKEN || ''
+    );
+
+    // On ajoute l'utilisateur à la requête
+    socket.user_id = Number(decoded.user.id);
     next();
 });
 
 io.on('connection', (socket: ISocket) => {
     const token = socket.handshake.auth.token;
-
-    //méthode decodeToken+return user_id
 
     console.log('connection');
     socket.username = 'user#' + Math.floor(Math.random() * 999999);
@@ -122,16 +130,8 @@ io.on('connection', (socket: ISocket) => {
     });
 
     socket.on('message', async (content: Message) => {
-        const decoded: any = jwt.verify(
-            // content.token,
-            socket.handshake.auth.token,
-            process.env.SECRET_TOKEN || ''
-        );
-
-        // On ajoute l'utilisateur à la requête
-        const user_id: string = decoded.user.id;
         const user = await userRepository.findOneBy({
-            id: Number(user_id),
+            id: socket.user_id,
         });
 
         const channel = await ChannelRepository.findOneBy({
@@ -163,10 +163,10 @@ io.on('connection', (socket: ISocket) => {
         }
     });
 
-    socket.on('peerId', (data: { peer_id: string; user_id: number }) => {
+    socket.on('peerId', (data: { peer_id: string }) => {
         socket.peer_id = data.peer_id;
-        user_id_to_peer_id.set(data.user_id, data.peer_id);
-        peer_to_status.set(data.peer_id, 1);
+        user_id_to_peer_id.set(socket.user_id as number, data.peer_id);
+        user_id_to_status.set(socket.user_id as number, 1);
 
         socket
             .to('test')
@@ -182,9 +182,26 @@ io.on('connection', (socket: ISocket) => {
 
     socket.on('disconnecting', (_reason) => {
         user_id_to_peer_id.delete(socket.user_id as number);
-        peer_to_status.delete(socket.peer_id as string);
+        user_id_to_status.delete(socket.user_id as number);
 
         socket.to('test').emit('disconnected', socket.id);
+    });
+
+    socket.on('inactif', () => {
+        user_id_to_status.delete(socket.user_id as number);
+        user_id_to_status.set(socket.user_id as number, 2);
+    });
+
+    socket.on('dnd', () => {
+        user_id_to_status.delete(socket.user_id as number);
+        user_id_to_status.set(socket.user_id as number, 3);
+    });
+
+    socket.on('joinvocalchannel', (id: number) => {
+        socket.broadcast.emit(`joiningvocalchannel:${id}`, {
+            user: socket.user_id,
+            peer_id: socket.peer_id,
+        });
     });
 });
 
@@ -203,7 +220,72 @@ function get_user_status_list(user_id_list: number[]) {
 }
 
 function get_user_status(user_id: number) {
-    return user_id_to_peer_id.has(user_id)
-        ? peer_to_status.get(user_id_to_peer_id.get(user_id) as string)
-        : 0;
+    return user_id_to_peer_id.has(user_id) ? user_id_to_status.get(user_id) : 0;
+}
+
+const PermRepository = AppDataSource.getRepository(Permission);
+
+async function init_perm_bdd() {
+    if ((await PermRepository.count({})) != 0) return;
+
+    PermRepository.save(
+        PermRepository.create({ id: 1, name: 'can_create_channel' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 2, name: 'can_update_channel' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 3, name: 'can_delete_channel' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 4, name: 'can_see_hidden_channel' })
+    );
+
+    PermRepository.save(
+        PermRepository.create({ id: 5, name: 'can_invite_user' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 7, name: 'can_mute_user' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 8, name: 'can_kick_user' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 9, name: 'can_mute_user' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 10, name: 'can_ban_user' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 11, name: 'can_update_nickname' })
+    );
+
+    PermRepository.save(
+        PermRepository.create({ id: 12, name: 'can_create_role' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 13, name: 'can_update_role' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 14, name: 'can_delete_role' })
+    );
+
+    PermRepository.save(
+        PermRepository.create({ id: 15, name: 'can_create_message' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 16, name: 'can_update_message' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 17, name: 'can_delete_message' })
+    );
+
+    PermRepository.save(
+        PermRepository.create({ id: 18, name: 'can_update_server_name' })
+    );
+    PermRepository.save(
+        PermRepository.create({ id: 19, name: 'can_update_server_logo' })
+    );
+
+    PermRepository.save(PermRepository.create({ id: 20, name: 'is_admin' }));
 }

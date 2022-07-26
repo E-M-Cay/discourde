@@ -8,6 +8,7 @@ interface UserState {
     activeServer?: number;
     user_id?: number;
     activeChannel?: number;
+    activeVocalChannel?: number;
 }
 
 const initialUserState: UserState = {
@@ -34,12 +35,14 @@ export const userSlice = createSlice({
         setActiveServer: (state, action: PayloadAction<number>) => {
             state.activeServer = action.payload;
         },
-
         setUserId: (state, action: PayloadAction<number>) => {
             state.user_id = action.payload;
         },
         setActiveChannel: (state, action: PayloadAction<number>) => {
             state.activeChannel = action.payload;
+        },
+        setActiveVocalChannel: (state, action: PayloadAction<number>) => {
+            state.activeVocalChannel = action.payload;
         },
     },
 });
@@ -51,6 +54,7 @@ export const {
     setActiveServer,
     setUserId,
     setActiveChannel,
+    setActiveVocalChannel,
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -13,6 +13,7 @@ import { VocalChannel } from '../../entities/VocalChannel';
 import { Channel } from '../../entities/Channel';
 
 const isAuth = require('../../MiddleWares/isAuth');
+const hasPerm = require('../../MiddleWares/hasPerm');
 
 const UserRepository = AppDataSource.getRepository(User);
 const ServerRepository = AppDataSource.getRepository(Server);
@@ -20,7 +21,7 @@ const vocalChannelRepository = AppDataSource.getRepository(VocalChannel);
 const channelRepository = AppDataSource.getRepository(Channel);
 const ServerUserRepository = AppDataSource.getRepository(ServerUser);
 
-router.get('/list', isAuth, async (req: IRequest, res: Response) => {
+router.get('/list', isAuth, hasPerm, async (req: IRequest, res: Response) => {
     const user = await UserRepository.findOne({
         where: {
             id: req.id,

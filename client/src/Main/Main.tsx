@@ -19,7 +19,7 @@ export const Main = () => {
                 <ChanelBar />
             </Col>
             <Col span={16}>
-                <Chat />
+                <FriendPanel />
             </Col>
             <Col style={{ backgroundColor: 'grey' }} span={4}>
                 <StatusBar />

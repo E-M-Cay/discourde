@@ -131,7 +131,7 @@ export const ChanelBar = () => {
                     label: (
                         <li>
                             <UserAddOutlined
-                                style={{ color: 'darkgrey', fontSize: 'small' }}
+                                style={{ color: 'green', fontSize: 'small' }}
                             />{' '}
                             Inviter des gens{' '}
                         </li>
@@ -181,7 +181,7 @@ export const ChanelBar = () => {
                     label: (
                         <li>
                             <BellOutlined
-                                style={{ color: 'darkgrey', fontSize: 'small' }}
+                                style={{ color: 'lightblue', fontSize: 'small' }}
                             />{' '}
                             Notifications{' '}
                         </li>
@@ -197,7 +197,7 @@ export const ChanelBar = () => {
                             <DeleteOutlined
                                 style={{ color: 'red', fontSize: 'small' }}
                             />{' '}
-                            Supprimer serveur{' '}
+                            Supprimer le serveur{' '}
                         </li>
                     ),
                     key: '6',

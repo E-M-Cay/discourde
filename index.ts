@@ -11,7 +11,6 @@ import AppDataSource from './db/AppDataSource';
 import { Channel } from './entities/Channel';
 import { User } from './entities/User';
 
-
 dotenv.config();
 
 const app: Express = express(),
@@ -29,7 +28,6 @@ interface userStatus {
     status: string;
     socketId: string;
 }
-
 
 interface Message {
     channel: number;
@@ -104,7 +102,17 @@ interface ISocket extends Socket {
     user_id?: number;
 }
 
+io.use((socket: ISocket, next) => {
+    const token = socket.handshake.auth?.token;
+    if (!token) return;
+    next();
+});
+
 io.on('connection', (socket: ISocket) => {
+    const token = socket.handshake.auth.token;
+
+    //méthode decodeToken+return user_id
+
     console.log('connection');
     socket.username = 'user#' + Math.floor(Math.random() * 999999);
     socket.join('test');
@@ -115,18 +123,20 @@ io.on('connection', (socket: ISocket) => {
     });
 
     socket.on('message', async (content: Message) => {
+        console.log('fdgdfdf');
 
-        console.log("fdgdfdf");
-
-        const decoded: any = jwt.verify(content.token, process.env.SECRET_TOKEN || '');
+        const decoded: any = jwt.verify(
+            content.token,
+            process.env.SECRET_TOKEN || ''
+        );
 
         // On ajoute l'utilisateur à la requête
         const user_id: string = decoded.user.id;
-        const user: any = await userRepository.findOneBy({
+        const user = await userRepository.findOneBy({
             id: Number(user_id),
         });
 
-        
+        if (!user) return;
 
         // const userId = Number(user_id);
 
@@ -136,23 +146,23 @@ io.on('connection', (socket: ISocket) => {
 
         if (channel && user) {
             try {
-                let time: Date = new Date((new Date()).getTime());
-                const channel_message: any = 
-                    ChannelMessageRepository.create({
-                        channel: channel,
-                        content: content.content,
-                        send_time: time,
-                    });
+                let time: string = new Date()
+                    .toISOString()
+                    .slice(0, 19)
+                    .replace('T', ' ');
+                const channel_message: any = ChannelMessageRepository.create({
+                    channel: channel,
+                    content: content.content,
+                    send_time: time,
+                    author: user,
+                });
                 ChannelMessageRepository.save(channel_message);
-                io.emit(`message`, content);
+                io.emit(`message:${channel.id}`, content);
             } catch (e) {
                 console.log(e);
             }
         }
-    
-        
     });
-
 
     socket.on('peerId', (data: { peer_id: string; user_id: number }) => {
         socket.peer_id = data.peer_id;

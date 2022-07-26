@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import 'antd/dist/antd.css';
 import fake from '../mockMessage';
 import { MessageItem } from './MessageItem';
 import axios from 'axios';
 import { useAppSelector } from '../redux/hooks';
+import { PeerSocketContext } from '../context/PeerSocket';
 const Message = () => {
+    const { socket } = useContext(PeerSocketContext);
     const activeChannel = useAppSelector(
         (state) => state.userReducer.activeChannel
     );
@@ -27,14 +29,27 @@ const Message = () => {
                     },
                 })
                 .then((res) => {
-                    setMessages(res.data)
+                    setMessages(res.data);
                     console.log(res.data, 'data');
                 });
         }
     }, [activeChannel]);
+
+    useEffect(() => {
+        socket?.on(`message:${activeChannel}`, receiveMessage);
+
+        return () => {
+            socket?.off(`message:${activeChannel}`, receiveMessage);
+        };
+    }, [socket, activeChannel]);
+
+    const receiveMessage = (message: Message) => {
+        setMessages([...messages, message]);
+    };
+
     return (
         <div className='message'>
-            {messages?.map((fake: any, i: any) => (
+            {messages?.map((fake, i: number) => (
                 <MessageItem obj={fake} key={i} />
             ))}
         </div>

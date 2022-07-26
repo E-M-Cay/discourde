@@ -156,7 +156,10 @@ router.post(
                 id: req.body.channel_id,
             });
             const content = req.body.content;
-            const date = Date.now();
+            const date = new Date()
+                .toISOString()
+                .slice(0, 19)
+                .replace('T', ' ');
 
             if (!channel) return res.status(400).send('Error server not found');
 
@@ -188,7 +191,7 @@ router.put('/update_message/', isAuth, async (req: IRequest, res: Response) => {
             id: req.body.message_id,
         });
         const content = req.body.content;
-        const date = Date.now();
+        const date = Date.now().toLocaleString();
 
         if (!message) return res.status(400).send('Error server not found');
 

@@ -19,7 +19,7 @@ export class ChannelMessage {
     content: string;
 
     @Column({ type: 'datetime', nullable: false })
-    send_time: Date;
+    send_time: string;
 
     @ManyToOne(() => Channel, (channel) => channel.messages, {
         onDelete: 'CASCADE',

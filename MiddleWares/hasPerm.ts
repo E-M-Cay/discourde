@@ -16,12 +16,12 @@ import { Permission } from '../entities/Permission';
 import { RolePermission } from '../entities/RolePermission';
 
 const userRepository = AppDataSource.getRepository(User);
-const serverRepository = AppDataSource.getRepository(Server)
-const serverUserRepository = AppDataSource.getRepository(ServerUser)
-const serverUserRoleRepository = AppDataSource.getRepository(ServerUserRole)
-const roleRepository = AppDataSource.getRepository(Role)
-const rolePermissionRepository = AppDataSource.getRepository(RolePermission)
-const permissionRepository = AppDataSource.getRepository(Permission)
+const serverRepository = AppDataSource.getRepository(Server);
+const serverUserRepository = AppDataSource.getRepository(ServerUser);
+const serverUserRoleRepository = AppDataSource.getRepository(ServerUserRole);
+const roleRepository = AppDataSource.getRepository(Role);
+const rolePermissionRepository = AppDataSource.getRepository(RolePermission);
+const permissionRepository = AppDataSource.getRepository(Permission);
 
 interface IJWT extends jwt.JwtPayload {
     id?: string;
@@ -29,46 +29,51 @@ interface IJWT extends jwt.JwtPayload {
 
 // Middleware : sert à intercepter la requête : Pour auth : on va regarder si on a un token et s'il est valide on autorise la requête suivante, sinon on envoie une erreur
 
-
-
 module.exports = async function (
     req: IRequest,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
 ) {
-    const action = req.action
-    const user_id = req.id
-    const server_id = req.server_id
+    const action = req.action;
+    const user_id = req.id;
+    const server_id = req.server_id;
 
     const permission_list = await permissionRepository.find({
-        relations: ["roles", "roles.role" , "roles.role.users" , "roles.role.users.user", "roles.role.users.user.user", "roles.role.users.user.server"],
-        where:{
-            roles:{
-                role:{
-                    users:{
-                        user:{
-                            user:{
-                                id: user_id
+        relations: [
+            'roles',
+            'roles.role',
+            'roles.role.users',
+            'roles.role.users.user',
+            'roles.role.users.user.user',
+            'roles.role.users.user.server',
+        ],
+        where: {
+            roles: {
+                role: {
+                    users: {
+                        user: {
+                            user: {
+                                id: user_id,
                             },
-                            server:{
-                                id: server_id
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    })
+                            server: {
+                                id: server_id,
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
 
-    console.log(permission_list)
-    
-    for(const permission of permission_list){
-        console.log(permission)
-        if(permission.id == action){
-            next()
-            break
+    //console.log(permission_list);
+
+    for (const permission of permission_list) {
+        //console.log(permission)
+        if (permission.id == action) {
+            next();
+            break;
         }
     }
 
-    next()
+    next();
 };

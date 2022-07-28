@@ -77,7 +77,7 @@ const App = () => {
             socket?.off('username', updateUsername);
             socket?.off('connect', onConnection);
         };
-    }, [socket, onConnection, updateUsername, dispatch]);
+    }, [socket, onConnection, updateUsername, dispatch, connectSocket]);
 
     const onChangeHandler = (
         e: React.ChangeEvent<HTMLInputElement>,
@@ -139,6 +139,7 @@ const App = () => {
     // );
     return (
         <>
+            <VocalChannel />
             <Modal
                 title='Basic Modal'
                 visible={isModalVisible}
@@ -148,7 +149,6 @@ const App = () => {
                     <div>{message}</div>
                     <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
                     <button onClick={fetchMessage}>Fetch message</button>
-                    <VocalChannel />
                     <>
                         <form onSubmit={(e) => onSubmitRegister(e)}>
                             <div>Register</div>

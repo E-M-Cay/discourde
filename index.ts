@@ -120,7 +120,7 @@ io.use((socket: ISocket, next) => {
 io.on('connection', (socket: ISocket) => {
     const token = socket.handshake.auth.token;
 
-    console.log('connection');
+    //console.log('connection');
     socket.username = 'user#' + Math.floor(Math.random() * 999999);
     socket.join('test');
 
@@ -172,7 +172,7 @@ io.on('connection', (socket: ISocket) => {
             .to('test')
             .emit('hello', { socketId: socket.id, peer_id: data.peer_id });
         const toto = get_user_status_list([]);
-        console.log(toto);
+        //console.log(toto);
         socket.emit('users', Array.from(toto));
     });
 
@@ -198,6 +198,7 @@ io.on('connection', (socket: ISocket) => {
     });
 
     socket.on('joinvocalchannel', (id: number) => {
+        console.log('join vocal:', id);
         socket.broadcast.emit(`joiningvocalchannel:${id}`, {
             user: socket.user_id,
             peer_id: socket.peer_id,
@@ -212,7 +213,7 @@ function get_user_status_list(user_id_list: number[]) {
             : user_id_list;
     let res = new Map<number, number>();
     user_id_list.forEach((user_id) => {
-        console.log(user_id);
+        //console.log(user_id);
         res.set(user_id, get_user_status(user_id) as number);
     });
     console.log(res);

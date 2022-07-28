@@ -48,7 +48,7 @@ router.get('/list', isAuth, hasPerm, async (req: IRequest, res: Response) => {
             return serv;
         })
     );
-    console.log(tempList[0]);
+    //console.log(tempList[0]);
     return res.send(tempList);
 });
 

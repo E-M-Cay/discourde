@@ -53,6 +53,9 @@ export const ChanelBar = () => {
     const serverName: string = 'TEEEST SERVEUR';
     const [vocalChannelList, setVocalChannelList] = useState<Channel[]>();
     const [textChannelList, setTextChannelList] = useState<Channel[]>();
+    const activeVocalChannel = useAppSelector(
+        (state) => state.userReducer.activeVocalChannel
+    );
     let micro: boolean = true;
 
     interface Channel {
@@ -84,9 +87,12 @@ export const ChanelBar = () => {
     };
     const onVocalChannelClick = useCallback(
         (id: number) => {
+            console.log(id, activeVocalChannel);
+            if (activeVocalChannel === id) return;
+            dispatch(setActiveVocalChannel(id));
             socket?.emit('joinvocalchannel', id);
         },
-        [socket]
+        [socket, activeVocalChannel]
     );
 
     const [stateMic, setmicState] = useState(true);

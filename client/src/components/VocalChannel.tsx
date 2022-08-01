@@ -132,12 +132,11 @@ const VocalChannel = () => {
     };*/
 
     useEffect(() => {
-        console.log('use pipi', activeVocalChannel);
         socket?.on(`joiningvocalchannel:${activeVocalChannel}`, hello);
         return () => {
             socket?.off(`joiningvocalchannel:${activeVocalChannel}`, hello);
         };
-    }, [activeVocalChannel, socket, activeCalls, hello, peer]);
+    }, [activeVocalChannel, socket, hello, peer]);
 
     useEffect(() => {
         activeCalls.forEach((call) => call.close());

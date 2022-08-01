@@ -135,8 +135,7 @@ export const ChanelBar = () => {
             });
     };
 
-    //get User id from dispach
-    const userId = useAppSelector((state) => state.userReducer.user_id);
+    //function joinChannel with axios request
 
     //function joinChannel with axios request
     const joinServer = () => {
@@ -274,19 +273,6 @@ export const ChanelBar = () => {
                     />
                     <input type='submit' value='Create' />
                 </form>
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        joinServer();
-                    }}>
-                    <input
-                        type='number'
-                        defaultValue={channelName}
-                        onChange={(e) => setServerId(Number(e.target.value))}
-                        placeholder='Enter server id'
-                    />
-                    <input type='submit' value='Create' />
-                </form>
             </Modal>
 
             <Dropdown overlay={menu} trigger={['click']}>
@@ -346,7 +332,7 @@ export const ChanelBar = () => {
                                         <>
                                             <br />
                                             <BorderlessTableOutlined className='activeChannel' />
-                                            {userId}
+                                            {}
                                         </>
                                     )}
                                 </li>

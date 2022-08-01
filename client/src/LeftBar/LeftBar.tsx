@@ -8,6 +8,7 @@ import { Image, Typography, Tooltip } from 'antd';
 import { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
+import { useAppSelector } from '../redux/hooks';
 
 interface ServerResponse {
     id: number;
@@ -35,7 +36,28 @@ export const LeftBar = (props: {
     //             })
     // }, []);
 
+    const [channelName, setChannelName] = useState('');
+    const userId = useAppSelector((state) => state.userReducer.user_id);
+
+    const joinServer = () => {
+        axios
+            .post(
+                '/server/add_user',
+                { server_id: serverId },
+                {
+                    headers: {
+                        access_token: localStorage.getItem('token') as string,
+                    },
+                }
+            )
+            .then((res) => {
+                console.log(res, 'gdhdhdhdg');
+                // dispatch(setActiveChannel(id));
+            });
+    };
+
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [serverId, setServerId] = useState(0);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -100,6 +122,19 @@ export const LeftBar = (props: {
                         defaultValue={serverLogo}
                         onChange={(e) => setServerLogo(e.target.value)}
                         placeholder='Enter server logo'
+                    />
+                    <input type='submit' value='Create' />
+                </form>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        joinServer();
+                    }}>
+                    <input
+                        type='number'
+                        defaultValue={channelName}
+                        onChange={(e) => setServerId(+e.target.value)}
+                        placeholder='Enter server id'
                     />
                     <input type='submit' value='Create' />
                 </form>

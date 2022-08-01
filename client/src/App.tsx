@@ -42,6 +42,10 @@ const App = () => {
   //   setIsModalVisible(true);
   // };
 
+  const verifyAndRefreshToken = (tk: string) => {
+
+  }
+
   const onConnection = useCallback(() => {
     console.log("socket con");
     socket?.emit("connected", socket.id);
@@ -61,7 +65,10 @@ const App = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token && !socket) connectSocket(token);
+        if (token && !socket) {
+          // verifyAndRefreshToken(token);
+          connectSocket(token);
+        }
         socket?.on('connect', onConnection);
         socket?.on('username', updateUsername);
         return () => {
@@ -244,7 +251,7 @@ const App = () => {
           </>
         </div>
       </Modal>
-      <Home />
+      <Home setTokenMissing={setIsModalVisible} />
     </>
   );
 };

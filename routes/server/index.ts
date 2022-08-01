@@ -13,6 +13,7 @@ import { VocalChannel } from '../../entities/VocalChannel';
 import { Channel } from '../../entities/Channel';
 
 const isAuth = require('../../MiddleWares/isAuth');
+const hasPerm = require('../../MiddleWares/hasPerm');
 
 const UserRepository = AppDataSource.getRepository(User);
 const ServerRepository = AppDataSource.getRepository(Server);
@@ -20,7 +21,7 @@ const vocalChannelRepository = AppDataSource.getRepository(VocalChannel);
 const channelRepository = AppDataSource.getRepository(Channel);
 const ServerUserRepository = AppDataSource.getRepository(ServerUser);
 
-router.get('/list', isAuth, async (req: IRequest, res: Response) => {
+router.get('/list', isAuth, hasPerm, async (req: IRequest, res: Response) => {
     const user = await UserRepository.findOne({
         where: {
             id: req.id,
@@ -47,7 +48,7 @@ router.get('/list', isAuth, async (req: IRequest, res: Response) => {
             return serv;
         })
     );
-    console.log(tempList[0]);
+    //console.log(tempList[0]);
     return res.send(tempList);
 });
 
@@ -123,21 +124,17 @@ router.put('/update_server', isAuth, async (req: IRequest, res: Response) => {
     return res.status(400).send('Wrong arguments');
 });
 
-router.delete(
-    '/delete_server/:id',
-    async (req: IRequest, res: Response) => {
-        const server_id = Number(req.params.id);
-        if (server_id == NaN)
-            return res.status(400).send('Error server not found');
+router.delete('/delete_server/:id', async (req: IRequest, res: Response) => {
+    const server_id = Number(req.params.id);
+    if (server_id == NaN) return res.status(400).send('Error server not found');
 
-        try {
-            await ServerRepository.delete(server_id);
-            return res.status(200).send('Server Successfully deleted');
-        } catch (error) {
-            return res.status(400).send(error);
-        }
+    try {
+        await ServerRepository.delete(server_id);
+        return res.status(200).send('Server Successfully deleted');
+    } catch (error) {
+        return res.status(400).send(error);
     }
-);
+});
 
 router.get('/list_user/:id', isAuth, async (req: IRequest, res: Response) => {
     const server_id = Number(req.params.id);
@@ -158,26 +155,35 @@ router.get('/list_user/:id', isAuth, async (req: IRequest, res: Response) => {
 });
 
 router.post('/add_user', isAuth, async (req: IRequest, res: Response) => {
-    const user = await UserRepository.findOneBy({ id: req.id });
-    if (!user) return res.status(404).send('Error');
+    try {
+        const user = await UserRepository.findOneBy({ id: req.id });
+        if (!user) return res.status(404).send('Error');
 
-    if (!('server_id' in req.body) && Number(req.body.server_id) != NaN)
-        return res.status(404).send('Error');
+        if (!('server_id' in req.body) && Number(req.body.server_id) == NaN)
+            return res.status(404).send('Error');
 
-    const server = await ServerRepository.findOneBy({
-        id: Number(req.body.server_id),
-    });
-    if (!server) return res.status(404).send('Error');
+        const server = await ServerRepository.findOneBy({
+            id: Number(req.body.server_id),
+        });
+        if (!server) return res.status(404).send('Error');
+        const existing = await ServerUserRepository.findOneBy({
+            user: user,
+            server: server,
+        });
+        if (existing) return res.status(200).send('Server already joined');
 
-    const serverUser = ServerUserRepository.create({
-        user: user,
-        server: server,
-        nickname: user.username,
-    });
+        const serverUser = ServerUserRepository.create({
+            user: user,
+            server: server,
+            nickname: user.username,
+        });
 
-    await ServerUserRepository.save(serverUser);
+        await ServerUserRepository.save(serverUser);
+    } catch (e) {
+        res.status(401).send({ error: e });
+    }
 
-    return res.status(400).send(serverUser);
+    return res.status(201).send('successfully joined');
 });
 
 router.delete(

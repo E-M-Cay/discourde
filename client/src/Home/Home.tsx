@@ -33,7 +33,7 @@ export const Home = () => {
     }, [token]);
 
     const getServers = useCallback(() => {
-        if (servers.length === 0 && !ignore && token) {
+        if (!ignore && token) {
             axios
                 .get('server/list', {
                     headers: {
@@ -41,6 +41,10 @@ export const Home = () => {
                     },
                 })
                 .then((res) => {
+                    if (res.data.length === 0) {
+                        console.log('no servers');
+                        return;
+                    }
                     console.log(res.data[0], 'data');
                     setServers(res.data);
                     setActiveServer(res.data[0].server.id);

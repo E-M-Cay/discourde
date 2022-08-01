@@ -129,18 +129,34 @@ router.get(
     isAuth,
     async (req: IRequest, res: Response) => {
         const channel_id = Number(req.params.channel_id);
-        if (channel_id == NaN)
+        /*if (channel_id == NaN)
             return res.status(400).send('Error server not found');
         const channel = await ChannelRepository.findOneBy({ id: channel_id });
         if (channel == null)
-            return res.status(400).send('Error server not found');
+            return res.status(400).send('Error server not found');*/
 
         try {
-            const message_list = await ChannelMessageRepository.findBy({
-                channel: channel,
+            const message_list = await ChannelMessageRepository.find({
+                relations: ['author', 'channel'],
+                where: {
+                    channel: {
+                        id: channel_id,
+                    },
+                },
             });
 
-            return res.status(200).send(message_list);
+            const response = [];
+
+            for (let message of message_list) {
+                response.push({
+                    id: message.id,
+                    content: message.content,
+                    send_time: message.send_time,
+                    author: message.author.id,
+                });
+            }
+
+            return res.status(200).send(response);
         } catch (error) {
             return res.status(400).send(error);
         }

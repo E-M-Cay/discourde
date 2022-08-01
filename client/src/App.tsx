@@ -42,15 +42,40 @@ const App = () => {
   //   setIsModalVisible(true);
   // };
 
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
-
   const onConnection = useCallback(() => {
     console.log("socket con");
     socket?.emit("connected", socket.id);
     connectPeer();
   }, [socket, connectPeer]);
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+    const updateUsername = useCallback(
+        (newUsername: string) => {
+            dispatch(setUsername(newUsername));
+        },
+        [dispatch]
+    );
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token && !socket) connectSocket(token);
+        socket?.on('connect', onConnection);
+        socket?.on('username', updateUsername);
+        return () => {
+            socket?.off('username', updateUsername);
+            socket?.off('connect', onConnection);
+        };
+    }, [socket, onConnection, updateUsername, dispatch, connectSocket]);
+
+    const onChangeHandler = (
+        e: React.ChangeEvent<HTMLInputElement>,
+        ref: React.MutableRefObject<string>
+    ) => {
+        ref.current = e.target.value;
+    };
 
   const fetchMessage = () => {
     if (!message) {
@@ -59,30 +84,19 @@ const App = () => {
     }
   };
 
-  const updateUsername = useCallback(
-    (newUsername: string) => {
-      dispatch(setUsername(newUsername));
-    },
-    [dispatch]
-  );
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token && !socket) connectSocket(token);
-    socket?.on("connect", onConnection);
-    socket?.on("username", updateUsername);
-    return () => {
-      socket?.off("username", updateUsername);
-      socket?.off("connect", onConnection);
-    };
-  }, [socket, onConnection, updateUsername, dispatch]);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token && !socket) connectSocket(token);
+  //   socket?.on("connect", onConnection);
+  //   socket?.on("username", updateUsername);
+  //   return () => {
+  //     socket?.off("username", updateUsername);
+  //     socket?.off("connect", onConnection);
+  //   };
+  // }, [socket, onConnection, updateUsername, dispatch]);
 
-  const onChangeHandler = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    ref: React.MutableRefObject<string>
-  ) => {
-    ref.current = e.target.value;
-  };
+
 
   const onSubmitRegister = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

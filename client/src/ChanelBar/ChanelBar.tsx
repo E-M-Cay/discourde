@@ -102,7 +102,6 @@ export const ChanelBar = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isFocused, setFocus] = useState(false);
   const [channelName, setChannelName] = useState("");
-  const [serverId, setServerId] = useState(0);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -139,22 +138,7 @@ export const ChanelBar = () => {
   const userId = useAppSelector((state) => state.userReducer.user_id);
 
   //function joinChannel with axios request
-  const joinServer = () => {
-    axios
-      .post(
-        "/server/add_user",
-        { server_id: serverId, id: userId },
-        {
-          headers: {
-            access_token: localStorage.getItem("token") as string,
-          },
-        }
-      )
-      .then((res) => {
-        console.log(res, "gdhdhdhdg");
-        // dispatch(setActiveChannel(id));
-      });
-  };
+
 
   const deleteServer = useCallback(() => {
     axios.delete(`/server/delete_server/${activeServer}`, {
@@ -270,15 +254,7 @@ export const ChanelBar = () => {
           />
           <input type="submit" value="Create" />
         </form>
-        <form onSubmit={(e) => joinServer()}>
-          <input
-            type="number"
-            defaultValue={channelName}
-            onChange={(e) => setServerId(+e.target.value)}
-            placeholder="Enter server id"
-          />
-          <input type="submit" value="Create" />
-        </form>
+        
       </Modal>
 
       <Dropdown overlay={menu} trigger={["click"]}>

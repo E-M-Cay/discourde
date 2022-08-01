@@ -159,6 +159,8 @@ router.post('/add_user', isAuth, async (req: IRequest, res: Response) => {
         const user = await UserRepository.findOneBy({ id: req.id });
         if (!user) return res.status(404).send('Error');
 
+        console.log(req.id, 'req.id');
+
         if (!('server_id' in req.body) && Number(req.body.server_id) == NaN)
             return res.status(404).send('Error');
 

@@ -143,7 +143,7 @@ export const ChanelBar = () => {
         axios
             .post(
                 '/server/add_user',
-                { server_id: serverId, id: userId },
+                { server_id: serverId },
                 {
                     headers: {
                         access_token: localStorage.getItem('token') as string,
@@ -274,11 +274,15 @@ export const ChanelBar = () => {
                     />
                     <input type='submit' value='Create' />
                 </form>
-                <form onSubmit={(e) => joinServer()}>
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        joinServer();
+                    }}>
                     <input
                         type='number'
                         defaultValue={channelName}
-                        onChange={(e) => setServerId(+e.target.value)}
+                        onChange={(e) => setServerId(Number(e.target.value))}
                         placeholder='Enter server id'
                     />
                     <input type='submit' value='Create' />

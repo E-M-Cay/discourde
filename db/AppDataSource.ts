@@ -11,16 +11,16 @@ const AppDataSource = new DataSource({
     migrations: ['migrations/*{.js,.ts}'],
 });
 
-/*const AppDataSource = new DataSource({
-    type: 'mariadb',
-    host: 'localhost',
-    port: 3306,
-    username: 'root',
-    password: '',
-    database: 'discourde',
-    entities: ['entities/*{.js,.ts}'],
-    migrations: ['migrations/*{.js,.ts}'],
-});*/
+// const AppDataSource = new DataSource({
+//     type: 'mariadb',
+//     host: 'localhost',
+//     port: 3306,
+//     username: 'root',
+//     password: '',
+//     database: 'discourde',
+//     entities: ['entities/*{.js,.ts}'],
+//     migrations: ['migrations/*{.js,.ts}'],
+// });
 
 AppDataSource.initialize()
     .then(() => {

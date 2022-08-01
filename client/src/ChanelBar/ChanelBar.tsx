@@ -278,7 +278,7 @@ export const ChanelBar = () => {
                         type='number'
                         defaultValue={channelName}
                         onChange={(e) => setServerId(+e.target.value)}
-                        placeholder='Enter server name'
+                        placeholder='Enter server id'
                     />
                     <input type='submit' value='Create' />
                 </form>
@@ -334,9 +334,21 @@ export const ChanelBar = () => {
                             vocalChannelList.map((chan) => (
                                 <li
                                     onClick={() => onVocalChannelClick(chan.id)}
-                                    className='panelContent'>
+                                    className='panelContent'
+                                    >
+                                        {activeVocalChannel === chan.id && (
+                                            <>
+                                            <br />
+                                            <BorderlessTableOutlined
+                                                className='activeChannel'
+                                            />
+                                            
+                                            </>
+                                        )
+                                            }
                                     {' '}
                                     <SoundOutlined /> {chan.name}
+
                                 </li>
                             ))}
                     </Panel>

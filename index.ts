@@ -198,11 +198,15 @@ io.on('connection', (socket: ISocket) => {
     });
 
     socket.on('joinvocalchannel', (id: number) => {
-        console.log('join vocal:', id);
+        console.log('join vocal:', id, socket.id);
         socket.broadcast.emit(`joiningvocalchannel:${id}`, {
             user: socket.user_id,
             peer_id: socket.peer_id,
         });
+    });
+
+    socket.on('vocalchannelchange', (truc: string) => {
+        console.log(truc);
     });
 });
 

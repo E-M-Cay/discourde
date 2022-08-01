@@ -4,6 +4,7 @@ import Peer from 'peerjs';
 interface UserState {
     rooms: string[];
     username: string;
+    serverUsername?: string;
     token?: string;
     activeServer?: number;
     user_id?: number;
@@ -28,6 +29,9 @@ export const userSlice = createSlice({
         },
         setUsername: (state, action: PayloadAction<string>) => {
             state.username = action.payload;
+        },
+        setServerUsername: (state, action: PayloadAction<string>) => {
+            state.serverUsername = action.payload;
         },
         setToken: (state, action: PayloadAction<string>) => {
             state.token = action.payload;
@@ -54,6 +58,7 @@ export const {
     setActiveServer,
     setUserId,
     setActiveChannel,
+    setServerUsername,
     setActiveVocalChannel,
 } = userSlice.actions;
 

@@ -4,16 +4,18 @@ import { PeerSocketContext } from '../context/PeerSocket';
 import { useAppSelector } from '../redux/hooks';
 
 interface UserInfo {
-    socketId: string;
+    socketId: number;
     id: string;
 }
 
-const VocalChannel = (props: { channelName: string }) => {
-    const { peer, socket } = useContext(PeerSocketContext);
-    const { channelName } = props;
-    const user = useAppSelector((state) => state.userReducer);
+const VocalChannel = () => {
+    const { peer, socket, connectPeer } = useContext(PeerSocketContext);
+    const activeVocalChannel = useAppSelector(
+        (state) => state.userReducer.activeVocalChannel
+    );
     const [userList, setUserList] = useState<UserInfo[]>([]);
     const streamRef = useRef<MediaStream>();
+    const [activeCalls, setActiveCalls] = useState<MediaConnection[]>([]);
 
     const toggleMicrophone = async () => {
         if (!streamRef.current?.active) {
@@ -21,7 +23,7 @@ const VocalChannel = (props: { channelName: string }) => {
                 .getUserMedia({ audio: true })
                 .then((stream) => {
                     stream.getAudioTracks().forEach((track) => {
-                        console.log(track.getSettings());
+                        console.log(streamRef.current);
                     });
                     streamRef.current = stream;
                 })
@@ -40,23 +42,25 @@ const VocalChannel = (props: { channelName: string }) => {
     };
 
     const openPeer = useCallback(
-        (id: string) => {
-            console.log('peerid:', id);
-            socket?.emit('peerId', { id, user_id: user.user_id });
+        (peer_id: string) => {
+            console.log('peerid:', peer_id);
+            peer?.on('call', (_call) =>
+                console.log('fdsqljqdsùsdqjlkqsdjqlskdj')
+            );
+            socket?.emit('peerId', { peer_id });
         },
         [socket]
     );
 
     const callEvent = useCallback(async (call: MediaConnection) => {
-        console.log('call');
         const audioNode = new Audio();
-        // eslint-disable-next-line no-restricted-globals
-        //if (confirm(`Call incoming`)) {
+
         if (!streamRef.current?.active) {
             await toggleMicrophone();
         }
         call.answer(streamRef.current as MediaStream);
 
+        setActiveCalls((prevState) => [...prevState, call]);
         call.on('stream', (stream) => {
             audioNode.srcObject = stream;
             console.log('receiving stream 2');
@@ -80,8 +84,9 @@ const VocalChannel = (props: { channelName: string }) => {
 
     const callUser = useCallback(
         async (id: string) => {
+            console.log('calling:', id, peer?.id);
             const audioNode = new Audio();
-            console.log(id);
+            console.log(streamRef.current?.getTracks());
             const call = peer?.call(id, streamRef.current as MediaStream);
 
             call?.on('stream', (stream) => {
@@ -89,55 +94,74 @@ const VocalChannel = (props: { channelName: string }) => {
                 console.log('receiving stream 1');
                 console.log(stream);
                 audioNode.play();
+                setActiveCalls((prevState) => [...prevState, call]);
             });
 
             call?.on('close', () => {
+                console.log('close pipi');
                 audioNode.remove();
             });
+            //call?.close();
+
+            console.log(call, 'call');
         },
         [peer]
     );
 
     const hello = useCallback(
-        async (data: { socketId: string; id: string }) => {
+        async (data: { user_id: number; peer_id: string }) => {
             console.log('hello');
-            setUserList((prevUserList) => [
-                ...prevUserList,
-                { socketId: data.socketId, id: data.id },
-            ]);
+            console.log('peer id:', data.peer_id);
+
             if (!streamRef.current?.active) {
                 await toggleMicrophone();
             }
-            callUser(data.id);
+            callUser(data.peer_id);
+            /*setUserList((prevState) => [
+                ...prevState,
+                { socketId: data.user_id, id: data.peer_id },
+            ]);*/
         },
         [callUser]
     );
 
-    const userDisconnected = (id: string) => {
+    /*const userDisconnected = (id: string) => {
         setUserList((prevUserList) => {
             return prevUserList.filter((u) => u.socketId !== id);
         });
-    };
+    };*/
+
+    useEffect(() => {
+        socket?.on(`joiningvocalchannel:${activeVocalChannel}`, hello);
+        return () => {
+            socket?.off(`joiningvocalchannel:${activeVocalChannel}`, hello);
+        };
+    }, [activeVocalChannel, socket, hello, peer]);
+
+    useEffect(() => {
+        activeCalls.forEach((call) => call.close());
+    }, [activeVocalChannel]);
 
     useEffect(() => {
         peer?.on('call', callEvent);
         peer?.on('open', openPeer);
-        socket?.on('hello', hello);
+        //peer?.on('call', (mddqs) => console.log('fdssdfsf'));
+        peer?.on('error', (e) => console.log(e));
+        console.log('my peer:', peer ? peer.id : 'none');
         socket?.on('users', receiveUsers);
-        socket?.on('disconnected', userDisconnected);
+        //socket?.on('disconnected', userDisconnected);
         return () => {
             peer?.off('call', callEvent);
             peer?.off('open', openPeer);
-            socket?.off('hello', hello);
             socket?.off('users', receiveUsers);
-            socket?.off('disconnected', userDisconnected);
+            //socket?.off('disconnected', userDisconnected);
         };
     }, [peer, socket, callEvent, openPeer, hello]);
 
     const displayUserList = () => {
         return userList.map((u) => {
             return (
-                <div>
+                <div key={u.id}>
                     {u.socketId}, {u.id}
                     <button onClick={() => callUser(u.id)}></button>
                 </div>
@@ -145,7 +169,7 @@ const VocalChannel = (props: { channelName: string }) => {
         });
     };
 
-    return <div>{displayUserList()}</div>;
+    return <div>{null}</div>;
 };
 
 export default VocalChannel;

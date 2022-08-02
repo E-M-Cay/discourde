@@ -3,6 +3,7 @@ import './App.css';
 import { PeerSocketContext } from './context/PeerSocket';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
+import { Input, Typography } from 'antd';
 import {
     joinRoomSuccess,
     setUsername,
@@ -12,6 +13,7 @@ import {
 import VocalChannel from './components/VocalChannel';
 import { Home } from './Home/Home';
 import { Modal } from 'antd';
+const { Title, Text } = Typography;
 
 interface UserInfo {
     username: string;
@@ -40,13 +42,7 @@ const App = () => {
     //   setIsModalVisible(true);
     // };
 
-    const handleOk = () => {
-        setIsModalVisible(false);
-    };
-
-    const handleCancel = () => {
-        setIsModalVisible(false);
-    };
+    const verifyAndRefreshToken = (tk: string) => {};
 
     const onConnection = useCallback(() => {
         console.log('socket con');
@@ -54,11 +50,8 @@ const App = () => {
         connectPeer();
     }, [socket, connectPeer]);
 
-    const fetchMessage = () => {
-        if (!message) {
-            console.log('axios');
-            axios.get(`/toto`).then((res) => setMessage(res.data));
-        }
+    const handleOk = () => {
+        setIsModalVisible(false);
     };
 
     const updateUsername = useCallback(
@@ -70,14 +63,17 @@ const App = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token && !socket) connectSocket(token);
+        if (token && !socket) {
+            // verifyAndRefreshToken(token);
+            connectSocket(token);
+        }
         socket?.on('connect', onConnection);
         socket?.on('username', updateUsername);
         return () => {
             socket?.off('username', updateUsername);
             socket?.off('connect', onConnection);
         };
-    }, [socket, onConnection, updateUsername, dispatch]);
+    }, [socket, onConnection, updateUsername, dispatch, connectSocket]);
 
     const onChangeHandler = (
         e: React.ChangeEvent<HTMLInputElement>,
@@ -85,6 +81,24 @@ const App = () => {
     ) => {
         ref.current = e.target.value;
     };
+
+    const fetchMessage = () => {
+        if (!message) {
+            console.log('axios');
+            axios.get(`/toto`).then((res) => setMessage(res.data));
+        }
+    };
+
+    // useEffect(() => {
+    //   const token = localStorage.getItem("token");
+    //   if (token && !socket) connectSocket(token);
+    //   socket?.on("connect", onConnection);
+    //   socket?.on("username", updateUsername);
+    //   return () => {
+    //     socket?.off("username", updateUsername);
+    //     socket?.off("connect", onConnection);
+    //   };
+    // }, [socket, onConnection, updateUsername, dispatch]);
 
     const onSubmitRegister = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -139,53 +153,84 @@ const App = () => {
     // );
     return (
         <>
+            <VocalChannel />
             <Modal
-                title='Basic Modal'
                 visible={isModalVisible}
-                onOk={handleOk}
-                onCancel={handleCancel}>
+                closable={false}
+                footer={null}
+                // style={{backgroundColor: '#535353'}}
+            >
                 <div className='App'>
-                    <div>{message}</div>
+                    {/* <div>{message}</div>
                     <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
                     <button onClick={fetchMessage}>Fetch message</button>
-                    <VocalChannel channelName='toto' />
+                    <VocalChannel channelName='toto' /> */}
                     <>
                         <form onSubmit={(e) => onSubmitRegister(e)}>
-                            <div>Register</div>
-                            <label>
-                                email
-                                <input
-                                    type='text'
+                            <Title level={3}>Register</Title>
+                            <div
+                                style={{
+                                    maxWidth: '80%',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    margin: 'auto',
+                                }}>
+                                <Text>email</Text>
+
+                                <Input
+                                    style={{ maxWidth: '50%' }}
+                                    placeholder='email'
                                     id='registerEmail'
                                     onChange={(e) =>
                                         onChangeHandler(e, registerEmailRef)
                                     }
                                 />
-                            </label>
-                            <label>
-                                password
-                                <input
-                                    type='password'
+                            </div>
+                            <div
+                                style={{
+                                    paddingTop: '10px',
+                                    maxWidth: '80%',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    margin: 'auto',
+                                }}>
+                                <Text>password</Text>
+                                <Input.Password
+                                    style={{ maxWidth: '50%' }}
+                                    placeholder='password'
                                     id='registerPassword'
                                     onChange={(e) =>
                                         onChangeHandler(e, registerPasswordRef)
                                     }
-                                />
-                            </label>
-                            <label>
-                                username
-                                <input
-                                    type='text'
+                                />{' '}
+                            </div>
+                            <div
+                                style={{
+                                    paddingTop: '10px',
+                                    maxWidth: '80%',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    margin: 'auto',
+                                }}>
+                                <Text>username</Text>
+
+                                <Input
+                                    placeholder='username'
+                                    style={{
+                                        paddingTop: '10px',
+                                        maxWidth: '50%',
+                                    }}
                                     id='registerUsername'
                                     onChange={(e) =>
                                         onChangeHandler(e, registerUsernameRef)
                                     }
                                 />
-                            </label>
+                            </div>
                             <input type='submit' />
                         </form>
                         <form onSubmit={(e) => onSubmitLogin(e)}>
-                            <div>Login</div>
+                            <Title level={3}>Login</Title>
+
                             <label>
                                 email
                                 <input
@@ -206,11 +251,11 @@ const App = () => {
                                     }></input>
                             </label>
                             <input type='submit' />
-                        </form>
+                        </form>{' '}
                     </>
                 </div>
             </Modal>
-            <Home />
+            <Home setTokenMissing={setIsModalVisible} />
         </>
     );
 };

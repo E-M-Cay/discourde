@@ -29,13 +29,14 @@ import {
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import Sider from 'antd/lib/layout/Sider';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 //import chanelData from '../mock1';
 import './ChanelBar.css';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setActiveChannel } from '../redux/userSlice';
+import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
 import { act } from 'react-dom/test-utils';
+import { PeerSocketContext } from '../context/PeerSocket';
 
 const { Panel } = Collapse;
 
@@ -43,12 +44,20 @@ export const ChanelBar = () => {
     const activeServer = useAppSelector(
         (state) => state.userReducer.activeServer
     );
+    const activeChannel = useAppSelector(
+        (state) => state.userReducer.activeChannel
+    );
+    const { peer, socket } = useContext(PeerSocketContext);
     const dispatch = useAppDispatch();
     const headerTxt: string = 'SALONS TEXTUELS';
     const headerVoc: string = 'SALONS VOCAUX';
     const serverName: string = 'TEEEST SERVEUR';
     const [vocalChannelList, setVocalChannelList] = useState<Channel[]>();
     const [textChannelList, setTextChannelList] = useState<Channel[]>();
+    const activeVocalChannel = useAppSelector(
+        (state) => state.userReducer.activeVocalChannel
+    );
+
     let micro: boolean = true;
 
     interface Channel {
@@ -59,7 +68,6 @@ export const ChanelBar = () => {
     }
 
     useEffect(() => {
-        console.log('active server:', activeServer);
         if (activeServer)
             axios
                 .get(`/channel/list/${activeServer}`, {
@@ -70,6 +78,8 @@ export const ChanelBar = () => {
                 .then((res) => {
                     setVocalChannelList(res.data.vocal);
                     setTextChannelList(res.data.text);
+                    console.log(res.data.text[0]);
+                    dispatch(setActiveChannel(res.data.text[0].id));
                 });
     }, [activeServer]);
 
@@ -77,7 +87,15 @@ export const ChanelBar = () => {
     const onTextChannelClick = (id: number) => {
         dispatch(setActiveChannel(id));
     };
-    const onVocalChannelClick = (id: number) => {};
+    const onVocalChannelClick = useCallback(
+        (id: number) => {
+            console.log(id, activeVocalChannel);
+            if (activeVocalChannel === id) return;
+            dispatch(setActiveVocalChannel(id));
+            socket?.emit('joinvocalchannel', id);
+        },
+        [socket, activeVocalChannel]
+    );
 
     const [stateMic, setmicState] = useState(true);
     const [stateHead, setheadState] = useState(true);
@@ -85,6 +103,7 @@ export const ChanelBar = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isFocused, setFocus] = useState(false);
     const [channelName, setChannelName] = useState('');
+    const [serverId, setServerId] = useState(0);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -114,6 +133,26 @@ export const ChanelBar = () => {
             .then((res) => {
                 console.log(res, 'gdhdhdhdg');
                 setIsModalVisible(false);
+            });
+    };
+
+    //function joinChannel with axios request
+
+    //function joinChannel with axios request
+    const joinServer = () => {
+        axios
+            .post(
+                '/server/add_user',
+                { server_id: serverId },
+                {
+                    headers: {
+                        access_token: localStorage.getItem('token') as string,
+                    },
+                }
+            )
+            .then((res) => {
+                console.log(res, 'gdhdhdhdg');
+                // dispatch(setActiveChannel(id));
             });
     };
 
@@ -231,7 +270,7 @@ export const ChanelBar = () => {
                         type='text'
                         defaultValue={channelName}
                         onChange={(e) => setChannelName(e.target.value)}
-                        placeholder='Enter server name'
+                        placeholder='Enter channel name'
                     />
                     <input type='submit' value='Create' />
                 </form>
@@ -290,6 +329,13 @@ export const ChanelBar = () => {
                                     className='panelContent'>
                                     {' '}
                                     <SoundOutlined /> {chan.name}
+                                    {activeVocalChannel === chan.id && (
+                                        <>
+                                            <br />
+                                            <BorderlessTableOutlined className='activeChannel' />
+                                            {}
+                                        </>
+                                    )}
                                 </li>
                             ))}
                     </Panel>

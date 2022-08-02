@@ -58,8 +58,6 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
         if (process.env.NODE_ENV === 'production') {
             secure = true;
         }
-        peer?.destroy();
-        console.log('peer connecting');
 
         const newPeer = new Peer({
             config: {
@@ -76,13 +74,12 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
             port: peerPort,
             host: peerServerHost,
             path: '/',
-            debug: 1,
+            debug: 3,
             secure: secure,
         });
         setPeer(newPeer);
     };
 
-    useEffect(() => {}, [socket]);
     return (
         <PeerSocketContext.Provider
             value={{ peer, socket, connectPeer, connectSocket }}>

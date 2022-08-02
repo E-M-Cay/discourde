@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
 import { useAppSelector } from '../redux/hooks';
+import { setServers } from 'dns';
 
 interface ServerResponse {
     id: number;
@@ -36,6 +37,8 @@ export const LeftBar = (props: {
     //             })
     // }, []);
 
+    const { servers, setServers } = props;
+
     const [channelName, setChannelName] = useState('');
     const userId = useAppSelector((state) => state.userReducer.user_id);
 
@@ -51,8 +54,9 @@ export const LeftBar = (props: {
                 }
             )
             .then((res) => {
-                console.log(res, 'gdhdhdhdg');
-                // dispatch(setActiveChannel(id));
+                if (res.data.server) {
+                    setServers((prevState) => [...prevState, res.data.server]);
+                }
             });
     };
 

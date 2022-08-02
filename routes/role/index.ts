@@ -25,7 +25,9 @@ router.get('/list/:server_id', isAuth, async (req: IRequest, res: Response) => {
     if (server == null) return res.status(400).send('Error server not found');
 
     try {
-        const role_list = await RoleRepository.findBy({ server: server });
+        const role_list = await RoleRepository.findBy({
+            server: { id: server_id },
+        });
         return res.status(200).send(role_list);
     } catch (error) {
         return res.status(400).send(error);

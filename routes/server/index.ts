@@ -33,7 +33,9 @@ router.get('/list', isAuth, hasPerm, async (req: IRequest, res: Response) => {
 
     const list_server = await ServerUserRepository.find({
         where: {
-            user: user,
+            user: {
+                id: req.id,
+            },
         },
         relations: ['server'],
     });
@@ -42,7 +44,7 @@ router.get('/list', isAuth, hasPerm, async (req: IRequest, res: Response) => {
         list_server.map(async (serv) => {
             serv.server.channels = await channelRepository.find({
                 where: {
-                    server: serv.server,
+                    server: { id: serv.server.id },
                 },
             });
             return serv;
@@ -138,20 +140,26 @@ router.delete('/delete_server/:id', async (req: IRequest, res: Response) => {
 
 router.get('/list_user/:id', isAuth, async (req: IRequest, res: Response) => {
     const server_id = Number(req.params.id);
-    if (server_id == NaN) return res.status(404).send('Error');
-
-    const server = await ServerRepository.findOneBy({ id: server_id });
-    if (!server) return res.status(404).send('Error');
 
     const user_list = await ServerUserRepository.find({
         where: {
-            server: server,
+            server: {
+                id: server_id,
+            },
         },
-        relations: ['user'],
+        relations: {
+            user: true,
+        },
+        select: {
+            user: {
+                id: true,
+                username: true,
+            },
+        },
     });
 
-    console.log(user_list);
-    return res.status(400).send(user_list);
+    //console.log(user_list);
+    return res.status(201).send(user_list);
 });
 
 router.post('/add_user', isAuth, async (req: IRequest, res: Response) => {
@@ -169,8 +177,10 @@ router.post('/add_user', isAuth, async (req: IRequest, res: Response) => {
         });
         if (!server) return res.status(404).send('Error');
         const existing = await ServerUserRepository.findOneBy({
-            user: user,
-            server: server,
+            user: { id: req.id },
+            server: {
+                id: server.id,
+            },
         });
         if (existing) return res.status(200).send('Server already joined');
 
@@ -181,11 +191,11 @@ router.post('/add_user', isAuth, async (req: IRequest, res: Response) => {
         });
 
         await ServerUserRepository.save(serverUser);
+
+        return res.status(201).send({ server: serverUser });
     } catch (e) {
         res.status(401).send({ error: e });
     }
-
-    return res.status(201).send('successfully joined');
 });
 
 router.delete(

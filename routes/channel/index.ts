@@ -30,10 +30,10 @@ router.get('/list/:server_id', isAuth, async (req: IRequest, res: Response) => {
 
     try {
         const text_channel_list = await ChannelRepository.findBy({
-            server: server,
+            server: { id: server_id },
         });
         const vocal_channel_list = await VocalChannelRepository.findBy({
-            server: server,
+            server: { id: server_id },
         });
 
         return res

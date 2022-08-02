@@ -38,9 +38,9 @@ interface Message {
     token: string;
 }
 
-export let user_id_to_peer_id = new Map<number, string>();
-export let user_id_to_status = new Map<number, number>();
-export let user_id_to_vocal_channel = new Map<number, number>();
+global.user_id_to_peer_id = new Map<number, string>();
+global.user_id_to_status = new Map<number, number>();
+global.user_id_to_vocal_channel = new Map<number, number>();
 
 const user_status = new Map<number, string>();
 
@@ -165,8 +165,8 @@ io.on('connection', (socket: ISocket) => {
 
     socket.on('peerId', (data: { peer_id: string }) => {
         socket.peer_id = data.peer_id;
-        user_id_to_peer_id.set(socket.user_id as number, data.peer_id);
-        user_id_to_status.set(socket.user_id as number, 1);
+        global.user_id_to_peer_id.set(socket.user_id as number, data.peer_id);
+        global.user_id_to_status.set(socket.user_id as number, 1);
 
         socket
             .to('test')
@@ -181,20 +181,20 @@ io.on('connection', (socket: ISocket) => {
     });
 
     socket.on('disconnecting', (_reason) => {
-        user_id_to_peer_id.delete(socket.user_id as number);
-        user_id_to_status.delete(socket.user_id as number);
+        global.user_id_to_peer_id.delete(socket.user_id as number);
+        global.user_id_to_status.delete(socket.user_id as number);
 
         socket.to('test').emit('disconnected', socket.id);
     });
 
     socket.on('inactif', () => {
-        user_id_to_status.delete(socket.user_id as number);
-        user_id_to_status.set(socket.user_id as number, 2);
+        global.user_id_to_status.delete(socket.user_id as number);
+        global.user_id_to_status.set(socket.user_id as number, 2);
     });
 
     socket.on('dnd', () => {
-        user_id_to_status.delete(socket.user_id as number);
-        user_id_to_status.set(socket.user_id as number, 3);
+        global.user_id_to_status.delete(socket.user_id as number);
+        global.user_id_to_status.set(socket.user_id as number, 3);
     });
 
     socket.on('joinvocalchannel', (id: number) => {
@@ -213,7 +213,7 @@ io.on('connection', (socket: ISocket) => {
 function get_user_status_list(user_id_list: number[]) {
     user_id_list =
         user_id_list.length == 0
-            ? [...user_id_to_peer_id.keys()]
+            ? [...global.user_id_to_peer_id.keys()]
             : user_id_list;
     let res = new Map<number, number>();
     user_id_list.forEach((user_id) => {
@@ -225,7 +225,9 @@ function get_user_status_list(user_id_list: number[]) {
 }
 
 function get_user_status(user_id: number) {
-    return user_id_to_peer_id.has(user_id) ? user_id_to_status.get(user_id) : 0;
+    return global.user_id_to_peer_id.has(user_id)
+        ? global.user_id_to_status.get(user_id)
+        : 0;
 }
 
 const PermRepository = AppDataSource.getRepository(Permission);

@@ -27,6 +27,7 @@ export const Home = (props: any) => {
   useEffect(() => {
     console.log("change token ??");
     getServers();
+    console.log(window.location.pathname.substring(1));
     return () => {
       ignore = true;
     };

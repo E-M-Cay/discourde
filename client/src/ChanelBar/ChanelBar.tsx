@@ -100,6 +100,7 @@ export const ChanelBar = () => {
     const [stateHead, setheadState] = useState(true);
     const [stateMenu, setmenuState] = useState(true);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isModalVisibleInvitation, setIsModalVisibleInvitation] = useState(false);
     const [isFocused, setFocus] = useState(false);
     const [channelName, setChannelName] = useState('');
     const [serverId, setServerId] = useState(0);
@@ -114,6 +115,17 @@ export const ChanelBar = () => {
 
     const handleCancel = () => {
         setIsModalVisible(false);
+    };
+    const showModal2 = () => {
+        setIsModalVisibleInvitation(true);
+    };
+
+    const handleOk2 = () => {
+        setIsModalVisibleInvitation(false);
+    };
+
+    const handleCancel2 = () => {
+        setIsModalVisibleInvitation(false);
     };
 
     const createChannel = (e: React.FormEvent<HTMLFormElement>) => {
@@ -161,13 +173,18 @@ export const ChanelBar = () => {
         });
     }, [activeServer]);
 
+    const handleLinkCreation = () => {
+        const id: string = Math.random().toString(16).slice(2);
+        
+    }
+
     const menu = (
         <Menu
             className='menu'
             items={[
                 {
                     label: (
-                        <li>
+                        <li onClick={showModal2}>
                             <UserAddOutlined
                                 style={{ color: 'darkgrey', fontSize: 'small' }}
                             />{' '}
@@ -263,7 +280,9 @@ export const ChanelBar = () => {
                 title='Basic Modal'
                 visible={isModalVisible}
                 onOk={handleOk}
-                onCancel={handleCancel}>
+                onCancel={handleCancel}
+                style={{ backgroundColor: '#1F1F1F' }}
+                >
                 <form onSubmit={(e) => createChannel(e)}>
                     <input
                         type='text'
@@ -273,6 +292,15 @@ export const ChanelBar = () => {
                     />
                     <input type='submit' value='Create' />
                 </form>
+            </Modal>
+            <Modal
+                title='Basic Modal'
+                visible={isModalVisibleInvitation}
+                onOk={handleOk2}
+                onCancel={handleCancel2}
+                style={{ backgroundColor: '#1F1F1F' }}
+                >
+                <Button onClick={(e) => handleLinkCreation()} >créer lien</Button>
             </Modal>
 
             <Dropdown overlay={menu} trigger={['click']}>

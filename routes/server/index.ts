@@ -174,11 +174,10 @@ router.post('/add_user', isAuth, async (req: IRequest, res: Response) => {
 
         console.log(req.id, 'req.id');
 
-        if (!('server_id' in req.body) && Number(req.body.server_id) == NaN)
-            return res.status(404).send('Error');
+        if (!('uuid' in req.body)) return res.status(404).send('Error');
 
         const server = await ServerRepository.findOneBy({
-            id: Number(req.body.server_id),
+            link: req.body.uuid,
         });
         if (!server) return res.status(404).send('Error');
         const existing = await ServerUserRepository.findOneBy({
@@ -228,5 +227,11 @@ router.delete(
         }
     }
 );
+
+router.post('/link', isAuth, (req: IRequest, res, next) => {
+    ServerRepository.update(req.body.server, {
+        link: req.body.uuid,
+    });
+});
 
 module.exports = router;

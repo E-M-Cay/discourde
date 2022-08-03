@@ -27,7 +27,28 @@ export const Home = (props: any) => {
     useEffect(() => {
         console.log('change token ??');
         getServers();
+        console.log(window.location.pathname.substring(1));
+        if (window.location.pathname.substring(1) !== '') {
+            joinServer(window.location.pathname.substring(1));
+        }
     }, [token]);
+
+    const joinServer = (uuid: string) => {
+        axios
+            .post(
+                '/server/add_user',
+                { uuid },
+                {
+                    headers: {
+                        access_token: localStorage.getItem('token') as string,
+                    },
+                }
+            )
+            .then((res) => {
+                console.log(res, 'gdhdhdhdg');
+                // dispatch(setActiveChannel(id));
+            });
+    };
 
     const getServers = useCallback(() => {
         if (token) {

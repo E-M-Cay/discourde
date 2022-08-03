@@ -5,8 +5,40 @@ import { ChanelBar } from '../ChanelBar/ChanelBar';
 import chanelData from '../mock1';
 import { FriendPanel } from '../FriendPanel/FriendPanel';
 import { useAppSelector } from '../redux/hooks';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+
+interface ServerUser {
+    id: number;
+    nickname: string;
+    user: User;
+}
+
+interface User {
+    id: number;
+    status: number;
+    username: string;
+}
 
 export const Main = () => {
+    const [userList, setUserList] = useState<ServerUser[]>([]);
+    const activeServer = useAppSelector(
+        (state) => state.userReducer.activeServer
+    );
+
+    useEffect(() => {
+        if (activeServer)
+            axios
+                .get(`/server/list_user/${activeServer}`, {
+                    headers: {
+                        access_token: localStorage.getItem('token') as string,
+                    },
+                })
+                .then((res) => {
+                    setUserList(res.data);
+                });
+    }, [activeServer]);
+
     return (
         <Row
             style={{
@@ -22,7 +54,7 @@ export const Main = () => {
                 <Chat />
             </Col>
             <Col style={{ backgroundColor: 'grey' }} span={4}>
-                <StatusBar />
+                <StatusBar userList={userList} />
             </Col>
         </Row>
     );

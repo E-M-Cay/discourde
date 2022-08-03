@@ -146,6 +146,11 @@ router.get('/list_user/:id', isAuth, async (req: IRequest, res: Response) => {
             server: {
                 id: server_id,
             },
+            /*roles: {
+                role: {
+                    name: "persddsq"
+                }
+            }*/
         },
         relations: {
             user: true,

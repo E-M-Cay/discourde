@@ -44,14 +44,14 @@ const Message = () => {
     }, [socket, activeChannel]);
 
     const receiveMessage = (message: Message) => {
-        setMessages(prev => [...prev, message]);
+        setMessages((prev) => [...prev, message]);
         console.log(message, 'message');
     };
 
     return (
         <div className='message'>
-            {messages?.map((fake, i: number) => (
-                <MessageItem obj={fake} key={i} />
+            {messages?.map((obj: Message, i: number) => (
+                <MessageItem obj={obj} key={i} />
             ))}
         </div>
     );

@@ -20,24 +20,8 @@ interface User {
     username: string;
 }
 
-export const StatusBar = () => {
-    const activeServer = useAppSelector(
-        (state) => state.userReducer.activeServer
-    );
-    const [userList, setUserList] = useState<ServerUser[]>([]);
-
-    useEffect(() => {
-        if (activeServer)
-            axios
-                .get(`/server/list_user/${activeServer}`, {
-                    headers: {
-                        access_token: localStorage.getItem('token') as string,
-                    },
-                })
-                .then((res) => {
-                    setUserList(res.data);
-                });
-    }, [activeServer]);
+export const StatusBar = (props: { userList: ServerUser[] }) => {
+    const { userList } = props;
 
     return (
         <div

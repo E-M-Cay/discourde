@@ -10,7 +10,7 @@ export interface User {
     username: string;
 }
 
-export interface Message {
+export interface TextMessage {
     id: number;
     content: string;
     send_time: string;

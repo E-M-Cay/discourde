@@ -5,24 +5,11 @@ import React, { useEffect, useState } from 'react';
 import { CustomImage } from '../CustomLi/CustomLi';
 import fake from '../mock';
 import { useAppSelector } from '../redux/hooks';
+import { UserMap } from '../types/types';
 const { Title } = Typography;
 const { Panel } = Collapse;
 
-interface ServerUser {
-    id: number;
-    nickname: string;
-    user: User;
-}
-
-interface User {
-    id: number;
-    status: number;
-    username: string;
-}
-
-export const StatusBar = (props: {
-    userMap: Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
-}) => {
+export const StatusBar = (props: { userMap: UserMap }) => {
     const { userMap } = props;
 
     return (

@@ -8,18 +8,7 @@ import { useAppSelector } from '../redux/hooks';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { MapOrEntries, useMap } from 'usehooks-ts';
-
-interface ServerUser {
-    id: number;
-    nickname: string;
-    user: User;
-}
-
-interface User {
-    id: number;
-    status: number;
-    username: string;
-}
+import { ServerUser } from '../types/types';
 
 export const Main = () => {
     const activeServer = useAppSelector(

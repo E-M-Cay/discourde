@@ -5,27 +5,7 @@ import { MessageItem } from './MessageItem';
 import axios from 'axios';
 import { useAppSelector } from '../redux/hooks';
 import { PeerSocketContext } from '../context/PeerSocket';
-
-interface Message {
-    id: number;
-    content: string;
-    send_time: string;
-    author: number;
-}
-
-interface ServerUser {
-    id: number;
-    nickname: string;
-    user: User;
-}
-
-interface User {
-    id: number;
-    status: number;
-    username: string;
-}
-
-type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
+import { UserMap, Message } from '../types/types';
 
 const Message = (props: { userMap: UserMap }) => {
     const { userMap } = props;
@@ -46,7 +26,7 @@ const Message = (props: { userMap: UserMap }) => {
                 })
                 .then((res) => {
                     setMessages(res.data);
-                    console.log(res.data, 'data');
+                    //console.log(res.data, 'data');
                 });
         }
     }, [activeChannel]);

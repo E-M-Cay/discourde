@@ -7,6 +7,7 @@ import { FriendPanel } from '../FriendPanel/FriendPanel';
 import { useAppSelector } from '../redux/hooks';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { MapOrEntries, useMap } from 'usehooks-ts';
 
 interface ServerUser {
     id: number;
@@ -21,10 +22,11 @@ interface User {
 }
 
 export const Main = () => {
-    const [userList, setUserList] = useState<ServerUser[]>([]);
     const activeServer = useAppSelector(
         (state) => state.userReducer.activeServer
     );
+    const initialValue: MapOrEntries<number, ServerUser> = [];
+    const [userMap, actions] = useMap<number, ServerUser>(initialValue);
 
     useEffect(() => {
         if (activeServer)
@@ -35,8 +37,14 @@ export const Main = () => {
                     },
                 })
                 .then((res) => {
-                    setUserList(res.data);
+                    res.data.forEach((user: ServerUser) =>
+                        actions.set(user.user.id, user)
+                    );
                 });
+
+        return () => {
+            actions.reset();
+        };
     }, [activeServer]);
 
     return (
@@ -51,10 +59,10 @@ export const Main = () => {
                 <ChanelBar />
             </Col>
             <Col span={16}>
-                <Chat />
+                <Chat userMap={userMap} />
             </Col>
             <Col style={{ backgroundColor: 'grey' }} span={4}>
-                <StatusBar userList={userList} />
+                <StatusBar userMap={userMap} />
             </Col>
         </Row>
     );

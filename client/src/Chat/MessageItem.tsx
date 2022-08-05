@@ -7,8 +7,22 @@ interface Message {
     author: any;
 }
 
-export const MessageItem = (props: { obj: Message }) => {
-    const { obj } = props;
+interface ServerUser {
+    id: number;
+    nickname: string;
+    user: User;
+}
+
+interface User {
+    id: number;
+    status: number;
+    username: string;
+}
+
+type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
+
+export const MessageItem = (props: { obj: Message; userMap: UserMap }) => {
+    const { obj, userMap } = props;
     return (
         <div className='messageItem'>
             <div className='messageItemAvatar'>
@@ -20,7 +34,8 @@ export const MessageItem = (props: { obj: Message }) => {
             </div>
             <div className='messageItemContent'>
                 <div className='messageItemContentName'>
-                    {obj.author}
+                    {' '}
+                    {userMap.get(obj.author)?.nickname}
                     <span className='time'> {obj.send_time}</span>
                 </div>
                 <div

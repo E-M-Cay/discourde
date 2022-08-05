@@ -20,8 +20,10 @@ interface User {
     username: string;
 }
 
-export const StatusBar = (props: { userList: ServerUser[] }) => {
-    const { userList } = props;
+export const StatusBar = (props: {
+    userMap: Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
+}) => {
+    const { userMap } = props;
 
     return (
         <div
@@ -37,8 +39,8 @@ export const StatusBar = (props: { userList: ServerUser[] }) => {
                     key='1'
                     header='en ligne'
                     style={{ margin: '0 !important' }}>
-                    {userList.map((object, i: number) =>
-                        object.user.status ? (
+                    {Array.from(userMap.entries()).map(([id, user]) =>
+                        user.user.status ? (
                             <div
                                 style={{
                                     display: 'flex',
@@ -48,7 +50,7 @@ export const StatusBar = (props: { userList: ServerUser[] }) => {
                                 }}
                                 className='hoStat'>
                                 {' '}
-                                <CustomImage obj={object} key={i} />{' '}
+                                <CustomImage obj={user} key={id} />{' '}
                                 <Typography
                                     style={{
                                         width: '100%',
@@ -56,7 +58,7 @@ export const StatusBar = (props: { userList: ServerUser[] }) => {
                                         fontWeight: 'bold',
                                         color: '#A1A1A1',
                                     }}>
-                                    {object.nickname}
+                                    {user.nickname}
                                 </Typography>{' '}
                             </div>
                         ) : (
@@ -68,8 +70,8 @@ export const StatusBar = (props: { userList: ServerUser[] }) => {
                     key='2'
                     header='hors ligne'
                     style={{ margin: '0 !important' }}>
-                    {userList.map((object: ServerUser, i: number) =>
-                        !object.user.status ? (
+                    {Array.from(userMap.entries()).map(([id, user]) =>
+                        !user.user.status ? (
                             <div
                                 className='hoStat'
                                 style={{
@@ -78,7 +80,7 @@ export const StatusBar = (props: { userList: ServerUser[] }) => {
                                     alignItems: 'center',
                                     maxWidth: '300px',
                                 }}>
-                                <CustomImage obj={object} key={i} />{' '}
+                                <CustomImage obj={user} key={id} />{' '}
                                 <Typography
                                     style={{
                                         width: '100%',
@@ -87,7 +89,7 @@ export const StatusBar = (props: { userList: ServerUser[] }) => {
                                         fontWeight: 'bold',
                                         color: '#A1A1A1',
                                     }}>
-                                    {object.nickname}
+                                    {user.nickname}
                                 </Typography>{' '}
                             </div>
                         ) : (

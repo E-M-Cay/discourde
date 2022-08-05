@@ -137,7 +137,7 @@ router.get(
 
         try {
             const message_list = await ChannelMessageRepository.find({
-                relations: ['author', 'channel'],
+                relations: { author: true, channel: true },
                 where: {
                     channel: {
                         id: channel_id,

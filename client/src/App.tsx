@@ -2,34 +2,19 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import './App.css';
 import { PeerSocketContext } from './context/PeerSocket';
 import axios from 'axios';
-import { useAppDispatch, useAppSelector } from './redux/hooks';
+import { useAppDispatch } from './redux/hooks';
 import { Input, Typography } from 'antd';
-import {
-    joinRoomSuccess,
-    setUsername,
-    setUserId,
-    setToken,
-} from './redux/userSlice';
+import { setUsername, setUserId, setToken } from './redux/userSlice';
 import VocalChannel from './components/VocalChannel';
 import { Home } from './Home/Home';
 import { Modal } from 'antd';
-import { useIsFirstRender } from 'usehooks-ts';
 
 const { Title, Text } = Typography;
-
-interface UserInfo {
-    username: string;
-    id: string;
-}
 
 const App = () => {
     const { socket, peer, connectPeer, connectSocket } =
         useContext(PeerSocketContext);
-    const [micStatus, setMicStatus] = useState<boolean>(false);
-    const [message, setMessage] = useState<string>();
-    const streamRef = useRef<MediaStream>();
     const dispatch = useAppDispatch();
-    const user = useAppSelector((state) => state.userReducer);
     const registerUsernameRef = useRef<string>('');
     const registerEmailRef = useRef<string>('');
     const loginEmailRef = useRef<string>('');
@@ -45,7 +30,7 @@ const App = () => {
     //   setIsModalVisible(true);
     // };
 
-    const verifyAndRefreshToken = (tk: string) => {};
+    //const verifyAndRefreshToken = (tk: string) => {};
 
     const onConnection = useCallback(() => {
         console.log('socket con');
@@ -64,20 +49,43 @@ const App = () => {
         [dispatch]
     );
 
+    const openPeer = useCallback(
+        (peer_id: string) => {
+            console.log('peerid:', peer_id);
+
+            socket?.emit('peerId', { peer_id });
+        },
+        [socket, peer]
+    );
+
     useEffect(() => {
+        peer?.on('open', openPeer);
+        return () => {
+            peer?.off('open', openPeer);
+        };
+    }, [peer, openPeer]);
+
+    useEffect(() => {
+        console.log('pi');
         const token = localStorage.getItem('token');
 
-        if (token && !socket && isFirst.current) {
+        if (token && isFirst.current) {
+            axios
+                .get('/user/token_check', {
+                    headers: {
+                        access_token: token,
+                    },
+                })
+                .then((res) => {
+                    if (res.data.ok) {
+                        connectSocket(token);
+                    }
+                });
             // verifyAndRefreshToken(token);
-            connectSocket(token);
+
             isFirst.current = false;
         }
-
-        return () => {
-            console.log('socket return', socket);
-            socket?.close();
-        };
-    }, [socket]);
+    }, [socket, connectSocket]);
 
     useEffect(() => {
         socket?.on('connect', onConnection);
@@ -93,13 +101,6 @@ const App = () => {
         ref: React.MutableRefObject<string>
     ) => {
         ref.current = e.target.value;
-    };
-
-    const fetchMessage = () => {
-        if (!message) {
-            console.log('axios');
-            axios.get(`/toto`).then((res) => setMessage(res.data));
-        }
     };
 
     // useEffect(() => {
@@ -164,9 +165,8 @@ const App = () => {
     //     )}
     //   </div>
     // );
-    return socket && peer ? (
+    return peer && socket ? (
         <div>
-            <>{console.log(socket, 'in render return')}</>
             <VocalChannel />
             <Modal
                 visible={isModalVisible}

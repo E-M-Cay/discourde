@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { host, socketPort } from '../env/host';
 import { peerPort, peerServerHost } from '../env/host';
@@ -75,7 +75,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
             host: peerServerHost,
             path: '/',
             debug: 3,
-            secure: secure,
+            secure,
         });
         setPeer(newPeer);
     };

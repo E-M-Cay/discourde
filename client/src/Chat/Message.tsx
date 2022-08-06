@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
-import 'antd/dist/antd.css';
-import fake from '../mockMessage';
+import { useContext, useEffect, useState } from 'react';
+import 'antd/dist/antd.min.css';
+
 import { MessageItem } from './MessageItem';
 import axios from 'axios';
 import { useAppSelector } from '../redux/hooks';

@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.min.css';
 import Message from './Message';
 import ChatBar from './ChatBar';
 import { UserMap } from '../types/types';

@@ -181,10 +181,10 @@ io.on('connection', (socket: ISocket) => {
         console.log(message);
     });
 
-    socket.on('disconnecting', (_reason) => {
+    socket.on('disconnecting', (reason) => {
         global.user_id_to_peer_id.delete(socket.user_id as number);
         global.user_id_to_status.delete(socket.user_id as number);
-        console.log('disconnected socket', socket.id);
+        console.log('disconnected socket', socket.id, reason);
 
         socket.to('test').emit('disconnected', socket.id);
     });

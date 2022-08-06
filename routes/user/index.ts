@@ -20,7 +20,7 @@ router.post('/login', async (req: Request, res: Response) => {
         });
 
         if (!user) {
-            res.send('Error user not found');
+            res.status(401).send('Error user not found');
             return;
         }
 
@@ -79,6 +79,10 @@ router.post('/register', async (req: Request, res: Response) => {
         return res.status(201).send('User created succesfully');
     }
     res.send('FAIL');
+});
+
+router.get('/token_check', isAuth, (_req: Request, res: Response) => {
+    res.status(201).send({ ok: 'Valid token' });
 });
 
 router.get('/home', isAuth, (_req: Request, res: Response) => {

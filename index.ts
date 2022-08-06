@@ -167,9 +167,7 @@ io.on('connection', (socket: ISocket) => {
         global.user_id_to_status.set(socket.user_id as number, 1);
         global.user_id_to_peer_id.set(socket.user_id as number, data.peer_id);
 
-        socket
-            .to('test')
-            .emit('hello', { socketId: socket.id, peer_id: data.peer_id });
+        socket.broadcast.emit('userconnected', socket.user_id);
         socket.emit('ready');
     });
 
@@ -182,7 +180,7 @@ io.on('connection', (socket: ISocket) => {
         global.user_id_to_status.delete(socket.user_id as number);
         console.log('disconnected socket', socket.id, reason);
 
-        socket.to('test').emit('disconnected', socket.id);
+        io.emit('userdisconnected', socket.user_id);
     });
 
     socket.on('inactif', () => {

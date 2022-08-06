@@ -14,27 +14,20 @@ import {
     UserAddOutlined,
 } from '@ant-design/icons';
 import {
-    Avatar,
     Button,
     Card,
     Collapse,
-    Divider,
     Dropdown,
     Menu,
-    Skeleton,
     Space,
     Tooltip,
     Modal,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import Sider from 'antd/lib/layout/Sider';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-//import chanelData from '../mock1';
 import './ChanelBar.css';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
-import { act } from 'react-dom/test-utils';
 import { PeerSocketContext } from '../context/PeerSocket';
 
 const { Panel } = Collapse;
@@ -42,9 +35,6 @@ const { Panel } = Collapse;
 export const ChanelBar = () => {
     const activeServer = useAppSelector(
         (state) => state.userReducer.activeServer
-    );
-    const activeChannel = useAppSelector(
-        (state) => state.userReducer.activeChannel
     );
     const { peer, socket } = useContext(PeerSocketContext);
     const dispatch = useAppDispatch();
@@ -80,7 +70,7 @@ export const ChanelBar = () => {
                     console.log(res.data.text[0]);
                     dispatch(setActiveChannel(res.data.text[0].id));
                 });
-    }, [activeServer]);
+    }, [activeServer, dispatch]);
 
     const onChange = (key: any) => {};
     const onTextChannelClick = (id: number) => {
@@ -102,9 +92,7 @@ export const ChanelBar = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isModalVisibleInvitation, setIsModalVisibleInvitation] =
         useState(false);
-    const [isFocused, setFocus] = useState(false);
     const [channelName, setChannelName] = useState('');
-    const [serverId, setServerId] = useState(0);
 
     const showModal = () => {
         setIsModalVisible(true);

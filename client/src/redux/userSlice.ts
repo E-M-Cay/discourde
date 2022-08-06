@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import Peer from 'peerjs';
 
 interface UserState {
     rooms: string[];

@@ -1,12 +1,8 @@
 import { Collapse, Typography } from 'antd';
-import axios from 'axios';
-
-import React, { useEffect, useState } from 'react';
 import { CustomImage } from '../CustomLi/CustomLi';
-import fake from '../mock';
-import { useAppSelector } from '../redux/hooks';
 import { UserMap } from '../types/types';
-const { Title } = Typography;
+
+//const { Title } = Typography;
 const { Panel } = Collapse;
 
 export const StatusBar = (props: { userMap: UserMap }) => {

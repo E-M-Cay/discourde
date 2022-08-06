@@ -17,4 +17,17 @@ export interface TextMessage {
     author: number;
 }
 
+export interface ServerResponse {
+    id: number;
+    nickname: string;
+    server: Server;
+}
+
+export interface Server {
+    id: number;
+    logo: string;
+    main_img: string;
+    name: string;
+}
+
 export type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;

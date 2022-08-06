@@ -341,6 +341,7 @@ export const ChanelBar = () => {
                         {vocalChannelList &&
                             vocalChannelList.map((chan) => (
                                 <li
+                                    key={chan.id}
                                     onClick={() => onVocalChannelClick(chan.id)}
                                     className='panelContent'>
                                     {' '}

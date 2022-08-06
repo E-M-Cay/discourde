@@ -6,23 +6,14 @@ import { ChanelBar } from '../ChanelBar/ChanelBar';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveServer } from '../redux/userSlice';
+import { ServerResponse } from '../types/types';
 
-interface ServerResponse {
-    id: number;
-    nickname: string;
-    server: Server;
-}
-
-interface Server {
-    id: number;
-    logo: string;
-    main_img: string;
-    name: string;
-}
-
-export const Home = (props: any) => {
+export const Home = (props: {
+    setTokenMissing: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
     const [servers, setServers] = useState<ServerResponse[]>([]);
     const token = useAppSelector((state) => state.userReducer.token);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         console.log('change token ??');
@@ -65,7 +56,8 @@ export const Home = (props: any) => {
                     }
                     console.log(res.data[0], 'data');
                     setServers(res.data);
-                    setActiveServer(res.data[0].server.id);
+                    console.log('active server:', res.data[0].server.id);
+                    dispatch(setActiveServer(res.data[0].server.id));
                 })
                 .catch((err) => {
                     console.log(err);

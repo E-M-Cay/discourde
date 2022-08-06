@@ -33,7 +33,6 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
     const [peer, setPeer] = useState<Peer>();
 
     const connectSocket = (token: string) => {
-        socket?.close();
         if (process.env.NODE_ENV === 'production') {
             setSocket(
                 io(`wss://${host}:${socketPort}/`, {
@@ -54,6 +53,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
     };
 
     const connectPeer = () => {
+        console.log('connect peer');
         let secure = false;
         if (process.env.NODE_ENV === 'production') {
             secure = true;

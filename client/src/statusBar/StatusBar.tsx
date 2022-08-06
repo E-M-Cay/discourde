@@ -29,6 +29,7 @@ export const StatusBar = (props: { userMap: UserMap }) => {
                     {Array.from(userMap.entries()).map(([id, user]) =>
                         user.user.status ? (
                             <div
+                                key={id}
                                 style={{
                                     display: 'flex',
                                     justifyContent: 'space-around',
@@ -48,9 +49,7 @@ export const StatusBar = (props: { userMap: UserMap }) => {
                                     {user.nickname}
                                 </Typography>{' '}
                             </div>
-                        ) : (
-                            ''
-                        )
+                        ) : null
                     )}
                 </Panel>
                 <Panel
@@ -60,6 +59,7 @@ export const StatusBar = (props: { userMap: UserMap }) => {
                     {Array.from(userMap.entries()).map(([id, user]) =>
                         !user.user.status ? (
                             <div
+                                key={id}
                                 className='hoStat'
                                 style={{
                                     display: 'flex',

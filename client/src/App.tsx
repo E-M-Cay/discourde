@@ -13,6 +13,8 @@ import {
 import VocalChannel from './components/VocalChannel';
 import { Home } from './Home/Home';
 import { Modal } from 'antd';
+import { useIsFirstRender } from 'usehooks-ts';
+
 const { Title, Text } = Typography;
 
 interface UserInfo {
@@ -33,6 +35,7 @@ const App = () => {
     const loginEmailRef = useRef<string>('');
     const registerPasswordRef = useRef<string>('');
     const loginPasswordRef = useRef<string>('');
+    const isFirst = useRef(true);
 
     const [isModalVisible, setIsModalVisible] = useState(
         localStorage.getItem('token') ? false : true
@@ -63,17 +66,27 @@ const App = () => {
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token && !socket) {
+
+        if (token && !socket && isFirst.current) {
             // verifyAndRefreshToken(token);
             connectSocket(token);
+            isFirst.current = false;
         }
+
+        return () => {
+            console.log('socket return', socket);
+            socket?.close();
+        };
+    }, [socket]);
+
+    useEffect(() => {
         socket?.on('connect', onConnection);
         socket?.on('username', updateUsername);
         return () => {
             socket?.off('username', updateUsername);
             socket?.off('connect', onConnection);
         };
-    }, [socket, onConnection, updateUsername, dispatch, connectSocket]);
+    }, [socket, onConnection, updateUsername, dispatch]);
 
     const onChangeHandler = (
         e: React.ChangeEvent<HTMLInputElement>,
@@ -151,8 +164,9 @@ const App = () => {
     //     )}
     //   </div>
     // );
-    return (
-        <>
+    return socket && peer ? (
+        <div>
+            <>{console.log(socket, 'in render return')}</>
             <VocalChannel />
             <Modal
                 visible={isModalVisible}
@@ -256,8 +270,8 @@ const App = () => {
                 </div>
             </Modal>
             <Home setTokenMissing={setIsModalVisible} />
-        </>
-    );
+        </div>
+    ) : null;
 };
 
 export default App;

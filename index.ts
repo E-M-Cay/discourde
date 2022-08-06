@@ -118,6 +118,7 @@ io.use((socket: ISocket, next) => {
 });
 
 io.on('connection', (socket: ISocket) => {
+    console.log('socket connected', socket.id);
     const token = socket.handshake.auth.token;
 
     //console.log('connection');
@@ -172,7 +173,7 @@ io.on('connection', (socket: ISocket) => {
             .to('test')
             .emit('hello', { socketId: socket.id, peer_id: data.peer_id });
         const toto = get_user_status_list([]);
-        //console.log(toto);
+        console.log('users:', toto);
         socket.emit('users', Array.from(toto));
     });
 
@@ -183,6 +184,7 @@ io.on('connection', (socket: ISocket) => {
     socket.on('disconnecting', (_reason) => {
         global.user_id_to_peer_id.delete(socket.user_id as number);
         global.user_id_to_status.delete(socket.user_id as number);
+        console.log('disconnected socket', socket.id);
 
         socket.to('test').emit('disconnected', socket.id);
     });

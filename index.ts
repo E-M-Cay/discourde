@@ -24,11 +24,6 @@ app.use(express.urlencoded({ extended: true }));
 const ChannelMessageRepository = AppDataSource.getRepository(ChannelMessage);
 const ChannelRepository = AppDataSource.getRepository(Channel);
 const userRepository = AppDataSource.getRepository(User);
-interface userStatus {
-    id: string;
-    status: string;
-    socketId: string;
-}
 
 interface Message {
     channel: number;
@@ -40,7 +35,7 @@ interface Message {
 
 global.user_id_to_peer_id = new Map<number, string>();
 global.user_id_to_status = new Map<number, number>();
-global.user_id_to_vocal_channel = new Map<number, number>();
+global.user_id_to_vocal_channel = new Map<number, number[]>();
 
 const user_status = new Map<number, string>();
 
@@ -111,10 +106,13 @@ io.use((socket: ISocket, next) => {
         socket.handshake.auth.token,
         process.env.SECRET_TOKEN || ''
     );
+    if (decoded) {
+        console.log('handshake');
 
-    // On ajoute l'utilisateur à la requête
-    socket.user_id = Number(decoded.user.id);
-    next();
+        // On ajoute l'utilisateur à la requête
+        socket.user_id = Number(decoded.user.id);
+        next();
+    }
 });
 
 io.on('connection', (socket: ISocket) => {
@@ -166,15 +164,13 @@ io.on('connection', (socket: ISocket) => {
 
     socket.on('peerId', (data: { peer_id: string }) => {
         socket.peer_id = data.peer_id;
-        global.user_id_to_peer_id.set(socket.user_id as number, data.peer_id);
         global.user_id_to_status.set(socket.user_id as number, 1);
+        global.user_id_to_peer_id.set(socket.user_id as number, data.peer_id);
 
         socket
             .to('test')
             .emit('hello', { socketId: socket.id, peer_id: data.peer_id });
-        const toto = get_user_status_list([]);
-        console.log('users:', toto);
-        socket.emit('users', Array.from(toto));
+        socket.emit('ready');
     });
 
     socket.on('message', (message) => {

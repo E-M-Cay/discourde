@@ -1,23 +1,11 @@
 import { DataSource } from 'typeorm';
+import dotenv from 'dotenv';
 
-// const AppDataSource = new DataSource({
-//     type: 'mariadb',
-//     host: 'j5zntocs2dn6c3fj.chr7pe7iynqr.eu-west-1.rds.amazonaws.com',
-//     port: 3306,
-//     username: 'wmmozcjrjf29dr7w',
-//     password: 'havhny5fifnr5hzp',
-//     database: 'jck4qsrp1swaqkzv',
-//     entities: ['entities/*{.js,.ts}'],
-//     migrations: ['migrationrs/*{.js,.ts}'],
-// });
+dotenv.config();
 
 const AppDataSource = new DataSource({
     type: 'mariadb',
-    host: 'localhost',
-    port: 3306,
-    username: 'root',
-    password: '',
-    database: 'discourde',
+    url: process.env.DB,
     entities: ['entities/*{.js,.ts}'],
     migrations: ['migrations/*{.js,.ts}'],
 });

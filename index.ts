@@ -188,14 +188,16 @@ io.on('connection', (socket: ISocket) => {
             socket.user_id as number
         );
         if (currentVocalChannel) {
-            global.vocal_channel_to_user_list
-                .get(currentVocalChannel as number)
-                ?.filter((u) => u !== socket.user_id);
-            socket.emit('userleftvocalchannel', {
-                channel: global.user_id_to_vocal_channel.get(socket.user_id),
+            io.emit('leftvocal', {
                 user: socket.user_id,
+                chan: currentVocalChannel,
             });
-            global.user_id_to_vocal_channel.delete(socket.user_id);
+            const userList =
+                global.vocal_channel_to_user_list.get(currentVocalChannel);
+            global.vocal_channel_to_user_list.set(
+                currentVocalChannel,
+                userList?.filter((u) => u !== socket.user_id) as number[]
+            );
         }
 
         io.emit('userdisconnected', socket.user_id);

@@ -188,14 +188,17 @@ io.on('connection', (socket: ISocket) => {
             socket.user_id as number
         );
         if (currentVocalChannel) {
-            global.vocal_channel_to_user_list
-                .get(currentVocalChannel as number)
-                ?.filter((u) => u !== socket.user_id);
-            socket.emit('userleftvocalchannel', {
-                channel: global.user_id_to_vocal_channel.get(socket.user_id),
+            console.log('has');
+            io.emit('leftvocal', {
                 user: socket.user_id,
+                chan: currentVocalChannel,
             });
-            global.user_id_to_vocal_channel.delete(socket.user_id);
+            const userList =
+                global.vocal_channel_to_user_list.get(currentVocalChannel);
+            global.vocal_channel_to_user_list.set(
+                currentVocalChannel,
+                userList?.filter((u) => u !== socket.user_id) as number[]
+            );
         }
 
         io.emit('userdisconnected', socket.user_id);
@@ -212,21 +215,24 @@ io.on('connection', (socket: ISocket) => {
     });
 
     socket.on('joinvocalchannel', (id: number) => {
-        console.log('join vocal:', id, socket.id);
         global.user_id_to_vocal_channel.set(socket.user_id as number, id);
         if (global.vocal_channel_to_user_list.has(id)) {
             global.vocal_channel_to_user_list
                 .get(id)
                 ?.push(socket.user_id as number);
+            console.log('push');
         } else {
             global.vocal_channel_to_user_list.set(id, [
                 socket.user_id as number,
             ]);
+
+            console.log('set');
         }
         socket.broadcast.emit(`joiningvocalchannel:${id}`, {
             user: socket.user_id,
             peer_id: socket.peer_id,
         });
+        io.emit('joiningvocal', { user: socket.user_id, chan: id });
     });
 
     socket.on('vocalchannelchange', (truc: string) => {

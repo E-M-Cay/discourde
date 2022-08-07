@@ -54,7 +54,6 @@ export const Main = () => {
             if (!copy) return;
             copy.user.status = 0;
             set(id, copy);
-            console.log('disconnecting', id);
         },
         [set, userMap]
     );
@@ -63,7 +62,6 @@ export const Main = () => {
         (id: number) => {
             console.log('connecting', id);
             const copy = userMap.get(id) ?? null;
-            console.log(copy, 'copy con');
             if (!copy) return;
             copy.user.status = 1;
             set(id, copy);
@@ -71,9 +69,9 @@ export const Main = () => {
         [set, userMap]
     );
 
-    useEffect(() => {
-        console.table(userMap);
-    }, [userMap]);
+    // useEffect(() => {
+    //     console.table(userMap);
+    // }, [userMap]);
 
     useEffect(() => {
         socket?.on('userdisconnected', handleDisconnection);
@@ -93,7 +91,7 @@ export const Main = () => {
             }}
             className='main'>
             <Col style={{ backgroundColor: '#535151' }} span={3.5}>
-                <ChanelBar />
+                <ChanelBar userMap={userMap} />
             </Col>
             <Col span={16}>
                 <Chat userMap={userMap} />

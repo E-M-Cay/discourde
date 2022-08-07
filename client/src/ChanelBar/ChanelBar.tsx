@@ -29,6 +29,8 @@ import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
 import { PeerSocketContext } from '../context/PeerSocket';
+import { setServers } from 'dns';
+import { UserMap } from '../types/types';
 
 const { Panel } = Collapse;
 
@@ -42,7 +44,8 @@ interface VocalChan extends Channel {
     users: number[];
 }
 
-export const ChanelBar = () => {
+export const ChanelBar = (props: { userMap: UserMap }) => {
+    const { userMap } = props;
     const activeServer = useAppSelector(
         (state) => state.userReducer.activeServer
     );
@@ -51,8 +54,8 @@ export const ChanelBar = () => {
     const headerTxt: string = 'SALONS TEXTUELS';
     const headerVoc: string = 'SALONS VOCAUX';
     const serverName: string = 'TEEEST SERVEUR';
-    const [vocalChannelList, setVocalChannelList] = useState<VocalChan[]>();
-    const [textChannelList, setTextChannelList] = useState<Channel[]>();
+    const [vocalChannelList, setVocalChannelList] = useState<VocalChan[]>([]);
+    const [textChannelList, setTextChannelList] = useState<Channel[]>([]);
     const activeVocalChannel = useAppSelector(
         (state) => state.userReducer.activeVocalChannel
     );
@@ -84,10 +87,45 @@ export const ChanelBar = () => {
             console.log(id, activeVocalChannel);
             if (activeVocalChannel === id) return;
             dispatch(setActiveVocalChannel(id));
-            socket?.emit('joinvocalchannel', id);
+            //socket?.emit('joinvocalchannel', id);
         },
         [socket, activeVocalChannel]
     );
+
+    const handleJoinVocal = (data: { user: number; chan: number }) => {
+        const { user, chan } = data;
+
+        setVocalChannelList((prevState) => {
+            return prevState.map((c) => {
+                if (c.id === chan) {
+                    return { ...c, users: [...c.users, user] };
+                }
+                return c;
+            });
+        });
+    };
+
+    const handleLeftVocal = (data: { user: number; chan: number }) => {
+        const { user, chan } = data;
+        console.log('left vocal', user, chan);
+        setVocalChannelList((prevState) => {
+            return prevState.map((c) => {
+                if (c.id === chan) {
+                    return { ...c, users: c.users.filter((u) => u !== user) };
+                }
+                return c;
+            });
+        });
+    };
+
+    useEffect(() => {
+        socket?.on(`joiningvocal`, handleJoinVocal);
+        socket?.on(`leftvocal`, handleLeftVocal);
+        return () => {
+            socket?.off(`joiningvocal`, handleJoinVocal);
+            socket?.off(`leftvocal`, handleLeftVocal);
+        };
+    }, [socket]);
 
     const [stateMic, setmicState] = useState(true);
     const [stateHead, setheadState] = useState(true);
@@ -347,7 +385,10 @@ export const ChanelBar = () => {
                                             </>
                                         )}
                                         {chan.users.map((u) => (
-                                            <div>{u}</div>
+                                            <div key={u}>
+                                                {userMap.get(u)?.nickname ||
+                                                    'Error retrieving user'}
+                                            </div>
                                         ))}
                                     </li>
                                 </>

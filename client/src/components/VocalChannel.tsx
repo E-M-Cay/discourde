@@ -58,14 +58,6 @@ const VocalChannel = () => {
         //}
     }, []);
 
-    //const receiveUsers = (userList: UserInfo[]) => {
-    //setUserList([...userList]);
-    // };
-
-    const receiveUsers = (userList: any) => {
-        console.log(new Map(userList), 'toto');
-    };
-
     const callUser = useCallback(
         async (id: string) => {
             console.log('calling:', id, peer?.id);
@@ -98,26 +90,20 @@ const VocalChannel = () => {
                 await toggleMicrophone();
             }
             callUser(data.peer_id);
-            /*setUserList((prevState) => [
-                ...prevState,
-                { socketId: data.user_id, id: data.peer_id },
-            ]);*/
         },
         [callUser]
     );
 
-    /*const userDisconnected = (id: string) => {
-        setUserList((prevUserList) => {
-            return prevUserList.filter((u) => u.socketId !== id);
-        });
-    };*/
-
     useEffect(() => {
+        if (activeVocalChannel)
+            socket?.emit('joinvocalchannel', activeVocalChannel);
         socket?.on(`joiningvocalchannel:${activeVocalChannel}`, hello);
         return () => {
             socket?.off(`joiningvocalchannel:${activeVocalChannel}`, hello);
+            if (activeVocalChannel)
+                socket?.emit('leftvocalchannel', activeVocalChannel);
         };
-    }, [activeVocalChannel, socket, hello, peer]);
+    }, [activeVocalChannel, socket, hello]);
 
     useEffect(() => {
         setActiveCalls((prevState) => {
@@ -131,17 +117,12 @@ const VocalChannel = () => {
 
     useEffect(() => {
         peer?.on('call', callEvent);
-        //peer?.on('call', (mddqs) => console.log('fdssdfsf'));
         peer?.on('error', (e) => console.log(e));
         console.log('my peer:', peer ? peer.id : 'none');
-        socket?.on('users', receiveUsers);
-        //socket?.on('disconnected', userDisconnected);
         return () => {
             peer?.off('call', callEvent);
-            socket?.off('users', receiveUsers);
-            //socket?.off('disconnected', userDisconnected);
         };
-    }, [peer, socket, callEvent, hello]);
+    }, [peer, callEvent, hello]);
 
     return <></>;
 };

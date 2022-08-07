@@ -19,6 +19,7 @@ import { ServerUser } from './ServerUser';
 @Entity()
 export class User {
     status: number;
+    vocalChannel: number;
 
     @PrimaryGeneratedColumn()
     id: number;
@@ -87,8 +88,13 @@ export class User {
     })
     receivedFriendRequest: FriendRequest[];
 
+    public set setVocalChannel(id: number) {
+        this.vocalChannel = id;
+    }
+
     @AfterLoad()
     setStatus() {
         this.status = global.user_id_to_status.get(this.id) || 0;
+        this.vocalChannel = 0;
     }
 }

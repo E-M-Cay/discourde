@@ -32,6 +32,16 @@ import { PeerSocketContext } from '../context/PeerSocket';
 
 const { Panel } = Collapse;
 
+interface Channel {
+    hidden: boolean;
+    id: number;
+    name: string;
+}
+
+interface VocalChan extends Channel {
+    users: number[];
+}
+
 export const ChanelBar = () => {
     const activeServer = useAppSelector(
         (state) => state.userReducer.activeServer
@@ -41,20 +51,13 @@ export const ChanelBar = () => {
     const headerTxt: string = 'SALONS TEXTUELS';
     const headerVoc: string = 'SALONS VOCAUX';
     const serverName: string = 'TEEEST SERVEUR';
-    const [vocalChannelList, setVocalChannelList] = useState<Channel[]>();
+    const [vocalChannelList, setVocalChannelList] = useState<VocalChan[]>();
     const [textChannelList, setTextChannelList] = useState<Channel[]>();
     const activeVocalChannel = useAppSelector(
         (state) => state.userReducer.activeVocalChannel
     );
 
     let micro: boolean = true;
-
-    interface Channel {
-        hidden: boolean;
-        id: number;
-        name: string;
-        is_audio: boolean;
-    }
 
     useEffect(() => {
         if (activeServer)
@@ -328,20 +331,26 @@ export const ChanelBar = () => {
                     <Panel className='headerPanel' header={headerVoc} key='2'>
                         {vocalChannelList &&
                             vocalChannelList.map((chan) => (
-                                <li
-                                    key={chan.id}
-                                    onClick={() => onVocalChannelClick(chan.id)}
-                                    className='panelContent'>
-                                    {' '}
-                                    <SoundOutlined /> {chan.name}
-                                    {activeVocalChannel === chan.id && (
-                                        <>
-                                            <br />
-                                            <BorderlessTableOutlined className='activeChannel' />
-                                            {}
-                                        </>
-                                    )}
-                                </li>
+                                <>
+                                    <li
+                                        key={chan.id}
+                                        onClick={() =>
+                                            onVocalChannelClick(chan.id)
+                                        }
+                                        className='panelContent'>
+                                        {' '}
+                                        <SoundOutlined /> {chan.name}
+                                        {activeVocalChannel === chan.id && (
+                                            <>
+                                                <br />
+                                                <BorderlessTableOutlined className='activeChannel' />
+                                            </>
+                                        )}
+                                        {chan.users.map((u) => (
+                                            <div>{u}</div>
+                                        ))}
+                                    </li>
+                                </>
                             ))}
                     </Panel>
                 </Collapse>

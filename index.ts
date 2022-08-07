@@ -35,8 +35,8 @@ interface Message {
 
 global.user_id_to_peer_id = new Map<number, string>();
 global.user_id_to_status = new Map<number, number>();
-global.user_id_to_vocal_channel = new Map<number, number[]>();
-
+global.vocal_channel_to_user_list = new Map<number, number[]>();
+global.user_id_to_vocal_channel = new Map<number, number>();
 const user_status = new Map<number, string>();
 
 user_status.set(0, 'Disconected');
@@ -176,9 +176,25 @@ io.on('connection', (socket: ISocket) => {
     });
 
     socket.on('disconnecting', (reason) => {
-        global.user_id_to_peer_id.delete(socket.user_id as number);
-        global.user_id_to_status.delete(socket.user_id as number);
+        if (!socket.user_id) {
+            return console.error('no user_id');
+        }
+        global.user_id_to_peer_id.delete(socket.user_id);
+        global.user_id_to_status.delete(socket.user_id);
         console.log('disconnected socket', socket.id, reason);
+        const currentVocalChannel = global.user_id_to_vocal_channel.get(
+            socket.user_id as number
+        );
+        if (currentVocalChannel) {
+            global.vocal_channel_to_user_list
+                .get(currentVocalChannel as number)
+                ?.filter((u) => u !== socket.user_id);
+            socket.emit('userleftvocalchannel', {
+                channel: global.user_id_to_vocal_channel.get(socket.user_id),
+                user: socket.user_id,
+            });
+            global.user_id_to_vocal_channel.delete(socket.user_id);
+        }
 
         io.emit('userdisconnected', socket.user_id);
     });
@@ -195,6 +211,16 @@ io.on('connection', (socket: ISocket) => {
 
     socket.on('joinvocalchannel', (id: number) => {
         console.log('join vocal:', id, socket.id);
+        global.user_id_to_vocal_channel.set(socket.user_id as number, id);
+        if (global.vocal_channel_to_user_list.has(id)) {
+            global.vocal_channel_to_user_list
+                .get(id)
+                ?.push(socket.user_id as number);
+        } else {
+            global.vocal_channel_to_user_list.set(id, [
+                socket.user_id as number,
+            ]);
+        }
         socket.broadcast.emit(`joiningvocalchannel:${id}`, {
             user: socket.user_id,
             peer_id: socket.peer_id,

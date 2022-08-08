@@ -13,7 +13,7 @@ import { User } from './entities/User';
 import { Permission } from './entities/Permission';
 import friends from './routes/friends';
 import channels from './routes/channels';
-import users from './routes/user';
+import users from './routes/users/index';
 import servers from './routes/servers/index';
 
 dotenv.config();

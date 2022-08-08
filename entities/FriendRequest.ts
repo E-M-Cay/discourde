@@ -1,13 +1,5 @@
 import 'reflect-metadata';
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToOne,
-    OneToMany,
-} from 'typeorm';
-import { Channel } from './Channel';
-import { Server } from './Server';
+import { Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { User } from './User';
 
 @Entity()

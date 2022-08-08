@@ -11,6 +11,10 @@ import AppDataSource from './db/AppDataSource';
 import { Channel } from './entities/Channel';
 import { User } from './entities/User';
 import { Permission } from './entities/Permission';
+import friends from './routes/friends';
+import channels from './routes/channels';
+import users from './routes/user';
+import servers from './routes/servers/index';
 
 dotenv.config();
 
@@ -48,13 +52,10 @@ user_status.set(3, 'Do not disturb');
 
 const httpServer = createServer(app);
 
-app.get('/toto', (_req: Request, res: Response) => {
-    res.send('Express + TypeScript Server');
-});
-
-app.use('/server', require('./routes/server'));
-app.use('/user', require('./routes/user'));
-app.use('/channel', require('./routes/channel'));
+app.use('/server', servers);
+app.use('/user', users);
+app.use('/channel', channels);
+app.use('/friends', friends);
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname, 'client/build')));
@@ -119,7 +120,6 @@ io.use((socket: ISocket, next) => {
 
 io.on('connection', (socket: ISocket) => {
     console.log('socket connected', socket.id);
-    const token = socket.handshake.auth.token;
 
     //console.log('connection');
     socket.username = 'user#' + Math.floor(Math.random() * 999999);

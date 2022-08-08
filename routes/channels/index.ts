@@ -12,8 +12,7 @@ import IRequest from '../../Interfaces/IRequest';
 import { In } from 'typeorm';
 import { ServerUser } from '../../entities/ServerUser';
 import { ChannelMessage } from '../../entities/ChannelMessage';
-
-const isAuth = require('../../MiddleWares/isAuth');
+import isAuth from '../../MiddleWares/isAuth';
 
 const UserRepository = AppDataSource.getRepository(User);
 const ServerRepository = AppDataSource.getRepository(Server);
@@ -266,4 +265,4 @@ router.delete(
     }
 );
 
-module.exports = router;
+export default router;

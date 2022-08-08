@@ -1,5 +1,4 @@
 import express, { text } from 'express';
-const router = express.Router();
 import { Request, Response } from 'express';
 import AppDataSource from '../../db/AppDataSource';
 import bcrypt from 'bcrypt';
@@ -11,8 +10,10 @@ import { In } from 'typeorm';
 import { ServerUser } from '../../entities/ServerUser';
 import { VocalChannel } from '../../entities/VocalChannel';
 import { Channel } from '../../entities/Channel';
+const router = express.Router();
 
-const isAuth = require('../../MiddleWares/isAuth');
+import isAuth from '../../MiddleWares/isAuth';
+import { isOwner } from '../../MiddleWares/isOwner';
 const hasPerm = require('../../MiddleWares/hasPerm');
 
 const UserRepository = AppDataSource.getRepository(User);
@@ -126,17 +127,23 @@ router.put('/update_server', isAuth, async (req: IRequest, res: Response) => {
     return res.status(400).send('Wrong arguments');
 });
 
-router.delete('/delete_server/:id', async (req: IRequest, res: Response) => {
-    const server_id = Number(req.params.id);
-    if (server_id == NaN) return res.status(400).send('Error server not found');
+router.delete(
+    '/delete_server/:id',
+    isAuth,
+    isOwner,
+    async (req: IRequest, res: Response) => {
+        const server_id = Number(req.params.id);
+        if (server_id == NaN)
+            return res.status(400).send('Error server not found');
 
-    try {
-        await ServerRepository.delete(server_id);
-        return res.status(200).send('Server Successfully deleted');
-    } catch (error) {
-        return res.status(400).send(error);
+        try {
+            await ServerRepository.delete(server_id);
+            return res.status(200).send('Server Successfully deleted');
+        } catch (error) {
+            return res.status(400).send({ error });
+        }
     }
-});
+);
 
 router.get('/list_user/:id', isAuth, async (req: IRequest, res: Response) => {
     const server_id = Number(req.params.id);
@@ -234,4 +241,4 @@ router.post('/link', isAuth, (req: IRequest, res, next) => {
     });
 });
 
-module.exports = router;
+export default router;

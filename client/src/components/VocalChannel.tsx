@@ -107,7 +107,7 @@ const VocalChannel = () => {
 
     useEffect(() => {
         setActiveCalls((prevState) => {
-            prevState.forEach((call, i) => {
+            prevState.forEach((call) => {
                 call.close();
             });
             return [];
@@ -121,6 +121,7 @@ const VocalChannel = () => {
         console.log('my peer:', peer ? peer.id : 'none');
         return () => {
             peer?.off('call', callEvent);
+            peer?.off('error');
         };
     }, [peer, callEvent, hello]);
 

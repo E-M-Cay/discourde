@@ -6,7 +6,7 @@ import { User } from '../../entities/User';
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();
-const isAuth = require('../../MiddleWares/isAuth');
+import isAuth from '../../MiddleWares/isAuth';
 
 const userRepository = AppDataSource.getRepository(User);
 
@@ -89,4 +89,4 @@ router.get('/home', isAuth, (_req: Request, res: Response) => {
     res.send('Hello fdp');
 });
 
-module.exports = router;
+export default router;

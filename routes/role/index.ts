@@ -11,7 +11,7 @@ import IRequest from '../../Interfaces/IRequest';
 import { In } from 'typeorm';
 import { ServerUser } from '../../entities/ServerUser';
 
-const isAuth = require('../../MiddleWares/isAuth');
+import isAuth from '../../MiddleWares/isAuth';
 
 const UserRepository = AppDataSource.getRepository(User);
 const ServerRepository = AppDataSource.getRepository(Server);

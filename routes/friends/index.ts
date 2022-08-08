@@ -1,28 +1,17 @@
 import express from 'express';
-const router = express.Router();
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import AppDataSource from '../../db/AppDataSource';
-import bcrypt from 'bcrypt';
 import { User } from '../../entities/User';
 import { Server } from '../../entities/Server';
-import { Channel } from '../../entities/Channel';
-import { VocalChannel } from '../../entities/VocalChannel';
-import jwt from 'jsonwebtoken';
 import IRequest from '../../Interfaces/IRequest';
-import { In } from 'typeorm';
-import { ServerUser } from '../../entities/ServerUser';
-import { ChannelMessage } from '../../entities/ChannelMessage';
 import { Friendship } from '../../entities/Friendship';
 import { FriendRequest } from '../../entities/FriendRequest';
+import isAuth from '../../MiddleWares/isAuth';
 
-const isAuth = require('../../MiddleWares/isAuth');
+const router = express.Router();
 
 const UserRepository = AppDataSource.getRepository(User);
 const ServerRepository = AppDataSource.getRepository(Server);
-const ServerUserRepository = AppDataSource.getRepository(ServerUser);
-const ChannelRepository = AppDataSource.getRepository(Channel);
-const VocalChannelRepository = AppDataSource.getRepository(VocalChannel);
-const ChannelMessageRepository = AppDataSource.getRepository(ChannelMessage);
 const FriendshipRepository = AppDataSource.getRepository(Friendship);
 const FriendRequestRepository = AppDataSource.getRepository(FriendRequest);
 
@@ -52,7 +41,7 @@ router.get('/list/:user_id', isAuth, async (req: IRequest, res: Response) => {
     }
 });
 
-router.post('/create/', isAuth, async (req: IRequest, res: Response) => {
+router.post('/create', isAuth, async (req: IRequest, res: Response) => {
     if ('user_id_1' in req.body && 'user_id_2' in req.body) {
         const user_1 = await UserRepository.findOneBy({
             id: req.body.user_id_1,
@@ -74,7 +63,7 @@ router.post('/create/', isAuth, async (req: IRequest, res: Response) => {
             return res.status(400).send(error);
         }
     }
-    return res.status(400).send('Error wrond arguments');
+    return res.status(400).send('Missing information');
 });
 
 router.delete(
@@ -159,3 +148,5 @@ router.delete(
         }
     }
 );
+
+export default router;

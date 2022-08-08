@@ -1,6 +1,3 @@
-var express = require('express');
-
-var router = express.Router();
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../entities/User';
 import AppDataSource from '../db/AppDataSource';
@@ -17,7 +14,7 @@ interface IJWT extends jwt.JwtPayload {
 
 // Middleware : sert à intercepter la requête : Pour auth : on va regarder si on a un token et s'il est valide on autorise la requête suivante, sinon on envoie une erreur
 
-module.exports = async function (
+export default async function (
     req: IRequest,
     res: Response,
     next: NextFunction
@@ -50,4 +47,4 @@ module.exports = async function (
     } catch (e) {
         return res.status(401).json({ err: 'fail:', e });
     }
-};
+}

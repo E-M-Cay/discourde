@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface UserState {
-    rooms: string[];
     username: string;
     serverUsername?: string;
     token?: string;
@@ -9,22 +8,23 @@ interface UserState {
     user_id?: number;
     activeChannel?: number;
     activeVocalChannel?: number;
+    home: boolean;
 }
 
 const initialUserState: UserState = {
     token: localStorage.getItem('token')
         ? (localStorage.getItem('token') as string)
         : undefined,
-    rooms: [],
     username: '',
+    home: true,
 };
 
 export const userSlice = createSlice({
     initialState: initialUserState,
     name: 'user',
     reducers: {
-        joinRoomSuccess: (state, action: PayloadAction<string>) => {
-            state.rooms = [...state.rooms, action.payload];
+        setIsHome: (state, action: PayloadAction<boolean>) => {
+            state.home = action.payload;
         },
         setUsername: (state, action: PayloadAction<string>) => {
             state.username = action.payload;
@@ -51,7 +51,7 @@ export const userSlice = createSlice({
 });
 
 export const {
-    joinRoomSuccess,
+    setIsHome,
     setUsername,
     setToken,
     setActiveServer,

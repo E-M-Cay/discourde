@@ -69,26 +69,31 @@ router.post('/create_server', isAuth, async (req: IRequest, res: Response) => {
                 name: name,
                 main_img: main_img,
                 logo: '',
-                owner: owner,
+                owner: { id: req.id },
             });
-            await ServerRepository.save(server);
             const vocalChan = vocalChannelRepository.create({
                 name: 'Forum',
                 server: server,
             });
-            await vocalChannelRepository.save(vocalChan);
+            server.vocalChannels.push(vocalChan);
+            //await vocalChannelRepository.save(vocalChan);
             const textChan: Channel = channelRepository.create({
                 name: 'Général',
                 server: server,
             });
-            await channelRepository.save(textChan);
+            //await channelRepository.save(textChan);
+            server.channels.push(textChan);
 
             const serverUser: ServerUser = ServerUserRepository.create({
                 server: server,
-                user: owner,
+                user: { id: req.id as number },
                 nickname: owner.username,
             });
-            await ServerUserRepository.save(serverUser);
+
+            server.users.push(serverUser);
+
+            //await ServerUserRepository.save(serverUser);
+            await ServerRepository.save(server);
             return res
                 .status(200)
                 .send({ id: serverUser.id, nickname: owner.username, server });

@@ -1,8 +1,8 @@
 import { Image, Typography, Tooltip } from 'antd';
-import React from 'react';
+import logo from '../assets/discourde.png';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setActiveServer } from '../redux/userSlice';
+import { setActiveServer, setIsHome } from '../redux/userSlice';
 
 interface ServerResponse {
     id: number;
@@ -17,22 +17,31 @@ interface Server {
     name: string;
 }
 
-export const CustomLimage = (props: { obj: ServerResponse }) => {
-    const obj = props.obj;
+export const CustomLimage = (props: { obj?: ServerResponse }) => {
+    const { obj } = props;
     const [isFocused, setFocus] = useState(false);
     const dispatch = useAppDispatch();
+
+    const onClickHandler = () => {
+        if (obj) {
+            dispatch(setActiveServer(obj.server.id));
+            dispatch(setIsHome(false));
+        } else {
+            dispatch(setIsHome(true));
+        }
+    };
 
     return (
         <Tooltip
             mouseLeaveDelay={0.3}
             placement='left'
             style={{ fontSize: '32px' }}
-            title={obj.server.name}>
+            title={obj?.server.name || 'Home'}>
             <img
                 onMouseEnter={() => setFocus(true)}
-                alt={obj.server.name}
+                alt={obj?.server.name || 'Home'}
                 onMouseLeave={() => setFocus(false)}
-                onClick={() => dispatch(setActiveServer(obj.server.id))}
+                onClick={onClickHandler}
                 className={'imgS'}
                 style={{
                     margin: '5px auto',
@@ -44,9 +53,11 @@ export const CustomLimage = (props: { obj: ServerResponse }) => {
                     height: '50px',
                 }}
                 src={
-                    obj.server.main_img[0] === 'h'
-                        ? obj.server.main_img
-                        : 'https://robohash.org/etdoloremvoluptas.png?size=50x50&set=set1'
+                    obj
+                        ? obj?.server.main_img[0] === 'h'
+                            ? obj?.server.main_img
+                            : 'https://robohash.org/etdoloremvoluptas.png?size=50x50&set=set1'
+                        : logo
                 }
             />
         </Tooltip>

@@ -119,24 +119,22 @@ io.use((socket: ISocket, next) => {
 });
 
 io.on('connection', (socket: ISocket) => {
-    console.log('socket connected', socket.id);
-
-    //console.log('connection');
-    socket.username = 'user#' + Math.floor(Math.random() * 999999);
-    socket.join('test');
-
     socket.on('username', (newUsername) => {
         socket.username = newUsername;
         socket.emit('username', newUsername);
     });
 
     socket.on('message', async (content: Message) => {
-        const user = await userRepository.findOneBy({
-            id: socket.user_id,
+        const user = await userRepository.count({
+            where: { id: socket.user_id },
+            select: { id: true },
         });
 
-        const channel = await ChannelRepository.findOneBy({
-            id: content.channel,
+        // const channedl = await ChannelRepository.findOne(1, {});
+
+        const channel = await ChannelRepository.count({
+            where: { id: content.channel },
+            select: { id: true },
         });
 
         if (channel && user) {
@@ -146,17 +144,17 @@ io.on('connection', (socket: ISocket) => {
                     .slice(0, 19)
                     .replace('T', ' ');
                 const channel_message: any = ChannelMessageRepository.create({
-                    channel: channel,
+                    channel: { id: content.channel },
                     content: content.content,
                     send_time: time,
-                    author: user,
+                    author: { id: socket.user_id },
                 });
                 ChannelMessageRepository.save(channel_message);
-                io.emit(`message:${channel.id}`, {
+                io.emit(`message:${content.channel}`, {
                     id: content.channel,
                     content: content.content,
                     send_time: time,
-                    author: user.id,
+                    author: socket.user_id,
                 });
             } catch (e) {
                 console.log(e);
@@ -271,71 +269,4 @@ function get_user_status(user_id: number) {
     return global.user_id_to_peer_id.has(user_id)
         ? global.user_id_to_status.get(user_id)
         : 0;
-}
-
-const PermRepository = AppDataSource.getRepository(Permission);
-
-async function init_perm_bdd() {
-    if ((await PermRepository.count({})) != 0) return;
-
-    PermRepository.save(
-        PermRepository.create({ id: 1, name: 'can_create_channel' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 2, name: 'can_update_channel' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 3, name: 'can_delete_channel' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 4, name: 'can_see_hidden_channel' })
-    );
-
-    PermRepository.save(
-        PermRepository.create({ id: 5, name: 'can_invite_user' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 7, name: 'can_mute_user' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 8, name: 'can_kick_user' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 9, name: 'can_mute_user' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 10, name: 'can_ban_user' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 11, name: 'can_update_nickname' })
-    );
-
-    PermRepository.save(
-        PermRepository.create({ id: 12, name: 'can_create_role' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 13, name: 'can_update_role' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 14, name: 'can_delete_role' })
-    );
-
-    PermRepository.save(
-        PermRepository.create({ id: 15, name: 'can_create_message' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 16, name: 'can_update_message' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 17, name: 'can_delete_message' })
-    );
-
-    PermRepository.save(
-        PermRepository.create({ id: 18, name: 'can_update_server_name' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 19, name: 'can_update_server_logo' })
-    );
-
-    PermRepository.save(PermRepository.create({ id: 20, name: 'is_admin' }));
 }

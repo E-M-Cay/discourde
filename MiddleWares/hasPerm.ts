@@ -14,6 +14,7 @@ import { createQueryBuilder } from 'typeorm';
 import { Role } from '../entities/Role';
 import { Permission } from '../entities/Permission';
 import { RolePermission } from '../entities/RolePermission';
+import Permissions from '../types/Permissions';
 
 const userRepository = AppDataSource.getRepository(User);
 const serverRepository = AppDataSource.getRepository(Server);
@@ -38,16 +39,17 @@ module.exports = async function (
     const user_id = req.id;
     const server_id = req.server_id;
 
-    const permission_list = await permissionRepository.find({
-        relations: [
-            'roles',
-            'roles.role',
-            'roles.role.users',
-            'roles.role.users.user',
-            'roles.role.users.user.user',
-            'roles.role.users.user.server',
-        ],
-        where: {
+    const permission_list = await permissionRepository.countBy([
+        {
+            // relations: [
+            //     'roles',
+            //     'roles.role',
+            //     'roles.role.users',
+            //     'roles.role.users.user',
+            //     'roles.role.users.user.user',
+            //     'roles.role.users.user.server',
+            // ],
+            name: 'Permissions.',
             roles: {
                 role: {
                     users: {
@@ -63,17 +65,34 @@ module.exports = async function (
                 },
             },
         },
-    });
+        {
+            name: Permissions.IS_ADMIN,
+            roles: {
+                role: {
+                    users: {
+                        user: {
+                            user: {
+                                id: user_id,
+                            },
+                            server: {
+                                id: server_id,
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    ]);
 
     //console.log(permission_list);
 
-    for (const permission of permission_list) {
-        //console.log(permission)
-        if (permission.id == action) {
-            next();
-            break;
-        }
-    }
+    // for (const permission of permission_list) {
+    //     //console.log(permission)
+    //     if (permission.id == action) {
+    //         next();
+    //         break;
+    //     }
+    // }
 
     next();
 };

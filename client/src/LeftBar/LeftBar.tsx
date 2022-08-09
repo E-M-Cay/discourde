@@ -155,8 +155,9 @@ export const LeftBar = (props: {
                     flexWrap: 'wrap',
                     overflowY: 'scroll',
                 }}>
+                <CustomLimage key={0} />
                 {props.servers.map((object: ServerResponse, i: number) => (
-                    <CustomLimage obj={object} key={i} />
+                    <CustomLimage obj={object} key={object.server.id} />
                 ))}
                 <Tooltip
                     mouseLeaveDelay={0.3}

@@ -5,6 +5,8 @@ import { ChanelBar } from '../ChanelBar/ChanelBar';
 import chanelData from '../mock1';
 import { FriendPanel } from '../FriendPanel/FriendPanel';
 import { useAppSelector } from '../redux/hooks';
+import { CallPanel } from '../CallPanel/CallPanel';
+import './Main.css';
 
 export const Main = () => {
     return (
@@ -18,10 +20,10 @@ export const Main = () => {
             <Col style={{ backgroundColor: '#535151' }} span={3.5}>
                 <ChanelBar />
             </Col>
-            <Col span={16}>
-                <FriendPanel />
+            <Col span={16} className='onCall'>
+                <CallPanel />
             </Col>
-            <Col style={{ backgroundColor: 'grey' }} span={4}>
+            <Col  span={4}>
                 <StatusBar />
             </Col>
         </Row>

@@ -9,6 +9,7 @@ interface UserState {
     activeChannel?: number;
     activeVocalChannel?: number;
     home: boolean;
+    privateChats: number[];
 }
 
 const initialUserState: UserState = {
@@ -17,6 +18,7 @@ const initialUserState: UserState = {
         : undefined,
     username: '',
     home: true,
+    privateChats: [],
 };
 
 export const userSlice = createSlice({
@@ -47,6 +49,12 @@ export const userSlice = createSlice({
         setActiveVocalChannel: (state, action: PayloadAction<number>) => {
             state.activeVocalChannel = action.payload;
         },
+        addPrivateChat: (state, action: PayloadAction<number>) => {
+            state.privateChats.push(action.payload);
+        },
+        setPrivateChat: (state, action: PayloadAction<number[]>) => {
+            state.privateChats = action.payload;
+        },
     },
 });
 
@@ -59,6 +67,8 @@ export const {
     setActiveChannel,
     setServerUsername,
     setActiveVocalChannel,
+    addPrivateChat,
+    setPrivateChat,
 } = userSlice.actions;
 
 export default userSlice.reducer;

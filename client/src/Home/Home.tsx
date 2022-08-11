@@ -13,7 +13,6 @@ export const Home = (props: {
     setTokenMissing: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
     const [servers, setServers] = useState<ServerResponse[]>([]);
-    const token = useAppSelector((state) => state.userReducer.token);
     const dispatch = useAppDispatch();
     const { socket } = useContext(PeerSocketContext);
 
@@ -25,14 +24,10 @@ export const Home = (props: {
                 },
             })
             .then((res) => {
-                if (res.data.length === 0) {
-                    console.log('no servers');
-                    return;
-                }
                 console.log(res.data[0], 'data');
                 setServers(res.data);
                 console.log('active server:', res.data[0].server.id);
-                dispatch(setActiveServer(res.data[0].server.id));
+                dispatch(setActiveServer(res.data[0]?.server.id));
             })
             .catch((err) => {
                 console.log(err);

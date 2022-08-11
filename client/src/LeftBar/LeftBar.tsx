@@ -10,19 +10,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
 import { useAppSelector } from '../redux/hooks';
 import { setServers } from 'dns';
-
-interface ServerResponse {
-    id: number;
-    nickname: string;
-    server: Server;
-}
-
-interface Server {
-    id: number;
-    logo: string;
-    main_img: string;
-    name: string;
-}
+import { ServerResponse } from '../types/types';
 
 export const LeftBar = (props: {
     servers: ServerResponse[];

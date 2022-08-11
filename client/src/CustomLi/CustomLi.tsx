@@ -2,27 +2,15 @@ import { Image, Typography, Tooltip } from 'antd';
 import logo from '../assets/discourde.png';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setActiveServer, setIsHome } from '../redux/userSlice';
-
-interface ServerResponse {
-    id: number;
-    nickname: string;
-    server: Server;
-}
-
-interface Server {
-    id: number;
-    logo: string;
-    main_img: string;
-    name: string;
-}
+import { addPrivateChat, setActiveServer, setIsHome } from '../redux/userSlice';
+import { ServerResponse, ServerUser, User } from '../types/types';
 
 export const CustomLimage = (props: { obj?: ServerResponse }) => {
     const { obj } = props;
     const [isFocused, setFocus] = useState(false);
     const dispatch = useAppDispatch();
 
-    const onClickHandler = () => {
+    const onClickServer = () => {
         if (obj) {
             dispatch(setActiveServer(obj.server.id));
             dispatch(setIsHome(false));
@@ -41,7 +29,7 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
                 onMouseEnter={() => setFocus(true)}
                 alt={obj?.server.name || 'Home'}
                 onMouseLeave={() => setFocus(false)}
-                onClick={onClickHandler}
+                onClick={onClickServer}
                 className={'imgS'}
                 style={{
                     margin: '5px auto',
@@ -53,23 +41,37 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
                     height: '50px',
                 }}
                 src={
-                    obj
+                    obj?.server.main_img
                         ? obj?.server.main_img[0] === 'h'
                             ? obj?.server.main_img
-                            : 'https://robohash.org/etdoloremvoluptas.png?size=50x50&set=set1'
+                            : logo
                         : logo
                 }
             />
         </Tooltip>
     );
 };
-export const CustomImage = ({ obj }: any) => {
+
+export const CustomImage = (props: { obj: ServerUser }) => {
+    const { obj } = props;
     const [isFocused, setFocus] = useState(false);
+    const dispatch = useAppDispatch();
+    const privateChats = useAppSelector(
+        (state) => state.userReducer.privateChats
+    );
+
+    const onClickHandler = () => {
+        if (!privateChats.includes(obj.user.id)) {
+            dispatch(addPrivateChat(obj.user.id));
+        }
+    };
+
     return (
         <img
-            alt={obj.first_name}
+            alt={obj.user.username}
             onMouseEnter={() => setFocus(true)}
             onMouseLeave={() => setFocus(false)}
+            onClick={onClickHandler}
             className={'imgS2'}
             style={{
                 margin: '5px auto',
@@ -78,15 +80,17 @@ export const CustomImage = ({ obj }: any) => {
                 borderRadius: '30px',
                 cursor: 'pointer',
             }}
-            src={obj.img}
+            src={obj.user.picture ?? logo}
         />
     );
 };
-export const CustomImageMess = ({ obj }: any) => {
+
+export const CustomImageMess = (props: { user: User }) => {
     const [isFocused, setFocus] = useState(false);
+    const { user } = props;
     return (
         <img
-            alt={obj.first_name}
+            alt={user.username}
             onMouseEnter={() => setFocus(true)}
             onMouseLeave={() => setFocus(false)}
             style={{
@@ -99,9 +103,7 @@ export const CustomImageMess = ({ obj }: any) => {
                 marginRight: '17px',
                 marginLeft: '10px',
             }}
-            src={
-                'https://robohash.org/sapienteateveniet.png?size=50x50&set=set1'
-            }
+            src={user.picture ?? logo}
         />
     );
 };

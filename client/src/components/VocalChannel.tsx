@@ -12,6 +12,9 @@ const VocalChannel = () => {
     const [_activeCalls, setActiveCalls] = useState<MediaConnection[]>([]);
 
     const toggleMicrophone = async () => {
+        const toto = navigator.mediaDevices;
+        console.log(await toto.enumerateDevices(), 'enumerate');
+
         if (!streamRef.current?.active) {
             await navigator.mediaDevices
                 .getUserMedia({ audio: true })
@@ -54,6 +57,7 @@ const VocalChannel = () => {
 
         call.on('close', () => {
             audioNode.remove();
+            setActiveCalls((prevCall) => prevCall.filter((c) => c !== call));
         });
         //}
     }, []);
@@ -73,9 +77,15 @@ const VocalChannel = () => {
                 setActiveCalls((prevState) => [...prevState, call]);
             });
 
+            // streamRef.current
+            //     ?.getAudioTracks()
+            //     .forEach((tr) => streamRef.current?.removeTrack(tr));
+
             call?.on('close', () => {
-                console.log('close pipi');
                 audioNode.remove();
+                setActiveCalls((prevCall) =>
+                    prevCall.filter((c) => c !== call)
+                );
             });
         },
         [peer]

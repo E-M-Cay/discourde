@@ -8,6 +8,7 @@ export interface User {
     id: number;
     status: number;
     username: string;
+    picture?: string;
 }
 
 export interface TextMessage {
@@ -26,7 +27,7 @@ export interface ServerResponse {
 export interface Server {
     id: number;
     logo: string;
-    main_img: string;
+    main_img?: string;
     name: string;
 }
 

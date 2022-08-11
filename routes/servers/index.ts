@@ -171,6 +171,7 @@ router.get('/list_user/:id', isAuth, async (req: IRequest, res: Response) => {
             user: {
                 id: true,
                 username: true,
+                picture: true,
             },
         },
     });

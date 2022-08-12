@@ -92,7 +92,8 @@ router.post('/create_server', isAuth, async (req: IRequest, res: Response) => {
                 return res.status(201).send(serverUser);
             })
             .catch((e) => {
-                return res.status(401).send(e.getMessage());
+                console.log(e);
+                return res.status(401).send('Error');
             });
     }
 });

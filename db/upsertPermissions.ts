@@ -1,8 +1,9 @@
 import { DataSource } from 'typeorm';
 import { Permission } from '../entities/Permission';
 import Permissions from '../types/Permissions';
+import AppDataSource from './AppDataSource';
 
-const upsertPermissions = async (AppDataSource: DataSource) => {
+const upsertPermissions = async () => {
     console.log('inserting permissions');
     const permissionRepository = AppDataSource.getRepository(Permission);
 

@@ -26,7 +26,7 @@ export class Permission {
         () => RolePermission,
         (rolePermission) => rolePermission.permission,
         {
-            onDelete: 'CASCADE',
+            cascade: ['insert'],
         }
     )
     roles: RolePermission[];

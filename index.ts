@@ -15,6 +15,7 @@ import friends from './routes/friends';
 import channels from './routes/channels';
 import users from './routes/users/index';
 import servers from './routes/servers/index';
+import upsertPermissions from './db/upsertPermissions';
 
 dotenv.config();
 
@@ -30,6 +31,15 @@ app.use(express.urlencoded({ extended: true }));
 const ChannelMessageRepository = AppDataSource.getRepository(ChannelMessage);
 const ChannelRepository = AppDataSource.getRepository(Channel);
 const userRepository = AppDataSource.getRepository(User);
+
+AppDataSource.initialize()
+    .then(() => {
+        console.log('Data Source has been initialized!');
+        upsertPermissions();
+    })
+    .catch((err) => {
+        console.error('Error during Data Source initialization', err);
+    });
 
 interface Message {
     channel: number;

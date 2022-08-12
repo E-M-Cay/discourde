@@ -50,31 +50,31 @@ export class Server {
     link: string;
 
     @ManyToOne(() => User, (user) => user.owned_servers, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     owner: User;
 
     @OneToMany(() => ServerUser, (ServerUser) => ServerUser.server, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     users: ServerUser[];
 
     @OneToMany(() => Channel, (channel) => channel.server, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     channels: Channel[];
 
     @OneToMany(() => VocalChannel, (vocalChannel) => vocalChannel.server, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     vocalChannels: VocalChannel[];
     @OneToMany(() => Role, (role) => role.server, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     public roles: Role[];
 
     @OneToMany(() => BannedUser, (bannedUser) => bannedUser.server, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     bannedUsers: BannedUser[];
 }

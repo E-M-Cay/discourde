@@ -10,12 +10,12 @@ export class Friendship {
     id: number;
 
     @ManyToOne(() => User, (user) => user.friendships, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     user1: User;
 
     @ManyToOne(() => User, (user) => user.friendships, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     user2: User;
 }

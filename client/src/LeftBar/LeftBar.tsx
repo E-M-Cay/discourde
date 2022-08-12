@@ -83,14 +83,7 @@ export const LeftBar = (props: {
                 setIsModalVisible(false);
 
                 props.setServers((prevServerList) => {
-                    return [
-                        ...prevServerList,
-                        {
-                            id: res.data.id,
-                            nickname: res.data.nickname,
-                            server: res.data.server,
-                        },
-                    ];
+                    return [...prevServerList, res.data];
                 });
             });
     };

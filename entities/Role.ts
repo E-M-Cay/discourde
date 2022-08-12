@@ -23,17 +23,17 @@ export class Role {
     name: string;
 
     @ManyToOne(() => Server, (server) => server.roles, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     server: Server;
 
     @OneToMany(() => RolePermission, (rolePermission) => rolePermission.role, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     permissions: RolePermission[];
 
     @OneToMany(() => ServerUserRole, (serverUserRole) => serverUserRole.role, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     users: ServerUserRole[];
 }

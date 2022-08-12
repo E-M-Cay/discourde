@@ -25,12 +25,12 @@ export class Channel {
     hidden: boolean;
 
     @ManyToOne(() => Server, (server) => server.channels, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     server: Server;
 
     @OneToMany(() => ChannelMessage, (message) => message.channel, {
-        onDelete: 'SET NULL',
+        cascade: ['insert'],
     })
     messages: ChannelMessage[];
 }

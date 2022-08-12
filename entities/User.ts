@@ -58,11 +58,11 @@ export class User {
     })
     picture: string;
 
-    @OneToMany(() => Server, (server) => server.owner, { cascade: true })
+    @OneToMany(() => Server, (server) => server.owner, { cascade: ['insert'] })
     owned_servers: Server[];
 
     @OneToMany(() => ServerUser, (ServerUser) => ServerUser.server, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     servers: ServerUser[];
 
@@ -70,28 +70,28 @@ export class User {
         () => ChannelMessage,
         (channelMessage) => channelMessage.author,
         {
-            onDelete: 'CASCADE',
+            cascade: ['insert'],
         }
     )
     channel_messages: ChannelMessage[];
 
     @OneToMany(() => Friendship, (friendship) => friendship.user1, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     friendships: Friendship[];
 
     @OneToMany(() => BannedUser, (bannedUser) => bannedUser.user, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     bannedFrom: Server[];
 
     @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.sender, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     sentFriendRequests: FriendRequest[];
 
     @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.receiver, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     receivedFriendRequest: FriendRequest[];
 

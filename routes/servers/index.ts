@@ -64,74 +64,67 @@ router.post('/create_server', isAuth, async (req: IRequest, res: Response) => {
 
         if (!owner) return res.status(404).send('User not found');
 
-        try {
-            const server: Server = ServerRepository.create({
-                name: name,
-                main_img: main_img,
-                logo: '',
-                owner: { id: req.id },
-            });
-            const vocalChan = vocalChannelRepository.create({
-                name: 'Forum',
-                server: server,
-            });
-            server.vocalChannels.push(vocalChan);
-            //await vocalChannelRepository.save(vocalChan);
-            const textChan: Channel = channelRepository.create({
-                name: 'Général',
-                server: server,
-            });
-            //await channelRepository.save(textChan);
-            server.channels.push(textChan);
-
-            const serverUser: ServerUser = ServerUserRepository.create({
-                server: server,
-                user: { id: req.id as number },
-                nickname: owner.username,
-            });
-
-            server.users.push(serverUser);
-
-            //await ServerUserRepository.save(serverUser);
-            await ServerRepository.save(server);
-            return res
-                .status(200)
-                .send({ id: serverUser.id, nickname: owner.username, server });
-        } catch (error) {
-            console.log(error);
-            return res.status(400).send('Error');
-        }
-    }
-    return res.status(400).send('Wrong arguments');
-});
-
-router.put('/update_server', isAuth, async (req: IRequest, res: Response) => {
-    if (
-        ('main_img' in req.body || 'logo' in req.body) &&
-        'server_id' in req.body
-    ) {
-        const server = await ServerRepository.findOneBy({
-            id: Number(req.body.server_id),
+        const vocalChan = vocalChannelRepository.create({
+            name: 'Forum',
         });
-        const logo: string = 'logo' in req.body ? req.body.name : null;
-        const main_img: string =
-            'main_img' in req.body ? req.body.main_img : null;
 
-        if (!server) return res.status(400).send('Error server not found');
+        //await vocalChannelRepository.save(vocalChan);
+        const textChan: Channel = channelRepository.create({
+            name: 'Général',
+        });
+        const server: Server = ServerRepository.create({
+            name: name,
+            main_img: main_img,
+            logo: '',
+            owner: { id: req.id },
+            channels: [textChan],
+            vocalChannels: [vocalChan],
+        });
 
-        try {
-            if (logo) server.logo = logo;
-            if (main_img) server.main_img = main_img;
+        const serverUser: ServerUser = ServerUserRepository.create({
+            user: { id: Number(req.id) },
+            nickname: owner.username,
+            server,
+        });
 
-            ServerRepository.save(server);
-            return res.status(200).send(server);
-        } catch (error) {
-            console.log(error);
-            return res.status(400).send('Error');
-        }
+        await ServerUserRepository.save(serverUser)
+            .then((serverUser) => {
+                return res.status(201).send(serverUser);
+            })
+            .catch((e) => {
+                return res.status(401).send(e.getMessage());
+            });
     }
-    return res.status(400).send('Wrong arguments');
 });
+
+router.put(
+    '/update_server/:id',
+    isAuth,
+    async (req: IRequest, res: Response) => {
+        if ('main_img' in req.body || 'logo' in req.body) {
+            const server = await ServerRepository.findOneBy({
+                id: Number(req.params.id),
+            });
+            const logo: string = 'logo' in req.body ? req.body.name : null;
+            const main_img: string =
+                'main_img' in req.body ? req.body.main_img : null;
+
+            if (!server) return res.status(400).send('Error server not found');
+
+            try {
+                if (logo) server.logo = logo;
+                if (main_img) server.main_img = main_img;
+
+                ServerRepository.save(server);
+                return res.status(200).send(server);
+            } catch (error) {
+                console.log(error);
+                return res.status(400).send('Error');
+            }
+        }
+        return res.status(400).send('Wrong arguments');
+    }
+);
 
 router.delete(
     '/delete_server/:id',
@@ -167,6 +160,7 @@ router.get('/list_user/:id', isAuth, async (req: IRequest, res: Response) => {
         },
         relations: {
             user: true,
+            server: false,
         },
         select: {
             user: {

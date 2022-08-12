@@ -8,12 +8,12 @@ export class FriendRequest {
     id: number;
 
     @ManyToOne(() => User, (user) => user.sentFriendRequests, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     sender: User;
 
     @ManyToOne(() => User, (user) => user.receivedFriendRequest, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     receiver: User;
 }

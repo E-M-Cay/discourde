@@ -16,10 +16,12 @@ export class BannedUser {
     id: number;
 
     @ManyToOne(() => Server, (server) => server.bannedUsers, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     server: Server;
 
-    @ManyToOne(() => User, (user) => user.bannedFrom, { onDelete: 'CASCADE' })
+    @ManyToOne(() => User, (user) => user.bannedFrom, {
+        cascade: ['insert', 'remove'],
+    })
     user: User;
 }

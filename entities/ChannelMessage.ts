@@ -22,12 +22,13 @@ export class ChannelMessage {
     send_time: string;
 
     @ManyToOne(() => Channel, (channel) => channel.messages, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     channel: Channel;
 
     @ManyToOne(() => User, (user) => user.channel_messages, {
         onDelete: 'SET NULL',
+        cascade: ['insert'],
     })
     author: User;
 }

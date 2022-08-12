@@ -5,6 +5,7 @@ import {
     Column,
     OneToMany,
     ManyToOne,
+    JoinColumn,
 } from 'typeorm';
 import { Server } from './Server';
 import { ServerUserRole } from './ServerUserRole';
@@ -16,7 +17,7 @@ export class ServerUser {
     id: number;
 
     @ManyToOne(() => User, (user) => user.servers, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     user: User;
 
@@ -24,12 +25,13 @@ export class ServerUser {
     nickname: string;
 
     @ManyToOne(() => Server, (server) => server.users, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
+        eager: true,
     })
     server: Server;
 
     @OneToMany(() => ServerUserRole, (serverUserRole) => serverUserRole.user, {
-        onDelete: 'CASCADE',
+        cascade: ['insert'],
     })
     roles: ServerUserRole[];
 }

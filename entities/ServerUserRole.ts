@@ -9,12 +9,12 @@ export class ServerUserRole {
     id: number;
 
     @ManyToOne(() => ServerUser, (serverUser) => serverUser.roles, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     user: ServerUser;
 
     @ManyToOne(() => Role, (role) => role.users, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     role: Role;
 }

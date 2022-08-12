@@ -16,12 +16,12 @@ export class RolePermission {
     id: number;
 
     @ManyToOne(() => Permission, (permission) => permission.roles, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     permission: Permission;
 
     @ManyToOne(() => Role, (role) => role.permissions, {
-        onDelete: 'CASCADE',
+        cascade: ['insert', 'remove'],
     })
     role: Role;
 }

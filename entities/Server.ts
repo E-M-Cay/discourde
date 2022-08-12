@@ -42,6 +42,13 @@ export class Server {
     })
     logo: string;
 
+    @Column({
+        type: 'varchar',
+        length: 255,
+        nullable: true,
+    })
+    link: string;
+
     @ManyToOne(() => User, (user) => user.owned_servers, {
         onDelete: 'CASCADE',
     })

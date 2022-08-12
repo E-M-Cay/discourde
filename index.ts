@@ -11,11 +11,17 @@ import AppDataSource from './db/AppDataSource';
 import { Channel } from './entities/Channel';
 import { User } from './entities/User';
 import { Permission } from './entities/Permission';
+import friends from './routes/friends';
+import channels from './routes/channels';
+import users from './routes/users/index';
+import servers from './routes/servers/index';
 
 dotenv.config();
 
 const app: Express = express(),
     port: string = process.env.PORT || '5001';
+
+console.log(process.env.PORT, 'port');
 
 app.use(cors());
 app.use(express.json());
@@ -24,11 +30,6 @@ app.use(express.urlencoded({ extended: true }));
 const ChannelMessageRepository = AppDataSource.getRepository(ChannelMessage);
 const ChannelRepository = AppDataSource.getRepository(Channel);
 const userRepository = AppDataSource.getRepository(User);
-interface userStatus {
-    id: string;
-    status: string;
-    socketId: string;
-}
 
 interface Message {
     channel: number;
@@ -38,10 +39,10 @@ interface Message {
     token: string;
 }
 
-export let user_id_to_peer_id = new Map<number, string>();
-export let user_id_to_status = new Map<number, number>();
-export let user_id_to_vocal_channel = new Map<number, number>();
-
+global.user_id_to_peer_id = new Map<number, string>();
+global.user_id_to_status = new Map<number, number>();
+global.vocal_channel_to_user_list = new Map<number, number[]>();
+global.user_id_to_vocal_channel = new Map<number, number>();
 const user_status = new Map<number, string>();
 
 user_status.set(0, 'Disconected');
@@ -51,13 +52,10 @@ user_status.set(3, 'Do not disturb');
 
 const httpServer = createServer(app);
 
-app.get('/toto', (_req: Request, res: Response) => {
-    res.send('Express + TypeScript Server');
-});
-
-app.use('/server', require('./routes/server'));
-app.use('/user', require('./routes/user'));
-app.use('/channel', require('./routes/channel'));
+app.use('/server', servers);
+app.use('/user', users);
+app.use('/channel', channels);
+app.use('/friends', friends);
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname, 'client/build')));
@@ -111,31 +109,32 @@ io.use((socket: ISocket, next) => {
         socket.handshake.auth.token,
         process.env.SECRET_TOKEN || ''
     );
+    if (decoded) {
+        console.log('handshake');
 
-    // On ajoute l'utilisateur à la requête
-    socket.user_id = Number(decoded.user.id);
-    next();
+        // On ajoute l'utilisateur à la requête
+        socket.user_id = Number(decoded.user.id);
+        next();
+    }
 });
 
 io.on('connection', (socket: ISocket) => {
-    const token = socket.handshake.auth.token;
-
-    //console.log('connection');
-    socket.username = 'user#' + Math.floor(Math.random() * 999999);
-    socket.join('test');
-
     socket.on('username', (newUsername) => {
         socket.username = newUsername;
         socket.emit('username', newUsername);
     });
 
     socket.on('message', async (content: Message) => {
-        const user = await userRepository.findOneBy({
-            id: socket.user_id,
+        const user = await userRepository.count({
+            where: { id: socket.user_id },
+            select: { id: true },
         });
 
-        const channel = await ChannelRepository.findOneBy({
-            id: content.channel,
+        // const channedl = await ChannelRepository.findOne(1, {});
+
+        const channel = await ChannelRepository.count({
+            where: { id: content.channel },
+            select: { id: true },
         });
 
         if (channel && user) {
@@ -145,17 +144,17 @@ io.on('connection', (socket: ISocket) => {
                     .slice(0, 19)
                     .replace('T', ' ');
                 const channel_message: any = ChannelMessageRepository.create({
-                    channel: channel,
+                    channel: { id: content.channel },
                     content: content.content,
                     send_time: time,
-                    author: user,
+                    author: { id: socket.user_id },
                 });
                 ChannelMessageRepository.save(channel_message);
-                io.emit(`message:${channel.id}`, {
+                io.emit(`message:${content.channel}`, {
                     id: content.channel,
                     content: content.content,
                     send_time: time,
-                    author: user.id,
+                    author: socket.user_id,
                 });
             } catch (e) {
                 console.log(e);
@@ -165,44 +164,86 @@ io.on('connection', (socket: ISocket) => {
 
     socket.on('peerId', (data: { peer_id: string }) => {
         socket.peer_id = data.peer_id;
-        user_id_to_peer_id.set(socket.user_id as number, data.peer_id);
-        user_id_to_status.set(socket.user_id as number, 1);
+        global.user_id_to_status.set(socket.user_id as number, 1);
+        global.user_id_to_peer_id.set(socket.user_id as number, data.peer_id);
 
-        socket
-            .to('test')
-            .emit('hello', { socketId: socket.id, peer_id: data.peer_id });
-        const toto = get_user_status_list([]);
-        //console.log(toto);
-        socket.emit('users', Array.from(toto));
+        socket.broadcast.emit('userconnected', socket.user_id);
+        socket.emit('ready');
     });
 
     socket.on('message', (message) => {
         console.log(message);
     });
 
-    socket.on('disconnecting', (_reason) => {
-        user_id_to_peer_id.delete(socket.user_id as number);
-        user_id_to_status.delete(socket.user_id as number);
+    socket.on('disconnecting', (reason) => {
+        if (!socket.user_id) {
+            return console.error('no user_id');
+        }
+        global.user_id_to_peer_id.delete(socket.user_id);
+        global.user_id_to_status.delete(socket.user_id);
+        console.log('disconnected socket', socket.id, reason);
+        const currentVocalChannel = global.user_id_to_vocal_channel.get(
+            socket.user_id as number
+        );
+        if (currentVocalChannel) {
+            io.emit('leftvocal', {
+                user: socket.user_id,
+                chan: currentVocalChannel,
+            });
+            const userList =
+                global.vocal_channel_to_user_list.get(currentVocalChannel);
+            global.vocal_channel_to_user_list.set(
+                currentVocalChannel,
+                userList?.filter((u) => u !== socket.user_id) as number[]
+            );
+        }
 
-        socket.to('test').emit('disconnected', socket.id);
+        io.emit('userdisconnected', socket.user_id);
     });
 
     socket.on('inactif', () => {
-        user_id_to_status.delete(socket.user_id as number);
-        user_id_to_status.set(socket.user_id as number, 2);
+        global.user_id_to_status.delete(socket.user_id as number);
+        global.user_id_to_status.set(socket.user_id as number, 2);
     });
 
     socket.on('dnd', () => {
-        user_id_to_status.delete(socket.user_id as number);
-        user_id_to_status.set(socket.user_id as number, 3);
+        global.user_id_to_status.delete(socket.user_id as number);
+        global.user_id_to_status.set(socket.user_id as number, 3);
     });
 
     socket.on('joinvocalchannel', (id: number) => {
-        console.log('join vocal:', id, socket.id);
+        const currentVocalChannel = global.user_id_to_vocal_channel.get(
+            socket.user_id as number
+        );
+        if (currentVocalChannel && currentVocalChannel !== id) {
+            io.emit('leftvocal', {
+                user: socket.user_id,
+                chan: currentVocalChannel,
+            });
+            const userList =
+                global.vocal_channel_to_user_list.get(currentVocalChannel);
+            global.vocal_channel_to_user_list.set(
+                currentVocalChannel,
+                userList?.filter((u) => u !== socket.user_id) as number[]
+            );
+        }
+
+        global.user_id_to_vocal_channel.set(socket.user_id as number, id);
+        if (global.vocal_channel_to_user_list.has(id)) {
+            global.vocal_channel_to_user_list
+                .get(id)
+                ?.push(socket.user_id as number);
+        } else {
+            global.vocal_channel_to_user_list.set(id, [
+                socket.user_id as number,
+            ]);
+        }
+
         socket.broadcast.emit(`joiningvocalchannel:${id}`, {
             user: socket.user_id,
             peer_id: socket.peer_id,
         });
+        io.emit('joiningvocal', { user: socket.user_id, chan: id });
     });
 
     socket.on('vocalchannelchange', (truc: string) => {
@@ -213,7 +254,7 @@ io.on('connection', (socket: ISocket) => {
 function get_user_status_list(user_id_list: number[]) {
     user_id_list =
         user_id_list.length == 0
-            ? [...user_id_to_peer_id.keys()]
+            ? [...global.user_id_to_peer_id.keys()]
             : user_id_list;
     let res = new Map<number, number>();
     user_id_list.forEach((user_id) => {
@@ -225,72 +266,7 @@ function get_user_status_list(user_id_list: number[]) {
 }
 
 function get_user_status(user_id: number) {
-    return user_id_to_peer_id.has(user_id) ? user_id_to_status.get(user_id) : 0;
-}
-
-const PermRepository = AppDataSource.getRepository(Permission);
-
-async function init_perm_bdd() {
-    if ((await PermRepository.count({})) != 0) return;
-
-    PermRepository.save(
-        PermRepository.create({ id: 1, name: 'can_create_channel' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 2, name: 'can_update_channel' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 3, name: 'can_delete_channel' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 4, name: 'can_see_hidden_channel' })
-    );
-
-    PermRepository.save(
-        PermRepository.create({ id: 5, name: 'can_invite_user' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 7, name: 'can_mute_user' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 8, name: 'can_kick_user' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 9, name: 'can_mute_user' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 10, name: 'can_ban_user' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 11, name: 'can_update_nickname' })
-    );
-
-    PermRepository.save(
-        PermRepository.create({ id: 12, name: 'can_create_role' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 13, name: 'can_update_role' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 14, name: 'can_delete_role' })
-    );
-
-    PermRepository.save(
-        PermRepository.create({ id: 15, name: 'can_create_message' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 16, name: 'can_update_message' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 17, name: 'can_delete_message' })
-    );
-
-    PermRepository.save(
-        PermRepository.create({ id: 18, name: 'can_update_server_name' })
-    );
-    PermRepository.save(
-        PermRepository.create({ id: 19, name: 'can_update_server_logo' })
-    );
-
-    PermRepository.save(PermRepository.create({ id: 20, name: 'is_admin' }));
+    return global.user_id_to_peer_id.has(user_id)
+        ? global.user_id_to_status.get(user_id)
+        : 0;
 }

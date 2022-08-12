@@ -7,6 +7,7 @@ import {
     ManyToMany,
     JoinTable,
     OneToMany,
+    AfterLoad,
 } from 'typeorm';
 import { BannedUser } from './BannedUser';
 import { ChannelMessage } from './ChannelMessage';
@@ -17,6 +18,9 @@ import { ServerUser } from './ServerUser';
 
 @Entity()
 export class User {
+    status: number;
+    vocalChannel: number;
+
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -46,6 +50,13 @@ export class User {
         nullable: false,
     })
     join_date: number;
+
+    @Column({
+        type: 'varchar',
+        length: 255,
+        nullable: true,
+    })
+    picture: string;
 
     @OneToMany(() => Server, (server) => server.owner, { cascade: true })
     owned_servers: Server[];
@@ -83,4 +94,10 @@ export class User {
         onDelete: 'CASCADE',
     })
     receivedFriendRequest: FriendRequest[];
+
+    @AfterLoad()
+    setStatus() {
+        this.status = global.user_id_to_status.get(this.id) || 0;
+        this.vocalChannel = 0;
+    }
 }

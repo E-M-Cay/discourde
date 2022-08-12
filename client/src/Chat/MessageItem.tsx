@@ -7,20 +7,39 @@ interface Message {
     author: any;
 }
 
-export const MessageItem = (props: { obj: Message }) => {
-    const { obj } = props;
+interface ServerUser {
+    id: number;
+    nickname: string;
+    user: User;
+}
+
+interface User {
+    id: number;
+    status: number;
+    username: string;
+}
+
+type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
+
+export const MessageItem = (props: {
+    obj: Message;
+    userMap: UserMap;
+    picture?: string;
+}) => {
+    const { obj, userMap, picture } = props;
     return (
         <div className='messageItem'>
             <div className='messageItemAvatar'>
-                <CustomImageMess
-                    obj={
-                        'https://robohash.org/sapienteateveniet.png?size=50x50&set=set1'
-                    }
-                />
+                {userMap.get(obj.author) && (
+                    <CustomImageMess
+                        user={userMap.get(obj.author)?.user as User}
+                    />
+                )}
             </div>
             <div className='messageItemContent'>
                 <div className='messageItemContentName'>
-                    {obj.author}
+                    {' '}
+                    {userMap.get(obj.author)?.nickname}
                     <span className='time'> {obj.send_time}</span>
                 </div>
                 <div

@@ -1,24 +1,20 @@
-import React, { useContext, useEffect, useState } from 'react';
-import 'antd/dist/antd.css';
-import fake from '../mockMessage';
+import { useContext, useEffect, useState } from 'react';
+import 'antd/dist/antd.min.css';
+
 import { MessageItem } from './MessageItem';
 import axios from 'axios';
 import { useAppSelector } from '../redux/hooks';
 import { PeerSocketContext } from '../context/PeerSocket';
-const Message = () => {
+import { UserMap, TextMessage } from '../types/types';
+
+const Message = (props: { userMap: UserMap }) => {
+    const { userMap } = props;
     const { socket } = useContext(PeerSocketContext);
     const activeChannel = useAppSelector(
         (state) => state.userReducer.activeChannel
     );
 
-    interface Message {
-        id: number;
-        content: string;
-        send_time: string;
-        author: number;
-    }
-
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<TextMessage[]>([]);
 
     useEffect(() => {
         if (activeChannel) {
@@ -30,7 +26,7 @@ const Message = () => {
                 })
                 .then((res) => {
                     setMessages(res.data);
-                    console.log(res.data, 'data');
+                    //console.log(res.data, 'data');
                 });
         }
     }, [activeChannel]);
@@ -43,15 +39,15 @@ const Message = () => {
         };
     }, [socket, activeChannel]);
 
-    const receiveMessage = (message: Message) => {
-        setMessages(prev => [...prev, message]);
+    const receiveMessage = (message: TextMessage) => {
+        setMessages((prev) => [...prev, message]);
         console.log(message, 'message');
     };
 
     return (
         <div className='message'>
-            {messages?.map((fake, i: number) => (
-                <MessageItem obj={fake} key={i} />
+            {messages?.map((obj: TextMessage, i: number) => (
+                <MessageItem obj={obj} key={i} userMap={userMap} />
             ))}
         </div>
     );

@@ -15,57 +15,53 @@ import {
     UserAddOutlined,
 } from '@ant-design/icons';
 import {
-    Avatar,
     Button,
     Card,
     Collapse,
-    Divider,
     Dropdown,
     Menu,
-    Skeleton,
     Space,
     Tooltip,
     Modal,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import Sider from 'antd/lib/layout/Sider';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-//import chanelData from '../mock1';
 import './ChanelBar.css';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
-import { act } from 'react-dom/test-utils';
 import { PeerSocketContext } from '../context/PeerSocket';
+import { UserMap } from '../types/types';
 
 const { Panel } = Collapse;
 
-export const ChanelBar = () => {
+interface Channel {
+    hidden: boolean;
+    id: number;
+    name: string;
+}
+
+interface VocalChan extends Channel {
+    users: number[];
+}
+
+export const ChanelBar = (props: { userMap: UserMap }) => {
+    const { userMap } = props;
     const activeServer = useAppSelector(
         (state) => state.userReducer.activeServer
-    );
-    const activeChannel = useAppSelector(
-        (state) => state.userReducer.activeChannel
     );
     const { peer, socket } = useContext(PeerSocketContext);
     const dispatch = useAppDispatch();
     const headerTxt: string = 'SALONS TEXTUELS';
     const headerVoc: string = 'SALONS VOCAUX';
     const serverName: string = 'TEEEST SERVEUR';
-    const [vocalChannelList, setVocalChannelList] = useState<Channel[]>();
-    const [textChannelList, setTextChannelList] = useState<Channel[]>();
+    const [vocalChannelList, setVocalChannelList] = useState<VocalChan[]>([]);
+    const [textChannelList, setTextChannelList] = useState<Channel[]>([]);
     const activeVocalChannel = useAppSelector(
         (state) => state.userReducer.activeVocalChannel
     );
+    const isHome = useAppSelector((state) => state.userReducer.home);
 
     let micro: boolean = true;
-
-    interface Channel {
-        hidden: boolean;
-        id: number;
-        name: string;
-        is_audio: boolean;
-    }
 
     useEffect(() => {
         if (activeServer)
@@ -81,7 +77,7 @@ export const ChanelBar = () => {
                     console.log(res.data.text[0]);
                     dispatch(setActiveChannel(res.data.text[0].id));
                 });
-    }, [activeServer]);
+    }, [activeServer, dispatch]);
 
     const onChange = (key: any) => {};
     const onTextChannelClick = (id: number) => {
@@ -92,18 +88,53 @@ export const ChanelBar = () => {
             console.log(id, activeVocalChannel);
             if (activeVocalChannel === id) return;
             dispatch(setActiveVocalChannel(id));
-            socket?.emit('joinvocalchannel', id);
+            //socket?.emit('joinvocalchannel', id);
         },
         [socket, activeVocalChannel]
     );
+
+    const handleJoinVocal = (data: { user: number; chan: number }) => {
+        const { user, chan } = data;
+
+        setVocalChannelList((prevState) => {
+            return prevState.map((c) => {
+                if (c.id === chan) {
+                    return { ...c, users: [...c.users, user] };
+                }
+                return c;
+            });
+        });
+    };
+
+    const handleLeftVocal = (data: { user: number; chan: number }) => {
+        const { user, chan } = data;
+        console.log('left vocal', user, chan);
+        setVocalChannelList((prevState) => {
+            return prevState.map((c) => {
+                if (c.id === chan) {
+                    return { ...c, users: c.users.filter((u) => u !== user) };
+                }
+                return c;
+            });
+        });
+    };
+
+    useEffect(() => {
+        socket?.on(`joiningvocal`, handleJoinVocal);
+        socket?.on(`leftvocal`, handleLeftVocal);
+        return () => {
+            socket?.off(`joiningvocal`, handleJoinVocal);
+            socket?.off(`leftvocal`, handleLeftVocal);
+        };
+    }, [socket]);
 
     const [stateMic, setmicState] = useState(true);
     const [stateHead, setheadState] = useState(true);
     const [stateMenu, setmenuState] = useState(true);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [isFocused, setFocus] = useState(false);
+    const [isModalVisibleInvitation, setIsModalVisibleInvitation] =
+        useState(false);
     const [channelName, setChannelName] = useState('');
-    const [serverId, setServerId] = useState(0);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -115,6 +146,17 @@ export const ChanelBar = () => {
 
     const handleCancel = () => {
         setIsModalVisible(false);
+    };
+    const showModal2 = () => {
+        setIsModalVisibleInvitation(true);
+    };
+
+    const handleOk2 = () => {
+        setIsModalVisibleInvitation(false);
+    };
+
+    const handleCancel2 = () => {
+        setIsModalVisibleInvitation(false);
     };
 
     const createChannel = (e: React.FormEvent<HTMLFormElement>) => {
@@ -136,31 +178,24 @@ export const ChanelBar = () => {
             });
     };
 
-    //function joinChannel with axios request
-
-    //function joinChannel with axios request
-    const joinServer = () => {
-        axios
-            .post(
-                '/server/add_user',
-                { server_id: serverId },
-                {
-                    headers: {
-                        access_token: localStorage.getItem('token') as string,
-                    },
-                }
-            )
-            .then((res) => {
-                console.log(res, 'gdhdhdhdg');
-                // dispatch(setActiveChannel(id));
-            });
-    };
-
     const deleteServer = useCallback(() => {
         axios.delete(`/server/delete_server/${activeServer}`, {
             headers: { access_token: localStorage.getItem('token') as string },
         });
     }, [activeServer]);
+
+    const handleLinkCreation = () => {
+        const id: string = Math.random().toString(16).slice(2);
+        axios.post(
+            '/server/link',
+            { uuid: id, server: activeServer },
+            {
+                headers: {
+                    access_token: localStorage.getItem('token') as string,
+                },
+            }
+        );
+    };
 
     const menu = (
         <Menu
@@ -168,7 +203,7 @@ export const ChanelBar = () => {
             items={[
                 {
                     label: (
-                        <li>
+                        <li onClick={showModal2}>
                             <UserAddOutlined
                                 style={{ color: 'green', fontSize: 'small' }}
                             />{' '}
@@ -181,7 +216,10 @@ export const ChanelBar = () => {
                     label: (
                         <li>
                             <TeamOutlined
-                                style={{ color: 'darkgrey', fontSize: 'small' }}
+                                style={{
+                                    color: 'darkgrey',
+                                    fontSize: 'small',
+                                }}
                             />{' '}
                             Gestion des membres{' '}
                         </li>
@@ -195,7 +233,10 @@ export const ChanelBar = () => {
                     label: (
                         <li>
                             <SettingOutlined
-                                style={{ color: 'darkgrey', fontSize: 'small' }}
+                                style={{
+                                    color: 'darkgrey',
+                                    fontSize: 'small',
+                                }}
                             />{' '}
                             Paramètres du serveur{' '}
                         </li>
@@ -206,7 +247,10 @@ export const ChanelBar = () => {
                     label: (
                         <li onClick={showModal}>
                             <PlusCircleOutlined
-                                style={{ color: 'darkgrey', fontSize: 'small' }}
+                                style={{
+                                    color: 'darkgrey',
+                                    fontSize: 'small',
+                                }}
                             />{' '}
                             Créer un salon{' '}
                         </li>
@@ -245,7 +289,10 @@ export const ChanelBar = () => {
                     label: (
                         <a href=''>
                             <LogoutOutlined
-                                style={{ color: 'red', fontSize: 'small' }}
+                                style={{
+                                    color: 'red',
+                                    fontSize: 'small',
+                                }}
                             />{' '}
                             Quitter le serveur{' '}
                         </a>
@@ -264,7 +311,8 @@ export const ChanelBar = () => {
                 title='Basic Modal'
                 visible={isModalVisible}
                 onOk={handleOk}
-                onCancel={handleCancel}>
+                onCancel={handleCancel}
+                style={{ backgroundColor: '#1F1F1F' }}>
                 <form onSubmit={(e) => createChannel(e)}>
                     <input
                         type='text'
@@ -275,23 +323,35 @@ export const ChanelBar = () => {
                     <input type='submit' value='Create' />
                 </form>
             </Modal>
+            <Modal
+                title='Basic Modal'
+                visible={isModalVisibleInvitation}
+                onOk={handleOk2}
+                onCancel={handleCancel2}
+                style={{ backgroundColor: '#1F1F1F' }}>
+                <Button onClick={(e) => handleLinkCreation()}>
+                    créer lien
+                </Button>
+            </Modal>
 
-            <Dropdown overlay={menu} trigger={['click']}>
-                <ul onClick={(e) => e.preventDefault()}>
-                    <Space>
-                        <p className='serverName'>
-                            {serverName}
-                            <a onClick={() => setmenuState(!stateMenu)}>
-                                {stateMenu ? (
-                                    <DownOutlined className='menuIcon' />
-                                ) : (
-                                    <CloseOutlined className='menuIcon' />
-                                )}
-                            </a>
-                        </p>
-                    </Space>
-                </ul>
-            </Dropdown>
+            {!isHome && (
+                <Dropdown overlay={menu} trigger={['click']}>
+                    <ul onClick={(e) => e.preventDefault()}>
+                        <Space>
+                            <p className='serverName'>
+                                {serverName}
+                                <a onClick={() => setmenuState(!stateMenu)}>
+                                    {stateMenu ? (
+                                        <DownOutlined className='menuIcon' />
+                                    ) : (
+                                        <CloseOutlined className='menuIcon' />
+                                    )}
+                                </a>
+                            </p>
+                        </Space>
+                    </ul>
+                </Dropdown>
+            )}
 
             <div
                 className={'scrollIssue'}
@@ -303,43 +363,63 @@ export const ChanelBar = () => {
                     flexWrap: 'wrap',
                     overflowY: 'scroll',
                 }}>
-                <Collapse
-                    ghost
-                    defaultActiveKey={['1', '2']}
-                    onChange={onChange}
-                    style={{ backgroundColor: '#1F1F1F' }}>
-                    <Panel className='headerPanel' header={headerTxt} key='1'>
-                        {textChannelList &&
-                            textChannelList.map((chan) => (
-                                <li
-                                    key={chan.id}
-                                    onClick={() => onTextChannelClick(chan.id)}
-                                    className='panelContent'>
-                                    {' '}
-                                    <BorderlessTableOutlined /> {chan.name}
-                                </li>
-                            ))}
-                    </Panel>
+                {!isHome && (
+                    <Collapse
+                        ghost
+                        defaultActiveKey={['1', '2']}
+                        onChange={onChange}
+                        style={{ backgroundColor: '#1F1F1F' }}>
+                        <Panel
+                            className='headerPanel'
+                            header={headerTxt}
+                            key='1'>
+                            {textChannelList &&
+                                textChannelList.map((chan) => (
+                                    <li
+                                        key={chan.id}
+                                        onClick={() =>
+                                            onTextChannelClick(chan.id)
+                                        }
+                                        className='panelContent'>
+                                        {' '}
+                                        <BorderlessTableOutlined /> {chan.name}
+                                    </li>
+                                ))}
+                        </Panel>
 
-                    <Panel className='headerPanel' header={headerVoc} key='2'>
-                        {vocalChannelList &&
-                            vocalChannelList.map((chan) => (
-                                <li
-                                    onClick={() => onVocalChannelClick(chan.id)}
-                                    className='panelContent'>
-                                    {' '}
-                                    <SoundOutlined /> {chan.name}
-                                    {activeVocalChannel === chan.id && (
-                                        <>
-                                            <br />
-                                            <BorderlessTableOutlined className='activeChannel' />
-                                            {}
-                                        </>
-                                    )}
-                                </li>
-                            ))}
-                    </Panel>
-                </Collapse>
+                        <Panel
+                            className='headerPanel'
+                            header={headerVoc}
+                            key='2'>
+                            {vocalChannelList &&
+                                vocalChannelList.map((chan) => (
+                                    <>
+                                        <li
+                                            key={chan.id}
+                                            onClick={() =>
+                                                onVocalChannelClick(chan.id)
+                                            }
+                                            className='panelContent'>
+                                            {' '}
+                                            <SoundOutlined /> {chan.name}
+                                            {activeVocalChannel === chan.id && (
+                                                <>
+                                                    <br />
+                                                    <BorderlessTableOutlined className='activeChannel' />
+                                                </>
+                                            )}
+                                            {chan.users.map((u) => (
+                                                <div key={u}>
+                                                    {userMap.get(u)?.nickname ||
+                                                        'Error retrieving user'}
+                                                </div>
+                                            ))}
+                                        </li>
+                                    </>
+                                ))}
+                        </Panel>
+                    </Collapse>
+                )}
             </div>
             <div style={{ backgroundColor: '#353535' }}>
                 <Card

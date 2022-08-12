@@ -9,19 +9,8 @@ import { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
 import { useAppSelector } from '../redux/hooks';
-
-interface ServerResponse {
-    id: number;
-    nickname: string;
-    server: Server;
-}
-
-interface Server {
-    id: number;
-    logo: string;
-    main_img: string;
-    name: string;
-}
+import { setServers } from 'dns';
+import { ServerResponse } from '../types/types';
 
 export const LeftBar = (props: {
     servers: ServerResponse[];
@@ -35,6 +24,8 @@ export const LeftBar = (props: {
     //             return ""
     //             })
     // }, []);
+
+    const { servers, setServers } = props;
 
     const [channelName, setChannelName] = useState('');
     const userId = useAppSelector((state) => state.userReducer.user_id);
@@ -51,8 +42,9 @@ export const LeftBar = (props: {
                 }
             )
             .then((res) => {
-                console.log(res, 'gdhdhdhdg');
-                // dispatch(setActiveChannel(id));
+                if (res.data.server) {
+                    setServers((prevState) => [...prevState, res.data.server]);
+                }
             });
     };
 
@@ -151,8 +143,9 @@ export const LeftBar = (props: {
                     flexWrap: 'wrap',
                     overflowY: 'scroll',
                 }}>
+                <CustomLimage key={0} />
                 {props.servers.map((object: ServerResponse, i: number) => (
-                    <CustomLimage obj={object} key={i} />
+                    <CustomLimage obj={object} key={object.server.id} />
                 ))}
                 <Tooltip
                     mouseLeaveDelay={0.3}

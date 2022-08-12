@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { host, socketPort } from '../env/host';
 import { peerPort, peerServerHost } from '../env/host';
@@ -33,7 +33,6 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
     const [peer, setPeer] = useState<Peer>();
 
     const connectSocket = (token: string) => {
-        socket?.close();
         if (process.env.NODE_ENV === 'production') {
             setSocket(
                 io(`wss://${host}:${socketPort}/`, {
@@ -54,6 +53,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
     };
 
     const connectPeer = () => {
+        console.log('connect peer');
         let secure = false;
         if (process.env.NODE_ENV === 'production') {
             secure = true;
@@ -75,7 +75,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
             host: peerServerHost,
             path: '/',
             debug: 3,
-            secure: secure,
+            secure,
         });
         setPeer(newPeer);
     };

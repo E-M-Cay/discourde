@@ -11,7 +11,7 @@ import IRequest from '../../Interfaces/IRequest';
 import { In } from 'typeorm';
 import { ServerUser } from '../../entities/ServerUser';
 
-const isAuth = require('../../MiddleWares/isAuth');
+import isAuth from '../../MiddleWares/isAuth';
 
 const UserRepository = AppDataSource.getRepository(User);
 const ServerRepository = AppDataSource.getRepository(Server);
@@ -20,12 +20,11 @@ const RoleRepository = AppDataSource.getRepository(Role);
 
 router.get('/list/:server_id', isAuth, async (req: IRequest, res: Response) => {
     const server_id = Number(req.params.server_id);
-    if (server_id == NaN) return res.status(400).send('Error server not found');
-    const server = await ServerRepository.findOneBy({ id: server_id });
-    if (server == null) return res.status(400).send('Error server not found');
 
     try {
-        const role_list = await RoleRepository.findBy({ server: server });
+        const role_list = await RoleRepository.findBy({
+            server: { id: server_id },
+        });
         return res.status(200).send(role_list);
     } catch (error) {
         return res.status(400).send(error);
@@ -76,18 +75,16 @@ router.put('/update/', isAuth, async (req: IRequest, res: Response) => {
     return res.status(400).send('Wrong arguments');
 });
 
-router.delete(
-    '/delete/:role_id',
-    isAuth,
-    async (req: IRequest, res: Response) => {
-        const role_id = Number(req.params.server_id);
-        if (role_id == NaN)
-            return res.status(400).send('Error server not found');
-        try {
-            await RoleRepository.delete(role_id);
-            return res.status(200).send('Role successfully deleted');
-        } catch (error) {
-            return res.status(400).send(error);
-        }
+router.delete('/delete/:role_id', isAuth, (req: IRequest, res: Response) => {
+    const role_id = Number(req.params.server_id);
+    if (role_id == NaN) return res.status(400).send('Error server not found');
+    try {
+        RoleRepository.delete(role_id).then((result) =>
+            res
+                .status(200)
+                .send({ message: 'Role successfully deleted', result })
+        );
+    } catch (error) {
+        return res.status(400).send(error);
     }
-);
+});

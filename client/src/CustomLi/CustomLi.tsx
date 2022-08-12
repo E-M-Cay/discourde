@@ -1,38 +1,35 @@
 import { Image, Typography, Tooltip } from 'antd';
-import React from 'react';
+import logo from '../assets/discourde.png';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setActiveServer } from '../redux/userSlice';
+import { addPrivateChat, setActiveServer, setIsHome } from '../redux/userSlice';
+import { ServerResponse, ServerUser, User } from '../types/types';
 
-interface ServerResponse {
-    id: number;
-    nickname: string;
-    server: Server;
-}
-
-interface Server {
-    id: number;
-    logo: string;
-    main_img: string;
-    name: string;
-}
-
-export const CustomLimage = (props: { obj: ServerResponse }) => {
-    const obj = props.obj;
+export const CustomLimage = (props: { obj?: ServerResponse }) => {
+    const { obj } = props;
     const [isFocused, setFocus] = useState(false);
     const dispatch = useAppDispatch();
+
+    const onClickServer = () => {
+        if (obj) {
+            dispatch(setActiveServer(obj.server.id));
+            dispatch(setIsHome(false));
+        } else {
+            dispatch(setIsHome(true));
+        }
+    };
 
     return (
         <Tooltip
             mouseLeaveDelay={0.3}
             placement='left'
             style={{ fontSize: '32px' }}
-            title={obj.server.name}>
+            title={obj?.server.name || 'Home'}>
             <img
                 onMouseEnter={() => setFocus(true)}
-                alt={obj.server.name}
+                alt={obj?.server.name || 'Home'}
                 onMouseLeave={() => setFocus(false)}
-                onClick={() => dispatch(setActiveServer(obj.server.id))}
+                onClick={onClickServer}
                 className={'imgS'}
                 style={{
                     margin: '5px auto',
@@ -44,21 +41,37 @@ export const CustomLimage = (props: { obj: ServerResponse }) => {
                     height: '50px',
                 }}
                 src={
-                    obj.server.main_img[0] === 'h'
-                        ? obj.server.main_img
-                        : 'https://robohash.org/etdoloremvoluptas.png?size=50x50&set=set1'
+                    obj?.server.main_img
+                        ? obj?.server.main_img[0] === 'h'
+                            ? obj?.server.main_img
+                            : logo
+                        : logo
                 }
             />
         </Tooltip>
     );
 };
-export const CustomImage = ({ obj }: any) => {
+
+export const CustomImage = (props: { obj: ServerUser }) => {
+    const { obj } = props;
     const [isFocused, setFocus] = useState(false);
+    const dispatch = useAppDispatch();
+    const privateChats = useAppSelector(
+        (state) => state.userReducer.privateChats
+    );
+
+    const onClickHandler = () => {
+        if (!privateChats.includes(obj.user.id)) {
+            dispatch(addPrivateChat(obj.user.id));
+        }
+    };
+
     return (
         <img
-            alt={obj.first_name}
+            alt={obj.user.username}
             onMouseEnter={() => setFocus(true)}
             onMouseLeave={() => setFocus(false)}
+            onClick={onClickHandler}
             className={'imgS2'}
             style={{
                 margin: '5px auto',
@@ -67,15 +80,17 @@ export const CustomImage = ({ obj }: any) => {
                 borderRadius: '30px',
                 cursor: 'pointer',
             }}
-            src={obj.img}
+            src={obj.user.picture ?? logo}
         />
     );
 };
-export const CustomImageMess = ({ obj }: any) => {
+
+export const CustomImageMess = (props: { user: User }) => {
     const [isFocused, setFocus] = useState(false);
+    const { user } = props;
     return (
         <img
-            alt={obj.first_name}
+            alt={user.username}
             onMouseEnter={() => setFocus(true)}
             onMouseLeave={() => setFocus(false)}
             style={{
@@ -88,9 +103,7 @@ export const CustomImageMess = ({ obj }: any) => {
                 marginRight: '17px',
                 marginLeft: '10px',
             }}
-            src={
-                'https://robohash.org/sapienteateveniet.png?size=50x50&set=set1'
-            }
+            src={user.picture ?? logo}
         />
     );
 };

@@ -1,8 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import Peer from 'peerjs';
 
 interface UserState {
-    rooms: string[];
     username: string;
     serverUsername?: string;
     token?: string;
@@ -10,22 +8,25 @@ interface UserState {
     user_id?: number;
     activeChannel?: number;
     activeVocalChannel?: number;
+    home: boolean;
+    privateChats: number[];
 }
 
 const initialUserState: UserState = {
     token: localStorage.getItem('token')
         ? (localStorage.getItem('token') as string)
         : undefined,
-    rooms: [],
     username: '',
+    home: true,
+    privateChats: [],
 };
 
 export const userSlice = createSlice({
     initialState: initialUserState,
     name: 'user',
     reducers: {
-        joinRoomSuccess: (state, action: PayloadAction<string>) => {
-            state.rooms = [...state.rooms, action.payload];
+        setIsHome: (state, action: PayloadAction<boolean>) => {
+            state.home = action.payload;
         },
         setUsername: (state, action: PayloadAction<string>) => {
             state.username = action.payload;
@@ -48,11 +49,17 @@ export const userSlice = createSlice({
         setActiveVocalChannel: (state, action: PayloadAction<number>) => {
             state.activeVocalChannel = action.payload;
         },
+        addPrivateChat: (state, action: PayloadAction<number>) => {
+            state.privateChats.push(action.payload);
+        },
+        setPrivateChat: (state, action: PayloadAction<number[]>) => {
+            state.privateChats = action.payload;
+        },
     },
 });
 
 export const {
-    joinRoomSuccess,
+    setIsHome,
     setUsername,
     setToken,
     setActiveServer,
@@ -60,6 +67,8 @@ export const {
     setActiveChannel,
     setServerUsername,
     setActiveVocalChannel,
+    addPrivateChat,
+    setPrivateChat,
 } = userSlice.actions;
 
 export default userSlice.reducer;

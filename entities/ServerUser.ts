@@ -3,8 +3,6 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     Column,
-    ManyToMany,
-    JoinTable,
     OneToMany,
     ManyToOne,
 } from 'typeorm';
@@ -17,13 +15,13 @@ export class ServerUser {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ type: 'varchar', length: 150, nullable: false })
-    nickname: string;
-
     @ManyToOne(() => User, (user) => user.servers, {
         onDelete: 'CASCADE',
     })
     user: User;
+
+    @Column({ type: 'varchar', length: 150, nullable: false })
+    nickname: string;
 
     @ManyToOne(() => Server, (server) => server.users, {
         onDelete: 'CASCADE',

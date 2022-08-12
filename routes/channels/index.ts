@@ -12,8 +12,7 @@ import IRequest from '../../Interfaces/IRequest';
 import { In } from 'typeorm';
 import { ServerUser } from '../../entities/ServerUser';
 import { ChannelMessage } from '../../entities/ChannelMessage';
-
-const isAuth = require('../../MiddleWares/isAuth');
+import isAuth from '../../MiddleWares/isAuth';
 
 const UserRepository = AppDataSource.getRepository(User);
 const ServerRepository = AppDataSource.getRepository(Server);
@@ -30,10 +29,10 @@ router.get('/list/:server_id', isAuth, async (req: IRequest, res: Response) => {
 
     try {
         const text_channel_list = await ChannelRepository.findBy({
-            server: server,
+            server: { id: server_id },
         });
         const vocal_channel_list = await VocalChannelRepository.findBy({
-            server: server,
+            server: { id: server_id },
         });
 
         return res
@@ -137,7 +136,7 @@ router.get(
 
         try {
             const message_list = await ChannelMessageRepository.find({
-                relations: ['author', 'channel'],
+                relations: { author: true, channel: true },
                 where: {
                     channel: {
                         id: channel_id,
@@ -266,4 +265,4 @@ router.delete(
     }
 );
 
-module.exports = router;
+export default router;

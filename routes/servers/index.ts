@@ -126,6 +126,7 @@ router.put('/update_server', isAuth, async (req: IRequest, res: Response) => {
             ServerRepository.save(server);
             return res.status(200).send(server);
         } catch (error) {
+            console.log(error);
             return res.status(400).send('Error');
         }
     }

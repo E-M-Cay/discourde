@@ -1,17 +1,17 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class discourde1659562731829 implements MigrationInterface {
-    name = 'discourde1659562731829'
+export class discourde1660304727986 implements MigrationInterface {
+    name = 'discourde1660304727986'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE \`friend_request\` (\`id\` int NOT NULL AUTO_INCREMENT, \`senderId\` int NULL, \`receiverId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`friendship\` (\`id\` int NOT NULL AUTO_INCREMENT, \`user1Id\` int NULL, \`user2Id\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`permission\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(150) NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
+        await queryRunner.query(`CREATE TABLE \`permission\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(150) NOT NULL, UNIQUE INDEX \`IDX_240853a0c3353c25fb12434ad3\` (\`name\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`role_permission\` (\`id\` int NOT NULL AUTO_INCREMENT, \`permissionId\` int NULL, \`roleId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`role\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(150) NOT NULL, \`serverId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`server_user_role\` (\`id\` int NOT NULL AUTO_INCREMENT, \`userId\` int NULL, \`roleId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`server_user\` (\`id\` int NOT NULL AUTO_INCREMENT, \`nickname\` varchar(150) NOT NULL, \`userId\` int NULL, \`serverId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
-        await queryRunner.query(`CREATE TABLE \`user\` (\`id\` int NOT NULL AUTO_INCREMENT, \`username\` varchar(150) NOT NULL, \`password\` varchar(150) NOT NULL, \`email\` varchar(150) NOT NULL, \`join_date\` bigint NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
+        await queryRunner.query(`CREATE TABLE \`user\` (\`id\` int NOT NULL AUTO_INCREMENT, \`username\` varchar(150) NOT NULL, \`password\` varchar(150) NOT NULL, \`email\` varchar(150) NOT NULL, \`join_date\` bigint NOT NULL, \`picture\` varchar(255) NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`channel_message\` (\`id\` int NOT NULL AUTO_INCREMENT, \`content\` varchar(255) NOT NULL, \`send_time\` datetime NOT NULL, \`channelId\` int NULL, \`authorId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`channel\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(150) NOT NULL, \`hidden\` tinyint NOT NULL DEFAULT 0, \`serverId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
         await queryRunner.query(`CREATE TABLE \`vocal_channel\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(150) NOT NULL, \`hidden\` tinyint NOT NULL DEFAULT 0, \`serverId\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`);
@@ -66,6 +66,7 @@ export class discourde1659562731829 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE \`server_user_role\``);
         await queryRunner.query(`DROP TABLE \`role\``);
         await queryRunner.query(`DROP TABLE \`role_permission\``);
+        await queryRunner.query(`DROP INDEX \`IDX_240853a0c3353c25fb12434ad3\` ON \`permission\``);
         await queryRunner.query(`DROP TABLE \`permission\``);
         await queryRunner.query(`DROP TABLE \`friendship\``);
         await queryRunner.query(`DROP TABLE \`friend_request\``);

@@ -18,6 +18,7 @@ export class Permission {
         type: 'varchar',
         length: 150,
         nullable: false,
+        unique: true,
     })
     name: string;
 

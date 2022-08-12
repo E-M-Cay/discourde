@@ -29,7 +29,6 @@ import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
 import { PeerSocketContext } from '../context/PeerSocket';
-import { setServers } from 'dns';
 import { UserMap } from '../types/types';
 
 const { Panel } = Collapse;
@@ -59,6 +58,7 @@ export const ChanelBar = (props: { userMap: UserMap }) => {
     const activeVocalChannel = useAppSelector(
         (state) => state.userReducer.activeVocalChannel
     );
+    const isHome = useAppSelector((state) => state.userReducer.home);
 
     let micro: boolean = true;
 
@@ -204,7 +204,10 @@ export const ChanelBar = (props: { userMap: UserMap }) => {
                     label: (
                         <li onClick={showModal2}>
                             <UserAddOutlined
-                                style={{ color: 'darkgrey', fontSize: 'small' }}
+                                style={{
+                                    color: 'darkgrey',
+                                    fontSize: 'small',
+                                }}
                             />{' '}
                             Inviter des gens{' '}
                         </li>
@@ -215,7 +218,10 @@ export const ChanelBar = (props: { userMap: UserMap }) => {
                     label: (
                         <li>
                             <TeamOutlined
-                                style={{ color: 'darkgrey', fontSize: 'small' }}
+                                style={{
+                                    color: 'darkgrey',
+                                    fontSize: 'small',
+                                }}
                             />{' '}
                             Gestion des membres{' '}
                         </li>
@@ -229,7 +235,10 @@ export const ChanelBar = (props: { userMap: UserMap }) => {
                     label: (
                         <li>
                             <SettingOutlined
-                                style={{ color: 'darkgrey', fontSize: 'small' }}
+                                style={{
+                                    color: 'darkgrey',
+                                    fontSize: 'small',
+                                }}
                             />{' '}
                             Paramètres du serveur{' '}
                         </li>
@@ -240,7 +249,10 @@ export const ChanelBar = (props: { userMap: UserMap }) => {
                     label: (
                         <li onClick={showModal}>
                             <PlusCircleOutlined
-                                style={{ color: 'darkgrey', fontSize: 'small' }}
+                                style={{
+                                    color: 'darkgrey',
+                                    fontSize: 'small',
+                                }}
                             />{' '}
                             Créer un salon{' '}
                         </li>
@@ -251,7 +263,10 @@ export const ChanelBar = (props: { userMap: UserMap }) => {
                     label: (
                         <li onClick={() => deleteServer()}>
                             <PlusCircleOutlined
-                                style={{ color: 'darkgrey', fontSize: 'small' }}
+                                style={{
+                                    color: 'darkgrey',
+                                    fontSize: 'small',
+                                }}
                             />{' '}
                             Supprimer serveur{' '}
                         </li>
@@ -265,7 +280,10 @@ export const ChanelBar = (props: { userMap: UserMap }) => {
                     label: (
                         <li>
                             <BellOutlined
-                                style={{ color: 'darkgrey', fontSize: 'small' }}
+                                style={{
+                                    color: 'darkgrey',
+                                    fontSize: 'small',
+                                }}
                             />{' '}
                             Notifications{' '}
                         </li>
@@ -279,7 +297,10 @@ export const ChanelBar = (props: { userMap: UserMap }) => {
                     label: (
                         <a href=''>
                             <LogoutOutlined
-                                style={{ color: 'red', fontSize: 'small' }}
+                                style={{
+                                    color: 'red',
+                                    fontSize: 'small',
+                                }}
                             />{' '}
                             Quitter le serveur{' '}
                         </a>
@@ -321,22 +342,24 @@ export const ChanelBar = (props: { userMap: UserMap }) => {
                 </Button>
             </Modal>
 
-            <Dropdown overlay={menu} trigger={['click']}>
-                <ul onClick={(e) => e.preventDefault()}>
-                    <Space>
-                        <p className='serverName'>
-                            {serverName}
-                            <a onClick={() => setmenuState(!stateMenu)}>
-                                {stateMenu ? (
-                                    <DownOutlined className='menuIcon' />
-                                ) : (
-                                    <CloseOutlined className='menuIcon' />
-                                )}
-                            </a>
-                        </p>
-                    </Space>
-                </ul>
-            </Dropdown>
+            {!isHome && (
+                <Dropdown overlay={menu} trigger={['click']}>
+                    <ul onClick={(e) => e.preventDefault()}>
+                        <Space>
+                            <p className='serverName'>
+                                {serverName}
+                                <a onClick={() => setmenuState(!stateMenu)}>
+                                    {stateMenu ? (
+                                        <DownOutlined className='menuIcon' />
+                                    ) : (
+                                        <CloseOutlined className='menuIcon' />
+                                    )}
+                                </a>
+                            </p>
+                        </Space>
+                    </ul>
+                </Dropdown>
+            )}
 
             <div
                 className={'scrollIssue'}
@@ -348,53 +371,63 @@ export const ChanelBar = (props: { userMap: UserMap }) => {
                     flexWrap: 'wrap',
                     overflowY: 'scroll',
                 }}>
-                <Collapse
-                    ghost
-                    defaultActiveKey={['1', '2']}
-                    onChange={onChange}
-                    style={{ backgroundColor: '#1F1F1F' }}>
-                    <Panel className='headerPanel' header={headerTxt} key='1'>
-                        {textChannelList &&
-                            textChannelList.map((chan) => (
-                                <li
-                                    key={chan.id}
-                                    onClick={() => onTextChannelClick(chan.id)}
-                                    className='panelContent'>
-                                    {' '}
-                                    <BorderlessTableOutlined /> {chan.name}
-                                </li>
-                            ))}
-                    </Panel>
-
-                    <Panel className='headerPanel' header={headerVoc} key='2'>
-                        {vocalChannelList &&
-                            vocalChannelList.map((chan) => (
-                                <>
+                {!isHome && (
+                    <Collapse
+                        ghost
+                        defaultActiveKey={['1', '2']}
+                        onChange={onChange}
+                        style={{ backgroundColor: '#1F1F1F' }}>
+                        <Panel
+                            className='headerPanel'
+                            header={headerTxt}
+                            key='1'>
+                            {textChannelList &&
+                                textChannelList.map((chan) => (
                                     <li
                                         key={chan.id}
                                         onClick={() =>
-                                            onVocalChannelClick(chan.id)
+                                            onTextChannelClick(chan.id)
                                         }
                                         className='panelContent'>
                                         {' '}
-                                        <SoundOutlined /> {chan.name}
-                                        {activeVocalChannel === chan.id && (
-                                            <>
-                                                <br />
-                                                <BorderlessTableOutlined className='activeChannel' />
-                                            </>
-                                        )}
-                                        {chan.users.map((u) => (
-                                            <div key={u}>
-                                                {userMap.get(u)?.nickname ||
-                                                    'Error retrieving user'}
-                                            </div>
-                                        ))}
+                                        <BorderlessTableOutlined /> {chan.name}
                                     </li>
-                                </>
-                            ))}
-                    </Panel>
-                </Collapse>
+                                ))}
+                        </Panel>
+
+                        <Panel
+                            className='headerPanel'
+                            header={headerVoc}
+                            key='2'>
+                            {vocalChannelList &&
+                                vocalChannelList.map((chan) => (
+                                    <>
+                                        <li
+                                            key={chan.id}
+                                            onClick={() =>
+                                                onVocalChannelClick(chan.id)
+                                            }
+                                            className='panelContent'>
+                                            {' '}
+                                            <SoundOutlined /> {chan.name}
+                                            {activeVocalChannel === chan.id && (
+                                                <>
+                                                    <br />
+                                                    <BorderlessTableOutlined className='activeChannel' />
+                                                </>
+                                            )}
+                                            {chan.users.map((u) => (
+                                                <div key={u}>
+                                                    {userMap.get(u)?.nickname ||
+                                                        'Error retrieving user'}
+                                                </div>
+                                            ))}
+                                        </li>
+                                    </>
+                                ))}
+                        </Panel>
+                    </Collapse>
+                )}
             </div>
             <div style={{ backgroundColor: '#353535' }}>
                 <Card

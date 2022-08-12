@@ -7,28 +7,34 @@ import { useAppSelector } from '../redux/hooks';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { MapOrEntries, useMap } from 'usehooks-ts';
-import { ServerUser } from '../types/types';
+import { ServerUser, User } from '../types/types';
 import { PeerSocketContext } from '../context/PeerSocket';
 
 export const Main = () => {
+    const isHome = useAppSelector((state) => state.userReducer.home);
     const activeServer = useAppSelector(
         (state) => state.userReducer.activeServer
     );
-    const initialValue: MapOrEntries<number, ServerUser> = [];
-    const [userMap, actions] = useMap<number, ServerUser>(initialValue);
+    const [userMap, userActions] = useMap<number, ServerUser>([]);
+    const [FriendMap, friendActions] = useMap<Number, User>([]);
     // const [userMap, setUserMap] = useState<Map<number, number>>(new Map([]))
     const { socket } = useContext(PeerSocketContext);
-    const { set, setAll, remove, reset } = actions;
+    const [setUser, setAllUsers, removeUser, resetUsers] = [
+        userActions.set,
+        userActions.setAll,
+        userActions.remove,
+        userActions.reset,
+    ];
 
     const resetUserMap = useCallback(() => {
-        reset();
-    }, [reset]);
+        resetUsers();
+    }, [resetUsers]);
 
     const setUserMap = useCallback(
         (user: ServerUser) => {
-            set(user.user.id, user);
+            setUser(user.user.id, user);
         },
-        [set]
+        [setUser]
     );
 
     useEffect(() => {
@@ -50,28 +56,21 @@ export const Main = () => {
 
     const handleDisconnection = useCallback(
         (id: number) => {
-            const copy = userMap.get(id) ?? null;
-            if (!copy) return;
-            copy.user.status = 0;
-            set(id, copy);
+            const user = userMap.get(id) ?? null;
+            if (!user) return;
+            setUser(id, { ...user, user: { ...user.user, status: 0 } });
         },
-        [set, userMap]
+        [setUser, userMap]
     );
 
     const handleConnection = useCallback(
         (id: number) => {
-            console.log('connecting', id);
-            const copy = userMap.get(id) ?? null;
-            if (!copy) return;
-            copy.user.status = 1;
-            set(id, copy);
+            const user = userMap.get(id) ?? null;
+            if (!user) return;
+            setUser(id, { ...user, user: { ...user.user, status: 1 } });
         },
-        [set, userMap]
+        [setUser, userMap]
     );
-
-    // useEffect(() => {
-    //     console.table(userMap);
-    // }, [userMap]);
 
     useEffect(() => {
         socket?.on('userdisconnected', handleDisconnection);
@@ -91,12 +90,13 @@ export const Main = () => {
             }}
             className='main'>
             <Col style={{ backgroundColor: '#535151' }} span={3.5}>
-                <ChanelBar userMap={userMap} />
+                {/*isHome ? 'prout' : */ <ChanelBar userMap={userMap} />}
             </Col>
             <Col span={16}>
                 <Chat userMap={userMap} />
             </Col>
             <Col style={{ backgroundColor: 'grey' }} span={4}>
+                {/* {friendBar} */}
                 <StatusBar userMap={userMap} />
             </Col>
         </Row>

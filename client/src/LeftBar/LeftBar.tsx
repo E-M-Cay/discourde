@@ -10,19 +10,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
 import { useAppSelector } from '../redux/hooks';
 import { setServers } from 'dns';
-
-interface ServerResponse {
-    id: number;
-    nickname: string;
-    server: Server;
-}
-
-interface Server {
-    id: number;
-    logo: string;
-    main_img: string;
-    name: string;
-}
+import { ServerResponse } from '../types/types';
 
 export const LeftBar = (props: {
     servers: ServerResponse[];
@@ -155,8 +143,9 @@ export const LeftBar = (props: {
                     flexWrap: 'wrap',
                     overflowY: 'scroll',
                 }}>
+                <CustomLimage key={0} />
                 {props.servers.map((object: ServerResponse, i: number) => (
-                    <CustomLimage obj={object} key={i} />
+                    <CustomLimage obj={object} key={object.server.id} />
                 ))}
                 <Tooltip
                     mouseLeaveDelay={0.3}

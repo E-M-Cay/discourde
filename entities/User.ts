@@ -51,6 +51,13 @@ export class User {
     })
     join_date: number;
 
+    @Column({
+        type: 'varchar',
+        length: 255,
+        nullable: true,
+    })
+    picture: string;
+
     @OneToMany(() => Server, (server) => server.owner, { cascade: true })
     owned_servers: Server[];
 
@@ -87,10 +94,6 @@ export class User {
         onDelete: 'CASCADE',
     })
     receivedFriendRequest: FriendRequest[];
-
-    public set setVocalChannel(id: number) {
-        this.vocalChannel = id;
-    }
 
     @AfterLoad()
     setStatus() {

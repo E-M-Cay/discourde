@@ -135,18 +135,45 @@ router.get(
             return res.status(400).send('Error server not found');*/
 
         try {
-            const message_list = await ChannelMessageRepository.find({
-                relations: { author: true, channel: true },
+            const channelAndMessages = await ChannelRepository.findOne({
+                // relations: { author: true, channel: true },
+                // where: {
+                //     channel: {
+                //         id: channel_id,
+                //     },
+                // },
+                // select: {
+                //     channel: {
+                //         name: true
+                //     },
+                //     author: {
+                //         id: true,
+                //         username: true
+                //     }
+                // }
+                relations: {
+                    messages: {
+                        author: true,
+                    },
+                },
                 where: {
-                    channel: {
-                        id: channel_id,
+                    id: channel_id,
+                },
+                select: {
+                    messages: {
+                        content: true,
+                        author: {
+                            id: true,
+                        },
                     },
                 },
             });
 
+            if (!channelAndMessages) return res.status(401).send('not found');
+
             const response = [];
 
-            for (let message of message_list) {
+            for (let message of channelAndMessages.messages) {
                 response.push({
                     id: message.id,
                     content: message.content,
@@ -155,8 +182,11 @@ router.get(
                 });
             }
 
-            return res.status(200).send(response);
+            return res
+                .status(200)
+                .send({ channelName: channelAndMessages.name, response });
         } catch (error) {
+            console.log(error);
             return res.status(400).send(error);
         }
     }

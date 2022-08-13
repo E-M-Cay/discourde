@@ -7,7 +7,6 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveServer } from '../redux/userSlice';
 import { ServerResponse } from '../types/types';
 import { PeerSocketContext } from '../context/PeerSocket';
-import { bindActionCreators } from '@reduxjs/toolkit';
 
 export const Home = (props: {
     setTokenMissing: React.Dispatch<React.SetStateAction<boolean>>;
@@ -48,7 +47,7 @@ export const Home = (props: {
         return () => {
             socket?.off('ready', getServers);
         };
-    }, [getServers]);
+    }, [getServers, socket]);
 
     const joinServer = (uuid: string) => {
         axios

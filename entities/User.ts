@@ -13,6 +13,7 @@ import { BannedUser } from './BannedUser';
 import { ChannelMessage } from './ChannelMessage';
 import { FriendRequest } from './FriendRequest';
 import { Friendship } from './Friendship';
+import { PrivateMessage } from './PrivateMessage';
 import { Server } from './Server';
 import { ServerUser } from './ServerUser';
 
@@ -75,10 +76,26 @@ export class User {
     )
     channel_messages: ChannelMessage[];
 
-    @OneToMany(() => Friendship, (friendship) => friendship.user1, {
-        cascade: ['insert'],
-    })
-    friendships: Friendship[];
+    @OneToMany(
+        () => Friendship,
+        (friendship) => {
+            friendship.user1, friendship.user2;
+        },
+        {
+            cascade: ['insert'],
+        }
+    )
+    friendshipsSent: Friendship[];
+
+    @OneToMany(
+        () => Friendship,
+        (friendship) => friendship.user1,
+
+        {
+            cascade: ['insert'],
+        }
+    )
+    friendshipsReceived: Friendship[];
 
     @OneToMany(() => BannedUser, (bannedUser) => bannedUser.user, {
         cascade: ['insert'],
@@ -94,6 +111,28 @@ export class User {
         cascade: ['insert'],
     })
     receivedFriendRequest: FriendRequest[];
+
+    @OneToMany(
+        () => PrivateMessage,
+        (message: { user1: any; user2: any }) => {
+            message.user1, message.user2;
+        },
+        {
+            cascade: ['insert'],
+        }
+    )
+    privateMessagesSent: PrivateMessage[];
+
+    @OneToMany(
+        () => PrivateMessage,
+        (message: { user1: any; user2: any }) => {
+            message.user1, message.user2;
+        },
+        {
+            cascade: ['insert'],
+        }
+    )
+    privateMessagesReceived: PrivateMessage[];
 
     @AfterLoad()
     setStatus() {

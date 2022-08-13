@@ -9,12 +9,12 @@ export class Friendship {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User, (user) => user.friendships, {
+    @ManyToOne(() => User, (user) => user.friendshipsSent, {
         cascade: ['insert', 'remove'],
     })
     user1: User;
 
-    @ManyToOne(() => User, (user) => user.friendships, {
+    @ManyToOne(() => User, (user) => user.friendshipsReceived, {
         cascade: ['insert', 'remove'],
     })
     user2: User;

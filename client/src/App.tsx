@@ -4,7 +4,7 @@ import { PeerSocketContext } from './context/PeerSocket';
 import axios from 'axios';
 import { useAppDispatch } from './redux/hooks';
 import { Input, Typography } from 'antd';
-import { setUsername, setUserId, setToken } from './redux/userSlice';
+import { setUsername, setToken, setMe } from './redux/userSlice';
 import VocalChannel from './components/VocalChannel';
 import { Home } from './Home/Home';
 import { Modal } from 'antd';
@@ -79,6 +79,7 @@ const App = () => {
                 .then((res) => {
                     if (res.data.ok) {
                         connectSocket(token);
+                        dispatch(setMe(res.data.user));
                     }
                 });
             // verifyAndRefreshToken(token);
@@ -103,17 +104,6 @@ const App = () => {
         ref.current = e.target.value;
     };
 
-    // useEffect(() => {
-    //   const token = localStorage.getItem("token");
-    //   if (token && !socket) connectSocket(token);
-    //   socket?.on("connect", onConnection);
-    //   socket?.on("username", updateUsername);
-    //   return () => {
-    //     socket?.off("username", updateUsername);
-    //     socket?.off("connect", onConnection);
-    //   };
-    // }, [socket, onConnection, updateUsername, dispatch]);
-
     const onSubmitRegister = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         axios.post(`/user/register`, {
@@ -134,37 +124,12 @@ const App = () => {
                 if (res.data.token) {
                     connectSocket(res.data.token);
                     localStorage.setItem('token', res.data.token);
-                    dispatch(setUserId(res.data.user_id));
+                    dispatch(setMe(res.data.user));
                     dispatch(setToken(res.data.token));
                     handleOk();
                 }
             });
     };
-
-    // return (
-    //   <div className='App'>
-    //     <button onClick={toggleMicrophone}>Open mic</button>
-    //     <div>{message}</div>
-    //     <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
-    //     <div>{displayUserList()}</div>
-    //     <button onClick={fetchMessage}>Fetch message</button>
-    //     <audio id='audio' />
-    //     {user != '' && (
-    //       <>
-    //         <div>{user}</div>
-    //         <form onSubmit={(e) => onSubmitHandler(e)}>
-    //           <input
-    //             type='text'
-    //             id='usernameInput'
-    //             onChange={(e) => onChangeHandler(e)}
-    //             defaultValue={user}
-    //           />
-    //           <input type='submit' />
-    //         </form>
-    //       </>
-    //     )}
-    //   </div>
-    // );
 
     return peer && socket ? (
         <div>
@@ -179,10 +144,6 @@ const App = () => {
             // style={{backgroundColor: '#535353'}}
         >
             <div className='App'>
-                {/* <div>{message}</div>
-    <div>Mic status: {micStatus ? 'open' : 'closed'}</div>
-    <button onClick={fetchMessage}>Fetch message</button>
-    <VocalChannel channelName='toto' /> */}
                 <>
                     <form onSubmit={(e) => onSubmitRegister(e)}>
                         <Title level={3}>Register</Title>

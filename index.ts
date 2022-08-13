@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import jwt from 'jsonwebtoken';
 import express, { Express, Request, Response } from 'express';
 import { createServer } from 'http';
@@ -15,7 +16,9 @@ import friends from './routes/friends';
 import channels from './routes/channels';
 import users from './routes/users/index';
 import servers from './routes/servers/index';
+import privateMessageRoute from './routes/privatemessage/index';
 import upsertPermissions from './db/upsertPermissions';
+import { PrivateMessage } from './entities/PrivateMessage';
 
 dotenv.config();
 
@@ -31,6 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 const ChannelMessageRepository = AppDataSource.getRepository(ChannelMessage);
 const ChannelRepository = AppDataSource.getRepository(Channel);
 const userRepository = AppDataSource.getRepository(User);
+const PrivateMessageRepository = AppDataSource.getRepository(PrivateMessage);
 
 AppDataSource.initialize()
     .then(() => {
@@ -49,10 +53,16 @@ interface Message {
     token: string;
 }
 
+interface PrivateMessageInterface {
+    to: number;
+    content: string;
+}
+
 global.user_id_to_peer_id = new Map<number, string>();
 global.user_id_to_status = new Map<number, number>();
 global.vocal_channel_to_user_list = new Map<number, number[]>();
 global.user_id_to_vocal_channel = new Map<number, number>();
+global.user_id_to_socket_id = new Map<number, string>();
 const user_status = new Map<number, string>();
 
 user_status.set(0, 'Disconected');
@@ -62,6 +72,7 @@ user_status.set(3, 'Do not disturb');
 
 const httpServer = createServer(app);
 
+app.use('/privatemessage', privateMessageRoute);
 app.use('/server', servers);
 app.use('/user', users);
 app.use('/channel', channels);
@@ -129,6 +140,7 @@ io.use((socket: ISocket, next) => {
 });
 
 io.on('connection', (socket: ISocket) => {
+    user_id_to_socket_id.set(socket.user_id as number, socket.id);
     socket.on('username', (newUsername) => {
         socket.username = newUsername;
         socket.emit('username', newUsername);
@@ -153,7 +165,7 @@ io.on('connection', (socket: ISocket) => {
                     .toISOString()
                     .slice(0, 19)
                     .replace('T', ' ');
-                const channel_message: any = ChannelMessageRepository.create({
+                const channel_message = ChannelMessageRepository.create({
                     channel: { id: content.channel },
                     content: content.content,
                     send_time: time,
@@ -170,6 +182,37 @@ io.on('connection', (socket: ISocket) => {
                 console.log(e);
             }
         }
+    });
+
+    socket.on('privatemessage', async (message: PrivateMessageInterface) => {
+        const user = await userRepository.count({
+            where: { id: socket.user_id },
+            select: { id: true },
+        });
+        console.log(message);
+        console.table(user_id_to_socket_id);
+
+        io.allSockets().then((res) => console.table(res));
+        let time: string = new Date()
+            .toISOString()
+            .slice(0, 19)
+            .replace('T', ' ');
+        const private_message = PrivateMessageRepository.create({
+            user1: { id: socket.user_id },
+            content: message.content,
+            send_time: time,
+            user2: { id: message.to },
+        });
+
+        console.log(private_message);
+        io.to(socket.id)
+            .to(user_id_to_socket_id.get(message.to as number) as string)
+            .emit(`privatemessage`, {
+                user1: private_message.user1,
+                receiver: private_message.user2,
+                send_time: private_message.send_time,
+                content: private_message.content,
+            });
     });
 
     socket.on('peerId', (data: { peer_id: string }) => {

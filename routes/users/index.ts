@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 import isAuth from '../../MiddleWares/isAuth';
+import IRequest from '../../Interfaces/IRequest';
 
 const userRepository = AppDataSource.getRepository(User);
 
@@ -39,7 +40,7 @@ router.post('/login', async (req: Request, res: Response) => {
                     if (err) throw err;
                     return res.status(200).json({
                         msg: 'Got token',
-                        user_id: user.id,
+                        user: user,
                         token,
                     });
                 }
@@ -81,8 +82,9 @@ router.post('/register', async (req: Request, res: Response) => {
     res.send('FAIL');
 });
 
-router.get('/token_check', isAuth, (_req: Request, res: Response) => {
-    res.status(201).send({ ok: 'Valid token' });
+router.get('/token_check', isAuth, async (req: IRequest, res: Response) => {
+    const user = await userRepository.findOne({ where: { id: req.id } });
+    res.status(201).send({ ok: 'Valid token', user });
 });
 
 router.get('/home', isAuth, (_req: Request, res: Response) => {

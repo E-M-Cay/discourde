@@ -1,13 +1,17 @@
 import { Collapse, Typography } from 'antd';
 import { CustomImage } from '../CustomLi/CustomLi';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { UserMap } from '../types/types';
+import { PrivateChatMap, User, UserMap } from '../types/types';
 
 //const { Title } = Typography;
 const { Panel } = Collapse;
 
-export const StatusBar = (props: { userMap: UserMap }) => {
-    const { userMap } = props;
+export const StatusBar = (props: {
+    userMap: UserMap;
+    privateChatMap: PrivateChatMap;
+    addPrivateChat: (user: User) => void;
+}) => {
+    const { userMap, privateChatMap, addPrivateChat } = props;
 
     return (
         <div
@@ -35,7 +39,12 @@ export const StatusBar = (props: { userMap: UserMap }) => {
                                 }}
                                 className='hoStat'>
                                 {' '}
-                                <CustomImage obj={user} key={id} />{' '}
+                                <CustomImage
+                                    obj={user}
+                                    privateChatMap={privateChatMap}
+                                    addPrivateChat={addPrivateChat}
+                                    key={id}
+                                />{' '}
                                 <Typography
                                     style={{
                                         width: '100%',
@@ -64,7 +73,12 @@ export const StatusBar = (props: { userMap: UserMap }) => {
                                     alignItems: 'center',
                                     maxWidth: '300px',
                                 }}>
-                                <CustomImage obj={user} key={id} />{' '}
+                                <CustomImage
+                                    obj={user}
+                                    privateChatMap={privateChatMap}
+                                    addPrivateChat={addPrivateChat}
+                                    key={id}
+                                />{' '}
                                 <Typography
                                     style={{
                                         width: '100%',

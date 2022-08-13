@@ -15,6 +15,7 @@ const Message = (props: { userMap: UserMap }) => {
     );
 
     const [messages, setMessages] = useState<TextMessage[]>([]);
+    const [name, setName] = useState<string>('Chan name');
 
     useEffect(() => {
         if (activeChannel) {
@@ -25,8 +26,8 @@ const Message = (props: { userMap: UserMap }) => {
                     },
                 })
                 .then((res) => {
-                    setMessages(res.data);
-                    //console.log(res.data, 'data');
+                    setMessages(res.data.response);
+                    setName(res.data.channelName);
                 });
         }
     }, [activeChannel]);
@@ -46,9 +47,22 @@ const Message = (props: { userMap: UserMap }) => {
 
     return (
         <div className='message'>
-            {messages?.map((obj: TextMessage, i: number) => (
-                <MessageItem obj={obj} key={i} userMap={userMap} />
-            ))}
+            <div>{name}</div>
+            {messages?.map((obj: TextMessage, i: number) => {
+                const user = userMap.get(obj.author);
+                return (
+                    user && (
+                        <MessageItem
+                            id={user.user.id}
+                            username={user.nickname}
+                            picture={user.user.picture}
+                            content={obj.content}
+                            send_time={obj.send_time}
+                            key={i}
+                        />
+                    )
+                );
+            })}
         </div>
     );
 };

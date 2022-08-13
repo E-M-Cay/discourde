@@ -16,19 +16,9 @@ export const LeftBar = (props: {
     servers: ServerResponse[];
     setServers: React.Dispatch<React.SetStateAction<ServerResponse[]>>;
 }) => {
-    // useEffect(() => {
-    //    fake.map((prop: any, i: any) => {
-    //             axios.post("server/create_server", {name: prop.first_name, main_img: prop.img as string}, { headers: { access_token:  localStorage.getItem("token") as string },  } ).then((res) => {
-    //                 console.log(res, "gdhdhdhdg");
-    //             });
-    //             return ""
-    //             })
-    // }, []);
-
     const { servers, setServers } = props;
 
     const [channelName, setChannelName] = useState('');
-    const userId = useAppSelector((state) => state.userReducer.user_id);
 
     const joinServer = () => {
         axios

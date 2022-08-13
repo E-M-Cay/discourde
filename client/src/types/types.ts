@@ -18,6 +18,15 @@ export interface TextMessage {
     author: number;
 }
 
+export interface PrivateMessage {
+    receiver: number;
+    content: string;
+    user1: {
+        id: number;
+    };
+    send_time: string;
+}
+
 export interface ServerResponse {
     id: number;
     nickname: string;
@@ -32,3 +41,8 @@ export interface Server {
 }
 
 export type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
+
+export type PrivateChatMap = Omit<
+    Map<Number, User>,
+    'delete' | 'set' | 'clear'
+>;

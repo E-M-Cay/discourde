@@ -2,8 +2,13 @@ import { Image, Typography, Tooltip } from 'antd';
 import logo from '../assets/discourde.png';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { addPrivateChat, setActiveServer, setIsHome } from '../redux/userSlice';
-import { ServerResponse, ServerUser, User } from '../types/types';
+import { setActiveServer, setIsHome } from '../redux/userSlice';
+import {
+    PrivateChatMap,
+    ServerResponse,
+    ServerUser,
+    User,
+} from '../types/types';
 
 export const CustomLimage = (props: { obj?: ServerResponse }) => {
     const { obj } = props;
@@ -16,6 +21,7 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
             dispatch(setIsHome(false));
         } else {
             dispatch(setIsHome(true));
+            dispatch(setActiveServer(0));
         }
     };
 
@@ -52,26 +58,20 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
     );
 };
 
-export const CustomImage = (props: { obj: ServerUser }) => {
-    const { obj } = props;
+export const CustomImage = (props: {
+    obj: ServerUser;
+    privateChatMap: PrivateChatMap;
+    addPrivateChat: (user: User) => void;
+}) => {
+    const { obj, addPrivateChat } = props;
     const [isFocused, setFocus] = useState(false);
-    const dispatch = useAppDispatch();
-    const privateChats = useAppSelector(
-        (state) => state.userReducer.privateChats
-    );
-
-    const onClickHandler = () => {
-        if (!privateChats.includes(obj.user.id)) {
-            dispatch(addPrivateChat(obj.user.id));
-        }
-    };
 
     return (
         <img
             alt={obj.user.username}
             onMouseEnter={() => setFocus(true)}
             onMouseLeave={() => setFocus(false)}
-            onClick={onClickHandler}
+            onClick={() => addPrivateChat(obj.user)}
             className={'imgS2'}
             style={{
                 margin: '5px auto',
@@ -85,12 +85,15 @@ export const CustomImage = (props: { obj: ServerUser }) => {
     );
 };
 
-export const CustomImageMess = (props: { user: User }) => {
+export const CustomImageMess = (props: {
+    picture: string;
+    nickname: string;
+}) => {
     const [isFocused, setFocus] = useState(false);
-    const { user } = props;
+    const { nickname, picture } = props;
     return (
         <img
-            alt={user.username}
+            alt={nickname}
             onMouseEnter={() => setFocus(true)}
             onMouseLeave={() => setFocus(false)}
             style={{
@@ -103,7 +106,7 @@ export const CustomImageMess = (props: { user: User }) => {
                 marginRight: '17px',
                 marginLeft: '10px',
             }}
-            src={user.picture ?? logo}
+            src={picture ?? logo}
         />
     );
 };

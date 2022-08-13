@@ -3,27 +3,44 @@ import { StatusBar } from '../statusBar/StatusBar';
 import Chat from '../Chat/Chat';
 import { ChanelBar } from '../ChanelBar/ChanelBar';
 //import { FriendPanel } from '../FriendPanel/FriendPanel';
-import { useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
-import { MapOrEntries, useMap } from 'usehooks-ts';
+import { useMap } from 'usehooks-ts';
 import { ServerUser, User } from '../types/types';
 import { PeerSocketContext } from '../context/PeerSocket';
+import { FriendPanel } from '../FriendPanel/FriendPanel';
+import PrivateChatBar from '../PrivateChatBar/PrivateChatBar';
+import { setActivePrivateChat, setIsHome } from '../redux/userSlice';
 
 export const Main = () => {
     const isHome = useAppSelector((state) => state.userReducer.home);
     const activeServer = useAppSelector(
         (state) => state.userReducer.activeServer
     );
+    const me = useAppSelector((state) => state.userReducer.me);
     const [userMap, userActions] = useMap<number, ServerUser>([]);
-    const [FriendMap, friendActions] = useMap<Number, User>([]);
-    // const [userMap, setUserMap] = useState<Map<number, number>>(new Map([]))
+    const [privateChatMap, privateChatActions] = useMap<Number, User>([]);
     const { socket } = useContext(PeerSocketContext);
+    const dispatch = useAppDispatch();
+
     const [setUser, setAllUsers, removeUser, resetUsers] = [
         userActions.set,
         userActions.setAll,
         userActions.remove,
         userActions.reset,
+    ];
+
+    const [
+        setPrivateChat,
+        setAllPrivateChats,
+        removePrivateChat,
+        resetPrivateChats,
+    ] = [
+        privateChatActions.set,
+        privateChatActions.setAll,
+        privateChatActions.remove,
+        privateChatActions.reset,
     ];
 
     const resetUserMap = useCallback(() => {
@@ -35,6 +52,21 @@ export const Main = () => {
             setUser(user.user.id, user);
         },
         [setUser]
+    );
+
+    const addPrivateChat = useCallback(
+        (user: User) => {
+            console.log(privateChatMap);
+
+            if (user.id === me?.id) return;
+            if (!privateChatMap.has(user.id)) {
+                setPrivateChat(user.id, user);
+            }
+
+            dispatch(setActivePrivateChat(user.id));
+            dispatch(setIsHome(true));
+        },
+        [setPrivateChat, me, dispatch, privateChatMap]
     );
 
     useEffect(() => {
@@ -90,14 +122,29 @@ export const Main = () => {
             }}
             className='main'>
             <Col style={{ backgroundColor: '#535151' }} span={3.5}>
-                {/*isHome ? 'prout' : */ <ChanelBar userMap={userMap} />}
+                {isHome ? (
+                    <PrivateChatBar privateChatMap={privateChatMap} />
+                ) : (
+                    <ChanelBar
+                        userMap={userMap}
+                        privateChatMap={privateChatMap}
+                        addPrivateChat={addPrivateChat}
+                    />
+                )}
             </Col>
             <Col span={16}>
-                <Chat userMap={userMap} />
+                <Chat userMap={userMap} privateChatMap={privateChatMap} />
             </Col>
             <Col style={{ backgroundColor: 'grey' }} span={4}>
-                {/* {friendBar} */}
-                <StatusBar userMap={userMap} />
+                {isHome ? (
+                    <FriendPanel />
+                ) : (
+                    <StatusBar
+                        userMap={userMap}
+                        addPrivateChat={addPrivateChat}
+                        privateChatMap={privateChatMap}
+                    />
+                )}
             </Col>
         </Row>
     );

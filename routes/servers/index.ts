@@ -95,6 +95,8 @@ router.post('/create_server', isAuth, async (req: IRequest, res: Response) => {
                 console.log(e);
                 return res.status(401).send('Error');
             });
+    } else {
+        return res.status(401).send('Wrong arguments');
     }
 });
 

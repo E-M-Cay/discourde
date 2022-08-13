@@ -9,7 +9,7 @@
         "dev": "nodemon index.ts",
         "client": "npm start --prefix client",
         "watch": "concurrently \"npm run dev\" \"npm run client\"",
-        "heroku-postbuild": "npm install && npm install --prefix client && npm run build --prefix client",
+        "heroku-postbuild": "npm install --prefix client && npm run build --prefix client",
         "typeorm": "ts-node --files ./node_modules/typeorm/cli.js",
         "migration:create": "ts-node --files ./node_modules/typeorm/cli.js migration:create ./migrations/discourde -d ./db/AppDataSource.ts",
         "migration:generate": "ts-node --files ./node_modules/typeorm/cli.js migration:generate ./migrations/discourde -d ./db/AppDataSource.ts",
@@ -46,7 +46,9 @@
         "reflect-metadata": "^0.1.13",
         "socket.io": "^4.5.1",
         "ts-node": "^10.9.1",
-        "typeorm": "^0.3.7"
+        "typeorm": "^0.3.7",
+        "terser": "^5.14.2",
+        "nth-check": "^2.0.1"
     },
     "devDependencies": {
         "concurrently": "^7.3.0",

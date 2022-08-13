@@ -1,15 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { User } from '../types/types';
 
 interface UserState {
     username: string;
     serverUsername?: string;
     token?: string;
     activeServer?: number;
-    user_id?: number;
     activeChannel?: number;
     activeVocalChannel?: number;
+    activePrivateChat?: number;
     home: boolean;
-    privateChats: number[];
+    me?: User;
 }
 
 const initialUserState: UserState = {
@@ -18,7 +19,6 @@ const initialUserState: UserState = {
         : undefined,
     username: '',
     home: true,
-    privateChats: [],
 };
 
 export const userSlice = createSlice({
@@ -40,20 +40,17 @@ export const userSlice = createSlice({
         setActiveServer: (state, action: PayloadAction<number>) => {
             state.activeServer = action.payload;
         },
-        setUserId: (state, action: PayloadAction<number>) => {
-            state.user_id = action.payload;
-        },
         setActiveChannel: (state, action: PayloadAction<number>) => {
             state.activeChannel = action.payload;
         },
         setActiveVocalChannel: (state, action: PayloadAction<number>) => {
             state.activeVocalChannel = action.payload;
         },
-        addPrivateChat: (state, action: PayloadAction<number>) => {
-            state.privateChats.push(action.payload);
+        setActivePrivateChat: (state, action: PayloadAction<number>) => {
+            state.activePrivateChat = action.payload;
         },
-        setPrivateChat: (state, action: PayloadAction<number[]>) => {
-            state.privateChats = action.payload;
+        setMe: (state, action: PayloadAction<User>) => {
+            state.me = action.payload;
         },
     },
 });
@@ -63,12 +60,11 @@ export const {
     setUsername,
     setToken,
     setActiveServer,
-    setUserId,
     setActiveChannel,
     setServerUsername,
     setActiveVocalChannel,
-    addPrivateChat,
-    setPrivateChat,
+    setActivePrivateChat,
+    setMe,
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -376,43 +376,6 @@ export const ChanelBar = (props: {
                     flexWrap: 'wrap',
                     overflowY: 'scroll',
                 }}>
-                {isHome && (
-                    <Panel
-                        key='3'
-                        header='hors ligne'
-                        style={{ margin: '0 !important' }}>
-                        {Array.from(userMap.entries()).map(([id, user]) =>
-                            !user.user.status ? (
-                                <div
-                                    key={id}
-                                    className='hoStat'
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        maxWidth: '300px',
-                                    }}>
-                                    <CustomImage
-                                        obj={user}
-                                        key={id}
-                                        privateChatMap={privateChatMap}
-                                        addPrivateChat={addPrivateChat}
-                                    />{' '}
-                                    <Typography
-                                        style={{
-                                            width: '100%',
-                                            height: '100%',
-                                            paddingLeft: '30px',
-                                            fontWeight: 'bold',
-                                            color: '#A1A1A1',
-                                        }}>
-                                        {user.nickname}
-                                    </Typography>{' '}
-                                </div>
-                            ) : null
-                        )}
-                    </Panel>
-                )}
                 {!isHome && (
                     <Collapse
                         ghost

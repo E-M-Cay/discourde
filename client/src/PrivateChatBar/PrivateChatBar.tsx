@@ -1,8 +1,10 @@
+import { Typography } from 'antd';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useAppSelector } from '../redux/hooks';
+import { CustomImageChat } from '../CustomLi/CustomLi';
+import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { setActivePrivateChat } from '../redux/userSlice';
-import { PrivateChatMap, TextMessage, User } from '../types/types';
+import { PrivateChatMap } from '../types/types';
 
 const PrivateChatBar = (props: { privateChatMap: PrivateChatMap }) => {
     const { privateChatMap } = props;
@@ -15,8 +17,32 @@ const PrivateChatBar = (props: { privateChatMap: PrivateChatMap }) => {
     return (
         <div>
             {Array.from(privateChatMap.entries()).map(([id, user]) => (
-                <div key={Number(id)} onClick={() => {}}>
-                    {user.username}
+                <div
+                    key={id}
+                    className='hoStat'
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        maxWidth: '300px',
+                    }}>
+                    <CustomImageChat
+                        key={id}
+                        id={id}
+                        picture={user.picture}
+                        nickname={user.username}
+                        onClickHandler={setActivePrivateChat}
+                    />{' '}
+                    <Typography
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            paddingLeft: '30px',
+                            fontWeight: 'bold',
+                            color: '#A1A1A1',
+                        }}>
+                        {user.username}
+                    </Typography>{' '}
                 </div>
             ))}
         </div>

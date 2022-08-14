@@ -43,6 +43,6 @@ export interface Server {
 export type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
 
 export type PrivateChatMap = Omit<
-    Map<Number, User>,
+    Map<number, User>,
     'delete' | 'set' | 'clear'
 >;

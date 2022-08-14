@@ -18,7 +18,7 @@ const PrivateMessageChat = (props: { privateChatMap: PrivateChatMap }) => {
     useEffect(() => {
         if (activePrivateChat) {
             axios
-                .get(`/privatemessage/${activePrivateChat}`, {
+                .get(`/privatemessage/messages/${activePrivateChat}`, {
                     headers: {
                         access_token: localStorage.getItem('token') as string,
                     },

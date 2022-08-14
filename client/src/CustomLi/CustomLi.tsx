@@ -9,6 +9,7 @@ import {
     ServerUser,
     User,
 } from '../types/types';
+import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 
 export const CustomLimage = (props: { obj?: ServerResponse }) => {
     const { obj } = props;
@@ -96,6 +97,35 @@ export const CustomImageMess = (props: {
             alt={nickname}
             onMouseEnter={() => setFocus(true)}
             onMouseLeave={() => setFocus(false)}
+            style={{
+                backgroundColor: '#535353',
+                margin: '5px auto',
+                width: 'auto',
+                borderRadius: '22px',
+                cursor: 'pointer',
+                height: '45px',
+                marginRight: '17px',
+                marginLeft: '10px',
+            }}
+            src={picture ?? logo}
+        />
+    );
+};
+
+export const CustomImageChat = (props: {
+    id: number;
+    picture?: string;
+    nickname: string;
+    onClickHandler: ActionCreatorWithPayload<number, string>;
+}) => {
+    const [isFocused, setFocus] = useState(false);
+    const { nickname, picture, onClickHandler, id } = props;
+    return (
+        <img
+            alt={nickname}
+            onMouseEnter={() => setFocus(true)}
+            onMouseLeave={() => setFocus(false)}
+            onClick={() => onClickHandler(id)}
             style={{
                 backgroundColor: '#535353',
                 margin: '5px auto',

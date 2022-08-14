@@ -23,8 +23,14 @@ router.get('/messages/:id', isAuth, async (req: IRequest, res: Response) => {
     try {
         const messages = await privateMessageRepository.find({
             where: [
-                { user1: { id: req.id }, user2: { id: user_id } },
-                { user1: { id: user_id }, user2: { id: req.id } },
+                {
+                    user1: { id: req.id },
+                    user2: { id: user_id },
+                },
+                {
+                    user1: { id: user_id },
+                    user2: { id: req.id },
+                },
             ],
             relations: {
                 user1: true,
@@ -43,42 +49,44 @@ router.get('/messages/:id', isAuth, async (req: IRequest, res: Response) => {
 });
 
 router.get('/userlist', isAuth, async (req: IRequest, res: Response) => {
-    console.log(
-        req.id,
-        'idk,lk,lk,flkez,lkea,ezlk,lak,ealkz,ealk,lk,zlkae,zlkaez,'
-    );
     try {
-        const users = await userRepository.find({
-            where: [
-                {
-                    privateMessagesReceived: {
-                        user1: {
-                            id: req.id,
-                        },
-                    },
-                    privateMessagesSent: {
-                        user2: {
-                            id: req.id,
-                        },
-                    },
-                },
-            ],
-            relations: {
-                privateMessagesReceived: true,
-                privateMessagesSent: true,
-            },
-            select: {
-                username: true,
-                id: true,
-                picture: true,
-            },
-        });
+        const users = await userRepository
+            .createQueryBuilder('user')
+            .select(['user.id', 'user.username', 'user.picture'])
+            .leftJoin('user.privateMessagesSent', 'sent')
+            .leftJoin('user.privateMessagesReceived', 'received')
+            .where('received.user1=:id', { id: req.id })
+            .orWhere('sent.user2=:id', { id: req.id })
+            .getMany();
+        // find({
+        //     where: [
 
-        console.log(users);
+        //         {
+        //             privateMessagesSent: {
+        //                 user2: {
+        //                     id: req.id,
+        //                 },
+        //             },
+        //         },
+        //         {
+        //             privateMessagesReceived: {
+        //                 user1: {
+        //                     id: req.id,
+        //                 },
+        //             },
+        //         },
+        //     ],
+        //     select: {
+        //         username: true,
+        //         id: true,
+        //         picture: true,
+        //     },
+        // });
+
+        res.status(201).send(users);
     } catch (e) {
         console.log(e);
     }
-    res.status(201).send('coucou');
 });
 
 export default router;

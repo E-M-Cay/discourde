@@ -116,7 +116,7 @@ export const CustomImageChat = (props: {
     id: number;
     picture?: string;
     nickname: string;
-    onClickHandler: ActionCreatorWithPayload<number, string>;
+    onClickHandler: (id: number) => void;
 }) => {
     const [isFocused, setFocus] = useState(false);
     const { nickname, picture, onClickHandler, id } = props;

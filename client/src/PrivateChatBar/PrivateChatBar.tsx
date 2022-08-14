@@ -8,11 +8,16 @@ import { PrivateChatMap } from '../types/types';
 
 const PrivateChatBar = (props: { privateChatMap: PrivateChatMap }) => {
     const { privateChatMap } = props;
+    const dispatch = useAppDispatch();
 
     // useEffect(() => {
     //     console.log(privateChatMap, 'from bar');
     //     console.table(Array.from(privateChatMap.entries()));
     // }, [privateChatMap]);
+
+    const onClickHandler = (id: number) => {
+        dispatch(setActivePrivateChat(id));
+    };
 
     return (
         <div>
@@ -31,7 +36,7 @@ const PrivateChatBar = (props: { privateChatMap: PrivateChatMap }) => {
                         id={id}
                         picture={user.picture}
                         nickname={user.username}
-                        onClickHandler={setActivePrivateChat}
+                        onClickHandler={onClickHandler}
                     />{' '}
                     <Typography
                         style={{

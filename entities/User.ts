@@ -8,6 +8,7 @@ import {
     JoinTable,
     OneToMany,
     AfterLoad,
+    JoinColumn,
 } from 'typeorm';
 import { BannedUser } from './BannedUser';
 import { ChannelMessage } from './ChannelMessage';
@@ -117,15 +118,9 @@ export class User {
     })
     privateMessagesSent: PrivateMessage[];
 
-    @OneToMany(
-        () => PrivateMessage,
-        (message: { user1: any; user2: any }) => {
-            message.user1, message.user2;
-        },
-        {
-            cascade: ['insert'],
-        }
-    )
+    @OneToMany(() => PrivateMessage, (message) => message.user2, {
+        cascade: ['insert'],
+    })
     privateMessagesReceived: PrivateMessage[];
 
     @AfterLoad()

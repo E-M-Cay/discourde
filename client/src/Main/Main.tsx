@@ -86,15 +86,18 @@ export const Main = () => {
         };
     }, [activeServer, setUserMap, resetUserMap]);
 
-    // useEffect(() => {
-    //     axios
-    //         .get('/privatemessage/userlist', {
-    //             headers: {
-    //                 access_token: localStorage.getItem('token') as string,
-    //             },
-    //         })
-    //         .then((res) => console.log(res));
-    // });
+    useEffect(() => {
+        axios
+            .get('/privatemessage/userlist', {
+                headers: {
+                    access_token: localStorage.getItem('token') as string,
+                },
+            })
+            .then((res) => {
+                console.log(res.data);
+                res.data.forEach((u: User) => setPrivateChat(u.id, u));
+            });
+    }, []);
 
     const handleDisconnection = useCallback(
         (id: number) => {

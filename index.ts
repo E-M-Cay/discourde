@@ -10,10 +10,12 @@ import path from 'path';
 import { ChannelMessage } from './entities/ChannelMessage';
 import AppDataSource from './db/AppDataSource';
 import { Channel } from './entities/Channel';
+import { VocalChannel } from './entities/VocalChannel';
 import { User } from './entities/User';
 import { Permission } from './entities/Permission';
 import friends from './routes/friends';
 import channels from './routes/channels';
+import vocalchannels from './routes/vocalchannels';
 import users from './routes/users/index';
 import servers from './routes/servers/index';
 import privateMessageRoute from './routes/privatemessage/index';
@@ -35,7 +37,7 @@ const ChannelMessageRepository = AppDataSource.getRepository(ChannelMessage);
 const ChannelRepository = AppDataSource.getRepository(Channel);
 const userRepository = AppDataSource.getRepository(User);
 const PrivateMessageRepository = AppDataSource.getRepository(PrivateMessage);
-
+const VocalChannelRepository = AppDataSource.getRepository(VocalChannel);
 AppDataSource.initialize()
     .then(() => {
         console.log('Data Source has been initialized!');
@@ -77,6 +79,7 @@ app.use('/server', servers);
 app.use('/user', users);
 app.use('/channel', channels);
 app.use('/friends', friends);
+app.use('/vocalchannel', vocalchannels)
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname, 'client/build')));

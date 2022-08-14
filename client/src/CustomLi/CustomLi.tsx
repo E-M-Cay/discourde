@@ -72,7 +72,7 @@ export const CustomImage = (props: {
             alt={obj.user.username}
             onMouseEnter={() => setFocus(true)}
             onMouseLeave={() => setFocus(false)}
-            onClick={() => addPrivateChat(obj.user)}
+            // onClick={() => addPrivateChat(obj.user)}
             className={'imgS2'}
             style={{
                 margin: '5px auto',

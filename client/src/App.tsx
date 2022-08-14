@@ -130,7 +130,7 @@ const App = () => {
                 }
             });
     };
-
+    
     return peer && socket ? (
         <div>
             <VocalChannel />

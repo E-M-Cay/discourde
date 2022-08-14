@@ -38,6 +38,7 @@ router.get('/list/:server_id', isAuth, async (req: IRequest, res: Response) => {
 });
 
 router.post('/create/', isAuth, async (req: IRequest, res: Response) => {
+    const server_id = req.body.server_id
     if ('name' in req.body && 'server_id' in req.body) {
         const server = await ServerRepository.findOneBy({
             id: Number(req.body.server_id),
@@ -68,7 +69,7 @@ router.post('/create/', isAuth, async (req: IRequest, res: Response) => {
             
             if('users' in req.body){
                 for(const user_id of req.body.users){
-                    const server_user = await ServerUserRepository.findOneBy({user: user_id, server: server})
+                    const server_user = await ServerUserRepository.findOneBy({user: user_id, server: server_id})
                     if(!server_user)
                         continue
                     

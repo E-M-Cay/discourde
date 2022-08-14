@@ -71,6 +71,60 @@ export const StatusBar = (props: {
       ]}
     />
   );
+  const menu2 = (
+    <Menu
+      items={[
+        {
+          key: "1",
+          label: (
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => addPrivateChat(activeUser)}
+            >
+              message
+            </a>
+          ),
+        },
+        {
+          key: "2",
+          label: (
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://www.aliyun.com"
+            >
+              ajouter en ami
+            </a>
+          ),
+        },
+        {
+          key: "3",
+          label: (
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://www.luohanacademy.com"
+            >
+              role
+            </a>
+          ),
+        },
+        {
+          key: "4",
+          label: (
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://www.luohanacademy.com"
+            >
+              exclure
+            </a>
+          ),
+        },
+      ]}
+    />
+  );
 
   return (
     <div
@@ -86,7 +140,7 @@ export const StatusBar = (props: {
         <Panel key="1" header="en ligne" style={{ margin: "0 !important" }}>
           {Array.from(userMap.entries()).map(([id, user]) =>
             user.user.status ? (
-                <Dropdown overlay={menu}  placement="bottomLeft" arrow>
+                <Dropdown overlay={menu}  placement="bottomLeft" trigger={['click']} arrow>
 
               <div
                 key={id}
@@ -124,9 +178,12 @@ export const StatusBar = (props: {
         <Panel key="2" header="hors ligne" style={{ margin: "0 !important" }}>
           {Array.from(userMap.entries()).map(([id, user]) =>
             !user.user.status ? (
+                <Dropdown overlay={menu2} placement="bottomLeft" trigger={['click']} arrow>
               <div
                 key={id}
                 className="hoStat"
+                onMouseEnter={() => setActiveUser(user.user)}
+
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
@@ -134,7 +191,7 @@ export const StatusBar = (props: {
                   maxWidth: "300px",
                 }}
               >
-                <Dropdown overlay={menu} placement="bottomLeft" arrow>
+                
                   <CustomImage
                     obj={user}
                     privateChatMap={privateChatMap}
@@ -152,8 +209,9 @@ export const StatusBar = (props: {
                   >
                     {user.nickname}
                   </Typography>{" "}
-                </Dropdown>
-              </div>
+               
+              </div> 
+            </Dropdown>
             ) : (
               ""
             )

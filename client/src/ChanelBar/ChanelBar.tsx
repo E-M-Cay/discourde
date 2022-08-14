@@ -137,14 +137,18 @@ export const ChanelBar = (props: {
 
   const [stateMic, setmicState] = useState(true);
   const [stateHead, setheadState] = useState(true);
+  const [isModify, setIsModify] = useState(0);
+  const [isModifyVoc, setIsModifyVoc] = useState(0);
   const [stateMenu, setmenuState] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newTextChannelName, setNewTextChannelName] = useState("");
-const [isAdminChannel, setIsAdminChannel] = useState(false);
+  const [isAdminChannel, setIsAdminChannel] = useState(false);
+  const [modifingChannel, setModifingChannel] = useState<any>(null);
   const [isModalVisibleInvitation, setIsModalVisibleInvitation] =
     useState(false);
   const [isModalVisibleParams, setIsModalVisibleParams] = useState(false);
   const [channelName, setChannelName] = useState("");
+  
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -180,30 +184,64 @@ const [isAdminChannel, setIsAdminChannel] = useState(false);
     setIsModalVisibleParams(false);
   };
 
+  const handleUpdateChannel = (txtChan: Channel | undefined , vocChan:  VocalChan | undefined ) => {
+      axios
+        .put(`/${vocChan ? "vocal" : ""}channel/update`, vocChan ?? txtChan, {
+          headers: {
+            access_token: localStorage.getItem("token") as string,
+          },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+  };
+
   const handleCreateChannel = (isVocal: any) => {
     console.log(isVocal, "rcvghjbknl", newTextChannelName);
     if (newTextChannelName.length > 0) {
-        axios
-            .post(`/${isVocal ? "vocalc" : "c"}hannel/create`, {
-                name: newTextChannelName,
-                server_id: activeServer,
-                hidden: isAdminChannel
-            }, {
-                headers: {
-                    access_token: localStorage.getItem("token") as string,
-                },
-            })
-            .then((res) => {
-                setTextChannelList([...textChannelList, res.data]);
-                setNewTextChannelName("");
-            }).catch((err) => {
-                console.log(err);
-            }).finally(() => {
-                setIsModalVisible(false);
-            }
-        );
+      axios
+        .post(
+          `/${isVocal ? "vocalc" : "c"}hannel/create`,
+          {
+            name: newTextChannelName,
+            server_id: activeServer,
+            hidden: isAdminChannel,
+          },
+          {
+            headers: {
+              access_token: localStorage.getItem("token") as string,
+            },
+          }
+        )
+        .then((res) => {
+          isVocal
+            ? setVocalChannelList([...vocalChannelList, res.data])
+            : setTextChannelList([...textChannelList, res.data]);
+          setNewTextChannelName("");
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setIsModalVisible(false);
+        });
     }
-    }
+  };
+
+  const handleModifyChannelText = (chan: Channel) => {
+    setModifingChannel(chan);
+    setIsModify(chan.id)
+  }
+  const handleModifyChannelVoc = (chan: Channel) => {
+    setModifingChannel(chan);
+    setIsModifyVoc(chan.id)
+  }
+
+
 
   const createChannel = (e: React.FormEvent<HTMLFormElement>) => {
     console.log("bhfdksdklf");
@@ -368,20 +406,61 @@ const [isAdminChannel, setIsAdminChannel] = useState(false);
     >
       <Modal
         title="Basic Modal"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        style={{ backgroundColor: "#1F1F1F" }}
+        visible={isModalVisibleParams}
+        onOk={handleOk3}
+        onCancel={handleCancel3}
       >
-        <form onSubmit={(e) => createChannel(e)}>
-          <input
-            type="text"
-            defaultValue={channelName}
-            onChange={(e) => setChannelName(e.target.value)}
-            placeholder="Enter channel name"
-          />
-          <input type="submit" value="Create" />
-        </form>
+        <Typography.Title level={4}>Paramètres du serveur</Typography.Title>
+        <Typography.Title level={5}>Channel Textuel</Typography.Title>
+        {textChannelList.map((channel: any) => (
+            (isModify === channel.id ) ? 
+                <div>
+                    <Input
+                        placeholder="Nom du salon"
+                        defaultValue={newTextChannelName}
+                        onChange={(e) => setModifingChannel((prev: any) => ({...prev, name: e.target.value}))}
+                    />
+                    <Button type="primary" onClick={() => handleUpdateChannel(modifingChannel, undefined)}>
+                        Modifier
+                    </Button>
+                    <Button type="primary" onClick={() => setIsModify(0)}>
+                        Annuler
+                    </Button>
+                </div> 
+                :
+          <div key={channel.id} onClick={() => handleModifyChannelText(channel)} >
+            <div> 
+              <span>{channel.name}</span>
+              <span>{channel.hidden ? "Caché" : "Public"}</span>
+            </div>
+            <div></div>
+          </div>
+        ))}
+        <Typography.Title level={5}>Channel Audio</Typography.Title>
+        {vocalChannelList.map((channel: any) => (
+            (isModifyVoc === channel.id ) ?
+                <div>
+                    <Input
+                        placeholder="Nom du salon"
+                        defaultValue={channel.name}
+                        onChange={(e) => setModifingChannel((prev: any) => ({...prev, name: e.target.value}))}
+                    />
+                    <Button type="primary" onClick={() => handleUpdateChannel( undefined, modifingChannel )}>
+                        Modifier
+                    </Button>
+                    <Button type="primary" onClick={() => setIsModifyVoc(0)}>
+                        Annuler
+                    </Button>
+                </div>
+                :
+            <div key={channel.id} onClick={() => handleModifyChannelVoc(channel)} >
+                <div>
+                    <span>{channel.name}</span>
+                    <span>{channel.hidden ? "Caché" : "Public"}</span>
+                </div>
+                <div></div>
+            </div>
+        ))}
       </Modal>
       <Modal
         title="Basic Modal"
@@ -394,9 +473,10 @@ const [isAdminChannel, setIsAdminChannel] = useState(false);
       </Modal>
       <Modal
         title="Basic Modal"
-        visible={isModalVisibleParams}
-        onOk={handleOk3}
-        onCancel={handleCancel3}
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        style={{ backgroundColor: "#1F1F1F" }}
       >
         <div
           style={{
@@ -406,8 +486,10 @@ const [isAdminChannel, setIsAdminChannel] = useState(false);
           }}
         >
           <Input placeholder="Add text channel" />
-          <Checkbox onChange={(e) => setIsAdminChannel(e.target.checked)}>isAdmin</Checkbox>
-          <Button type="primary" onClick={() => handleCreateChannel(true)}>
+          <Checkbox onChange={(e) => setIsAdminChannel(e.target.checked)}>
+            isAdmin
+          </Checkbox>
+          <Button type="primary" onClick={() => handleCreateChannel(false)}>
             Create
           </Button>
         </div>
@@ -418,9 +500,14 @@ const [isAdminChannel, setIsAdminChannel] = useState(false);
             alignItems: "center",
           }}
         >
-          <Input onChange={(e) => setNewTextChannelName("kggkhgghlfghkl")} placeholder="Add vocal channel" />
-          <Checkbox onChange={(e) => setIsAdminChannel(e.target.checked)}>isAdmin</Checkbox>{" "}
-          <Button type="primary" onClick={() => handleCreateChannel(false)}>
+          <Input
+            onChange={(e) => setNewTextChannelName("kggkhgghlfghkl")}
+            placeholder="Add vocal channel"
+          />
+          <Checkbox onChange={(e) => setIsAdminChannel(e.target.checked)}>
+            isAdmin
+          </Checkbox>{" "}
+          <Button type="primary" onClick={() => handleCreateChannel(true)}>
             Create
           </Button>
         </div>

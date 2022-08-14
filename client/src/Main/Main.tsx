@@ -20,7 +20,7 @@ export const Main = () => {
     );
     const me = useAppSelector((state) => state.userReducer.me);
     const [userMap, userActions] = useMap<number, ServerUser>([]);
-    const [privateChatMap, privateChatActions] = useMap<Number, User>([]);
+    const [privateChatMap, privateChatActions] = useMap<number, User>([]);
     const { socket } = useContext(PeerSocketContext);
     const dispatch = useAppDispatch();
 
@@ -85,6 +85,19 @@ export const Main = () => {
             resetUserMap();
         };
     }, [activeServer, setUserMap, resetUserMap]);
+
+    useEffect(() => {
+        axios
+            .get('/privatemessage/userlist', {
+                headers: {
+                    access_token: localStorage.getItem('token') as string,
+                },
+            })
+            .then((res) => {
+                console.log(res.data);
+                res.data.forEach((u: User) => setPrivateChat(u.id, u));
+            });
+    }, []);
 
     const handleDisconnection = useCallback(
         (id: number) => {

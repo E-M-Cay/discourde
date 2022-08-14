@@ -207,6 +207,8 @@ io.on('connection', (socket: ISocket) => {
             user2: { id: message.to },
         });
 
+        await PrivateMessageRepository.save(private_message);
+
         console.log(private_message);
         io.to(socket.id)
             .to(user_id_to_socket_id.get(message.to as number) as string)

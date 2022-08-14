@@ -79,7 +79,7 @@ app.use('/server', servers);
 app.use('/user', users);
 app.use('/channel', channels);
 app.use('/friends', friends);
-app.use('/vocalchannel', vocalchannels)
+app.use('/vocalchannel', vocalchannels);
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname, 'client/build')));
@@ -114,7 +114,7 @@ if (process.env.NODE_ENV === 'development') {
     });
 }
 
-const io: SocketServer = new SocketServer(httpServer, {
+export const io: SocketServer = new SocketServer(httpServer, {
     cors: { origin: '*', methods: ['GET', 'POST'] },
 });
 

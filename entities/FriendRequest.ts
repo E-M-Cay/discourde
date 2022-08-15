@@ -12,7 +12,7 @@ export class FriendRequest {
     })
     sender: User;
 
-    @ManyToOne(() => User, (user) => user.receivedFriendRequest, {
+    @ManyToOne(() => User, (user) => user.receivedFriendRequests, {
         cascade: ['insert', 'remove'],
     })
     receiver: User;

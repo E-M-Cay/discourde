@@ -189,13 +189,14 @@ io.on('connection', (socket: ISocket) => {
 
     socket.on('privatemessage', async (message: PrivateMessageInterface) => {
         const user = await userRepository.count({
-            where: { id: socket.user_id },
+            where: { id: message.to },
             select: { id: true },
         });
-        console.log(message);
-        console.table(user_id_to_socket_id);
+        // console.log(message.to, 'to');
+        // console.table(user_id_to_socket_id);
+        // console.log(user_id_to_socket_id.get(message.to), 'to');
 
-        io.allSockets().then((res) => console.table(res));
+        // io.allSockets().then((res) => console.table(res));
         let time: string = new Date()
             .toISOString()
             .slice(0, 19)
@@ -209,9 +210,9 @@ io.on('connection', (socket: ISocket) => {
 
         await PrivateMessageRepository.save(private_message);
 
-        console.log(private_message);
+        // console.log(private_message);
         io.to(socket.id)
-            .to(user_id_to_socket_id.get(message.to as number) as string)
+            .to(user_id_to_socket_id.get(message.to) as string)
             .emit(`privatemessage`, {
                 user1: private_message.user1,
                 receiver: private_message.user2,

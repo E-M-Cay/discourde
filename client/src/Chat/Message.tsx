@@ -5,14 +5,15 @@ import { MessageItem } from './MessageItem';
 import axios from 'axios';
 import { useAppSelector } from '../redux/hooks';
 import { PeerSocketContext } from '../context/PeerSocket';
-import { UserMap, TextMessage } from '../types/types';
+import { ServerUserMap, TextMessage } from '../types/types';
+import { UserMapsContext } from '../context/UserMapsContext';
 
-const Message = (props: { userMap: UserMap }) => {
-    const { userMap } = props;
+const Message = () => {
     const { socket } = useContext(PeerSocketContext);
     const activeChannel = useAppSelector(
         (state) => state.userReducer.activeChannel
     );
+    const { serverUserMap } = useContext(UserMapsContext);
 
     const [messages, setMessages] = useState<TextMessage[]>([]);
     const [name, setName] = useState<string>('Chan name');
@@ -49,7 +50,7 @@ const Message = (props: { userMap: UserMap }) => {
         <div className='message'>
             <div>{name}</div>
             {messages?.map((obj: TextMessage, i: number) => {
-                const user = userMap.get(obj.author);
+                const user = serverUserMap.get(obj.author);
                 return (
                     user && (
                         <MessageItem

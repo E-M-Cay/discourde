@@ -1,5 +1,8 @@
 import { BellOutlined, LogoutOutlined, PlusCircleOutlined, SettingOutlined, TeamOutlined, UserAddOutlined } from "@ant-design/icons";
-import { Avatar, Badge, Menu } from "antd";
+import { Avatar, Badge, Menu, Modal } from "antd";
+import { useContext, useState } from "react";
+import { NotificationsComponent } from "../components/NotificationsComponent";
+import { NotificationsContext } from "../context/NotificationsContext";
 
 export const DropdownMenu = (params: {
 
@@ -14,7 +17,25 @@ deleteServer: Function;
         showModal,
         deleteServer,
     } = params;
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const {notifications, clearNotification} = useContext(NotificationsContext);
+
+
+    const showNotificationModal = () => {
+      setIsModalVisible(true);
+    };
+  
+    const handleOk = () => {
+      setIsModalVisible(false);
+      clearNotification();
+    };
+  
+    const handleCancel = () => {
+      setIsModalVisible(false);
+      clearNotification();
+    };
     return (
+      <>
     <Menu
       className="menu"
       items={[
@@ -100,14 +121,14 @@ deleteServer: Function;
         },
         {
           label: (
-            <li style={{ color: "white" }} key={5}>
+            <li style={{ color: "white" }} onClick={()=>showNotificationModal()} key={5}>
               <BellOutlined
                 style={{
                   color: "darkgrey",
                   fontSize: "small",
                 }}
               />{" "}
-              Notifications{" "}
+              Notifications{" "}<Badge count={notifications.length}></Badge>
 
             </li>
           ),
@@ -132,4 +153,15 @@ deleteServer: Function;
         },
       ]}
     />
+    <Modal
+        title="Notification"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        closable={false}
+        footer={null}
+      >
+        <NotificationsComponent />
+      </Modal>
+      </>
   );}

@@ -37,7 +37,7 @@ import { CustomImage } from '../CustomLi/CustomLi';
 import { ServerChannels, ServerInvit, ServerParams } from '../Modals/Modals';
 import { DropdownMenu } from '../DropdownMenu/DropdownMenu';
 import { ChannelCollapse } from '../ChannelCollapse/ChannelCollapse';
-import { openNotification } from '../notificationHandler/notificationHandler';
+import { NotificationsContext } from '../context/NotificationsContext';
 
 const { Panel } = Collapse;
 
@@ -46,6 +46,7 @@ export const ChanelBar = () => {
         (state) => state.userReducer.activeServer
     );
     const { socket } = useContext(PeerSocketContext);
+    const {notifications, addNotification} = useContext(NotificationsContext);
     const dispatch = useAppDispatch();
     const headerTxt: string = 'SALONS TEXTUELS';
     const headerVoc: string = 'SALONS VOCAUX';
@@ -220,7 +221,7 @@ export const ChanelBar = () => {
                         ? setVocalChannelList([...vocalChannelList, res.data])
                         : setTextChannelList([...textChannelList, res.data]);
                     setNewTextChannelName('');
-                    openNotification("success", "success", "Channel created");
+                    addNotification({type: 'success', title: "success", content: 'Channel created'});
                     // setNotifications(...notifications);
                 })
                 .catch((err) => {

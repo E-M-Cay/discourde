@@ -43,6 +43,7 @@ import { CustomImage } from "../CustomLi/CustomLi";
 import { ServerChannels, ServerInvit, ServerParams } from "../Modals/Modals";
 import { DropdownMenu } from "../DropdownMenu/DropdownMenu";
 import { ChannelCollapse } from "../ChannelCollapse/ChannelCollapse";
+import { openNotification } from "../notificationHandler/notificationHandler";
 
 const { Panel } = Collapse;
 
@@ -224,6 +225,7 @@ export const ChanelBar = (props: {
             ? setVocalChannelList([...vocalChannelList, res.data])
             : setTextChannelList([...textChannelList, res.data]);
           setNewTextChannelName("");
+          openNotification("success", "success", "Channel created");
         })
         .catch((err) => {
           console.log(err);

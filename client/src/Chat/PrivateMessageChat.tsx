@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { PeerSocketContext } from '../context/PeerSocket';
+import { UserMapsContext } from '../context/UserMapsContext';
 import { useAppSelector } from '../redux/hooks';
 import { PrivateChatMap, PrivateMessage, TextMessage } from '../types/types';
 import { MessageItem } from './MessageItem';
 
-const PrivateMessageChat = (props: { privateChatMap: PrivateChatMap }) => {
-    const { privateChatMap } = props;
+const PrivateMessageChat = () => {
     const activePrivateChat = useAppSelector(
         (state) => state.userReducer.activePrivateChat
     );
@@ -14,6 +14,7 @@ const PrivateMessageChat = (props: { privateChatMap: PrivateChatMap }) => {
     const [messages, setMessages] = useState<PrivateMessage[]>([]);
     const [name, setName] = useState<string>('user name');
     const { socket } = useContext(PeerSocketContext);
+    const { privateChatMap } = useContext(UserMapsContext);
 
     useEffect(() => {
         if (activePrivateChat) {
@@ -33,7 +34,6 @@ const PrivateMessageChat = (props: { privateChatMap: PrivateChatMap }) => {
 
     const receiveMessage = useCallback(
         (message: PrivateMessage) => {
-            console.log('private mes couilles');
             if (
                 message.user1.id === activePrivateChat ||
                 message.user1.id === me?.id
@@ -60,7 +60,7 @@ const PrivateMessageChat = (props: { privateChatMap: PrivateChatMap }) => {
                     obj.user1.id === me?.id
                         ? me
                         : privateChatMap.get(obj.user1.id);
-                console.log(privateChatMap, 'user', obj.user1.id);
+                // console.log(privateChatMap, 'user', obj.user1.id);
                 return (
                     user && (
                         <MessageItem

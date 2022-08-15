@@ -77,24 +77,16 @@ export class User {
     )
     channel_messages: ChannelMessage[];
 
-    @OneToMany(
-        () => Friendship,
-        (friendship) => {
-            friendship.user1, friendship.user2;
-        },
-        {
-            cascade: ['insert'],
-        }
-    )
+    @OneToMany(() => Friendship, (friendship) => friendship.user1, {
+        cascade: ['insert'],
+    })
     friendshipsSent: Friendship[];
 
     @OneToMany(
         () => Friendship,
         (friendship) => friendship.user1,
 
-        {
-            cascade: ['insert'],
-        }
+        { cascade: ['insert'] }
     )
     friendshipsReceived: Friendship[];
 
@@ -111,7 +103,7 @@ export class User {
     @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.receiver, {
         cascade: ['insert'],
     })
-    receivedFriendRequest: FriendRequest[];
+    receivedFriendRequests: FriendRequest[];
 
     @OneToMany(() => PrivateMessage, (message) => message.user1, {
         cascade: ['insert'],

@@ -8,6 +8,7 @@ import { setUsername, setToken, setMe } from './redux/userSlice';
 import VocalChannel from './components/VocalChannel';
 import { Home } from './Home/Home';
 import { Modal } from 'antd';
+import UserMapsContextProvider from './context/UserMapsContext';
 
 const { Title, Text } = Typography;
 
@@ -80,6 +81,8 @@ const App = () => {
                     if (res.data.ok) {
                         connectSocket(token);
                         dispatch(setMe(res.data.user));
+                    } else {
+                        setIsModalVisible(true);
                     }
                 });
             // verifyAndRefreshToken(token);
@@ -130,110 +133,120 @@ const App = () => {
                 }
             });
     };
-    
-    return peer && socket ? (
-        <div>
-            <VocalChannel />
-            <Home setTokenMissing={setIsModalVisible} />
-        </div>
-    ) : (
-        <Modal
-            visible={isModalVisible}
-            closable={false}
-            footer={null}
-            // style={{backgroundColor: '#535353'}}
-        >
-            <div className='App'>
-                <>
-                    <form onSubmit={(e) => onSubmitRegister(e)}>
-                        <Title level={3}>Register</Title>
-                        <div
-                            style={{
-                                maxWidth: '80%',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                margin: 'auto',
-                            }}>
-                            <Text>email</Text>
 
-                            <Input
-                                style={{ maxWidth: '50%' }}
-                                placeholder='email'
-                                id='registerEmail'
-                                onChange={(e) =>
-                                    onChangeHandler(e, registerEmailRef)
-                                }
-                            />
-                        </div>
-                        <div
-                            style={{
-                                paddingTop: '10px',
-                                maxWidth: '80%',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                margin: 'auto',
-                            }}>
-                            <Text>password</Text>
-                            <Input.Password
-                                style={{ maxWidth: '50%' }}
-                                placeholder='password'
-                                id='registerPassword'
-                                onChange={(e) =>
-                                    onChangeHandler(e, registerPasswordRef)
-                                }
-                            />{' '}
-                        </div>
-                        <div
-                            style={{
-                                paddingTop: '10px',
-                                maxWidth: '80%',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                margin: 'auto',
-                            }}>
-                            <Text>username</Text>
+    return (
+        <UserMapsContextProvider>
+            {peer && socket ? (
+                <div>
+                    <VocalChannel />
+                    <Home setTokenMissing={setIsModalVisible} />
+                </div>
+            ) : (
+                <Modal
+                    visible={isModalVisible}
+                    closable={false}
+                    footer={null}
+                    // style={{backgroundColor: '#535353'}}
+                >
+                    <div className='App'>
+                        <>
+                            <form onSubmit={(e) => onSubmitRegister(e)}>
+                                <Title level={3}>Register</Title>
+                                <div
+                                    style={{
+                                        maxWidth: '80%',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        margin: 'auto',
+                                    }}>
+                                    <Text>email</Text>
 
-                            <Input
-                                placeholder='username'
-                                style={{
-                                    paddingTop: '10px',
-                                    maxWidth: '50%',
-                                }}
-                                id='registerUsername'
-                                onChange={(e) =>
-                                    onChangeHandler(e, registerUsernameRef)
-                                }
-                            />
-                        </div>
-                        <input type='submit' />
-                    </form>
-                    <form onSubmit={(e) => onSubmitLogin(e)}>
-                        <Title level={3}>Login</Title>
+                                    <Input
+                                        style={{ maxWidth: '50%' }}
+                                        placeholder='email'
+                                        id='registerEmail'
+                                        onChange={(e) =>
+                                            onChangeHandler(e, registerEmailRef)
+                                        }
+                                    />
+                                </div>
+                                <div
+                                    style={{
+                                        paddingTop: '10px',
+                                        maxWidth: '80%',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        margin: 'auto',
+                                    }}>
+                                    <Text>password</Text>
+                                    <Input.Password
+                                        style={{ maxWidth: '50%' }}
+                                        placeholder='password'
+                                        id='registerPassword'
+                                        onChange={(e) =>
+                                            onChangeHandler(
+                                                e,
+                                                registerPasswordRef
+                                            )
+                                        }
+                                    />{' '}
+                                </div>
+                                <div
+                                    style={{
+                                        paddingTop: '10px',
+                                        maxWidth: '80%',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        margin: 'auto',
+                                    }}>
+                                    <Text>username</Text>
 
-                        <label>
-                            email
-                            <input
-                                type='text'
-                                id='loginPassword'
-                                onChange={(e) =>
-                                    onChangeHandler(e, loginEmailRef)
-                                }
-                            />
-                        </label>
-                        <label>
-                            password
-                            <input
-                                type='password'
-                                id='loginPassword'
-                                onChange={(e) =>
-                                    onChangeHandler(e, loginPasswordRef)
-                                }></input>
-                        </label>
-                        <input type='submit' />
-                    </form>{' '}
-                </>
-            </div>
-        </Modal>
+                                    <Input
+                                        placeholder='username'
+                                        style={{
+                                            paddingTop: '10px',
+                                            maxWidth: '50%',
+                                        }}
+                                        id='registerUsername'
+                                        onChange={(e) =>
+                                            onChangeHandler(
+                                                e,
+                                                registerUsernameRef
+                                            )
+                                        }
+                                    />
+                                </div>
+                                <input type='submit' />
+                            </form>
+                            <form onSubmit={(e) => onSubmitLogin(e)}>
+                                <Title level={3}>Login</Title>
+
+                                <label>
+                                    email
+                                    <input
+                                        type='text'
+                                        id='loginPassword'
+                                        onChange={(e) =>
+                                            onChangeHandler(e, loginEmailRef)
+                                        }
+                                    />
+                                </label>
+                                <label>
+                                    password
+                                    <input
+                                        type='password'
+                                        id='loginPassword'
+                                        onChange={(e) =>
+                                            onChangeHandler(e, loginPasswordRef)
+                                        }></input>
+                                </label>
+                                <input type='submit' />
+                            </form>{' '}
+                        </>
+                    </div>
+                </Modal>
+            )}
+        </UserMapsContextProvider>
     );
 };
 

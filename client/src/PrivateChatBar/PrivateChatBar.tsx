@@ -1,14 +1,15 @@
 import { Typography } from 'antd';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { UserMapsContext } from '../context/UserMapsContext';
 import { CustomImageChat } from '../CustomLi/CustomLi';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { setActivePrivateChat } from '../redux/userSlice';
 import { PrivateChatMap } from '../types/types';
 
-const PrivateChatBar = (props: { privateChatMap: PrivateChatMap }) => {
-    const { privateChatMap } = props;
+const PrivateChatBar = () => {
     const dispatch = useAppDispatch();
+    const { privateChatMap } = useContext(UserMapsContext);
 
     // useEffect(() => {
     //     console.log(privateChatMap, 'from bar');

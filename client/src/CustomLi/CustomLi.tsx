@@ -59,12 +59,8 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
     );
 };
 
-export const CustomImage = (props: {
-    obj: ServerUser;
-    privateChatMap: PrivateChatMap;
-    addPrivateChat: (user: User) => void;
-}) => {
-    const { obj, addPrivateChat } = props;
+export const CustomImage = (props: { obj: ServerUser }) => {
+    const { obj } = props;
     const [isFocused, setFocus] = useState(false);
 
     return (
@@ -72,7 +68,6 @@ export const CustomImage = (props: {
             alt={obj.user.username}
             onMouseEnter={() => setFocus(true)}
             onMouseLeave={() => setFocus(false)}
-            // onClick={() => addPrivateChat(obj.user)}
             className={'imgS2'}
             style={{
                 margin: '5px auto',

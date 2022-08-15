@@ -40,6 +40,9 @@ router.get('/messages/:id', isAuth, async (req: IRequest, res: Response) => {
                     id: true,
                 },
             },
+            order: {
+                send_time: 'ASC',
+            },
         });
         res.status(201).send({ messages, username: user.username });
     } catch (e) {

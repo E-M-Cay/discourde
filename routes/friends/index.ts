@@ -10,7 +10,7 @@ import isAuth from '../../MiddleWares/isAuth';
 
 const router = express.Router();
 
-const UserRepository = AppDataSource.getRepository(User);
+const userRepository = AppDataSource.getRepository(User);
 const ServerRepository = AppDataSource.getRepository(Server);
 const FriendshipRepository = AppDataSource.getRepository(Friendship);
 const FriendRequestRepository = AppDataSource.getRepository(FriendRequest);
@@ -27,37 +27,175 @@ router.get('/list', isAuth, async (req: IRequest, res: Response) => {
     if (!user) return res.status(400).send('User not found');
 
     try {
-        const friend_list = await FriendshipRepository.find({
-            where: [{ user1: { id: user_id } }, { user2: { id: user_id } }],
+        // const friends = await userRepository.find({
+        //     where: [
+        //         {
+        //             friendshipsReceived: {
+        //                 user1: { id: req.id },
+        //             },
+        //         },
+        //         {
+        //             friendshipsSent: {
+        //                 user2: { id: req.id },
+        //             },
+        //         },
+
+        //     ], relations: {
+        //         friendshipsReceived: {
+        //             user2: {id: true}
+        //         }
+        //     },  select: {
+        //         friendshipsReceived: {
+        //             user2: {
+
+        //             }
+        //         }
+        //     }
+        // });
+
+        // const friends = await FriendshipRepository.find({
+        //     where: [
+        //         {
+        //             user1: {
+        //                 id: req.id,
+        //             },
+        //         },
+        //         {
+        //             user2: {
+        //                 id: req.id,
+        //             },
+        //         },
+        //     ],
+        //     relations: {
+        //         user1: true,
+        //         user2: true,
+        //     },
+        //     select: {
+        //         id: true,
+        //         user1: { id: true, picture: true, username: true },
+        //         user2: {
+        //             id: true,
+        //             picture: true,
+        //             username: true,
+        //         },
+        //     },
+        // });
+
+        const friends = await FriendshipRepository.createQueryBuilder(
+            'friendship'
+        )
+            .leftJoinAndSelect('friendship.user1', 'sender')
+            .leftJoinAndSelect('friendship.user2', 'receiver')
+            .select([
+                'friendship.id',
+                'receiver.id',
+                'receiver.username',
+                'receiver.picture',
+                'sender.id',
+                'sender.username',
+                'sender.picture',
+            ])
+            .where('sender.id=:id', { id: req.id })
+            .orWhere('receiver.id=:id', { id: req.id })
+            .getMany();
+
+        return res.status(200).send(friends);
+    } catch (error) {
+        console.log(error);
+        return res.status(400).send('error');
+    }
+});
+
+router.get('/requests/', isAuth, async (req: IRequest, res: Response) => {
+    try {
+        const friendRequests = await FriendRequestRepository.find({
+            where: {
+                receiver: { id: req.id },
+            },
+            relations: { sender: true },
             select: {
-                id: true,
-                user1: {
+                sender: {
                     id: true,
-                },
-                user2: {
-                    id: true,
+                    username: true,
+                    picture: true,
                 },
             },
         });
-
-        const friendships = friend_list.map((f) => {
-            return f.user1.id === user_id
-                ? { id: f.id, friend: f.user2.id }
-                : { id: f.id, friend: f.user1.id };
-        });
-
-        return res.status(200).send(friendships);
-    } catch (error) {
-        return res.status(400).send(error);
+        // console.log(friendRequests);
+        return res.status(201).send(friendRequests);
+    } catch (e) {
+        res.status(401).send('Could not get friends');
     }
+});
+
+router.post('/send_request/', isAuth, async (req: IRequest, res: Response) => {
+    if ('user' in req.body) {
+        try {
+            const sender = await userRepository.countBy({
+                id: req.id,
+            });
+            const receiver = await userRepository.countBy({
+                id: req.body.user,
+            });
+            if (!sender || !receiver)
+                return res.status(400).send('Error user not found');
+
+            const alreadyFriends = await FriendshipRepository.count({
+                where: [
+                    {
+                        user1: { id: req.id },
+                        user2: { id: req.body.user },
+                    },
+                    {
+                        user1: { id: req.body.user },
+                        user2: { id: req.id },
+                    },
+                ],
+            });
+
+            console.log(alreadyFriends, 'friends ?');
+
+            if (alreadyFriends) {
+                return res.status(401).send('Already friends');
+            }
+
+            const alreadyExists = await FriendRequestRepository.count({
+                where: {
+                    sender: [{ id: req.id }, { id: req.body.user }],
+                },
+            });
+
+            console.log(alreadyExists);
+
+            if (alreadyExists) {
+                return res.status(401).send('A request already exists.');
+            }
+        } catch (e) {
+            console.log(e);
+            return res.status(401).send('error1');
+        }
+
+        try {
+            const friend_request = FriendRequestRepository.create({
+                sender: { id: req.id },
+                receiver: { id: req.body.user },
+            });
+            await FriendRequestRepository.save(friend_request);
+            return res.status(200).send('Request sent');
+        } catch (error) {
+            console.log(error);
+            return res.status(400).send('error2');
+        }
+    }
+    return res.status(400).send('Error wrond arguments');
 });
 
 router.post('/create', isAuth, async (req: IRequest, res: Response) => {
     if ('user_id_1' in req.body && 'user_id_2' in req.body) {
-        const user_1 = await UserRepository.findOneBy({
+        const user_1 = await userRepository.findOneBy({
             id: req.body.user_id_1,
         });
-        const user_2 = await UserRepository.findOneBy({
+        const user_2 = await userRepository.findOneBy({
             id: req.body.user_id_2,
         });
         if (!user_1 || !user_2)
@@ -102,7 +240,7 @@ router.get(
         if (user_id == NaN)
             return res.status(400).send('Error user_id not a number');
 
-        const user = await UserRepository.count({ where: { id: user_id } });
+        const user = await userRepository.count({ where: { id: user_id } });
         if (!user) return res.status(400).send('Error user not found');
 
         try {
@@ -117,41 +255,6 @@ router.get(
         }
     }
 );
-
-router.post('/send_request/', async (req: IRequest, res: Response) => {
-    if ('sender_id' in req.body && 'receiver_id' in req.body) {
-        const sender = await UserRepository.countBy({
-            id: req.id,
-        });
-        const receiver = await UserRepository.countBy({
-            id: req.body.receiver_id,
-        });
-        if (!sender || !receiver)
-            return res.status(400).send('Error user not found');
-
-        const alreadyExists = await FriendRequestRepository.count({
-            where: {
-                sender: [{ id: req.id }, { id: req.body.receiver_id }],
-            },
-        });
-
-        if (alreadyExists) {
-            return res.status(401).send('A request already exists.');
-        }
-
-        try {
-            const friend_request = FriendRequestRepository.create({
-                sender: { id: req.id },
-                receiver: { id: req.body.receiver_id },
-            });
-            await FriendshipRepository.save(friend_request);
-            return res.status(200).send('Request sent');
-        } catch (error) {
-            return res.status(400).send(error);
-        }
-    }
-    return res.status(400).send('Error wrond arguments');
-});
 
 router.delete(
     '/delete_request/:request_id',

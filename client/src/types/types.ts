@@ -11,6 +11,16 @@ export interface User {
     picture?: string;
 }
 
+export interface FriendRequest {
+    id: number;
+    sender: User;
+}
+
+export interface Friendship {
+    id: number;
+    friend: User;
+}
+
 export interface TextMessage {
     id: number;
     content: string;
@@ -44,15 +54,23 @@ export interface Channel {
     hidden: boolean;
     id: number;
     name: string;
-  }
-  
-  export interface VocalChan extends Channel {
-    users: number[];
-  }
+}
 
-export type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
+export interface VocalChan extends Channel {
+    users: number[];
+}
+
+export type ServerUserMap = Omit<
+    Map<number, ServerUser>,
+    'delete' | 'set' | 'clear'
+>;
 
 export type PrivateChatMap = Omit<
     Map<number, User>,
+    'delete' | 'set' | 'clear'
+>;
+
+export type FriendshipMap = Omit<
+    Map<number, Friendship>,
     'delete' | 'set' | 'clear'
 >;

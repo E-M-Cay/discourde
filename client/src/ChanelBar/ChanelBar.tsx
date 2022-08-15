@@ -32,20 +32,19 @@ import axios from "axios";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { setActiveChannel, setActiveVocalChannel } from "../redux/userSlice";
 import { PeerSocketContext } from "../context/PeerSocket";
-import { PrivateChatMap, User, UserMap } from "../types/types";
+import {
+  Channel,
+  PrivateChatMap,
+  User,
+  UserMap,
+  VocalChan,
+} from "../types/types";
 import { CustomImage } from "../CustomLi/CustomLi";
+import { ServerChannels, ServerInvit, ServerParams } from "../Modals/Modals";
+import { DropdownMenu } from "../DropdownMenu/DropdownMenu";
+import { ChannelCollapse } from "../ChannelCollapse/ChannelCollapse";
 
 const { Panel } = Collapse;
-
-interface Channel {
-  hidden: boolean;
-  id: number;
-  name: string;
-}
-
-interface VocalChan extends Channel {
-  users: number[];
-}
 
 export const ChanelBar = (props: {
   userMap: UserMap;
@@ -148,7 +147,6 @@ export const ChanelBar = (props: {
     useState(false);
   const [isModalVisibleParams, setIsModalVisibleParams] = useState(false);
   const [channelName, setChannelName] = useState("");
-  
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -181,23 +179,27 @@ export const ChanelBar = (props: {
   };
 
   const handleCancel3 = () => {
+    console.log("cancel");
     setIsModalVisibleParams(false);
   };
 
-  const handleUpdateChannel = (txtChan: Channel | undefined , vocChan:  VocalChan | undefined ) => {
-      axios
-        .put(`/${vocChan ? "vocal" : ""}channel/update`, vocChan ?? txtChan, {
-          headers: {
-            access_token: localStorage.getItem("token") as string,
-          },
-        })
-        .then((res) => {
-          if (res.status === 200) {
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+  const handleUpdateChannel = (
+    txtChan: Channel | undefined,
+    vocChan: VocalChan | undefined
+  ) => {
+    axios
+      .put(`/${vocChan ? "vocal" : ""}channel/update`, vocChan ?? txtChan, {
+        headers: {
+          access_token: localStorage.getItem("token") as string,
+        },
+      })
+      .then((res) => {
+        if (res.status === 200) {
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const handleCreateChannel = (isVocal: any) => {
@@ -234,14 +236,12 @@ export const ChanelBar = (props: {
 
   const handleModifyChannelText = (chan: Channel) => {
     setModifingChannel(chan);
-    setIsModify(chan.id)
-  }
+    setIsModify(chan.id);
+  };
   const handleModifyChannelVoc = (chan: Channel) => {
     setModifingChannel(chan);
-    setIsModifyVoc(chan.id)
-  }
-
-
+    setIsModifyVoc(chan.id);
+  };
 
   const createChannel = (e: React.FormEvent<HTMLFormElement>) => {
     console.log("bhfdksdklf");
@@ -281,121 +281,11 @@ export const ChanelBar = (props: {
   };
 
   const menu = (
-    <Menu
-      className="menu"
-      items={[
-        {
-          label: (
-            <li style={{ color: "white" }} key={0} onClick={showModal2}>
-              <UserAddOutlined
-                style={{
-                  color: "darkgrey",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Inviter des gens{" "}
-            </li>
-          ),
-          key: "0",
-        },
-        {
-          label: (
-            <li style={{ color: "white" }} key={1}>
-              <TeamOutlined
-                style={{
-                  color: "darkgrey",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Gestion des membres{" "}
-            </li>
-          ),
-          key: "1",
-        },
-        {
-          type: "divider",
-        },
-        {
-          label: (
-            <li style={{ color: "white" }} onClick={showModal3} key={2}>
-              <SettingOutlined
-                style={{
-                  color: "darkgrey",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Paramètres du serveur{" "}
-            </li>
-          ),
-          key: "2",
-        },
-        {
-          label: (
-            <li style={{ color: "white" }} key={3} onClick={showModal}>
-              <PlusCircleOutlined
-                style={{
-                  color: "darkgrey",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Créer un salon{" "}
-            </li>
-          ),
-          key: "3",
-        },
-        {
-          label: (
-            <li
-              style={{ color: "white" }}
-              key={4}
-              onClick={() => deleteServer()}
-            >
-              <PlusCircleOutlined
-                style={{
-                  color: "darkgrey",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Supprimer serveur{" "}
-            </li>
-          ),
-          key: "4",
-        },
-        {
-          type: "divider",
-        },
-        {
-          label: (
-            <li style={{ color: "white" }} key={5}>
-              <BellOutlined
-                style={{
-                  color: "darkgrey",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Notifications{" "}
-            </li>
-          ),
-          key: "5",
-        },
-        {
-          type: "divider",
-        },
-        {
-          label: (
-            <a style={{ color: "white" }} href="">
-              <LogoutOutlined
-                style={{
-                  color: "red",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Quitter le serveur{" "}
-            </a>
-          ),
-          key: "6",
-        },
-      ]}
+    <DropdownMenu
+      showModal2={showModal2}
+      showModal3={showModal3}
+      showModal={showModal}
+      deleteServer={deleteServer}
     />
   );
 
@@ -404,114 +294,37 @@ export const ChanelBar = (props: {
       style={{ width: "100%", backgroundColor: "#1F1F1F" }}
       className="site-layout-background"
     >
-      <Modal
-        title="Basic Modal"
-        visible={isModalVisibleParams}
-        onOk={handleOk3}
-        onCancel={handleCancel3}
-      >
-        <Typography.Title level={4}>Paramètres du serveur</Typography.Title>
-        <Typography.Title level={5}>Channel Textuel</Typography.Title>
-        {textChannelList.map((channel: any) => (
-            (isModify === channel.id ) ? 
-                <div>
-                    <Input
-                        placeholder="Nom du salon"
-                        defaultValue={newTextChannelName}
-                        onChange={(e) => setModifingChannel((prev: any) => ({...prev, name: e.target.value}))}
-                    />
-                    <Button type="primary" onClick={() => handleUpdateChannel(modifingChannel, undefined)}>
-                        Modifier
-                    </Button>
-                    <Button type="primary" onClick={() => setIsModify(0)}>
-                        Annuler
-                    </Button>
-                </div> 
-                :
-          <div key={channel.id} onClick={() => handleModifyChannelText(channel)} >
-            <div> 
-              <span>{channel.name}</span>
-              <span>{channel.hidden ? "Caché" : "Public"}</span>
-            </div>
-            <div></div>
-          </div>
-        ))}
-        <Typography.Title level={5}>Channel Audio</Typography.Title>
-        {vocalChannelList.map((channel: any) => (
-            (isModifyVoc === channel.id ) ?
-                <div>
-                    <Input
-                        placeholder="Nom du salon"
-                        defaultValue={channel.name}
-                        onChange={(e) => setModifingChannel((prev: any) => ({...prev, name: e.target.value}))}
-                    />
-                    <Button type="primary" onClick={() => handleUpdateChannel( undefined, modifingChannel )}>
-                        Modifier
-                    </Button>
-                    <Button type="primary" onClick={() => setIsModifyVoc(0)}>
-                        Annuler
-                    </Button>
-                </div>
-                :
-            <div key={channel.id} onClick={() => handleModifyChannelVoc(channel)} >
-                <div>
-                    <span>{channel.name}</span>
-                    <span>{channel.hidden ? "Caché" : "Public"}</span>
-                </div>
-                <div></div>
-            </div>
-        ))}
-      </Modal>
-      <Modal
-        title="Basic Modal"
-        visible={isModalVisibleInvitation}
-        onOk={handleOk2}
-        onCancel={handleCancel2}
-        style={{ backgroundColor: "#1F1F1F" }}
-      >
-        <Button onClick={(e) => handleLinkCreation()}>créer lien</Button>
-      </Modal>
-      <Modal
-        title="Basic Modal"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        style={{ backgroundColor: "#1F1F1F" }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Input placeholder="Add text channel" />
-          <Checkbox onChange={(e) => setIsAdminChannel(e.target.checked)}>
-            isAdmin
-          </Checkbox>
-          <Button type="primary" onClick={() => handleCreateChannel(false)}>
-            Create
-          </Button>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Input
-            onChange={(e) => setNewTextChannelName("kggkhgghlfghkl")}
-            placeholder="Add vocal channel"
-          />
-          <Checkbox onChange={(e) => setIsAdminChannel(e.target.checked)}>
-            isAdmin
-          </Checkbox>{" "}
-          <Button type="primary" onClick={() => handleCreateChannel(true)}>
-            Create
-          </Button>
-        </div>
-      </Modal>
+      <ServerParams
+        isModalVisibleParams={isModalVisibleParams}
+        handleOk3={handleOk3}
+        handleCancel3={handleCancel3}
+        textChannelList={textChannelList}
+        isModify={isModify}
+        newTextChannelName={newTextChannelName}
+        setModifingChannel={setModifingChannel}
+        handleUpdateChannel={handleUpdateChannel}
+        modifingChannel={modifingChannel}
+        setIsModify={setIsModify}
+        handleModifyChannelText={handleModifyChannelText}
+        vocalChannelList={vocalChannelList}
+        isModifyVoc={isModifyVoc}
+        setIsModifyVoc={setIsModifyVoc}
+        handleModifyChannelVoc={handleModifyChannelVoc}
+      />
+      <ServerInvit
+        isModalVisibleInvitation={isModalVisibleInvitation}
+        handleOk2={handleOk2}
+        handleCancel2={handleCancel2}
+        handleLinkCreation={handleLinkCreation}
+      />
+      <ServerChannels
+        isModalVisible={isModalVisible}
+        handleOk={handleOk}
+        handleCancel={handleCancel}
+        setNewTextChannelName={setNewTextChannelName}
+        setIsAdminChannel={setIsAdminChannel}
+        handleCreateChannel={handleCreateChannel}
+      />
 
       {!isHome && (
         <Dropdown overlay={menu} trigger={["click"]}>
@@ -580,51 +393,14 @@ export const ChanelBar = (props: {
           </Panel>
         )}
         {!isHome && (
-          <Collapse
-            ghost
-            defaultActiveKey={["1", "2"]}
-            onChange={onChange}
-            style={{ backgroundColor: "#1F1F1F" }}
-          >
-            <Panel className="headerPanel" header={headerTxt} key="1">
-              {textChannelList &&
-                textChannelList.map((chan) => (
-                  <li
-                    key={chan.id}
-                    onClick={() => onTextChannelClick(chan.id)}
-                    className="panelContent"
-                  >
-                    {" "}
-                    <BorderlessTableOutlined /> {chan.name}
-                  </li>
-                ))}
-            </Panel>
-
-            <Panel className="headerPanel" header={headerVoc} key="2">
-              {vocalChannelList &&
-                vocalChannelList.map((chan) => (
-                  <li
-                    key={chan.id}
-                    onClick={() => onVocalChannelClick(chan.id)}
-                    className="panelContent"
-                  >
-                    {" "}
-                    <SoundOutlined /> {chan.name}
-                    {activeVocalChannel === chan.id && (
-                      <>
-                        <br />
-                        <BorderlessTableOutlined className="activeChannel" />
-                      </>
-                    )}
-                    {chan.users.map((u) => (
-                      <div key={u}>
-                        {userMap.get(u)?.nickname || "Error retrieving user"}
-                      </div>
-                    ))}
-                  </li>
-                ))}
-            </Panel>
-          </Collapse>
+          <ChannelCollapse
+          textChannelList={textChannelList}
+          vocalChannelList={vocalChannelList}
+          onTextChannelClick={onTextChannelClick}
+          onVocalChannelClick={onVocalChannelClick}
+          activeVocalChannel={activeVocalChannel}
+          userMap={userMap}
+          />
         )}
       </div>
       <div style={{ backgroundColor: "#353535" }}>

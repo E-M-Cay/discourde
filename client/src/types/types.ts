@@ -40,6 +40,16 @@ export interface Server {
     name: string;
 }
 
+export interface Channel {
+    hidden: boolean;
+    id: number;
+    name: string;
+  }
+  
+  export interface VocalChan extends Channel {
+    users: number[];
+  }
+
 export type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
 
 export type PrivateChatMap = Omit<

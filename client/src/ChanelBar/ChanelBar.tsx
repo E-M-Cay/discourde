@@ -25,6 +25,7 @@ import {
   Typography,
   Input,
   Checkbox,
+  notification,
 } from "antd";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import "./ChanelBar.css";
@@ -44,6 +45,7 @@ import { ServerChannels, ServerInvit, ServerParams } from "../Modals/Modals";
 import { DropdownMenu } from "../DropdownMenu/DropdownMenu";
 import { ChannelCollapse } from "../ChannelCollapse/ChannelCollapse";
 import { openNotification } from "../notificationHandler/notificationHandler";
+import { NotificationsContext } from "../context/Notification";
 
 const { Panel } = Collapse;
 
@@ -56,6 +58,7 @@ export const ChanelBar = (props: {
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
   );
+  const [Notifications, setNotifications] = useContext(NotificationsContext);
   const { peer, socket } = useContext(PeerSocketContext);
   const dispatch = useAppDispatch();
   const headerTxt: string = "SALONS TEXTUELS";
@@ -226,6 +229,7 @@ export const ChanelBar = (props: {
             : setTextChannelList([...textChannelList, res.data]);
           setNewTextChannelName("");
           openNotification("success", "success", "Channel created");
+          // setNotifications(...notifications);
         })
         .catch((err) => {
           console.log(err);

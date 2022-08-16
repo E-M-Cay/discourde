@@ -29,6 +29,8 @@ export const FriendPanel = () => {
         deleteFriendRequest,
     } = useContext(UserMapsContext);
 
+    const [serverRequests, setServerRequests] = useState<Array<any>>([]);
+
     useEffect(() => {}, []);
 
     // for (let index = 0; index < friendsData.length; index++) {
@@ -45,11 +47,52 @@ export const FriendPanel = () => {
     //     console.log(onlineUsers);
     // }
 
+    useEffect(() => {
+        axios
+            .get('serverinvitation/getinvitations', {
+                headers: {
+                    access_token: localStorage.getItem('token') as string,
+                },
+            })
+            .then((res) => {
+                console.log(res, 'pépon');
+                setServerRequests(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
+    const handleAcceptServerInvitation = (
+        invitationId: number,
+        serverId: number
+    ) => {
+        axios
+            .post(
+                'serverinvitation/acceptInvitation',
+                {
+                    serverInvitationId: invitationId,
+                    serverId: serverId,
+                },
+                {
+                    headers: {
+                        access_token: localStorage.getItem('token') as string,
+                    },
+                }
+            )
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+
     const onChange = (key: any) => {
-        // console.log(key);
+        console.log(key);
     };
     const onClick = (e: any) => {
-        // console.log('click ', e);
+        console.log('click ', e);
     };
 
     return (
@@ -166,7 +209,7 @@ export const FriendPanel = () => {
                                     <CloseCircleOutlined
                                         className='iconFriend'
                                         onClick={() =>
-                                            refuseFriendRequest(
+                                            deleteFriendRequest(
                                                 request.id,
                                                 request.sender.id
                                             )
@@ -214,6 +257,22 @@ export const FriendPanel = () => {
                             </div>
                         )
                     )}
+                    <p>Serveur à rejoindre</p>
+                    {serverRequests.map((request) => (
+                        <div key={request.id}>
+                            <Divider style={{ margin: 0 }} />{' '}
+                            {request.server.name} {request.sender.username}
+                            <button
+                                onClick={() =>
+                                    handleAcceptServerInvitation(
+                                        request.id,
+                                        request.server.id
+                                    )
+                                }>
+                                accepter
+                            </button>
+                        </div>
+                    ))}
                 </li>
             </TabPane>
             <TabPane tab='Ajouter un ami' key='4'>

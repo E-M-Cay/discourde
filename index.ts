@@ -18,6 +18,7 @@ import channels from './routes/channels';
 import vocalchannels from './routes/vocalchannels';
 import users from './routes/users/index';
 import servers from './routes/servers/index';
+import serverinvitation from './routes/serverinvitation/index';
 import privateMessageRoute from './routes/privatemessage/index';
 import upsertPermissions from './db/upsertPermissions';
 import { PrivateMessage } from './entities/PrivateMessage';
@@ -80,6 +81,7 @@ app.use('/user', users);
 app.use('/channel', channels);
 app.use('/friends', friends);
 app.use('/vocalchannel', vocalchannels);
+app.use('/serverinvitation', serverinvitation);
 
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname, 'client/build')));

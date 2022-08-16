@@ -133,14 +133,38 @@ export const ServerInvit = (props: {
     handleOk2: Function;
     handleCancel2: Function;
     handleLinkCreation: Function;
+    serverId: number;
 }) => {
     const {
         isModalVisibleInvitation,
         handleOk2,
         handleCancel2,
         handleLinkCreation,
+        serverId,
     } = props;
     const { friendMap } = useContext(UserMapsContext);
+    const me = useAppSelector((state) => state.userReducer.me);
+    const handleInviteUser = (myId: number, hisId: number) => {
+        axios
+            .post(
+                'serverinvitation/createInvitation',
+                {
+                    invitedUserId: hisId,
+                    serverId: serverId,
+                },
+                {
+                    headers: {
+                        access_token: localStorage.getItem('token') as string,
+                    },
+                }
+            )
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
     return (
         <Modal
             visible={isModalVisibleInvitation}
@@ -163,7 +187,13 @@ export const ServerInvit = (props: {
                                     src={friendShip.friend.picture ?? logo}
                                 />
                                 <span>{friendShip.friend.username}</span>
-                                <Button type='primary'>Inviter</Button>
+                                <Button
+                                    onClick={() =>
+                                        handleInviteUser(me?.id || -1, id)
+                                    }
+                                    type='primary'>
+                                    Inviter
+                                </Button>
                             </div>
                         );
                     })}

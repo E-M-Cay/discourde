@@ -62,6 +62,7 @@ router.put('/update', isAuth, async (req: IRequest, res: Response) => {
             if (hidden) channel.hidden = hidden;
 
             await VocalChannelRepository.save(channel);
+            
             return res.status(200).send(channel);
         } catch (error) {
             return res.status(400).send('Error');

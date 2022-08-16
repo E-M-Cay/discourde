@@ -190,6 +190,27 @@ export const ChanelBar = () => {
             )
             .then((res) => {
                 if (res.status === 200) {
+                    if (vocChan) {
+                        setVocalChannelList((prevState) => {
+                            return prevState.map((c) => {
+                                if (c.id === vocChan.id) {
+                                    return vocChan;
+                                }
+                                return c;
+                            });
+                        });
+                    } else {
+                        setTextChannelList((prevState: any) => {
+                            return prevState.map((c: any) => {
+                                if (c.id === txtChan?.id) {
+                                    return txtChan;
+                                }
+                                return c;
+                            });
+                        });
+                    }
+                    
+                  addNotification({type: 'success', title: "success", content: 'Channel updated'});
                 }
             })
             .catch((err) => {
@@ -221,7 +242,7 @@ export const ChanelBar = () => {
                         ? setVocalChannelList([...vocalChannelList, res.data])
                         : setTextChannelList([...textChannelList, res.data]);
                     setNewTextChannelName('');
-                    addNotification({type: 'success', title: "success", content: 'Channel created'});
+                    addNotification({type: 'success', title: "success", content: 'Channel created', isTmp: true});
                     // setNotifications(...notifications);
                 })
                 .catch((err) => {

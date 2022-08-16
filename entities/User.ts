@@ -16,6 +16,7 @@ import { FriendRequest } from './FriendRequest';
 import { Friendship } from './Friendship';
 import { PrivateMessage } from './PrivateMessage';
 import { Server } from './Server';
+import { ServerInvitation } from './ServerInvitation';
 import { ServerUser } from './ServerUser';
 
 @Entity()
@@ -115,6 +116,16 @@ export class User {
     })
     privateMessagesReceived: PrivateMessage[];
 
+    @OneToMany(() => ServerInvitation, (invitation) => invitation.sender, {
+        cascade: ['insert'],
+    })
+    sentInvitations: ServerInvitation[];
+
+    @OneToMany(() => ServerInvitation, (invitation) => invitation.receiver, {
+        cascade: ['insert'],
+    })
+    receivedInvitations: ServerInvitation[];
+
     @AfterLoad()
     setStatus() {
         this.status = global.user_id_to_status.get(this.id) || 0;
@@ -127,6 +138,4 @@ export class User {
     // } as any)
     // @JoinTable()
     // receivedServerInvitations: Server[];
-
-
 }

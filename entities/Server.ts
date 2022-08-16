@@ -79,6 +79,10 @@ export class Server {
     })
     bannedUsers: BannedUser[];
 
+    @OneToMany(() => ServerInvitation, (invitation) => invitation.server, {
+        cascade: ['insert'],
+    })
+    invitations: ServerInvitation[];
     // @JoinTable()
     // public invitedUsers: User[];
 
@@ -87,7 +91,4 @@ export class Server {
     //     cascade: ['insert'],
     // })
     // receivedInvitations: ServerInvitation[];
-
-
-
 }

@@ -8,15 +8,18 @@ export class ServerInvitation {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => User, (user) => user.receivedServerInvitations, {
+    @ManyToOne(() => User, (user) => user.receivedInvitations, {
         cascade: ['insert', 'remove'],
     })
     receiver: User;
 
-    @ManyToOne(() => Server, (server) => server.receivedServerInvitations, {
+    @ManyToOne(() => User, (user) => user.sentInvitations, {
+        cascade: ['insert', 'remove'],
+    })
+    sender: User;
+
+    @ManyToOne(() => Server, (server) => server.invitations, {
         cascade: ['insert', 'remove'],
     })
     server: Server;
-    
-
 }

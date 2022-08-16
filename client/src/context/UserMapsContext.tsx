@@ -381,6 +381,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
         handleNewFriendRequest,
         handleNewFriendship,
         handleFriendRequestCanceled,
+        handleFriendshipRefused,
     ]);
 
     return (

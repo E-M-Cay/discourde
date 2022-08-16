@@ -97,7 +97,7 @@ export const ChanelBar = () => {
             dispatch(setActiveVocalChannel(id));
             //socket?.emit('joinvocalchannel', id);
         },
-        [socket, activeVocalChannel]
+        [activeVocalChannel, dispatch]
     );
 
     const handleJoinVocal = (data: { user: number; chan: number }) => {
@@ -363,7 +363,7 @@ export const ChanelBar = () => {
                 handleOk2={handleOk2}
                 handleCancel2={handleCancel2}
                 handleLinkCreation={handleLinkCreation}
-                serverId={activeServer ||-1}
+                serverId={activeServer || -1}
             />
             <ServerChannels
                 isModalVisible={isModalVisible}

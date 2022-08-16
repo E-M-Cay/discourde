@@ -26,7 +26,7 @@ interface userMapsContext {
     setFriend: (key: number, value: Friendship) => void;
     removeFriend: (key: number) => void;
     openPrivateChat: (user: User) => void;
-    sendFriendRequest: (id: number) => void;
+    sendFriendRequest: (user: User) => void;
     acceptFriendRequest: (id: number, senderId: number) => void;
     refuseFriendRequest: (id: number, senderId: number) => void;
     deleteFriendRequest: (id: number, receiverId: number) => void;
@@ -137,18 +137,28 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
         reset: resetSentFriendRequests,
     } = sentFriendRequestActions;
 
-    const sendFriendRequest = (id: number) => {
-        axios.post(
-            `/friends/send_request`,
-            {
-                user: id,
-            },
-            {
-                headers: {
-                    access_token: localStorage.getItem('token') as string,
+    const sendFriendRequest = (user: User) => {
+        axios
+            .post(
+                `/friends/send_request`,
+                {
+                    user: user.id,
                 },
-            }
-        );
+                {
+                    headers: {
+                        access_token: localStorage.getItem('token') as string,
+                    },
+                }
+            )
+            .then((res) => {
+                if (res.status === 201) {
+                    const requestId = res.data.newRequest;
+                    setSentFriendRequest(user.id, {
+                        receiver: user,
+                        id: requestId,
+                    });
+                }
+            });
     };
 
     const acceptFriendRequest = (id: number, senderId: number) => {
@@ -181,7 +191,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
 
     const refuseFriendRequest = (id: number, senderId: number) => {
         axios
-            .delete(`friends/request/:id${id}`, {
+            .delete(`friends/request/received/${id}`, {
                 headers: {
                     access_token: localStorage.getItem('token') as string,
                 },
@@ -195,7 +205,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
 
     const deleteFriendRequest = (id: number, receiverId: number) => {
         axios
-            .delete(`friends/request/${id}`, {
+            .delete(`friends/request/sent/${id}`, {
                 headers: {
                     access_token: localStorage.getItem('token') as string,
                 },
@@ -323,7 +333,6 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
 
     const handleNewFriendRequest = useCallback(
         (friendRequest: ReceivedFriendRequest) => {
-            console.log('FERDQD request');
             setReceivedFriendRequest(friendRequest.sender.id, friendRequest);
         },
         [setReceivedFriendRequest]
@@ -341,12 +350,20 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
         (id: number) => {
             removeSentFriendRequest(id);
         },
-        [refuseFriendRequest]
+        [removeSentFriendRequest]
+    );
+
+    const handleFriendRequestCanceled = useCallback(
+        (id: number) => {
+            removeReceivedFriendRequest(id);
+        },
+        [removeReceivedFriendRequest]
     );
 
     useEffect(() => {
         socket?.on('friendrequestrefused', handleFriendshipRefused);
         socket?.on('friendrequestaccepted', handleNewFriendship);
+        socket?.on('friendrequestcanceled', handleFriendRequestCanceled);
         socket?.on('newfriendrequest', handleNewFriendRequest);
         socket?.on('userdisconnected', handleDisconnection);
         socket?.on('userconnected', handleConnection);
@@ -363,6 +380,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
         handleConnection,
         handleNewFriendRequest,
         handleNewFriendship,
+        handleFriendRequestCanceled,
     ]);
 
     return (

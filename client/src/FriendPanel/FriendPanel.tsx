@@ -20,8 +20,13 @@ const { Panel } = Collapse;
 export const FriendPanel = () => {
     const onlineUsers: Array<any> = [];
     // const me = useAppSelector((state) => state.userReducer.me);
-    const { friendMap, receivedFriendRequestMap, acceptFriendRequest } =
-        useContext(UserMapsContext);
+    const {
+        friendMap,
+        receivedFriendRequestMap,
+        sentFriendRequestMap,
+        acceptFriendRequest,
+        deleteFriendRequest,
+    } = useContext(UserMapsContext);
 
     useEffect(() => {}, []);
 
@@ -141,6 +146,7 @@ export const FriendPanel = () => {
                         flexWrap: 'wrap',
                         overflowY: 'scroll',
                     }}>
+                    <p>Requête d'amis reçues</p>
                     {Array.from(receivedFriendRequestMap.entries()).map(
                         ([id, request]) => (
                             <div
@@ -156,7 +162,15 @@ export const FriendPanel = () => {
                                 <>
                                     <Divider style={{ margin: 0 }} />{' '}
                                     {request.sender.username}{' '}
-                                    <CloseCircleOutlined className='iconFriend' />{' '}
+                                    <CloseCircleOutlined
+                                        className='iconFriend'
+                                        onClick={() =>
+                                            deleteFriendRequest(
+                                                request.id,
+                                                request.sender.id
+                                            )
+                                        }
+                                    />{' '}
                                     <CheckCircleFilled
                                         className='iconFriend'
                                         onClick={() =>
@@ -166,6 +180,35 @@ export const FriendPanel = () => {
                                             )
                                         }
                                     />
+                                </>
+                            </div>
+                        )
+                    )}
+                    <p>Requêtes d'amis envoyées</p>
+                    {Array.from(sentFriendRequestMap.entries()).map(
+                        ([id, request]) => (
+                            <div
+                                key={id}
+                                onClick={onClick}
+                                className='panelContent'
+                                style={{
+                                    margin: 0,
+                                    padding: 0,
+                                    height: '8vh',
+                                    fontWeight: 'bold',
+                                }}>
+                                <>
+                                    <Divider style={{ margin: 0 }} />{' '}
+                                    {request.receiver.username}{' '}
+                                    <CloseCircleOutlined
+                                        className='iconFriend'
+                                        onClick={() =>
+                                            deleteFriendRequest(
+                                                request.id,
+                                                request.receiver.id
+                                            )
+                                        }
+                                    />{' '}
                                 </>
                             </div>
                         )

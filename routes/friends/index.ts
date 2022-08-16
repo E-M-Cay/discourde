@@ -297,45 +297,84 @@ router.delete(
     }
 );
 
-router.get(
-    '/sent_request_list/',
-    isAuth,
-    async (req: IRequest, res: Response) => {
-        const user_id = Number(req.id);
-        if (user_id == NaN)
-            return res.status(400).send('Error user_id not a number');
+router.get('/requests/sent', isAuth, async (req: IRequest, res: Response) => {
+    const user_id = Number(req.id);
+    if (user_id == NaN)
+        return res.status(400).send('Error user_id not a number');
 
-        const user = await userRepository.count({ where: { id: user_id } });
-        if (!user) return res.status(400).send('Error user not found');
+    const user = await userRepository.count({ where: { id: user_id } });
+    if (!user) return res.status(400).send('Error user not found');
 
-        try {
-            const friend_request_list = await FriendRequestRepository.findBy({
+    try {
+        const friendRequestsSent = await FriendRequestRepository.find({
+            where: {
                 sender: {
                     id: user_id,
                 },
-            });
-            return res.status(200).send(friend_request_list);
-        } catch (error) {
-            return res.status(400).send(error);
-        }
-    }
-);
+            },
+            relations: {
+                receiver: true,
+            },
+            select: {
+                receiver: {
+                    id: true,
+                    username: true,
+                    picture: true,
+                    join_date: true,
+                },
+            },
+        });
 
-router.delete(
-    '/delete_request/:request_id',
-    isAuth,
-    async (req: IRequest, res: Response) => {
-        const request_id = Number(req.params.request_id);
-        if (request_id == NaN)
-            return res.status(400).send('Error request id not found');
-
-        try {
-            await FriendRequestRepository.delete(request_id);
-            return res.status(200).send('request successfully deleted');
-        } catch (error) {
-            return res.status(400).send(error);
-        }
+        return res.status(200).send(friendRequestsSent);
+    } catch (error) {
+        return res.status(400).send(error);
     }
-);
+});
+
+router.delete('/request/:id', isAuth, async (req: IRequest, res: Response) => {
+    const requestId = Number(req.params.id);
+    if (requestId == NaN)
+        return res.status(400).send('Error request id not found');
+    try {
+        const request = await FriendRequestRepository.findOne({
+            where: {
+                id: requestId,
+                receiver: {
+                    id: req.id,
+                },
+            },
+            relations: {
+                sender: true,
+                receiver: true,
+            },
+            select: {
+                sender: { id: true },
+                receiver: { id: true },
+            },
+        });
+        if (!request) return res.status(401).send('Cannot refuse this request');
+
+        const senderId = request.sender.id;
+
+        if (senderId === req.id) {
+            if (global.user_id_to_socket_id.has(request.receiver.id)) {
+                io.to(
+                    global.user_id_to_socket_id.get(
+                        request.receiver.id
+                    ) as string
+                ).emit('friendrequestcanceled', req.id);
+            }
+        } else if (global.user_id_to_socket_id.has(senderId)) {
+            io.to(global.user_id_to_socket_id.get(senderId) as string).emit(
+                'friendrequestrefused',
+                req.id
+            );
+        }
+        await FriendRequestRepository.delete(requestId);
+        return res.status(204);
+    } catch (error) {
+        return res.status(400).send(error);
+    }
+});
 
 export default router;

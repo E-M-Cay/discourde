@@ -18,7 +18,7 @@ export interface ReceivedFriendRequest {
 
 export interface SentFriendRequest {
     id: number;
-    received: User;
+    receiver: User;
 }
 
 export interface Friendship {

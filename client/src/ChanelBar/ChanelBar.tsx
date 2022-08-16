@@ -363,6 +363,7 @@ export const ChanelBar = () => {
                 handleOk2={handleOk2}
                 handleCancel2={handleCancel2}
                 handleLinkCreation={handleLinkCreation}
+                serverId={activeServer ||-1}
             />
             <ServerChannels
                 isModalVisible={isModalVisible}

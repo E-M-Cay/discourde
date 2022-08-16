@@ -136,16 +136,31 @@ export const ServerInvit = (props: {
     handleCancel2,
     handleLinkCreation,
   } = props;
+  const { friendMap } = useContext(UserMapsContext);
   return (
     <Modal
       visible={isModalVisibleInvitation}
       onOk={() => handleOk2()}
       onCancel={() => handleCancel2()}
-      style={{ backgroundColor: "#1F1F1F" }}
+      
       closable={false}
       footer={null}
     >
+      <div style={{ minHeight: "500px" }} >
       <Button onClick={(e) => handleLinkCreation()}>créer lien</Button>
+      <>
+        <Typography.Title level={4}>Inviter un ami</Typography.Title>
+        {Array.from(friendMap.entries()).map(([id, friendShip]) => {
+          return (
+          <div key={id}>  
+            <Avatar src={friendShip.friend.picture ?? logo} />
+            <span>{friendShip.friend.username}</span>
+            <Button type="primary">Inviter</Button>
+          </div>
+          );
+        }
+        )}
+      </></div>
     </Modal>
   );
 };
@@ -214,7 +229,10 @@ export const ServerChannels = (props: {
   );
 };
 
-export const UserProfileModal = (props: {  openPrivateChat: Function; user: User; }) => {
+export const UserProfileModal = (props: {
+  openPrivateChat: Function;
+  user: User;
+}) => {
   const { openPrivateChat, user } = props;
   const { Title } = Typography;
 
@@ -236,23 +254,31 @@ export const UserProfileModal = (props: {  openPrivateChat: Function; user: User
   const isFriend = friendMap.has(user.id);
   console.log(user);
   return (
-    <>
-      <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} >
+    <div style={{ minHeight: "500px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
         <Avatar size={64} src={user.picture ?? logo} />
         <Title level={2}>{" " + user.username}</Title>
         <div></div>
       </div>
-      <div style={{marginTop: "24px"}}>
-      {isFriend === undefined ? (
-        <Button onClick={() => maybeSendFriendRequest(user.id)}>
-          Add as friend
-        </Button>
-      ) : me?.id !== user.id ? (
-        <Typography>You are friends</Typography>
-      ) : null}
-      <br />
-      {me?.id !== user.id && (<Button onClick={() => openPrivateChat(user)}>Message</Button>)}
+      <div style={{ marginTop: "24px" }}>
+        {isFriend === false && me?.id !== user.id ? (
+          <Button onClick={() => maybeSendFriendRequest(user.id)}>
+            Add as friend
+          </Button>
+        ) : me?.id !== user.id ? (
+          <Typography>You are friends</Typography>
+        ) : null}
+        <br />
+        {me?.id !== user.id && (
+          <Button onClick={() => openPrivateChat(user)}>Message</Button>
+        )}
       </div>
-    </>
+    </div>
   );
 };

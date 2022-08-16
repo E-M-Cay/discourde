@@ -120,4 +120,13 @@ export class User {
         this.status = global.user_id_to_status.get(this.id) || 0;
         this.vocalChannel = 0;
     }
+
+    // // receivedServerInvitations
+    // @ManyToMany(() => Server, (server) => server.receivedInvitations, {
+    //     cascade: ['insert'],
+    // } as any)
+    // @JoinTable()
+    // receivedServerInvitations: Server[];
+
+
 }

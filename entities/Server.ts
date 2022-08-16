@@ -12,6 +12,7 @@ import {
 import { BannedUser } from './BannedUser';
 import { Channel } from './Channel';
 import { Role } from './Role';
+import { ServerInvitation } from './ServerInvitation';
 import { ServerUser } from './ServerUser';
 import { User } from './User';
 import { VocalChannel } from './VocalChannel';
@@ -77,4 +78,16 @@ export class Server {
         cascade: ['insert'],
     })
     bannedUsers: BannedUser[];
+
+    // @JoinTable()
+    // public invitedUsers: User[];
+
+    // //server.receivedInvitations
+    // @OneToMany(() => ServerInvitation, (serverInvitation) => serverInvitation.server, {
+    //     cascade: ['insert'],
+    // })
+    // receivedInvitations: ServerInvitation[];
+
+
+
 }

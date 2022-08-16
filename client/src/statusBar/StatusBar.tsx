@@ -19,6 +19,7 @@ export const StatusBar = () => {
   const me = useAppSelector((state) => state.userReducer.me);
 
   const showModal = (user: User) => {
+    setSelectedUser(user);
     setIsModalVisible(true);
   };
 
@@ -88,7 +89,7 @@ export const StatusBar = () => {
                 >
                   <UserProfileModal
                     openPrivateChat={openPrivateChat}
-                    user={user}
+                    user={selectedUser ?? user}
                   />
                 </Modal>
               </>
@@ -155,7 +156,7 @@ export const StatusBar = () => {
                 >
                   <UserProfileModal
                     openPrivateChat={openPrivateChat}
-                    user={user}
+                    user={selectedUser ?? user}
                   />
                 </Modal>
               </>

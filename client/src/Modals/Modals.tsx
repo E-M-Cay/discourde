@@ -1,10 +1,10 @@
-import { Avatar, Button, Checkbox, Input, Modal, Typography } from "antd";
-import axios from "axios";
-import { useContext, useState } from "react";
-import { UserMapsContext } from "../context/UserMapsContext";
-import { useAppSelector } from "../redux/hooks";
-import { Channel, User, VocalChan } from "../types/types";
-import logo from "../assets/discourde.png";
+import { Avatar, Button, Checkbox, Input, Modal, Typography } from 'antd';
+import axios from 'axios';
+import { useContext, useState } from 'react';
+import { UserMapsContext } from '../context/UserMapsContext';
+import { useAppSelector } from '../redux/hooks';
+import { Channel, User, VocalChan } from '../types/types';
+import logo from '../assets/discourde.png';
 
 export const ServerParams = (props: {
     isModalVisibleParams: boolean;
@@ -135,66 +135,72 @@ export const ServerInvit = (props: {
     handleLinkCreation: Function;
     serverId: number;
 }) => {
-  const {
-    isModalVisibleInvitation,
-    handleOk2,
-    handleCancel2,
-    handleLinkCreation,
-    serverId,
-  } = props;
-  const { friendMap } = useContext(UserMapsContext);
-  const me = useAppSelector((state) => state.userReducer.me);
-  const handleInviteUser = (myId: number, hisId: number) => {
-    axios
-      .post(
-        "serverinvitation/createInvitation",
-        {
-          invitedUserId: hisId,
-          serverId: serverId,
-        },
-        {
-          headers: {
-            access_token: localStorage.getItem("token") as string,
-          },
-        }
-      )
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  return (
-    <Modal
-      visible={isModalVisibleInvitation}
-      onOk={() => handleOk2()}
-      onCancel={() => handleCancel2()}
-      closable={false}
-      footer={null}
-    >
-      <div style={{ minHeight: "500px" }}>
-        <Button onClick={(e) => handleLinkCreation()}>créer lien</Button>
-        <>
-          <Typography.Title level={4}>Inviter un ami</Typography.Title>
-          {Array.from(friendMap.entries()).map(([id, friendShip]) => {
-            return (
-              <div key={id}>
-                <Avatar src={friendShip.friend.picture ?? logo} />
-                <span>{friendShip.friend.username}</span>
-                <Button
-                  onClick={() => handleInviteUser(me?.id || -1, id)}
-                  type="primary"
-                >
-                  Inviter
+    const {
+        isModalVisibleInvitation,
+        handleOk2,
+        handleCancel2,
+        handleLinkCreation,
+        serverId,
+    } = props;
+    const { friendMap } = useContext(UserMapsContext);
+    const me = useAppSelector((state) => state.userReducer.me);
+    const handleInviteUser = (myId: number, hisId: number) => {
+        axios
+            .post(
+                'serverinvitation/createInvitation',
+                {
+                    invitedUserId: hisId,
+                    serverId: serverId,
+                },
+                {
+                    headers: {
+                        access_token: localStorage.getItem('token') as string,
+                    },
+                }
+            )
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+    return (
+        <Modal
+            visible={isModalVisibleInvitation}
+            onOk={() => handleOk2()}
+            onCancel={() => handleCancel2()}
+            closable={false}
+            footer={null}>
+            <div style={{ minHeight: '500px' }}>
+                <Button onClick={(e) => handleLinkCreation()}>
+                    créer lien
                 </Button>
-              </div>
-            );
-          })}
-        </>
-      </div>
-    </Modal>
-  );
+                <>
+                    <Typography.Title level={4}>
+                        Inviter un ami
+                    </Typography.Title>
+                    {Array.from(friendMap.entries()).map(([id, friendShip]) => {
+                        return (
+                            <div key={id}>
+                                <Avatar
+                                    src={friendShip.friend.picture ?? logo}
+                                />
+                                <span>{friendShip.friend.username}</span>
+                                <Button
+                                    onClick={() =>
+                                        handleInviteUser(me?.id || -1, id)
+                                    }
+                                    type='primary'>
+                                    Inviter
+                                </Button>
+                            </div>
+                        );
+                    })}
+                </>
+            </div>
+        </Modal>
+    );
 };
 export const ServerChannels = (props: {
     isModalVisible: boolean;
@@ -269,81 +275,92 @@ export const UserProfileModal = (props: {
     const { openPrivateChat, user } = props;
     const { Title } = Typography;
 
-  const me = useAppSelector((state) => state.userReducer.me);
-  const [userTmp, setUserTmp] = useState<User | undefined>(me);
-  const { friendMap, sendFriendRequest } = useContext(UserMapsContext);
-  const isFriend = friendMap.has(user.id);
-  console.log(user);
-  const handleProfileChange = () => {
-    if (userTmp?.username || userTmp?.picture) {
-      axios
-        .post(
-          "user/update",
-          {
-            picture: userTmp.picture,
-            username: userTmp.username,
-          },
-          {
-            headers: {
-              access_token: localStorage.getItem("token") as string,
-            },
-          }
-        )
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  };
-  return (
-    <div style={{ minHeight: "500px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Avatar size={64} src={user.picture ?? logo} />
-        <Title level={2}>{" " + user.username}</Title>
-        <div></div>
-      </div>
-      <div style={{ marginTop: "24px" }}>
-        {isFriend === false && me?.id !== user.id ? (
-          <Button onClick={() => sendFriendRequest(user.id)}>
-            Add as friend
-          </Button>
-        ) : me?.id !== user.id ? (
-          <Typography>You are friends</Typography>
-        ) : null}
-        <br />
-        {me?.id !== user.id && (
-          <Button onClick={() => openPrivateChat(user)}>Message</Button>
-        )}
-        {me?.id === user.id && (
-          <>
-            <Input
-              type={"text"}
-              defaultValue={user.username}
-              onChange={(e) => {
-                setUserTmp({ ...user, username: e.target.value });
-              }}
-              placeholder={"Change your username"}
-            />
-            <Input
-              type={"text"}
-              defaultValue={user.picture}
-              onChange={(e) => {
-                setUserTmp({ ...user, picture: e.target.value });
-              }}
-              placeholder={"Change your picture"}
-            />
-            <Button onClick={() => handleProfileChange()}>Change</Button>
-          </>
-        )}
-      </div>
-    </div>
-  );
+    const me = useAppSelector((state) => state.userReducer.me);
+    const [userTmp, setUserTmp] = useState<User | undefined>(me);
+    const { friendMap, sendFriendRequest } = useContext(UserMapsContext);
+    const isFriend = friendMap.has(user.id);
+    console.log(user);
+    const handleProfileChange = () => {
+        if (userTmp?.username || userTmp?.picture) {
+            axios
+                .post(
+                    'user/update',
+                    {
+                        picture: userTmp.picture,
+                        username: userTmp.username,
+                    },
+                    {
+                        headers: {
+                            access_token: localStorage.getItem(
+                                'token'
+                            ) as string,
+                        },
+                    }
+                )
+                .then((res) => {
+                    console.log(res);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+    };
+    return (
+        <div style={{ minHeight: '500px' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}>
+                <Avatar size={64} src={user.picture ?? logo} />
+                <Title level={2}>{' ' + user.username}</Title>
+                <div></div>
+            </div>
+            <div style={{ marginTop: '24px' }}>
+                {isFriend === false && me?.id !== user.id ? (
+                    <Button onClick={() => sendFriendRequest(user)}>
+                        Add as friend
+                    </Button>
+                ) : me?.id !== user.id ? (
+                    <Typography>You are friends</Typography>
+                ) : null}
+                <br />
+                {me?.id !== user.id && (
+                    <Button onClick={() => openPrivateChat(user)}>
+                        Message
+                    </Button>
+                )}
+                {me?.id === user.id && (
+                    <>
+                        <Input
+                            type={'text'}
+                            defaultValue={user.username}
+                            onChange={(e) => {
+                                setUserTmp({
+                                    ...user,
+                                    username: e.target.value,
+                                });
+                            }}
+                            placeholder={'Change your username'}
+                        />
+                        <Input
+                            type={'text'}
+                            defaultValue={user.picture}
+                            onChange={(e) => {
+                                setUserTmp({
+                                    ...user,
+                                    picture: e.target.value,
+                                });
+                            }}
+                            placeholder={'Change your picture'}
+                        />
+                        <Button onClick={() => handleProfileChange()}>
+                            Change
+                        </Button>
+                    </>
+                )}
+            </div>
+        </div>
+    );
 };

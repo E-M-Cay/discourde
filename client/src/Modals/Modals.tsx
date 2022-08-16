@@ -1,6 +1,6 @@
 import { Avatar, Button, Checkbox, Input, Modal, Typography } from "antd";
 import axios from "axios";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserMapsContext } from "../context/UserMapsContext";
 import { useAppSelector } from "../redux/hooks";
 import { Channel, User, VocalChan } from "../types/types";
@@ -179,7 +179,7 @@ export const ServerInvit = (props: {
                 <Avatar src={friendShip.friend.picture ?? logo} />
                 <span>{friendShip.friend.username}</span>
                 <Button
-                  onClick={() => handleInviteUser(me?.id||-1, id)}
+                  onClick={() => handleInviteUser(me?.id || -1, id)}
                   type="primary"
                 >
                   Inviter
@@ -265,9 +265,33 @@ export const UserProfileModal = (props: {
   const { Title } = Typography;
 
   const me = useAppSelector((state) => state.userReducer.me);
+  const [userTmp, setUserTmp] = useState<User | undefined>(me);
   const { friendMap, sendFriendRequest } = useContext(UserMapsContext);
   const isFriend = friendMap.has(user.id);
   console.log(user);
+  const handleProfileChange = () => {
+    if (userTmp?.username || userTmp?.picture) {
+      axios
+        .post(
+          "user/update",
+          {
+            picture: userTmp.picture,
+            username: userTmp.username,
+          },
+          {
+            headers: {
+              access_token: localStorage.getItem("token") as string,
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
   return (
     <div style={{ minHeight: "500px" }}>
       <div
@@ -292,6 +316,27 @@ export const UserProfileModal = (props: {
         <br />
         {me?.id !== user.id && (
           <Button onClick={() => openPrivateChat(user)}>Message</Button>
+        )}
+        {me?.id === user.id && (
+          <>
+            <Input
+              type={"text"}
+              defaultValue={user.username}
+              onChange={(e) => {
+                setUserTmp({ ...user, username: e.target.value });
+              }}
+              placeholder={"Change your username"}
+            />
+            <Input
+              type={"text"}
+              defaultValue={user.picture}
+              onChange={(e) => {
+                setUserTmp({ ...user, picture: e.target.value });
+              }}
+              placeholder={"Change your picture"}
+            />
+            <Button onClick={() => handleProfileChange()}>Change</Button>
+          </>
         )}
       </div>
     </div>

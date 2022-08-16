@@ -25,6 +25,7 @@ export const FriendPanel = () => {
         receivedFriendRequestMap,
         sentFriendRequestMap,
         acceptFriendRequest,
+        refuseFriendRequest,
         deleteFriendRequest,
     } = useContext(UserMapsContext);
 
@@ -45,10 +46,10 @@ export const FriendPanel = () => {
     // }
 
     const onChange = (key: any) => {
-        console.log(key);
+        // console.log(key);
     };
     const onClick = (e: any) => {
-        console.log('click ', e);
+        // console.log('click ', e);
     };
 
     return (
@@ -110,7 +111,7 @@ export const FriendPanel = () => {
                         overflowY: 'scroll',
                     }}>
                     {Array.from(friendMap.entries()).map(([id, friendship]) => (
-                        <li
+                        <span
                             key={friendship.id}
                             onClick={onClick}
                             className='panelContent'
@@ -126,7 +127,7 @@ export const FriendPanel = () => {
                                 <MessageOutlined className='iconFriend' />{' '}
                                 <MenuOutlined className='iconFriend' />
                             </>
-                        </li>
+                        </span>
                     ))}
                 </li>
             </TabPane>
@@ -165,7 +166,7 @@ export const FriendPanel = () => {
                                     <CloseCircleOutlined
                                         className='iconFriend'
                                         onClick={() =>
-                                            deleteFriendRequest(
+                                            refuseFriendRequest(
                                                 request.id,
                                                 request.sender.id
                                             )

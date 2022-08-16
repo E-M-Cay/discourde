@@ -263,7 +263,7 @@ export const UserProfileModal = (props: {
             </div>
             <div style={{ marginTop: '24px' }}>
                 {isFriend === false && me?.id !== user.id ? (
-                    <Button onClick={() => sendFriendRequest(user.id)}>
+                    <Button onClick={() => sendFriendRequest(user)}>
                         Add as friend
                     </Button>
                 ) : me?.id !== user.id ? (

@@ -27,6 +27,7 @@ const Message = () => {
                     },
                 })
                 .then((res) => {
+                    console.log(res.data, 'channels');
                     setMessages(res.data.response);
                     setName(res.data.channelName);
                 });

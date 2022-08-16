@@ -67,9 +67,7 @@ const App = () => {
     }, [peer, openPeer]);
 
     useEffect(() => {
-        console.log('pi');
         const token = localStorage.getItem('token');
-
         if (token && isFirst.current) {
             axios
                 .get('/user/token_check', {
@@ -127,6 +125,7 @@ const App = () => {
                 if (res.data.token) {
                     connectSocket(res.data.token);
                     localStorage.setItem('token', res.data.token);
+                    console.log('res data user', res.data.user);
                     dispatch(setMe(res.data.user));
                     dispatch(setToken(res.data.token));
                     handleOk();

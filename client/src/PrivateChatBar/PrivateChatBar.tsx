@@ -11,11 +11,6 @@ const PrivateChatBar = () => {
     const dispatch = useAppDispatch();
     const { privateChatMap } = useContext(UserMapsContext);
 
-    // useEffect(() => {
-    //     console.log(privateChatMap, 'from bar');
-    //     console.table(Array.from(privateChatMap.entries()));
-    // }, [privateChatMap]);
-
     const onClickHandler = (id: number) => {
         dispatch(setActivePrivateChat(id));
     };

@@ -83,7 +83,15 @@ router.post('/register', async (req: Request, res: Response) => {
 });
 
 router.get('/token_check', isAuth, async (req: IRequest, res: Response) => {
-    const user = await userRepository.findOne({ where: { id: req.id } });
+    const user = await userRepository.findOne({
+        where: { id: req.id },
+        select: {
+            id: true,
+            picture: true,
+            email: true,
+            username: true,
+        },
+    });
     res.status(201).send({ ok: 'Valid token', user });
 });
 

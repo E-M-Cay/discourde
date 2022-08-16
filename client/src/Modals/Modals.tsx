@@ -1,6 +1,10 @@
 import { Avatar, Button, Checkbox, Input, Modal, Typography } from "antd";
+import axios from "axios";
+import { useContext } from "react";
+import { UserMapsContext } from "../context/UserMapsContext";
 import { useAppSelector } from "../redux/hooks";
 import { Channel, User, VocalChan } from "../types/types";
+import logo from "../assets/discourde.png";
 
 export const ServerParams = (props: {
   isModalVisibleParams: boolean;
@@ -210,20 +214,45 @@ export const ServerChannels = (props: {
   );
 };
 
+export const UserProfileModal = (props: {  openPrivateChat: Function; user: User; }) => {
+  const { openPrivateChat, user } = props;
+  const { Title } = Typography;
 
-export const UserProfileModal = (props: {
-  user: User | undefined;
-}) => {
-  const {
-    user,
-  } = props;
+  const maybeSendFriendRequest = (id: number) => {
+    axios.post(
+      `/friends/send_request`,
+      {
+        user: id,
+      },
+      {
+        headers: {
+          access_token: localStorage.getItem("token") as string,
+        },
+      }
+    );
+  };
   const me = useAppSelector((state) => state.userReducer.me);
-  console.log(me)
+  const { friendMap } = useContext(UserMapsContext);
+  const isFriend = friendMap.has(user.id);
+  console.log(user);
   return (
     <>
-    <Avatar size={64} src={"%PUBLIC_URL%/discourde.png"} />
-    {user?.username}
-
+      <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}} >
+        <Avatar size={64} src={user.picture ?? logo} />
+        <Title level={2}>{" " + user.username}</Title>
+        <div></div>
+      </div>
+      <div style={{marginTop: "24px"}}>
+      {isFriend === undefined ? (
+        <Button onClick={() => maybeSendFriendRequest(user.id)}>
+          Add as friend
+        </Button>
+      ) : me?.id !== user.id ? (
+        <Typography>You are friends</Typography>
+      ) : null}
+      <br />
+      {me?.id !== user.id && (<Button onClick={() => openPrivateChat(user)}>Message</Button>)}
+      </div>
     </>
   );
-}
+};

@@ -16,11 +16,10 @@ export const StatusBar = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User>();
 
+  const me = useAppSelector((state) => state.userReducer.me);
+
   const showModal = (user: User) => {
-    if (user) {
-      setSelectedUser(user);
-      setIsModalVisible(true);
-    }
+    setIsModalVisible(true);
   };
 
   const handleOk = () => {
@@ -33,25 +32,11 @@ export const StatusBar = () => {
 
   //antd menu for dropdown
 
-  const maybeSendFriendRequest = (id: number) => {
-    axios.post(
-      `/friends/send_request`,
-      {
-        user: id,
-      },
-      {
-        headers: {
-          access_token: localStorage.getItem("token") as string,
-        },
-      }
-    );
-  };
-
   const menu = (user: User) => {
     return (
       <Menu
         items={[
-          {
+          (me?.id !== user.id && {
             key: "1",
             label: (
               <a
@@ -62,15 +47,8 @@ export const StatusBar = () => {
                 message
               </a>
             ),
-          },
-          {
-            key: "2",
-            label: (
-              <div onClick={() => maybeSendFriendRequest(user.id)}>
-                ajouter en ami
-              </div>
-            ),
-          },
+          }) ||
+            null,
           {
             key: "3",
             label: (
@@ -83,7 +61,7 @@ export const StatusBar = () => {
               </a>
             ),
           },
-          {
+          (me?.id !== user.id && {
             key: "4",
             label: (
               <a
@@ -94,10 +72,27 @@ export const StatusBar = () => {
                 exclure
               </a>
             ),
-          },
+          }) ||
+            null,
           {
             key: "5",
-            label: <div onClick={() => showModal(user)}>profil</div>,
+            label: (
+              <>
+                <div onClick={() => showModal(user)}>Profil</div>
+                <Modal
+                  title="profil"
+                  visible={isModalVisible}
+                  onOk={handleOk}
+                  onCancel={handleCancel}
+                  footer={null}
+                >
+                  <UserProfileModal
+                    openPrivateChat={openPrivateChat}
+                    user={user}
+                  />
+                </Modal>
+              </>
+            ),
           },
         ]}
       />
@@ -108,7 +103,7 @@ export const StatusBar = () => {
     return (
       <Menu
         items={[
-          {
+          (me?.id !== user.id && {
             key: "1",
             label: (
               <a
@@ -119,15 +114,8 @@ export const StatusBar = () => {
                 message
               </a>
             ),
-          },
-          {
-            key: "2",
-            label: (
-              <div onClick={() => maybeSendFriendRequest(user.id)}>
-                ajouter en ami
-              </div>
-            ),
-          },
+          }) ||
+            null,
           {
             key: "3",
             label: (
@@ -140,7 +128,7 @@ export const StatusBar = () => {
               </a>
             ),
           },
-          {
+          (me?.id !== user.id && {
             key: "4",
             label: (
               <a
@@ -151,10 +139,27 @@ export const StatusBar = () => {
                 exclure
               </a>
             ),
-          },
+          }) ||
+            null,
           {
             key: "5",
-            label: <div onClick={() => showModal(user)}>Profil</div>,
+            label: (
+              <>
+                <div onClick={() => showModal(user)}>Profil</div>
+                <Modal
+                  title="profil"
+                  visible={isModalVisible}
+                  onOk={handleOk}
+                  onCancel={handleCancel}
+                  footer={null}
+                >
+                  <UserProfileModal
+                    openPrivateChat={openPrivateChat}
+                    user={user}
+                  />
+                </Modal>
+              </>
+            ),
           },
         ]}
       />
@@ -171,16 +176,6 @@ export const StatusBar = () => {
         overflowY: "scroll",
       }}
     >
-      <Modal
-        title="profil"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        footer={null}
-      >
-        <UserProfileModal user={selectedUser} />
-      </Modal>
-
       <Collapse defaultActiveKey={["1", "2"]} ghost>
         <Panel key="1" header="en ligne" style={{ margin: "0 !important" }}>
           {Array.from(serverUserMap.entries()).map(([id, user]) =>

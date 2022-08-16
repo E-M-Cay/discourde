@@ -25,6 +25,7 @@ import {
     Typography,
     Input,
     Checkbox,
+    notification,
 } from 'antd';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import './ChanelBar.css';
@@ -32,12 +33,19 @@ import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
 import { PeerSocketContext } from '../context/PeerSocket';
-import { Channel, PrivateChatMap, User, VocalChan } from '../types/types';
+import {
+    Channel,
+    PrivateChatMap,
+    User,
+    ServerUserMap,
+    VocalChan,
+} from '../types/types';
 import { CustomImage } from '../CustomLi/CustomLi';
 import { ServerChannels, ServerInvit, ServerParams } from '../Modals/Modals';
 import { DropdownMenu } from '../DropdownMenu/DropdownMenu';
 import { ChannelCollapse } from '../ChannelCollapse/ChannelCollapse';
-
+import { openNotification } from '../notificationHandler/notificationHandler';
+import { NotificationsContext } from '../context/Notification';
 const { Panel } = Collapse;
 
 export const ChanelBar = () => {
@@ -55,6 +63,8 @@ export const ChanelBar = () => {
         (state) => state.userReducer.activeVocalChannel
     );
     const isHome = useAppSelector((state) => state.userReducer.home);
+
+    const { Panel } = Collapse;
 
     let micro: boolean = true;
 
@@ -107,7 +117,10 @@ export const ChanelBar = () => {
         setVocalChannelList((prevState) => {
             return prevState.map((c) => {
                 if (c.id === chan) {
-                    return { ...c, users: c.users.filter((u) => u !== user) };
+                    return {
+                        ...c,
+                        users: c.users.filter((u) => u !== user),
+                    };
                 }
                 return c;
             });
@@ -172,29 +185,6 @@ export const ChanelBar = () => {
         setIsModalVisibleParams(false);
     };
 
-    const handleUpdateChannel = (
-        txtChan: Channel | undefined,
-        vocChan: VocalChan | undefined
-    ) => {
-        axios
-            .put(
-                `/${vocChan ? 'vocal' : ''}channel/update`,
-                vocChan ?? txtChan,
-                {
-                    headers: {
-                        access_token: localStorage.getItem('token') as string,
-                    },
-                }
-            )
-            .then((res) => {
-                if (res.status === 200) {
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    };
-
     const handleCreateChannel = (isVocal: any) => {
         console.log(isVocal, 'rcvghjbknl', newTextChannelName);
         if (newTextChannelName.length > 0) {
@@ -219,6 +209,8 @@ export const ChanelBar = () => {
                         ? setVocalChannelList([...vocalChannelList, res.data])
                         : setTextChannelList([...textChannelList, res.data]);
                     setNewTextChannelName('');
+                    openNotification('success', 'success', 'Channel created');
+                    // setNotifications(...notifications);
                 })
                 .catch((err) => {
                     console.log(err);
@@ -227,6 +219,29 @@ export const ChanelBar = () => {
                     setIsModalVisible(false);
                 });
         }
+    };
+
+    const handleUpdateChannel = (
+        txtChan: Channel | undefined,
+        vocChan: VocalChan | undefined
+    ) => {
+        axios
+            .put(
+                `/${vocChan ? 'vocal' : ''}channel/update`,
+                vocChan ?? txtChan,
+                {
+                    headers: {
+                        access_token: localStorage.getItem('token') as string,
+                    },
+                }
+            )
+            .then((res) => {
+                if (res.status === 200) {
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
     const handleModifyChannelText = (chan: Channel) => {
@@ -258,7 +273,9 @@ export const ChanelBar = () => {
 
     const deleteServer = useCallback(() => {
         axios.delete(`/server/delete_server/${activeServer}`, {
-            headers: { access_token: localStorage.getItem('token') as string },
+            headers: {
+                access_token: localStorage.getItem('token') as string,
+            },
         });
     }, [activeServer]);
 
@@ -402,3 +419,5 @@ export const ChanelBar = () => {
         </div>
     );
 };
+
+export default ChanelBar;

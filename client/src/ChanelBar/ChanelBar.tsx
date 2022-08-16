@@ -45,7 +45,8 @@ import { ServerChannels, ServerInvit, ServerParams } from '../Modals/Modals';
 import { DropdownMenu } from '../DropdownMenu/DropdownMenu';
 import { ChannelCollapse } from '../ChannelCollapse/ChannelCollapse';
 import { openNotification } from '../notificationHandler/notificationHandler';
-import { NotificationsContext } from '../context/Notification';
+import { NotificationsContext } from '../context/NotificationsContext';
+
 const { Panel } = Collapse;
 
 export const ChanelBar = () => {
@@ -53,6 +54,7 @@ export const ChanelBar = () => {
         (state) => state.userReducer.activeServer
     );
     const { socket } = useContext(PeerSocketContext);
+    const { notifications, addNotification } = useContext(NotificationsContext);
     const dispatch = useAppDispatch();
     const headerTxt: string = 'SALONS TEXTUELS';
     const headerVoc: string = 'SALONS VOCAUX';
@@ -209,7 +211,12 @@ export const ChanelBar = () => {
                         ? setVocalChannelList([...vocalChannelList, res.data])
                         : setTextChannelList([...textChannelList, res.data]);
                     setNewTextChannelName('');
-                    openNotification('success', 'success', 'Channel created');
+                    addNotification({
+                        type: 'success',
+                        title: 'success',
+                        content: 'Channel created',
+                        isTmp: true,
+                    });
                     // setNotifications(...notifications);
                 })
                 .catch((err) => {
@@ -237,10 +244,39 @@ export const ChanelBar = () => {
             )
             .then((res) => {
                 if (res.status === 200) {
+                    if (vocChan) {
+                        setVocalChannelList((prevState) => {
+                            return prevState.map((c) => {
+                                if (c.id === vocChan.id) {
+                                    return vocChan;
+                                }
+                                return c;
+                            });
+                        });
+                    } else {
+                        setTextChannelList((prevState: any) => {
+                            return prevState.map((c: any) => {
+                                if (c.id === txtChan?.id) {
+                                    return txtChan;
+                                }
+                                return c;
+                            });
+                        });
+                    }
+
+                    addNotification({
+                        type: 'success',
+                        title: 'success',
+                        content: 'Channel updated',
+                    });
+                    setNewTextChannelName('');
                 }
             })
             .catch((err) => {
                 console.log(err);
+            })
+            .finally(() => {
+                setIsModalVisible(false);
             });
     };
 

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useCallback, useContext, useEffect, useState } from 'react';
+import { NotificationsContext } from '../context/NotificationsContext';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { useAppSelector } from '../redux/hooks';
@@ -15,6 +16,8 @@ const PrivateMessageChat = () => {
     const [name, setName] = useState<string>('user name');
     const { socket } = useContext(PeerSocketContext);
     const { privateChatMap } = useContext(UserMapsContext);
+    const {notifications, addNotification} = useContext(NotificationsContext);
+
 
     useEffect(() => {
         if (activePrivateChat) {

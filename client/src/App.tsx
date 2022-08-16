@@ -9,12 +9,14 @@ import VocalChannel from './components/VocalChannel';
 import { Home } from './Home/Home';
 import { Modal } from 'antd';
 import UserMapsContextProvider from './context/UserMapsContext';
+import NotificationsContextProvider from './context/NotificationsContext';
 
 const { Title, Text } = Typography;
 
 const App = () => {
     const { socket, peer, connectPeer, connectSocket } =
         useContext(PeerSocketContext);
+
     const dispatch = useAppDispatch();
     const registerUsernameRef = useRef<string>('');
     const registerEmailRef = useRef<string>('');
@@ -135,6 +137,7 @@ const App = () => {
 
     return (
         <UserMapsContextProvider>
+            <NotificationsContextProvider>
             {peer && socket ? (
                 <div>
                     <VocalChannel />
@@ -245,6 +248,7 @@ const App = () => {
                     </div>
                 </Modal>
             )}
+            </NotificationsContextProvider>
         </UserMapsContextProvider>
     );
 };

@@ -1,5 +1,6 @@
-import { Button, Checkbox, Input, Modal, Typography } from "antd";
-import { Channel, VocalChan } from "../types/types";
+import { Avatar, Button, Checkbox, Input, Modal, Typography } from "antd";
+import { useAppSelector } from "../redux/hooks";
+import { Channel, User, VocalChan } from "../types/types";
 
 export const ServerParams = (props: {
   isModalVisibleParams: boolean;
@@ -178,7 +179,7 @@ export const ServerChannels = (props: {
       >
         <Input
           placeholder="Add text channel"
-          onChange={(e) => setNewTextChannelName("teste")}
+          onChange={(e) => setNewTextChannelName(e.target.value)}
         />
         <Checkbox onChange={(e) => setIsAdminChannel(e.target.checked)}>
           isAdmin
@@ -195,7 +196,7 @@ export const ServerChannels = (props: {
         }}
       >
         <Input
-          onChange={(e) => setNewTextChannelName("vocal")}
+          onChange={(e) => setNewTextChannelName(e.target.value)}
           placeholder="Add vocal channel"
         />
         <Checkbox onChange={(e) => setIsAdminChannel(e.target.checked)}>
@@ -208,3 +209,21 @@ export const ServerChannels = (props: {
     </Modal>
   );
 };
+
+
+export const UserProfileModal = (props: {
+  user: User | undefined;
+}) => {
+  const {
+    user,
+  } = props;
+  const me = useAppSelector((state) => state.userReducer.me);
+  console.log(me)
+  return (
+    <>
+    <Avatar size={64} src={"%PUBLIC_URL%/discourde.png"} />
+    {user?.username}
+
+    </>
+  );
+}

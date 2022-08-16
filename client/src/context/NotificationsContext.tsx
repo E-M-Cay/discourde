@@ -45,16 +45,23 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
     const [id, setId] = useState(0);
     const { socket } = useContext(PeerSocketContext);
     const [notifications, setNotifications] = useState<Notification[]>([]);
-    const addNotification = (notification: Notification) => {
-        !notification.isTmp &&
-            setNotifications([...notifications, { ...notification, id: id }]);
-        openNotification(
-            notification.type,
-            notification.title,
-            notification.content
-        );
-        setId(id + 1);
-    };
+    const addNotification = useCallback(
+        (notification: Notification) => {
+            !notification.isTmp &&
+                setNotifications([
+                    ...notifications,
+                    { ...notification, id: id },
+                ]);
+            openNotification(
+                notification.type,
+                notification.title,
+                notification.content
+            );
+            setId(id + 1);
+        },
+        [setNotifications, id, notifications]
+    );
+
     const receiveMessage = useCallback(
         (message: PrivateMessage) => {
             if (message.user1.id !== me?.id) {

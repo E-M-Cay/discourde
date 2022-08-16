@@ -16,8 +16,7 @@ const PrivateMessageChat = () => {
     const [name, setName] = useState<string>('user name');
     const { socket } = useContext(PeerSocketContext);
     const { privateChatMap } = useContext(UserMapsContext);
-    const {notifications, addNotification} = useContext(NotificationsContext);
-
+    const { notifications, addNotification } = useContext(NotificationsContext);
 
     useEffect(() => {
         if (activePrivateChat) {
@@ -53,7 +52,7 @@ const PrivateMessageChat = () => {
         return () => {
             socket?.off(`privatemessage`, receiveMessage);
         };
-    }, [socket]);
+    }, [socket, receiveMessage]);
 
     return (
         <div className='message'>

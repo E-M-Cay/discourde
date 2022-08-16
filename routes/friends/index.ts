@@ -372,7 +372,7 @@ router.delete(
       const request = await FriendRequestRepository.findOne({
         where: {
           id: requestId,
-          receiver: {
+          sender: {
             id: req.id,
           },
         },

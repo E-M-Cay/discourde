@@ -10,6 +10,10 @@ import {
     ServerUserMap,
     User,
     PrivateChatMap,
+    ReceivedFriendRequestMap,
+    SentFriendRequestMap,
+    ReceivedFriendRequest,
+    SentFriendRequest,
 } from '../types/types';
 import { PeerSocketContext } from './PeerSocket';
 
@@ -17,15 +21,20 @@ interface userMapsContext {
     serverUserMap: ServerUserMap;
     friendMap: FriendshipMap;
     privateChatMap: PrivateChatMap;
+    receivedFriendRequestMap: ReceivedFriendRequestMap;
+    sentFriendRequestMap: SentFriendRequestMap;
     setFriend: (key: number, value: Friendship) => void;
     removeFriend: (key: number) => void;
     openPrivateChat: (user: User) => void;
+    acceptFriendRequest: (id: number, senderId: number) => void;
 }
 
 const UserMapsContext = createContext<userMapsContext>({
     friendMap: new Map<number, Friendship>(),
     serverUserMap: new Map<number, ServerUser>(),
     privateChatMap: new Map<number, User>(),
+    receivedFriendRequestMap: new Map<number, ReceivedFriendRequest>(),
+    sentFriendRequestMap: new Map<number, SentFriendRequest>(),
     setFriend: (_any?: any) => {
         throw new Error('setFriend not correctly overriden');
     },
@@ -34,6 +43,9 @@ const UserMapsContext = createContext<userMapsContext>({
     },
     openPrivateChat: (_any?: any) => {
         throw new Error('removeFriend not correctly overriden');
+    },
+    acceptFriendRequest: (_any?: any) => {
+        throw new Error('acceptFriendRequest not correctly overriden');
     },
 });
 
@@ -54,26 +66,26 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
     const [friendMap, friendsActions] = useMap<number, Friendship>([]);
     const {
         set: setFriend,
-        setAll: setAllFriends,
+        setAll: _setAllFriends,
         remove: removeFriend,
-        reset: resetFriends,
+        reset: _resetFriends,
     } = friendsActions;
 
     const [serverUserMap, serverUserActions] = useMap<number, ServerUser>([]);
 
     const {
         set: setServerUser,
-        setAll: setAllServerUsers,
-        remove: removeserverUser,
+        setAll: _setAllServerUsers,
+        remove: _removeserverUser,
         reset: resetServerUsers,
     } = serverUserActions;
 
     const [privateChatMap, privateChatActions] = useMap<number, User>([]);
     const {
         set: setPrivateChat,
-        setAll: setAllPrivateChats,
-        remove: removePrivateChat,
-        reset: resetPrivateChats,
+        setAll: _setAllPrivateChats,
+        remove: _removePrivateChat,
+        reset: _resetPrivateChats,
     } = privateChatActions;
 
     const openPrivateChat = useCallback(
@@ -90,6 +102,56 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
         },
         [setPrivateChat, me, dispatch, privateChatMap]
     );
+
+    const [receivedFriendRequestMap, receivedFriendRequestActions] = useMap<
+        number,
+        ReceivedFriendRequest
+    >([]);
+    const {
+        set: setReceivedFriendRequest,
+        setAll: _setAllReceivedFriendRequests,
+        remove: removeReceivedFriendRequest,
+        reset: resetReceivedFriendRequests,
+    } = receivedFriendRequestActions;
+
+    const [sentFriendRequestMap, sentFriendRequestActions] = useMap<
+        number,
+        SentFriendRequest
+    >();
+    const {
+        set: _setSentFriendRequest,
+        setAll: _setAllSentFriendRequests,
+        remove: removeSentFriendRequest,
+        reset: _resetFriendRequests,
+    } = sentFriendRequestActions;
+
+    const acceptFriendRequest = (id: number, senderId: number) => {
+        // console.log('accept req', id);
+        axios
+            .post(
+                '/friends/create',
+                {
+                    request: id,
+                },
+                {
+                    headers: {
+                        access_token: localStorage.getItem('token') as string,
+                    },
+                }
+            )
+            .then((res) => {
+                if (res.status === 201) {
+                    const receivedRequest =
+                        receivedFriendRequestMap.get(senderId);
+                    if (!receivedRequest) return;
+                    removeReceivedFriendRequest(senderId);
+                    setFriend(senderId, {
+                        id: senderId,
+                        friend: receivedRequest.sender,
+                    });
+                }
+            });
+    };
 
     useEffect(() => {
         // console.log(serverUserMap, 'userMapcaralho');
@@ -112,6 +174,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
     }, [activeServer, setServerUser, resetServerUsers]);
 
     useEffect(() => {
+        if (!me) return;
         axios
             .get('/privatemessage/userlist', {
                 headers: {
@@ -129,7 +192,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
                     access_token: localStorage.getItem('token') as string,
                 },
             })
-            .then((res) =>
+            .then((res) => {
                 res.data.forEach(
                     (friendshipResponse: {
                         id: number;
@@ -146,9 +209,27 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
                             friend: correctUser,
                         });
                     }
-                )
-            );
-    }, []);
+                );
+            });
+    }, [me, setFriend, setPrivateChat]);
+
+    useEffect(() => {
+        axios
+            .get('/friends/requests/received', {
+                headers: {
+                    access_token: localStorage.getItem('token') as string,
+                },
+            })
+            .then((res) => {
+                console.log('Friendship', res.data);
+                res.data.forEach((fr: ReceivedFriendRequest) => {
+                    setReceivedFriendRequest(fr.sender.id, fr);
+                });
+            });
+        return () => {
+            resetReceivedFriendRequests();
+        };
+    }, [setReceivedFriendRequest, resetReceivedFriendRequests]);
 
     const handleDisconnection = useCallback(
         (id: number) => {
@@ -168,24 +249,53 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
         [setServerUser, serverUserMap]
     );
 
+    const handleNewFriendRequest = useCallback(
+        (friendRequest: ReceivedFriendRequest) => {
+            console.log('FERDQD request');
+            setReceivedFriendRequest(friendRequest.sender.id, friendRequest);
+        },
+        [setReceivedFriendRequest]
+    );
+
+    const handleNewFriendship = useCallback(
+        (friendship: Friendship) => {
+            removeSentFriendRequest(friendship.friend.id);
+            setFriend(friendship.friend.id, friendship);
+        },
+        [removeSentFriendRequest, setFriend]
+    );
+
     useEffect(() => {
+        socket?.on('friendrequestaccepted', handleNewFriendship);
+        socket?.on('newfriendrequest', handleNewFriendRequest);
         socket?.on('userdisconnected', handleDisconnection);
         socket?.on('userconnected', handleConnection);
         return () => {
+            socket?.off('friendRequestAccepted', handleNewFriendship);
             socket?.off('userdisconnected', handleDisconnection);
             socket?.off('userconnected', handleConnection);
+            socket?.off('newfriendrequest', handleNewFriendRequest);
         };
-    }, [socket, handleDisconnection, handleConnection]);
+    }, [
+        socket,
+        handleDisconnection,
+        handleConnection,
+        handleNewFriendRequest,
+        handleNewFriendship,
+    ]);
 
     return (
         <UserMapsContext.Provider
             value={{
+                receivedFriendRequestMap,
+                sentFriendRequestMap,
                 friendMap,
                 serverUserMap,
                 privateChatMap,
                 openPrivateChat,
                 setFriend,
                 removeFriend,
+                acceptFriendRequest,
             }}>
             {children}
         </UserMapsContext.Provider>

@@ -11,9 +11,14 @@ export interface User {
     picture?: string;
 }
 
-export interface FriendRequest {
+export interface ReceivedFriendRequest {
     id: number;
     sender: User;
+}
+
+export interface SentFriendRequest {
+    id: number;
+    received: User;
 }
 
 export interface Friendship {
@@ -67,6 +72,16 @@ export type ServerUserMap = Omit<
 
 export type PrivateChatMap = Omit<
     Map<number, User>,
+    'delete' | 'set' | 'clear'
+>;
+
+export type ReceivedFriendRequestMap = Omit<
+    Map<number, ReceivedFriendRequest>,
+    'delete' | 'set' | 'clear'
+>;
+
+export type SentFriendRequestMap = Omit<
+    Map<number, SentFriendRequest>,
     'delete' | 'set' | 'clear'
 >;
 

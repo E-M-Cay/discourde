@@ -97,10 +97,7 @@ router.delete(
 );
 
 router.put('/update', isAuth, async (req: IRequest, res: Response) => {
-    if (
-        ('name' in req.body || 'hidden' in req.body) &&
-        'id' in req.body
-    ) {
+    if (('name' in req.body || 'hidden' in req.body) && 'id' in req.body) {
         const channel = await ChannelRepository.findOneBy({
             id: Number(req.body.id),
         });
@@ -133,45 +130,26 @@ router.get(
             return res.status(400).send('Error server not found');*/
 
         try {
-            const channelAndMessages = await ChannelRepository.findOne({
-                // relations: { author: true, channel: true },
-                // where: {
-                //     channel: {
-                //         id: channel_id,
-                //     },
-                // },
-                // select: {
-                //     channel: {
-                //         name: true
-                //     },
-                //     author: {
-                //         id: true,
-                //         username: true
-                //     }
-                // }
-                relations: {
-                    messages: {
-                        author: true,
-                    },
-                },
+            const messages = await ChannelMessageRepository.find({
                 where: {
-                    id: channel_id,
+                    channel: { id: channel_id },
+                },
+                relations: {
+                    author: true,
                 },
                 select: {
-                    messages: {
-                        content: true,
-                        author: {
-                            id: true,
-                        },
+                    content: true,
+                    id: true,
+                    send_time: true,
+                    author: {
+                        id: true,
                     },
                 },
             });
 
-            if (!channelAndMessages) return res.status(401).send('not found');
-
             const response = [];
 
-            for (let message of channelAndMessages.messages) {
+            for (let message of messages) {
                 response.push({
                     id: message.id,
                     content: message.content,
@@ -179,13 +157,11 @@ router.get(
                     author: message.author.id,
                 });
             }
-
-            return res
-                .status(200)
-                .send({ channelName: channelAndMessages.name, response });
+            // console.log(response, 'response');
+            return res.status(200).send({ response });
         } catch (error) {
             console.log(error);
-            return res.status(400).send(error);
+            return res.status(400).send('error retrieving messages');
         }
     }
 );

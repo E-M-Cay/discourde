@@ -7,6 +7,7 @@ import IRequest from '../../Interfaces/IRequest';
 import { Friendship } from '../../entities/Friendship';
 import { FriendRequest } from '../../entities/FriendRequest';
 import isAuth from '../../MiddleWares/isAuth';
+import { io } from '../../index';
 
 const router = express.Router();
 
@@ -106,27 +107,31 @@ router.get('/list', isAuth, async (req: IRequest, res: Response) => {
     }
 });
 
-router.get('/requests/', isAuth, async (req: IRequest, res: Response) => {
-    try {
-        const friendRequests = await FriendRequestRepository.find({
-            where: {
-                receiver: { id: req.id },
-            },
-            relations: { sender: true },
-            select: {
-                sender: {
-                    id: true,
-                    username: true,
-                    picture: true,
+router.get(
+    '/requests/received',
+    isAuth,
+    async (req: IRequest, res: Response) => {
+        try {
+            const friendRequests = await FriendRequestRepository.find({
+                where: {
+                    receiver: { id: req.id },
                 },
-            },
-        });
-        // console.log(friendRequests);
-        return res.status(201).send(friendRequests);
-    } catch (e) {
-        res.status(401).send('Could not get friends');
+                relations: { sender: true },
+                select: {
+                    sender: {
+                        id: true,
+                        username: true,
+                        picture: true,
+                    },
+                },
+            });
+            // console.log(friendRequests, 'FRRR', req.id);
+            return res.status(201).send(friendRequests);
+        } catch (e) {
+            res.status(401).send('Could not get friends');
+        }
     }
-});
+);
 
 router.post('/send_request/', isAuth, async (req: IRequest, res: Response) => {
     if ('user' in req.body) {
@@ -153,7 +158,7 @@ router.post('/send_request/', isAuth, async (req: IRequest, res: Response) => {
                 ],
             });
 
-            console.log(alreadyFriends, 'friends ?');
+            // console.log(alreadyFriends, 'friends ?');
 
             if (alreadyFriends) {
                 return res.status(401).send('Already friends');
@@ -165,7 +170,7 @@ router.post('/send_request/', isAuth, async (req: IRequest, res: Response) => {
                 },
             });
 
-            console.log(alreadyExists);
+            // console.log(alreadyExists);
 
             if (alreadyExists) {
                 return res.status(401).send('A request already exists.');
@@ -176,11 +181,36 @@ router.post('/send_request/', isAuth, async (req: IRequest, res: Response) => {
         }
 
         try {
+            const sender = await userRepository.findOne({
+                where: {
+                    id: req.id,
+                },
+                select: {
+                    id: true,
+                    username: true,
+                    picture: true,
+                },
+            });
+
             const friend_request = FriendRequestRepository.create({
                 sender: { id: req.id },
                 receiver: { id: req.body.user },
             });
-            await FriendRequestRepository.save(friend_request);
+            await FriendRequestRepository.save(friend_request).then(
+                (response) => {
+                    if (global.user_id_to_socket_id.has(req.body.user)) {
+                        io.to(
+                            global.user_id_to_socket_id.get(
+                                req.body.user
+                            ) as string
+                        ).emit('newfriendrequest', {
+                            id: response.id,
+                            sender,
+                        });
+                    }
+                }
+            );
+
             return res.status(200).send('Request sent');
         } catch (error) {
             console.log(error);
@@ -191,25 +221,60 @@ router.post('/send_request/', isAuth, async (req: IRequest, res: Response) => {
 });
 
 router.post('/create', isAuth, async (req: IRequest, res: Response) => {
-    if ('user_id_1' in req.body && 'user_id_2' in req.body) {
-        const user_1 = await userRepository.findOneBy({
-            id: req.body.user_id_1,
-        });
-        const user_2 = await userRepository.findOneBy({
-            id: req.body.user_id_2,
-        });
-        if (!user_1 || !user_2)
-            return res.status(400).send('Error server not found');
-
+    if ('request' in req.body) {
+        const requestId = req.body.request;
+        // console.log(requestId, 'req id');
         try {
-            const friend = FriendshipRepository.create({
-                user1: user_1,
-                user2: user_2,
+            const request = await FriendRequestRepository.findOne({
+                where: {
+                    id: requestId,
+                },
+                relations: {
+                    sender: true,
+                    receiver: true,
+                },
+                select: {
+                    sender: {
+                        id: true,
+                    },
+                    receiver: {
+                        id: true,
+                        username: true,
+                        picture: true,
+                        join_date: true,
+                    },
+                },
             });
-            await FriendshipRepository.save(friend);
-            return res.status(200).send('Users are now friends');
+
+            // console.log(request, 'req');
+            if (!request) throw new Error('Request not found');
+            const friendship = FriendshipRepository.create({
+                user1: { id: req.id },
+                user2: {
+                    id: request.sender.id,
+                },
+            });
+
+            await FriendshipRepository.save(friendship).then((response) => {
+                if (global.user_id_to_socket_id.has(request.sender.id)) {
+                    io.to(
+                        global.user_id_to_socket_id.get(
+                            request.sender.id
+                        ) as string
+                    ).emit('friendrequestaccepted', {
+                        id: response.id,
+                        friend: request.receiver,
+                    });
+                }
+            });
+            await FriendRequestRepository.delete({
+                id: requestId,
+            });
+
+            return res.status(201).send();
         } catch (error) {
-            return res.status(400).send(error);
+            console.log(error);
+            return res.status(400).send('error');
         }
     }
     return res.status(400).send('Missing information');

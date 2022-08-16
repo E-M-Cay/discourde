@@ -7,52 +7,23 @@ import {
 import { Collapse, Divider, Tabs } from 'antd';
 import Sider from 'antd/lib/layout/Sider';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { UserMapsContext } from '../context/UserMapsContext';
 import { useAppSelector } from '../redux/hooks';
-import { FriendRequest, Friendship } from '../types/types';
+import { ReceivedFriendRequest, Friendship } from '../types/types';
 // import friendsData from '../mockFriends';
 import './FriendPanel.css';
 
 const { TabPane } = Tabs;
 const { Panel } = Collapse;
 
-export const FriendPanel = (serveur: any) => {
-    for (const obj in serveur) {
-        console.table(
-            `${obj} pipi : ${serveur[obj].nickname}, ${serveur[obj].email}`
-        );
-    }
-
+export const FriendPanel = () => {
     const onlineUsers: Array<any> = [];
-    const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
-    const [friendships, setFriendShips] = useState<Friendship[]>([]);
-    const me = useAppSelector((state) => state.userReducer.me);
+    // const me = useAppSelector((state) => state.userReducer.me);
+    const { friendMap, receivedFriendRequestMap, acceptFriendRequest } =
+        useContext(UserMapsContext);
 
-    useEffect(() => {
-        axios
-            .get('/friends/requests', {
-                headers: {
-                    access_token: localStorage.getItem('token') as string,
-                },
-            })
-            .then((res) => {
-                setFriendRequests(res.data);
-            });
-
-        axios
-            .get('/friends/list', {
-                headers: {
-                    access_token: localStorage.getItem('token') as string,
-                },
-            })
-            .then((res) => {
-                setFriendShips(res.data);
-            });
-    }, []);
-
-    const acceptFriendRequest = (id: number) => {
-        // axios.post;
-    };
+    useEffect(() => {}, []);
 
     // for (let index = 0; index < friendsData.length; index++) {
     //     if (friendsData[index].onRequest) {
@@ -119,7 +90,7 @@ export const FriendPanel = (serveur: any) => {
             </TabPane>
             <TabPane tab='Tous' key='2'>
                 <p style={{ position: 'fixed', fontSize: 'large' }}>
-                    Tous les amis - {friendships.length}
+                    Tous les amis - {friendMap.size}
                 </p>
                 <br />
                 <br />
@@ -133,8 +104,9 @@ export const FriendPanel = (serveur: any) => {
                         flexWrap: 'wrap',
                         overflowY: 'scroll',
                     }}>
-                    {friendships.map((friendship) => (
+                    {Array.from(friendMap.entries()).map(([id, friendship]) => (
                         <li
+                            key={friendship.id}
                             onClick={onClick}
                             className='panelContent'
                             style={{
@@ -145,7 +117,7 @@ export const FriendPanel = (serveur: any) => {
                             }}>
                             <>
                                 <Divider style={{ margin: 0 }} />{' '}
-                                {/* {friendship.friend.username}{' '} */}
+                                {friendship.friend.username}{' '}
                                 <MessageOutlined className='iconFriend' />{' '}
                                 <MenuOutlined className='iconFriend' />
                             </>
@@ -155,7 +127,7 @@ export const FriendPanel = (serveur: any) => {
             </TabPane>
             <TabPane tab='En attente' key='3'>
                 <p style={{ position: 'fixed', fontSize: 'large' }}>
-                    En attente - {friendRequests.length}
+                    En attente - {receivedFriendRequestMap.size}
                 </p>
                 <br />
                 <br />
@@ -169,29 +141,35 @@ export const FriendPanel = (serveur: any) => {
                         flexWrap: 'wrap',
                         overflowY: 'scroll',
                     }}>
-                    {friendRequests.map((friendRequest) => (
-                        <div
-                            onClick={onClick}
-                            className='panelContent'
-                            style={{
-                                margin: 0,
-                                padding: 0,
-                                height: '8vh',
-                                fontWeight: 'bold',
-                            }}>
-                            <>
-                                <Divider style={{ margin: 0 }} />{' '}
-                                {friendRequest.sender.username}{' '}
-                                <CloseCircleOutlined className='iconFriend' />{' '}
-                                <CheckCircleFilled
-                                    className='iconFriend'
-                                    onClick={() =>
-                                        acceptFriendRequest(friendRequest.id)
-                                    }
-                                />
-                            </>
-                        </div>
-                    ))}
+                    {Array.from(receivedFriendRequestMap.entries()).map(
+                        ([id, request]) => (
+                            <div
+                                key={id}
+                                onClick={onClick}
+                                className='panelContent'
+                                style={{
+                                    margin: 0,
+                                    padding: 0,
+                                    height: '8vh',
+                                    fontWeight: 'bold',
+                                }}>
+                                <>
+                                    <Divider style={{ margin: 0 }} />{' '}
+                                    {request.sender.username}{' '}
+                                    <CloseCircleOutlined className='iconFriend' />{' '}
+                                    <CheckCircleFilled
+                                        className='iconFriend'
+                                        onClick={() =>
+                                            acceptFriendRequest(
+                                                request.id,
+                                                request.sender.id
+                                            )
+                                        }
+                                    />
+                                </>
+                            </div>
+                        )
+                    )}
                 </li>
             </TabPane>
             <TabPane tab='Ajouter un ami' key='4'>

@@ -55,7 +55,7 @@ export const FriendPanel = () => {
         },
       })
       .then((res) => {
-        console.log(res, 'pépon');
+        // console.log(res, 'pépon');
         setServerRequests(res.data);
       })
       .catch((err) => {
@@ -89,10 +89,10 @@ export const FriendPanel = () => {
   };
 
   const onChange = (key: any) => {
-    console.log(key);
+    // console.log(key);
   };
   const onClick = (e: any) => {
-    console.log('click ', e);
+    // console.log('click ', e);
   };
 
   return (
@@ -213,7 +213,7 @@ export const FriendPanel = () => {
                   <CloseCircleOutlined
                     className='iconFriend'
                     onClick={() =>
-                      deleteFriendRequest(request.id, request.sender.id)
+                      refuseFriendRequest(request.id, request.sender.id)
                     }
                   />{' '}
                   <CheckCircleFilled

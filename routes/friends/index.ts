@@ -2,7 +2,6 @@ import express from 'express';
 import { Response } from 'express';
 import AppDataSource from '../../db/AppDataSource';
 import { User } from '../../entities/User';
-import { Server } from '../../entities/Server';
 import IRequest from '../../Interfaces/IRequest';
 import { Friendship } from '../../entities/Friendship';
 import { FriendRequest } from '../../entities/FriendRequest';
@@ -12,7 +11,6 @@ import { io } from '../../index';
 const router = express.Router();
 
 const userRepository = AppDataSource.getRepository(User);
-const ServerRepository = AppDataSource.getRepository(Server);
 const FriendshipRepository = AppDataSource.getRepository(Friendship);
 const FriendRequestRepository = AppDataSource.getRepository(FriendRequest);
 
@@ -25,9 +23,8 @@ router.get('/list', isAuth, async (req: IRequest, res: Response) => {
 
   try {
     const user_id = Number(req.id);
-    const user = await ServerRepository.countBy({ id: user_id });
+    const user = await userRepository.countBy({ id: user_id });
     if (!user) {
-      console.log(user, user_id, req.id, 'console');
       throw new Error('User not found');
     }
 
@@ -175,7 +172,7 @@ router.post('/send_request/', isAuth, async (req: IRequest, res: Response) => {
           io.to(global.user_id_to_socket_id.get(req.body.user) as string).emit(
             'newfriendrequest',
             {
-              id: 404,
+              id: response.id,
               sender,
             }
           );
@@ -375,7 +372,7 @@ router.delete(
       const request = await FriendRequestRepository.findOne({
         where: {
           id: requestId,
-          sender: {
+          receiver: {
             id: req.id,
           },
         },

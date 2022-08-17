@@ -136,9 +136,16 @@ router.post('/send_request/', isAuth, async (req: IRequest, res: Response) => {
       }
 
       const alreadyExists = await FriendRequestRepository.count({
-        where: {
-          sender: [{ id: req.id }, { id: req.body.user }],
-        },
+        where: [
+          {
+            sender: { id: req.body.user },
+            receiver: { id: req.id },
+          },
+          {
+            receiver: { id: req.body.user },
+            sender: { id: req.id },
+          },
+        ],
       });
 
       // console.log(alreadyExists);

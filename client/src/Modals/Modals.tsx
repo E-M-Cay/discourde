@@ -271,7 +271,7 @@ export const UserProfileModal = (props: {
   const [serverNickname, setServerNickname] = useState<string>('');
   const { friendMap, sendFriendRequest } = useContext(UserMapsContext);
   const isFriend = friendMap.has(user.id);
-  console.log(user);
+  // console.log(user);
   const handleProfileChange = () => {
     if (userTmp?.username || userTmp?.picture) {
       axios
@@ -310,12 +310,13 @@ export const UserProfileModal = (props: {
         )
         .then((res) => {
           console.log(res);
-        }).catch((err) => {
+        })
+        .catch((err) => {
           console.log(err);
-        }).finally(() => {
+        })
+        .finally(() => {
           setServerNickname('');
-        }
-        );
+        });
     }
   };
   return (

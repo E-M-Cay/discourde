@@ -43,8 +43,24 @@
     position: relative;
 }
 .iconFriend {
-    text-align: right !important;
-    font-size: larger;
-}
 
+    text-align: right !important;
+    font-size: x-large;
+}
+.iconFriend:hover {
+    text-align: right !important;
+    font-size: x-large;
+}
+.searchBar {
+    width: 95%;
+    font-size: x-large;
+}
+.searchBar2{
+    width: 95%;
+    
+}
+.DropDownFriend{
+    margin-right: 10px;
+    margin-top: -15px;
+}
 

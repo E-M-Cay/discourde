@@ -245,4 +245,29 @@ router.post('/link', isAuth, (req: IRequest, res, next) => {
     });
 });
 
+router.post ('/updatenickname', isAuth, async (req: IRequest, res: Response) => {
+        const serverUser = await ServerUserRepository.findOne({
+            where: {
+                server: {
+                    id: Number(req.body.idserver),
+                },
+                user: {
+                    id: Number(req.id),
+                },
+            },
+        });
+
+        if (!serverUser) return res.status(400).send('Error user in serverUser not found');
+
+        try {
+            await ServerUserRepository.update(serverUser.id, {
+                nickname: req.body.nickname,
+            });
+            return res.status(201).send('Nickname Successfully updated');
+        } catch (error) {
+            return res.status(400).send('Error');
+        }
+    })
+
+
 export default router;

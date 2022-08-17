@@ -263,9 +263,12 @@ export const UserProfileModal = (props: {
 }) => {
   const { openPrivateChat, user } = props;
   const { Title } = Typography;
-
+  const activeServer = useAppSelector(
+    (state) => state.userReducer.activeServer
+  );
   const me = useAppSelector((state) => state.userReducer.me);
   const [userTmp, setUserTmp] = useState<User | undefined>(me);
+  const [serverNickname, setServerNickname] = useState<string>('');
   const { friendMap, sendFriendRequest } = useContext(UserMapsContext);
   const isFriend = friendMap.has(user.id);
   console.log(user);
@@ -290,6 +293,29 @@ export const UserProfileModal = (props: {
         .catch((err) => {
           console.log(err);
         });
+    }
+    if (serverNickname.length > 0) {
+      axios
+        .post(
+          'server/updatenickname',
+          {
+            idserver: activeServer,
+            nickname: serverNickname,
+          },
+          {
+            headers: {
+              access_token: localStorage.getItem('token') as string,
+            },
+          }
+        )
+        .then((res) => {
+          console.log(res);
+        }).catch((err) => {
+          console.log(err);
+        }).finally(() => {
+          setServerNickname('');
+        }
+        );
     }
   };
   return (
@@ -328,6 +354,7 @@ export const UserProfileModal = (props: {
               }}
               placeholder={'Change your username'}
             />
+
             <Input
               type={'text'}
               defaultValue={user.picture}
@@ -339,6 +366,15 @@ export const UserProfileModal = (props: {
               }}
               placeholder={'Change your picture'}
             />
+
+            <Input
+              type={'text'}
+              onChange={(e) => {
+                setServerNickname(e.target.value);
+              }}
+              placeholder={'Change your server nickname'}
+            />
+
             <Button onClick={() => handleProfileChange()}>Change</Button>
           </>
         )}
@@ -347,14 +383,13 @@ export const UserProfileModal = (props: {
   );
 };
 
-
 export const GeneralSettings = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const handleDisconnect = () => {
     localStorage.removeItem('token');
     window.location.href = '/';
-  }
+  };
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -370,17 +405,23 @@ export const GeneralSettings = () => {
 
   useEffect(() => {
     window.onkeyup = (e) => {
-        if (e.code === 'Escape') {
-          showModal();
-        }
+      if (e.code === 'Escape') {
+        showModal();
+      }
     };
   }, []);
 
   return (
     <>
-      <Modal title="General Settings" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} footer={null} >
-        <Button onClick={() => handleDisconnect()} >Disconnect</Button>
+      <Modal
+        title='General Settings'
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <Button onClick={() => handleDisconnect()}>Disconnect</Button>
       </Modal>
     </>
   );
-}
+};

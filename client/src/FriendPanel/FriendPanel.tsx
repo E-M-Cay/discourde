@@ -10,7 +10,12 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { useAppSelector } from '../redux/hooks';
-import { ReceivedFriendRequest, Friendship } from '../types/types';
+import {
+  ReceivedFriendRequest,
+  Friendship,
+  User,
+  Server,
+} from '../types/types';
 // import friendsData from '../mockFriends';
 
 import './FriendPanel.css';
@@ -19,7 +24,7 @@ const { TabPane } = Tabs;
 const { Panel } = Collapse;
 
 export const FriendPanel = () => {
-  const onlineUsers: Array<any> = [];
+  const onlineUsers: any[] = [];
   // const me = useAppSelector((state) => state.userReducer.me);
   const {
     friendMap,
@@ -30,9 +35,13 @@ export const FriendPanel = () => {
     deleteFriendRequest,
   } = useContext(UserMapsContext);
 
-  const [serverRequests, setServerRequests] = useState<Array<any>>([]);
+  interface ServerInvitation {
+    id: number;
+    sender: User;
+    server: Server;
+  }
 
-  useEffect(() => {}, []);
+  const [serverRequests, setServerRequests] = useState<ServerInvitation[]>([]);
 
   // for (let index = 0; index < friendsData.length; index++) {
   //     if (friendsData[index].onRequest) {
@@ -256,13 +265,14 @@ export const FriendPanel = () => {
             <div key={request.id}>
               <Divider style={{ margin: 0 }} /> {request.server.name}{' '}
               {request.sender.username}
-              <button
+              <CheckCircleFilled
+                className='iconFriend'
                 onClick={() =>
                   handleAcceptServerInvitation(request.id, request.server.id)
                 }
               >
                 accepter
-              </button>
+              </CheckCircleFilled>
             </div>
           ))}
         </li>

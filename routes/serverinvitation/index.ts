@@ -48,7 +48,7 @@ router.post(
         sender: user,
         server: server,
       });
-    await ServerInvitationRepository.save(serverInvitation);
+    const newInvit = await ServerInvitationRepository.save(serverInvitation);
     return res.status(200).send('Invitation sent');
   }
 );

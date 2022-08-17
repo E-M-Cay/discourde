@@ -1,6 +1,6 @@
 import { Avatar, Button, Checkbox, Input, Modal, Typography } from 'antd';
 import axios from 'axios';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { useAppSelector } from '../redux/hooks';
 import { Channel, User, VocalChan } from '../types/types';
@@ -346,3 +346,41 @@ export const UserProfileModal = (props: {
     </div>
   );
 };
+
+
+export const GeneralSettings = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const handleDisconnect = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/';
+  }
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  useEffect(() => {
+    window.onkeyup = (e) => {
+        if (e.code === 'Escape') {
+          showModal();
+        }
+    };
+  }, []);
+
+  return (
+    <>
+      <Modal title="General Settings" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} footer={null} >
+        <Button onClick={() => handleDisconnect()} >Disconnect</Button>
+      </Modal>
+    </>
+  );
+}

@@ -12,6 +12,7 @@ import { UserMapsContext } from '../context/UserMapsContext';
 import { useAppSelector } from '../redux/hooks';
 import { ReceivedFriendRequest, Friendship } from '../types/types';
 // import friendsData from '../mockFriends';
+
 import './FriendPanel.css';
 
 const { TabPane } = Tabs;

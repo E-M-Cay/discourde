@@ -343,7 +343,7 @@ router.delete(
           sender: { id: true },
         },
       });
-      if (!request) return res.status(401).send('Cannot refuse this request');
+      if (!request) throw new Error('Can not delete this request');
 
       const senderId = request.sender.id;
 

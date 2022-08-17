@@ -86,6 +86,7 @@ router.post('/create_server', isAuth, async (req: IRequest, res: Response) => {
             nickname: owner.username,
             server,
         });
+        
 
         await ServerUserRepository.save(serverUser)
             .then((serverUser) => {
@@ -93,7 +94,7 @@ router.post('/create_server', isAuth, async (req: IRequest, res: Response) => {
             })
             .catch((e) => {
                 console.log(e);
-                return res.status(401).send('Error');
+                return res.status(401).send(e);
             });
     } else {
         return res.status(401).send('Wrong arguments');

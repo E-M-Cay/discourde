@@ -80,7 +80,7 @@ router.post('/register', async (req: Request, res: Response) => {
     });
 
     const newUser = await userRepository.save(user);
-    const mainServ = await serverRepository.findOneBy({ id: 99999 });
+    const mainServ = await serverRepository.findOneBy({ id: 1 });
     if (mainServ) {
       const serverUserRegistration = serverUserRepository.create({
         user: newUser,
@@ -98,7 +98,7 @@ router.post('/register', async (req: Request, res: Response) => {
       });
       const newMainServ = serverRepository.create({
         name: 'Général',
-        id: 99999,
+        id: Number(1),
         channels: [textChan],
         vocalChannels: [vocalChan],
       });

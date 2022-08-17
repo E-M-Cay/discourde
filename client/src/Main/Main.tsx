@@ -9,6 +9,7 @@ import axios from 'axios';
 import { MapOrEntries, useMap } from 'usehooks-ts';
 import { ServerUser, User } from '../types/types';
 import { PeerSocketContext } from '../context/PeerSocket';
+import { CallPanel } from '../CallPanel/CallPanel';
 
 export const Main = () => {
     const isHome = useAppSelector((state) => state.userReducer.home);
@@ -93,7 +94,7 @@ export const Main = () => {
                 {/*isHome ? 'prout' : */ <ChanelBar userMap={userMap} />}
             </Col>
             <Col span={16}>
-                <Chat userMap={userMap} />
+                <CallPanel userMap={userMap} />
             </Col>
             <Col style={{ backgroundColor: 'grey' }} span={4}>
                 {/* {friendBar} */}

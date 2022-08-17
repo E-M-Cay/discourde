@@ -1,0 +1,43 @@
+.vocStyle {
+    background-color: black !important;
+    width: 65vw;
+    height: 100vh;
+}
+
+.vocStyle:hover {
+    background-color: #232222 !important;
+}
+
+.vocStyle button {
+    display: none;
+    
+}
+.vocStyle header{
+    display: none;
+}
+.vocStyle:hover header{
+    font-size: 200%;
+    display: block;
+}
+
+.vocStyle:hover button {
+    display: flex;
+/*     grid-template-columns: repeat(3, 1fr);
+    grid-gap: 100px;
+    grid-auto-rows: minmax(100px, auto); */
+    color: grey;
+    background-color: #232222;
+    border: none;
+}
+#phone {
+/*     grid-column: 1;
+    grid-row: 1; */
+}
+#menu {
+    display: inline !important;
+}
+
+#phone:hover , #menu:hover , #audio:hover {
+    color: green;
+    font-size: 110%;
+}

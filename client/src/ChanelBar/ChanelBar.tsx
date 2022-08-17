@@ -84,6 +84,7 @@ export const ChanelBar = (props: { userMap: UserMap }) => {
         dispatch(setActiveChannel(id));
     };
     const onVocalChannelClick = useCallback(
+        
         (id: number) => {
             console.log(id, activeVocalChannel);
             if (activeVocalChannel === id) return;
@@ -95,12 +96,15 @@ export const ChanelBar = (props: { userMap: UserMap }) => {
 
     const handleJoinVocal = (data: { user: number; chan: number }) => {
         const { user, chan } = data;
-
+        
         setVocalChannelList((prevState) => {
             return prevState.map((c) => {
+            
                 if (c.id === chan) {
                     return { ...c, users: [...c.users, user] };
                 }
+                console.log("list des users");
+            console.log(c)
                 return c;
             });
         });

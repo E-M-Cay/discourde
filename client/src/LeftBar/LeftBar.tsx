@@ -125,7 +125,7 @@ export const LeftBar = (props: {
                     flexWrap: 'wrap',
                     overflowY: 'scroll',
                 }}>
-                <CustomLimage key={0} />
+                <CustomLimage  key={0} />
                 {props.servers.map((object: ServerResponse, i: number) => (
                     <CustomLimage obj={object} key={object.server.id} />
                 ))}

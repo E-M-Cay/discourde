@@ -53,12 +53,15 @@ export const ChanelBar = () => {
     const activeServer = useAppSelector(
         (state) => state.userReducer.activeServer
     );
+    const activeServerName = useAppSelector(
+        (state) => state.userReducer.activeServerName
+    );
     const { socket } = useContext(PeerSocketContext);
     const { notifications, addNotification } = useContext(NotificationsContext);
     const dispatch = useAppDispatch();
     const headerTxt: string = 'SALONS TEXTUELS';
     const headerVoc: string = 'SALONS VOCAUX';
-    const serverName: string = 'TEEEST SERVEUR';
+    const serverName: string = activeServerName ?? 'Serveur';
     const [vocalChannelList, setVocalChannelList] = useState<VocalChan[]>([]);
     const [textChannelList, setTextChannelList] = useState<Channel[]>([]);
     const activeVocalChannel = useAppSelector(

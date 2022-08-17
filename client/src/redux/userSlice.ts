@@ -5,6 +5,7 @@ interface UserState {
     username: string;
     serverUsername?: string;
     token?: string;
+    activeServerName?: string;
     activeServer?: number;
     activeChannel?: number;
     activeVocalChannel?: number;
@@ -37,6 +38,9 @@ export const userSlice = createSlice({
         setToken: (state, action: PayloadAction<string>) => {
             state.token = action.payload;
         },
+        setActiveServerName: (state, action: PayloadAction<string>) => {
+            state.activeServerName = action.payload;
+        },
         setActiveServer: (state, action: PayloadAction<number>) => {
             state.activeServer = action.payload;
         },
@@ -59,6 +63,7 @@ export const {
     setIsHome,
     setUsername,
     setToken,
+    setActiveServerName,
     setActiveServer,
     setActiveChannel,
     setServerUsername,

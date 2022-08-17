@@ -2,7 +2,7 @@ import { Image, Typography, Tooltip } from 'antd';
 import logo from '../assets/discourde.png';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setActiveServer, setIsHome } from '../redux/userSlice';
+import { setActiveServer, setIsHome, setActiveServerName } from '../redux/userSlice';
 import {
     PrivateChatMap,
     ServerResponse,
@@ -19,6 +19,7 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
     const onClickServer = () => {
         if (obj) {
             dispatch(setActiveServer(obj.server.id));
+            dispatch(setActiveServerName(obj.server.name));
             dispatch(setIsHome(false));
         } else {
             dispatch(setIsHome(true));

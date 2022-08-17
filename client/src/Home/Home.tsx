@@ -4,7 +4,7 @@ import { Main } from '../Main/Main';
 import { Col, Row } from 'antd';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setActiveServer } from '../redux/userSlice';
+import { setActiveServer, setActiveServerName } from '../redux/userSlice';
 import { ServerResponse } from '../types/types';
 import { PeerSocketContext } from '../context/PeerSocket';
 
@@ -27,6 +27,7 @@ export const Home = (props: {
                 setServers(res.data);
                 console.log('active server:', res.data[0].server.id);
                 dispatch(setActiveServer(res.data[0]?.server.id));
+                dispatch(setActiveServerName(res.data[0]?.server.name));
             })
             .catch((err) => {
                 console.log(err);

@@ -127,4 +127,21 @@ router.post(
   }
 );
 
+router.post(
+  '/declineinvitation',
+  isAuth,
+  async (req: IREQUEST, res: Response) => {
+    const user = await UserRepository.findOneBy({
+      id: req.id,
+    });
+    const serverInvitation = await ServerInvitationRepository.findOneBy({
+      id: req.body.serverInvitationId,
+    });
+    if (!user || !serverInvitation)
+      return res.status(404).send('User not found');
+    ServerInvitationRepository.delete(serverInvitation.id);
+    return res.status(200).send('Invitation declined');
+  }
+);
+
 export default router;

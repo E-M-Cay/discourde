@@ -1,4 +1,4 @@
-import { Avatar, Button, Checkbox, Input, Modal, Typography } from 'antd';
+import { Alert, Avatar, Button, Checkbox, Input, Modal, Typography } from 'antd';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
@@ -158,7 +158,7 @@ export const ServerInvit = (props: {
         console.log(res);
       })
       .catch((err) => {
-        console.log(err);
+        Alert(err)
       });
   };
   return (

@@ -124,10 +124,7 @@ export const ChanelBar = () => {
     setVocalChannelList((prevState) => {
       return prevState.map((c) => {
         if (c.id === chan) {
-          return {
-            ...c,
-            users: c.users.filter((u) => u !== user),
-          };
+          return { ...c, users: c.users.filter((u) => u !== user) };
         }
         return c;
       });
@@ -328,11 +325,117 @@ export const ChanelBar = () => {
   };
 
   const menu = (
-    <DropdownMenu
-      showModal2={showModal2}
-      showModal3={showModal3}
-      showModal={showModal}
-      deleteServer={deleteServer}
+    <Menu
+      className='menu'
+      items={[
+        {
+          label: (
+            <li onClick={showModal2}>
+              <UserAddOutlined
+                style={{
+                  color: 'darkgrey',
+                  fontSize: 'small',
+                }}
+              />{' '}
+              Inviter des gens{' '}
+            </li>
+          ),
+          key: '0',
+        },
+        {
+          label: (
+            <li>
+              <TeamOutlined
+                style={{
+                  color: 'darkgrey',
+                  fontSize: 'small',
+                }}
+              />{' '}
+              Gestion des membres{' '}
+            </li>
+          ),
+          key: '1',
+        },
+        {
+          type: 'divider',
+        },
+        {
+          label: (
+            <li>
+              <SettingOutlined
+                style={{
+                  color: 'darkgrey',
+                  fontSize: 'small',
+                }}
+              />{' '}
+              Paramètres du serveur{' '}
+            </li>
+          ),
+          key: '3',
+        },
+        {
+          label: (
+            <li onClick={showModal}>
+              <PlusCircleOutlined
+                style={{
+                  color: 'darkgrey',
+                  fontSize: 'small',
+                }}
+              />{' '}
+              Créer un salon{' '}
+            </li>
+          ),
+          key: '4',
+        },
+        {
+          label: (
+            <li onClick={() => deleteServer()}>
+              <PlusCircleOutlined
+                style={{
+                  color: 'darkgrey',
+                  fontSize: 'small',
+                }}
+              />{' '}
+              Supprimer serveur{' '}
+            </li>
+          ),
+          key: '5',
+        },
+        {
+          type: 'divider',
+        },
+        {
+          label: (
+            <li>
+              <BellOutlined
+                style={{
+                  color: 'darkgrey',
+                  fontSize: 'small',
+                }}
+              />{' '}
+              Notifications{' '}
+            </li>
+          ),
+          key: '6',
+        },
+        {
+          type: 'divider',
+        },
+        {
+          label: (
+            <a href=''>
+              <LogoutOutlined
+                style={{
+                  color: 'red',
+                  fontSize: 'small',
+                }}
+              />{' '}
+              Quitter le serveur{' '}
+            </a>
+          ),
+          key: '7',
+        },
+      ]}
     />
   );
 

@@ -64,7 +64,7 @@ router.post('/register', async (req: Request, res: Response) => {
     const email: string = req.body.email;
     const existing_user = await userRepository.findOneBy({ email: email });
     if (existing_user) {
-      return res.status(400).send('User already exist');
+      return res.status(400).send('User already exists');
     }
 
     const password: string = bcrypt.hashSync(req.body.password, 10);
@@ -78,38 +78,16 @@ router.post('/register', async (req: Request, res: Response) => {
       password: password,
       join_date: date,
     });
+    const serverUserRegistration = serverUserRepository.create({
+      server: { id: 1 },
+      nickname: username,
+      user: user,
+    });
 
-    const newUser = await userRepository.save(user);
-    const mainServ = await serverRepository.findOneBy({ id: 1 });
-    if (mainServ) {
-      const serverUserRegistration = serverUserRepository.create({
-        user: newUser,
-        server: mainServ,
-        nickname: newUser.username,
-      });
-      await serverUserRepository.save(serverUserRegistration);
-    } else {
-      console.log('Error main server not found');
-      const vocalChan = vocalChannelRepository.create({
-        name: 'Forum',
-      });
-      const textChan: Channel = channelRepository.create({
-        name: 'Général',
-      });
-      const newMainServ = serverRepository.create({
-        name: 'Général',
-        id: Number(1),
-        channels: [textChan],
-        vocalChannels: [vocalChan],
-      });
-      await serverRepository.save(newMainServ);
-      const serverUserRegistration = serverUserRepository.create({
-        user: newUser,
-        server: newMainServ,
-        nickname: newUser.username,
-      });
-      await serverUserRepository.save(serverUserRegistration);
-    }
+    await serverUserRepository.save(serverUserRegistration);
+
+    // await serverUserRepository.save(serverUserRegistration);
+
     return res.status(201).send('User created succesfully');
   }
   res.send('FAIL');

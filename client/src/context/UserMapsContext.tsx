@@ -227,6 +227,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
           },
         })
         .then((res) => {
+          console.log(res.data, 'user server');
           res.data.forEach((user: ServerUser) =>
             setServerUser(user.user.id, user)
           );

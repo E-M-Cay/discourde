@@ -25,12 +25,18 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { UserMapsContext } from '../context/UserMapsContext';
-import { useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import {
+  setActiveChannel,
+  setActiveServer,
+  setIsHome,
+} from '../redux/userSlice';
 import {
   ReceivedFriendRequest,
   Friendship,
   User,
   Server,
+  ServerResponse,
 } from '../types/types';
 // import friendsData from '../mockFriends';
 import './FriendPanel.css';
@@ -39,7 +45,10 @@ const { TabPane } = Tabs;
 const { Panel } = Collapse;
 const { Search } = Input;
 
-export const FriendPanel = () => {
+export const FriendPanel = (props: {
+  setServers: React.Dispatch<React.SetStateAction<ServerResponse[]>>;
+}) => {
+  const { setServers } = props;
   const onlineUsers: any[] = [];
   // const me = useAppSelector((state) => state.userReducer.me);
   const {
@@ -51,6 +60,7 @@ export const FriendPanel = () => {
     deleteFriendRequest,
   } = useContext(UserMapsContext);
   const { socket } = useContext(PeerSocketContext);
+  const dispatch = useAppDispatch();
 
   interface ServerInvitation {
     id: number;
@@ -119,7 +129,9 @@ export const FriendPanel = () => {
         }
       )
       .then((res) => {
-        console.log(res);
+        setServers((prevState) => [...prevState, res.data]);
+        dispatch(setActiveServer(res.data.server.id));
+        dispatch(setIsHome(false));
       })
       .catch((err) => {
         console.log(err);
@@ -141,15 +153,17 @@ export const FriendPanel = () => {
       )
       .then((res) => {
         // delete server invitation in the state
-        setServerRequests(serverRequests.filter((invitation) => {
-          return invitation.id !== invitationId;
-        }));
+        setServerRequests(
+          serverRequests.filter((invitation) => {
+            return invitation.id !== invitationId;
+          })
+        );
         console.log(res);
-      }).catch((err) => {
+      })
+      .catch((err) => {
         console.log(err);
-      }
-      );
-  }
+      });
+  };
 
   const [stateMenu, setmenuState] = useState(true);
 
@@ -472,16 +486,14 @@ export const FriendPanel = () => {
                   />
                 </Tooltip>
                 <Tooltip title='Annuler la demande'>
-                    <Button
-                      shape='circle'
-                      className='DelFriendBtton'
-                      icon={<CloseOutlined />}
-                      danger
-                      onClick={() =>
-                        handleRefuseServerInvitation(invitation.id)
-                      }
-                    />
-                  </Tooltip>
+                  <Button
+                    shape='circle'
+                    className='DelFriendBtton'
+                    icon={<CloseOutlined />}
+                    danger
+                    onClick={() => handleRefuseServerInvitation(invitation.id)}
+                  />
+                </Tooltip>
               </div>
             ))}
           </li>

@@ -112,36 +112,58 @@ router.post(
   '/acceptinvitation',
   isAuth,
   async (req: IREQUEST, res: Response) => {
-    const user = await UserRepository.findOneBy({
-      id: req.id,
-    });
-    const serverInvitation = await ServerInvitationRepository.findOneBy({
-      id: req.body.serverInvitationId,
-    });
-    const server = await ServerRepository.findOneBy({
-      id: req.body.serverId,
-    });
-    if (!server) return res.status(401).send('Error');
-    if (!user || !serverInvitation)
-      return res.status(404).send('User not found');
-    const existing = await ServerUserRepository.findOneBy({
-      user: { id: req.id },
-      server: {
-        id: server.id,
-      },
-    });
-    if (existing) {
+    try {
+      const user = await UserRepository.findOneBy({
+        id: req.id,
+      });
+      const serverInvitation = await ServerInvitationRepository.findOneBy({
+        id: req.body.serverInvitationId,
+      });
+      const server = await ServerRepository.findOneBy({
+        id: req.body.serverId,
+      });
+      if (!server) return res.status(401).send('Error');
+      if (!user || !serverInvitation)
+        return res.status(404).send('User not found');
+      const existing = await ServerUserRepository.findOneBy({
+        user: { id: req.id },
+        server: {
+          id: server.id,
+        },
+      });
+      if (existing) {
+        ServerInvitationRepository.delete(serverInvitation.id);
+        return res.status(200).send('Server already joined');
+      }
+      const serverUser = ServerUserRepository.create({
+        user: user,
+        server: server,
+        nickname: user.username,
+      });
+      const newId = (await ServerUserRepository.save(serverUser)).id;
+      const newServerUser = await ServerUserRepository.findOne({
+        where: { id: newId },
+        relations: {
+          user: true,
+          server: true,
+        },
+        select: {
+          user: {
+            id: true,
+            username: true,
+            picture: true,
+            join_date: true,
+          },
+        },
+      });
       ServerInvitationRepository.delete(serverInvitation.id);
-      return res.status(200).send('Server already joined');
+      io.emit('userjoinedserver', newServerUser);
+      console.log('servu:', newServerUser, 'user:', serverUser.user);
+      return res.status(201).send(newServerUser);
+    } catch (e) {
+      console.log(e);
+      return res.status(401).send('error');
     }
-    const serverUser = ServerUserRepository.create({
-      user: user,
-      server: server,
-      nickname: user.username,
-    });
-    await ServerUserRepository.save(serverUser);
-    ServerInvitationRepository.delete(serverInvitation.id);
-    return res.status(201).send(serverUser);
   }
 );
 

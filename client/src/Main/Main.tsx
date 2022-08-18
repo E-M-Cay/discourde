@@ -7,9 +7,13 @@ import { FriendPanel } from '../FriendPanel/FriendPanel';
 import PrivateChatBar from '../PrivateChatBar/PrivateChatBar';
 import { useEffect } from 'react';
 import { GeneralSettings } from '../Modals/Modals';
+import { ServerResponse } from '../types/types';
 
-export const Main = (props: { handleLeaveServer: () => void }) => {
-  const { handleLeaveServer } = props;
+export const Main = (props: {
+  handleLeaveServer: () => void;
+  setServers: React.Dispatch<React.SetStateAction<ServerResponse[]>>;
+}) => {
+  const { handleLeaveServer, setServers } = props;
   const isHome = useAppSelector((state) => state.userReducer.home);
 
   return (
@@ -33,7 +37,7 @@ export const Main = (props: { handleLeaveServer: () => void }) => {
         <Chat /> {/* <CallPanel /> */}
       </Col>
       <Col style={{ backgroundColor: 'grey' }} span={4}>
-        {isHome ? <FriendPanel /> : <StatusBar />}
+        {isHome ? <FriendPanel setServers={setServers} /> : <StatusBar />}
       </Col>
     </Row>
   );

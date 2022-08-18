@@ -91,6 +91,22 @@ export const ChanelBar = () => {
         });
   }, [activeServer, dispatch]);
 
+  const handleDeleteTextChannel = (channelId: number, serverId) => {
+    axios
+      .delete(`/channel/${channelId}/server/${serverId}`)
+      .then((res) => {
+        console.log(res);
+        if (res.status === 200) {
+          setTextChannelList(
+            textChannelList.filter((channel) => channel.id !== channelId)
+          );
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+  };
+
   const onChange = (key: any) => {};
   const onTextChannelClick = (id: number) => {
     dispatch(setActiveChannel(id));
@@ -361,6 +377,7 @@ export const ChanelBar = () => {
         isModifyVoc={isModifyVoc}
         setIsModifyVoc={setIsModifyVoc}
         handleModifyChannelVoc={handleModifyChannelVoc}
+        handleDeleteTextChannel={handleDeleteTextChannel}
       />
       <ServerInvit
         isModalVisibleInvitation={isModalVisibleInvitation}

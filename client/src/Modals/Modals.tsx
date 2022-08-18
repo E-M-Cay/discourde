@@ -5,6 +5,7 @@ import {
   Checkbox,
   Input,
   Modal,
+  Tooltip,
   Typography,
 } from 'antd';
 import axios from 'axios';
@@ -13,6 +14,7 @@ import { UserMapsContext } from '../context/UserMapsContext';
 import { useAppSelector } from '../redux/hooks';
 import { Channel, User, VocalChan } from '../types/types';
 import logo from '../assets/discourde.png';
+import { CloseOutlined } from '@ant-design/icons';
 
 export const ServerParams = (props: {
   isModalVisibleParams: boolean;
@@ -30,6 +32,7 @@ export const ServerParams = (props: {
   isModifyVoc: number;
   setIsModifyVoc: Function;
   handleModifyChannelVoc: Function;
+  handleDeleteTextChannel: Function;
 }) => {
   const {
     isModalVisibleParams,
@@ -47,7 +50,9 @@ export const ServerParams = (props: {
     isModifyVoc,
     setIsModifyVoc,
     handleModifyChannelVoc,
+    handleDeleteTextChannel,
   } = props;
+
   return (
     <Modal
       visible={isModalVisibleParams}
@@ -80,6 +85,15 @@ export const ServerParams = (props: {
             <Button type='primary' onClick={() => setIsModify(0)}>
               Annuler
             </Button>
+            <Tooltip title='Supprimer le serveur'>
+              <Button
+                shape='circle'
+                className='DelFriendBtton'
+                icon={<CloseOutlined />}
+                danger
+                onClick={() => handleDeleteTextChannel(Number(channel.id))}
+              />
+            </Tooltip>
           </div>
         ) : (
           <div

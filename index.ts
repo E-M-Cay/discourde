@@ -268,6 +268,24 @@ io.on('connection', (socket: ISocket) => {
     global.user_id_to_status.set(socket.user_id as number, 3);
   });
 
+  socket.on('leftvocalchannel', (id: number) => {
+    const currentVocalChannel = global.user_id_to_vocal_channel.get(
+      socket.user_id as number
+    );
+    if (currentVocalChannel && currentVocalChannel !== id) {
+      io.emit('leftvocal', {
+        user: socket.user_id,
+        chan: currentVocalChannel,
+      });
+      const userList =
+        global.vocal_channel_to_user_list.get(currentVocalChannel);
+      global.vocal_channel_to_user_list.set(
+        currentVocalChannel,
+        userList?.filter((u) => u !== socket.user_id) as number[]
+      );
+    }
+  });
+
   socket.on('joinvocalchannel', (id: number) => {
     const currentVocalChannel = global.user_id_to_vocal_channel.get(
       socket.user_id as number

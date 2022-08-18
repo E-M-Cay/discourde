@@ -359,12 +359,16 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
 
   const handleUserLeftServer = useCallback(
     (id: number) => {
-      console.log(id);
-      console.table(serverUserMap);
-      console.log(serverUserMap.has(id));
       removeServerUser(id);
     },
     [removeServerUser, serverUserMap]
+  );
+
+  const handeUserJoinedServer = useCallback(
+    (serverUser: ServerUser) => {
+      setServerUser(serverUser.user.id, serverUser);
+    },
+    [setServerUser]
   );
 
   useEffect(() => {
@@ -379,6 +383,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
     socket?.on('userdisconnected', handleDisconnection);
     socket?.on('userconnected', handleConnection);
     socket?.on('userleftserver', handleUserLeftServer);
+    socket?.on('userjoinedserver', handeUserJoinedServer);
     return () => {
       socket?.off('friendrequestrefused', handleFriendshipRefused);
       socket?.off('friendRequestAccepted', handleNewFriendship);
@@ -386,6 +391,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
       socket?.off('userconnected', handleConnection);
       socket?.off('newfriendrequest', handleNewFriendRequest);
       socket?.off('userleftserver', handleUserLeftServer);
+      socket?.off('userjoinedserver', handeUserJoinedServer);
     };
   }, [
     socket,

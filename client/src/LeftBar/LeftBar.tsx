@@ -11,6 +11,7 @@ import { Modal } from 'antd';
 import { useAppSelector } from '../redux/hooks';
 import { setServers } from 'dns';
 import { ServerResponse } from '../types/types';
+import { serverPng } from '../profilePng/profilePng';
 
 export const LeftBar = (props: {
     servers: ServerResponse[];
@@ -91,12 +92,12 @@ export const LeftBar = (props: {
                         onChange={(e) => setServerName(e.target.value)}
                         placeholder='Enter server name'
                     />
-                    <input
-                        type='text'
-                        defaultValue={serverLogo}
-                        onChange={(e) => setServerLogo(e.target.value)}
-                        placeholder='Enter server logo'
-                    />
+                    <select name='pictures' onChange={(e) => setServerLogo(e.target.value)} id='pictures'>
+                    
+                    {serverPng.map((png, key) => (
+                      <option value={png||"pipi"}>{key < 10 ? "men " + (Number(key) + 1) : 'women ' + (Number(key) + 1)}</option>
+                    ))}
+                  </select>
                     <input type='submit' value='Create' />
                 </form>
                 <form

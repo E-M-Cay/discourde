@@ -61,6 +61,7 @@ router.post('/login', async (req: Request, res: Response) => {
 
 router.post('/register', async (req: Request, res: Response) => {
   if ('username' in req.body && 'email' in req.body && 'password' in req.body) {
+    const picture = req.body.picture || 'https://randomuser.me/api/portraits/men/1.jpg';
     const email: string = req.body.email;
     const existing_user = await userRepository.findOneBy({ email: email });
     if (existing_user) {
@@ -77,13 +78,16 @@ router.post('/register', async (req: Request, res: Response) => {
       email: email,
       password: password,
       join_date: date,
+      picture: picture,
     });
     const serverUserRegistration = serverUserRepository.create({
       server: { id: 1 },
       nickname: username,
       user: user,
     });
-
+    if (!serverUserRegistration || !user) {
+      return res.status(400).send('Error while creating user');
+    }
     await serverUserRepository.save(serverUserRegistration);
 
     // await serverUserRepository.save(serverUserRegistration);

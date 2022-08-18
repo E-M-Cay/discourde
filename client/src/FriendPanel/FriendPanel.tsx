@@ -127,6 +127,10 @@ export const FriendPanel = () => {
         }
       )
       .then((res) => {
+        // delete server invitation in the state
+        setServerRequests(serverRequests.filter((invitation) => {
+          return invitation.id !== invitationId;
+        }));
         console.log(res);
       }).catch((err) => {
         console.log(err);

@@ -29,10 +29,7 @@
     background-color: #232222;
     border: none;
 }
-#phone {
-/*     grid-column: 1;
-    grid-row: 1; */
-}
+
 #menu {
     display: inline !important;
 }

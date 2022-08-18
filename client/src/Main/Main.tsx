@@ -25,7 +25,7 @@ export const Main = () => {
         {isHome ? <PrivateChatBar /> : <ChanelBar />}
       </Col>
       <Col span={16}>
-        <Chat />
+        <Chat /> {/* <CallPanel /> */}
       </Col>
       <Col style={{ backgroundColor: 'grey' }} span={4}>
         {isHome ? <FriendPanel /> : <StatusBar />}

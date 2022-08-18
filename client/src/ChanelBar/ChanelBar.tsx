@@ -4,10 +4,19 @@ import {
   CloseOutlined,
   CustomerServiceOutlined,
   DownOutlined,
+  PhoneOutlined,
   SettingOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { Avatar, Card, Collapse, Dropdown, Space, Tooltip, Typography } from 'antd';
+import {
+  Avatar,
+  Card,
+  Collapse,
+  Dropdown,
+  Space,
+  Tooltip,
+  Typography,
+} from 'antd';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import './ChanelBar.css';
 import axios from 'axios';
@@ -70,11 +79,16 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
 
   const handleDeleteChannel = (channelId: number, isVocal: boolean) => {
     axios
-      .delete(`/channel/${isVocal?"vocal":"text"}/${channelId}/server/${activeServer}`, {
-        headers: {
-          access_token: localStorage.getItem('token') as string,
-        },
-      })
+      .delete(
+        `/channel/${
+          isVocal ? 'vocal' : 'text'
+        }/${channelId}/server/${activeServer}`,
+        {
+          headers: {
+            access_token: localStorage.getItem('token') as string,
+          },
+        }
+      )
       .then((res) => {
         console.log(res);
         if (res.status === 200) {
@@ -85,7 +99,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
       })
       .catch((err) => {
         console.log(err);
-      })
+      });
   };
 
   const onChange = (key: any) => {};
@@ -340,7 +354,6 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
 
   const me = useAppSelector((state) => state.userReducer.me);
 
-
   return (
     <div
       style={{ width: '100%', backgroundColor: '#1F1F1F' }}
@@ -416,13 +429,25 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
             vocalChannelList={vocalChannelList}
             onTextChannelClick={onTextChannelClick}
             onVocalChannelClick={onVocalChannelClick}
-            activeVocalChannel={activeVocalChannel}
+            activeVocalChannel={activeVocalChannel || null}
           />
         )}
       </div>
       <div style={{ backgroundColor: '#353535' }}>
         <Card
-          title={<div style={{display: "flex", justifyContent: "space-between"}} ><Avatar size={30} src={me?.picture || "https://randomuser.me/api/portraits/women/1.jpg"} /><Typography>{me?.username || "random"}</Typography><div></div></div>}
+          title={
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Avatar
+                size={30}
+                src={
+                  me?.picture ||
+                  'https://randomuser.me/api/portraits/women/1.jpg'
+                }
+              />
+              <Typography>{me?.username || 'random'}</Typography>
+              <div></div>
+            </div>
+          }
           extra={
             <a href='#'>
               <Tooltip placement='top' title={'Paramètres utilisateur'}>
@@ -455,6 +480,15 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
               )}
             </a>
           </Tooltip>
+          {activeVocalChannel ? (
+            <Tooltip placement='top' title={'raccrochage'}>
+              <PhoneOutlined
+                onClick={() => dispatch(setActiveVocalChannel(0))}
+              />
+            </Tooltip>
+          ) : (
+            ''
+          )}
         </Card>
       </div>
     </div>

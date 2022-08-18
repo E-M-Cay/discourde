@@ -1,45 +1,19 @@
 import {
   AudioMutedOutlined,
   AudioOutlined,
-  BellOutlined,
-  BorderlessTableOutlined,
   CloseOutlined,
   CustomerServiceOutlined,
   DownOutlined,
-  LogoutOutlined,
-  PlusCircleOutlined,
   SettingOutlined,
-  SoundOutlined,
-  TeamOutlined,
-  UserAddOutlined,
 } from '@ant-design/icons';
-import {
-  Button,
-  Card,
-  Collapse,
-  Dropdown,
-  Menu,
-  Space,
-  Tooltip,
-  Modal,
-  Typography,
-  Input,
-  Checkbox,
-  notification,
-} from 'antd';
+import { Card, Collapse, Dropdown, Space, Tooltip } from 'antd';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import './ChanelBar.css';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
 import { PeerSocketContext } from '../context/PeerSocket';
-import {
-  Channel,
-  PrivateChatMap,
-  User,
-  ServerUserMap,
-  VocalChan,
-} from '../types/types';
+import { Channel, VocalChan } from '../types/types';
 import { CustomImage } from '../CustomLi/CustomLi';
 import { ServerChannels, ServerInvit, ServerParams } from '../Modals/Modals';
 import { DropdownMenu } from '../DropdownMenu/DropdownMenu';
@@ -49,7 +23,8 @@ import { NotificationsContext } from '../context/NotificationsContext';
 
 const { Panel } = Collapse;
 
-export const ChanelBar = () => {
+export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
+  const { handleLeaveServer } = props;
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
   );
@@ -337,6 +312,7 @@ export const ChanelBar = () => {
       showModal3={showModal3}
       showModal={showModal}
       deleteServer={deleteServer}
+      handleLeaveServer={handleLeaveServer}
     />
   );
 

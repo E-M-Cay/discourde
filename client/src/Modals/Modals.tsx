@@ -32,7 +32,7 @@ export const ServerParams = (props: {
   isModifyVoc: number;
   setIsModifyVoc: Function;
   handleModifyChannelVoc: Function;
-  handleDeleteTextChannel: Function;
+  handleDeleteChannel: Function;
 }) => {
   const {
     isModalVisibleParams,
@@ -50,7 +50,7 @@ export const ServerParams = (props: {
     isModifyVoc,
     setIsModifyVoc,
     handleModifyChannelVoc,
-    handleDeleteTextChannel,
+    handleDeleteChannel
   } = props;
 
   return (
@@ -91,7 +91,7 @@ export const ServerParams = (props: {
                 className='DelFriendBtton'
                 icon={<CloseOutlined />}
                 danger
-                onClick={() => handleDeleteTextChannel(Number(channel.id))}
+                onClick={() => handleDeleteChannel(Number(channel.id), false)}
               />
             </Tooltip>
           </div>
@@ -131,6 +131,15 @@ export const ServerParams = (props: {
             <Button type='primary' onClick={() => setIsModifyVoc(0)}>
               Annuler
             </Button>
+            <Tooltip title='Supprimer le serveur'>
+              <Button
+                shape='circle'
+                className='DelFriendBtton'
+                icon={<CloseOutlined />}
+                danger
+                onClick={() => handleDeleteChannel(Number(channel.id), true)}
+              />
+            </Tooltip>
           </div>
         ) : (
           <div key={channel.id} onClick={() => handleModifyChannelVoc(channel)}>

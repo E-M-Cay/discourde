@@ -67,7 +67,6 @@ router.post(
             name: channel_name,
             hidden: is_hidden,
           });
-
           await ChannelRepository.save(channel);
           io.emit(`channelcreated:server${req.body.server}`, channel);
           return res.status(200).send(channel);

@@ -11,7 +11,7 @@ export const isOwner = async (
   next: NextFunction
 ) => {
   try {
-    const serverId = req.params.server_id || req.body.server;
+    const serverId = req.params.server_id || req.body.server || req.body.server_id;
 
     if (!serverId) throw new Error('no server id');
 

@@ -5,8 +5,9 @@ import {
   CustomerServiceOutlined,
   DownOutlined,
   SettingOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
-import { Card, Collapse, Dropdown, Space, Tooltip } from 'antd';
+import { Avatar, Card, Collapse, Dropdown, Space, Tooltip, Typography } from 'antd';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import './ChanelBar.css';
 import axios from 'axios';
@@ -42,6 +43,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
   );
+
   const isHome = useAppSelector((state) => state.userReducer.home);
 
   const { Panel } = Collapse;
@@ -66,9 +68,13 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
         });
   }, [activeServer, dispatch]);
 
-  const handleDeleteTextChannel = (channelId: number, serverId) => {
+  const handleDeleteChannel = (channelId: number, isVocal: boolean) => {
     axios
-      .delete(`/channel/${channelId}/server/${serverId}`)
+      .delete(`/channel/${isVocal?"vocal":"text"}/${channelId}/server/${activeServer}`, {
+        headers: {
+          access_token: localStorage.getItem('token') as string,
+        },
+      })
       .then((res) => {
         console.log(res);
         if (res.status === 200) {
@@ -191,7 +197,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
           `/${isVocal ? 'vocalc' : 'c'}hannel/create`,
           {
             name: newTextChannelName,
-            server_id: activeServer,
+            server: activeServer,
             hidden: isAdminChannel,
           },
           {
@@ -332,6 +338,9 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
     />
   );
 
+  const me = useAppSelector((state) => state.userReducer.me);
+
+
   return (
     <div
       style={{ width: '100%', backgroundColor: '#1F1F1F' }}
@@ -353,7 +362,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
         isModifyVoc={isModifyVoc}
         setIsModifyVoc={setIsModifyVoc}
         handleModifyChannelVoc={handleModifyChannelVoc}
-        handleDeleteTextChannel={handleDeleteTextChannel}
+        handleDeleteChannel={handleDeleteChannel}
       />
       <ServerInvit
         isModalVisibleInvitation={isModalVisibleInvitation}
@@ -413,7 +422,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
       </div>
       <div style={{ backgroundColor: '#353535' }}>
         <Card
-          title='User + avatar'
+          title={<div style={{display: "flex", justifyContent: "space-between"}} ><Avatar size={30} src={me?.picture || "https://randomuser.me/api/portraits/women/1.jpg"} /><Typography>{me?.username || "random"}</Typography><div></div></div>}
           extra={
             <a href='#'>
               <Tooltip placement='top' title={'Paramètres utilisateur'}>

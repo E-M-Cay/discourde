@@ -231,16 +231,20 @@ export const ChanelBar = () => {
     }
   };
 
-  const handleUpdateChannel = (
-    txtChan: Channel | undefined,
-    vocChan: VocalChan | undefined
-  ) => {
+  const handleUpdateChannel = (txtChan?: Channel, vocChan?: VocalChan) => {
+    const chan = txtChan ?? vocChan;
     axios
-      .put(`/${vocChan ? 'vocal' : ''}channel/update`, vocChan ?? txtChan, {
-        headers: {
-          access_token: localStorage.getItem('token') as string,
-        },
-      })
+      .put(
+        `/${vocChan ? 'vocal' : ''}channel/${
+          vocChan?.id ?? txtChan?.id
+        }/server/`,
+        vocChan ?? txtChan,
+        {
+          headers: {
+            access_token: localStorage.getItem('token') as string,
+          },
+        }
+      )
       .then((res) => {
         if (res.status === 200) {
           if (vocChan) {

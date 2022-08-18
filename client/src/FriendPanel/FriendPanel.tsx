@@ -23,6 +23,7 @@ import {
 import Sider from 'antd/lib/layout/Sider';
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
+import { PeerSocketContext } from '../context/PeerSocket';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { useAppSelector } from '../redux/hooks';
 import {
@@ -49,6 +50,7 @@ export const FriendPanel = () => {
     refuseFriendRequest,
     deleteFriendRequest,
   } = useContext(UserMapsContext);
+  const { socket } = useContext(PeerSocketContext);
 
   interface ServerInvitation {
     id: number;
@@ -87,6 +89,17 @@ export const FriendPanel = () => {
         console.log(err);
       });
   }, []);
+
+  const handleNewServerInvitation = (newInvit: ServerInvitation) => {
+    setServerRequests((prevState) => [...prevState, newInvit]);
+  };
+
+  useEffect(() => {
+    socket?.on('newserverinvitation', handleNewServerInvitation);
+    return () => {
+      socket?.off('newserverinvitation', handleNewServerInvitation);
+    };
+  }, [handleNewServerInvitation]);
 
   const handleAcceptServerInvitation = (
     invitationId: number,
@@ -398,7 +411,7 @@ export const FriendPanel = () => {
                     icon={<CloseOutlined />}
                     danger
                     onClick={() =>
-                      refuseFriendRequest(request.id, request.receiver.id)
+                      deleteFriendRequest(request.id, request.receiver.id)
                     }
                   />
                 </Tooltip>
@@ -417,7 +430,8 @@ export const FriendPanel = () => {
                 }}
               >
                 <Divider style={{ margin: 0 }} />
-                {invitation.sender.username}
+                {invitation.sender.username} vous a invité à rejoindre{' '}
+                {invitation.server.name}
                 <Tooltip title='Accepter la demande'>
                   <Button
                     shape='circle'

@@ -38,7 +38,9 @@ router.get('/list', isAuth, hasPerm, async (req: IRequest, res: Response) => {
         id: req.id,
       },
     },
-    relations: ['server'],
+    relations: {
+      server: true,
+    },
   });
 
   const tempList: ServerUser[] = await Promise.all(
@@ -101,12 +103,13 @@ router.post('/create_server', isAuth, async (req: IRequest, res: Response) => {
 });
 
 router.put(
-  '/update_server/:id',
+  '/update_server/:server_id',
   isAuth,
+  isOwner,
   async (req: IRequest, res: Response) => {
     if ('main_img' in req.body || 'logo' in req.body) {
       const server = await ServerRepository.findOneBy({
-        id: Number(req.params.id),
+        id: Number(req.params.server_id),
       });
       const logo: string = 'logo' in req.body ? req.body.name : null;
       const main_img: string =
@@ -130,11 +133,39 @@ router.put(
 );
 
 router.delete(
-  '/delete_server/:id',
+  ':server_id:/user/:user_id',
   isAuth,
   isOwner,
   async (req: IRequest, res: Response) => {
-    const server_id = Number(req.params.id);
+    const serverUser = await ServerUserRepository.findOne({
+      where: {
+        server: {
+          id: Number(req.params.server_id),
+        },
+        user: {
+          id: Number(req.params.user_id),
+        },
+      },
+    });
+
+    if (!serverUser) return res.status(400).send('Error server not found');
+
+    try {
+      await ServerUserRepository.delete(serverUser.id);
+      //emit left server
+      return res.status(200).send('Server Successfully deleted');
+    } catch (error) {
+      return res.status(400).send('Error');
+    }
+  }
+);
+
+router.delete(
+  '/:server_id',
+  isAuth,
+  isOwner,
+  async (req: IRequest, res: Response) => {
+    const server_id = Number(req.params.server_id);
     if (server_id == NaN) return res.status(400).send('Error server not found');
 
     try {
@@ -211,38 +242,12 @@ router.post('/add_user', isAuth, async (req: IRequest, res: Response) => {
     });
 
     await ServerUserRepository.save(serverUser);
-
+    //emit user arrived
     return res.status(201).send({ server: serverUser });
   } catch (e) {
     res.status(401).send({ error: e });
   }
 });
-
-router.delete(
-  '/delete_user/:id_user&:id_server',
-  isAuth,
-  async (req: IRequest, res: Response) => {
-    const serverUser = await ServerUserRepository.findOne({
-      where: {
-        server: {
-          id: Number(req.params.id_server),
-        },
-        user: {
-          id: Number(req.params.id_user),
-        },
-      },
-    });
-
-    if (!serverUser) return res.status(400).send('Error server not found');
-
-    try {
-      await ServerUserRepository.delete(serverUser.id);
-      return res.status(200).send('Server Successfully deleted');
-    } catch (error) {
-      return res.status(400).send('Error');
-    }
-  }
-);
 
 router.post('/link', isAuth, (req: IRequest, res, next) => {
   ServerRepository.update(req.body.server, {
@@ -269,6 +274,7 @@ router.post('/updatenickname', isAuth, async (req: IRequest, res: Response) => {
     await ServerUserRepository.update(serverUser.id, {
       nickname: req.body.nickname,
     });
+    //emit update nickname
     return res.status(201).send('Nickname Successfully updated');
   } catch (error) {
     return res.status(400).send('Error');

@@ -1,4 +1,12 @@
-import { Alert, Avatar, Button, Checkbox, Input, Modal, Typography } from 'antd';
+import {
+  Alert,
+  Avatar,
+  Button,
+  Checkbox,
+  Input,
+  Modal,
+  Typography,
+} from 'antd';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
@@ -140,13 +148,13 @@ export const ServerInvit = (props: {
   } = props;
   const { friendMap } = useContext(UserMapsContext);
   const me = useAppSelector((state) => state.userReducer.me);
-  const handleInviteUser = (myId: number, hisId: number) => {
+  const handleInviteUser = (hisId: number) => {
     axios
       .post(
         'serverinvitation/createInvitation',
         {
           invitedUserId: hisId,
-          serverId: serverId,
+          server: serverId,
         },
         {
           headers: {
@@ -158,7 +166,7 @@ export const ServerInvit = (props: {
         console.log(res);
       })
       .catch((err) => {
-        Alert(err)
+        console.log(err);
       });
   };
   return (
@@ -178,10 +186,7 @@ export const ServerInvit = (props: {
               <div key={id}>
                 <Avatar src={friendShip.friend.picture ?? logo} />
                 <span>{friendShip.friend.username}</span>
-                <Button
-                  onClick={() => handleInviteUser(me?.id || -1, id)}
-                  type='primary'
-                >
+                <Button onClick={() => handleInviteUser(id)} type='primary'>
                   Inviter
                 </Button>
               </div>

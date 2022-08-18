@@ -15,20 +15,32 @@ const ServerInvitationRepository =
 const ServerUserRepository = AppDataSource.getRepository(ServerUser);
 import IREQUEST from '../../Interfaces/IRequest';
 import { Request, Response } from 'express';
+import { io } from '../../index';
+import { isOwner } from '../../MiddleWares/isOwner';
 
 router.post(
   '/createInvitation',
   isAuth,
+  isOwner,
   async (req: IREQUEST, res: Response) => {
-    const user = await UserRepository.findOneBy({
-      id: req.id,
+    const user = await UserRepository.findOne({
+      where: {
+        id: req.id,
+      },
+      select: {
+        id: true,
+        username: true,
+        picture: true,
+        join_date: true,
+      },
     });
-    const invitedUser = await UserRepository.findOneBy({
-      id: req.body.invitedUserId,
+    const invitedUser = await UserRepository.findOne({
+      where: { id: req.body.invitedUserId },
+      select: { id: true },
     });
     if (!user || !invitedUser) return res.status(401).send('User not found');
     const server = await ServerRepository.findOneBy({
-      id: req.body.serverId,
+      id: req.body.server,
     });
     if (!server) return res.status(401).send('Server not found');
     const invitation = await ServerInvitationRepository.findOne({
@@ -49,6 +61,12 @@ router.post(
         server: server,
       });
     const newInvit = await ServerInvitationRepository.save(serverInvitation);
+    if (user_id_to_socket_id.has(invitedUser.id)) {
+      io.to(user_id_to_socket_id.get(invitedUser.id) as string).emit(
+        'newserverinvitation',
+        newInvit
+      );
+    }
     return res.status(200).send('Invitation sent');
   }
 );
@@ -123,7 +141,7 @@ router.post(
     });
     await ServerUserRepository.save(serverUser);
     ServerInvitationRepository.delete(serverInvitation.id);
-    return res.status(201).send({ server });
+    return res.status(201).send(serverUser);
   }
 );
 

@@ -30,7 +30,7 @@ interface IJWT extends jwt.JwtPayload {
 
 // Middleware : sert à intercepter la requête : Pour auth : on va regarder si on a un token et s'il est valide on autorise la requête suivante, sinon on envoie une erreur
 
-module.exports = async function (
+export default async function (
   req: IRequest,
   res: Response,
   next: NextFunction
@@ -95,4 +95,4 @@ module.exports = async function (
   // }
 
   next();
-};
+}

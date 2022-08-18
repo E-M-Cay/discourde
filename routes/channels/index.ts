@@ -14,6 +14,7 @@ import { ServerUser } from '../../entities/ServerUser';
 import { ChannelMessage } from '../../entities/ChannelMessage';
 import isAuth from '../../MiddleWares/isAuth';
 import { isOwner } from '../../MiddleWares/isOwner';
+import { io } from '../../index';
 
 const UserRepository = AppDataSource.getRepository(User);
 const ServerRepository = AppDataSource.getRepository(Server);
@@ -68,6 +69,7 @@ router.post(
           });
 
           await ChannelRepository.save(channel);
+          io.emit(`channelcreated:server${req.body.server}`, channel);
           return res.status(200).send(channel);
         } catch (error) {
           console.log(error);
@@ -79,7 +81,7 @@ router.post(
 );
 
 router.delete(
-  '/:channel_id/server/:server_id/',
+  '/text/:channel_id/server/:server_id/',
   isAuth,
   isOwner,
   async (req: IRequest, res: Response) => {
@@ -96,6 +98,31 @@ router.delete(
 
     try {
       await ChannelRepository.delete(channel.id);
+      return res.sendStatus(204);
+    } catch (error) {
+      return res.status(400).send(error);
+    }
+  }
+);
+
+router.delete(
+  '/vocal/:channel_id/server/:server_id/',
+  isAuth,
+  isOwner,
+  async (req: IRequest, res: Response) => {
+    const server_id = Number(req.params.server_id);
+    const channel_id = Number(req.params.channel_id);
+    if (server_id == NaN || channel_id == NaN)
+      return res.status(400).send('Error server not found');
+
+    const server = await ServerRepository.findOneBy({ id: server_id });
+    const channel = await VocalChannelRepository.findOneBy({ id: channel_id });
+
+    if (!server || !channel)
+      return res.status(400).send('Error server not found');
+
+    try {
+      await VocalChannelRepository.delete(channel.id);
       return res.sendStatus(204);
     } catch (error) {
       return res.status(400).send(error);

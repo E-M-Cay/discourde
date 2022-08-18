@@ -8,7 +8,8 @@ import PrivateChatBar from '../PrivateChatBar/PrivateChatBar';
 import { useEffect } from 'react';
 import { GeneralSettings } from '../Modals/Modals';
 
-export const Main = () => {
+export const Main = (props: { handleLeaveServer: () => void }) => {
+  const { handleLeaveServer } = props;
   const isHome = useAppSelector((state) => state.userReducer.home);
 
   return (
@@ -22,7 +23,11 @@ export const Main = () => {
     >
       <GeneralSettings />
       <Col style={{ backgroundColor: '#535151' }} span={3.5}>
-        {isHome ? <PrivateChatBar /> : <ChanelBar />}
+        {isHome ? (
+          <PrivateChatBar />
+        ) : (
+          <ChanelBar handleLeaveServer={handleLeaveServer} />
+        )}
       </Col>
       <Col span={16}>
         <Chat /> {/* <CallPanel /> */}

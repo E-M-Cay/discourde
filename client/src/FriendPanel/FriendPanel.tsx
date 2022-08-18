@@ -126,6 +126,31 @@ export const FriendPanel = () => {
       });
   };
 
+  const handleRefuseServerInvitation = (invitationId: number) => {
+    axios
+      .post(
+        'serverinvitation/declineinvitation',
+        {
+          serverInvitationId: invitationId,
+        },
+        {
+          headers: {
+            access_token: localStorage.getItem('token') as string,
+          },
+        }
+      )
+      .then((res) => {
+        // delete server invitation in the state
+        setServerRequests(serverRequests.filter((invitation) => {
+          return invitation.id !== invitationId;
+        }));
+        console.log(res);
+      }).catch((err) => {
+        console.log(err);
+      }
+      );
+  }
+
   const [stateMenu, setmenuState] = useState(true);
 
   const onChange = (key: any) => {
@@ -446,6 +471,17 @@ export const FriendPanel = () => {
                     }
                   />
                 </Tooltip>
+                <Tooltip title='Annuler la demande'>
+                    <Button
+                      shape='circle'
+                      className='DelFriendBtton'
+                      icon={<CloseOutlined />}
+                      danger
+                      onClick={() =>
+                        handleRefuseServerInvitation(invitation.id)
+                      }
+                    />
+                  </Tooltip>
               </div>
             ))}
           </li>

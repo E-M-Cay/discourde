@@ -88,7 +88,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
   const {
     set: setServerUser,
     setAll: _setAllServerUsers,
-    remove: removeserverUser,
+    remove: removeServerUser,
     reset: resetServerUsers,
   } = serverUserActions;
 
@@ -361,10 +361,15 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
     (id: number) => {
       console.log(id);
       console.table(serverUserMap);
-      removeserverUser(id);
+      console.log(serverUserMap.has(id));
+      removeServerUser(id);
     },
-    [removeserverUser, serverUserMap]
+    [removeServerUser, serverUserMap]
   );
+
+  useEffect(() => {
+    console.table(serverUserMap);
+  }, [serverUserMap]);
 
   useEffect(() => {
     socket?.on('friendrequestrefused', handleFriendshipRefused);
@@ -390,6 +395,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
     handleNewFriendship,
     handleFriendRequestCanceled,
     handleFriendshipRefused,
+    handleUserLeftServer,
   ]);
 
   return (

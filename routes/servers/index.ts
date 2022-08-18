@@ -153,7 +153,7 @@ router.delete(
 
     try {
       await ServerUserRepository.delete(serverUser.id);
-      io.emit('userleftserver', req.params.user_id);
+      io.emit('userleftserver', Number(req.params.user_id));
       return res.sendStatus(204);
     } catch (error) {
       return res.status(400).send('Error');

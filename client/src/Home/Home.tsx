@@ -59,7 +59,7 @@ export const Home = (props: {
             setServers((prevState) =>
               prevState.filter((serv) => serv.server.id !== activeServer)
             );
-            dispatch(setActiveServer(servers[0].id));
+            dispatch(setActiveServer(servers[0].server.id));
           } else {
             dispatch(setIsHome(true));
           }

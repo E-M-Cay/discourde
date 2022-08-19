@@ -25,7 +25,9 @@ const App = () => {
   const loginPasswordRef = useRef<string>('');
   const isFirst = useRef(true);
 
-  const [pictureLink, setPictureLink] = useState('https://randomuser.me/api/portraits/men/1.jpg');
+  const [pictureLink, setPictureLink] = useState(
+    'https://randomuser.me/api/portraits/men/1.jpg'
+  );
 
   const [isModalVisible, setIsModalVisible] = useState(
     localStorage.getItem('token') ? false : true
@@ -37,38 +39,9 @@ const App = () => {
 
   //const verifyAndRefreshToken = (tk: string) => {};
 
-  const onConnection = useCallback(() => {
-    console.log('socket con');
-    socket?.emit('connected', socket.id);
-    connectPeer();
-  }, [socket, connectPeer]);
-
   const handleOk = () => {
     setIsModalVisible(false);
   };
-
-  const updateUsername = useCallback(
-    (newUsername: string) => {
-      dispatch(setUsername(newUsername));
-    },
-    [dispatch]
-  );
-
-  const openPeer = useCallback(
-    (peer_id: string) => {
-      console.log('peerid:', peer_id);
-
-      socket?.emit('peerId', { peer_id });
-    },
-    [socket]
-  );
-
-  useEffect(() => {
-    peer?.on('open', openPeer);
-    return () => {
-      peer?.off('open', openPeer);
-    };
-  }, [peer, openPeer]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -92,15 +65,6 @@ const App = () => {
       isFirst.current = false;
     }
   }, [socket, connectSocket, dispatch]);
-
-  useEffect(() => {
-    socket?.on('connect', onConnection);
-    socket?.on('username', updateUsername);
-    return () => {
-      socket?.off('username', updateUsername);
-      socket?.off('connect', onConnection);
-    };
-  }, [socket, onConnection, updateUsername, dispatch]);
 
   const onChangeHandler = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -141,7 +105,7 @@ const App = () => {
   return (
     <UserMapsContextProvider>
       <NotificationsContextProvider>
-        {peer && socket ? (
+        {peer?.open && socket?.connected ? (
           <div>
             <VocalChannel />
             <Home setTokenMissing={setIsModalVisible} />
@@ -221,13 +185,22 @@ const App = () => {
                       margin: 'auto',
                     }}
                   >
-                  <Text>picture</Text>
-                  <select name='pictures' onChange={(e) => setPictureLink(e.target.value)} id='pictures'>
-                    
-                    {profilePng.map((png, key) => (
-                      <option value={png||"pipi"}>{key < 10 ? "men " + (Number(key) + 1) : 'women ' + (Number(key) + 1)}</option>
-                    ))}
-                  </select></div> <br />
+                    <Text>picture</Text>
+                    <select
+                      name='pictures'
+                      onChange={(e) => setPictureLink(e.target.value)}
+                      id='pictures'
+                    >
+                      {profilePng.map((png, key) => (
+                        <option value={png || 'pipi'}>
+                          {key < 10
+                            ? 'men ' + (Number(key) + 1)
+                            : 'women ' + (Number(key) + 1)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>{' '}
+                  <br />
                   <input type='submit' />
                 </form>
                 <form onSubmit={(e) => onSubmitLogin(e)}>

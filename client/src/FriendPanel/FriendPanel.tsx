@@ -25,6 +25,7 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { UserMapsContext } from '../context/UserMapsContext';
+import { CustomImageChat, CustomImageMess } from '../CustomLi/CustomLi';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
   setActiveChannel,
@@ -322,6 +323,7 @@ export const FriendPanel = (props: {
           >
             {Array.from(friendMap.entries()).map(([id, friendship]) => (
               <div
+                key={id}
                 onClick={onClick}
                 className='panelContent'
                 style={{
@@ -331,7 +333,12 @@ export const FriendPanel = (props: {
                   fontWeight: 'bold',
                 }}
               >
-                <Divider style={{ margin: 0 }} /> {friendship.friend.username}
+                <Divider style={{ margin: 0 }} />
+                <CustomImageMess
+                  picture={friendship.friend.picture}
+                  nickname={friendship.friend.username}
+                />
+                {friendship.friend.username}
                 <div className='iconFriend'>
                   {/*                             <a style={{ color: '#060606'}}><div><Tooltip placement="top" title={"Envoyer un message"}><MessageOutlined /></Tooltip></div></a>
                    */}{' '}
@@ -390,6 +397,7 @@ export const FriendPanel = (props: {
             {Array.from(receivedFriendRequestMap.entries()).map(
               ([id, request]) => (
                 <div
+                  key={id}
                   onClick={onClick}
                   className='panelContent'
                   style={{
@@ -400,6 +408,10 @@ export const FriendPanel = (props: {
                   }}
                 >
                   <Divider style={{ margin: 0 }} />
+                  <CustomImageMess
+                    picture={request.sender.picture}
+                    nickname={request.sender.username}
+                  />
                   {request.sender.username}
                   <Tooltip title='Accepter la demande'>
                     <Button
@@ -441,6 +453,10 @@ export const FriendPanel = (props: {
                 }}
               >
                 <Divider style={{ margin: 0 }} />
+                <CustomImageMess
+                  picture={request.receiver.picture}
+                  nickname={request.receiver.username}
+                />
                 {request.receiver.username}
 
                 <Tooltip title='Annuler la demande'>
@@ -469,6 +485,10 @@ export const FriendPanel = (props: {
                 }}
               >
                 <Divider style={{ margin: 0 }} />
+                <CustomImageMess
+                  picture={invitation.sender.picture}
+                  nickname={invitation.sender.username}
+                />
                 {invitation.sender.username} vous a invité à rejoindre{' '}
                 {invitation.server.name}
                 <Tooltip title='Accepter la demande'>

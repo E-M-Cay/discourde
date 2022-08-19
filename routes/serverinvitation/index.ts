@@ -21,7 +21,6 @@ import { isOwner } from '../../MiddleWares/isOwner';
 router.post(
   '/createInvitation',
   isAuth,
-  isOwner,
   async (req: IREQUEST, res: Response) => {
     const user = await UserRepository.findOne({
       where: {
@@ -158,7 +157,7 @@ router.post(
       });
       ServerInvitationRepository.delete(serverInvitation.id);
       io.emit('userjoinedserver', newServerUser);
-      console.log('servu:', newServerUser, 'user:', serverUser.user);
+      // console.log('servu:', newServerUser, 'user:', serverUser.user);
       return res.status(201).send(newServerUser);
     } catch (e) {
       console.log(e);

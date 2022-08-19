@@ -122,7 +122,6 @@ const VocalChannel = () => {
       });
       return [];
     });
-    setActiveCalls([]);
   }, [activeVocalChannel]);
 
   useEffect(() => {

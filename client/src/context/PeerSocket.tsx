@@ -1,8 +1,9 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useCallback, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { host, socketPort } from '../env/host';
 import { peerPort, peerServerHost } from '../env/host';
 import Peer from 'peerjs';
+import { setUsername } from '../redux/userSlice';
 
 interface PeerSocket {
   peer?: Peer;
@@ -31,6 +32,8 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
 
   const [socket, setSocket] = useState<ISocket>();
   const [peer, setPeer] = useState<Peer>();
+  const [socketState, setSocketState] = useState(false);
+  const [peerState, setPeerState] = useState(false);
 
   const connectSocket = (token: string) => {
     if (process.env.NODE_ENV === 'production') {
@@ -52,7 +55,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
     }
   };
 
-  const connectPeer = () => {
+  const connectPeer = useCallback(() => {
     console.log('connect peer');
     let secure = false;
     if (process.env.NODE_ENV === 'production') {
@@ -84,7 +87,48 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
       secure,
     });
     setPeer(newPeer);
-  };
+  }, [setPeer]);
+
+  const onPeerOpen = useCallback(
+    (peer_id: string) => {
+      console.log('peerid:', peer_id);
+      setPeerState(true);
+      socket?.emit('peerId', { peer_id });
+    },
+    [socket]
+  );
+
+  const onPeerDisconnect = useCallback(() => {
+    setPeerState(false);
+  }, [peer]);
+
+  const onConnection = useCallback(() => {
+    connectPeer();
+    setSocketState(true);
+  }, [connectPeer]);
+
+  const onDisconnection = useCallback(() => {
+    setSocketState(false);
+    setSocket(undefined);
+  }, []);
+
+  useEffect(() => {
+    socket?.on('connect', onConnection);
+    socket?.on('disconnect', onDisconnection);
+    return () => {
+      socket?.off('connect', onConnection);
+      socket?.off('disconnect', onDisconnection);
+    };
+  }, [socket, onConnection, onDisconnection]);
+
+  useEffect(() => {
+    peer?.on('open', onPeerOpen);
+    peer?.on('disconnected', onPeerDisconnect);
+    return () => {
+      peer?.off('open', onPeerOpen);
+      peer?.off('disconnected', onPeerDisconnect);
+    };
+  }, [peer, onPeerOpen]);
 
   return (
     <PeerSocketContext.Provider
@@ -98,3 +142,6 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
 export default PeerSocketProvider;
 
 export { PeerSocketContext };
+function dispatch(arg0: { payload: string; type: string }) {
+  throw new Error('Function not implemented.');
+}

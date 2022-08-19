@@ -30,6 +30,7 @@ interface userMapsContext {
   acceptFriendRequest: (id: number, senderId: number) => void;
   refuseFriendRequest: (id: number, senderId: number) => void;
   deleteFriendRequest: (id: number, receiverId: number) => void;
+  setPrivateChat: (id: number, user: User) => void;
 }
 
 const UserMapsContext = createContext<userMapsContext>({
@@ -59,15 +60,16 @@ const UserMapsContext = createContext<userMapsContext>({
   deleteFriendRequest: (_any?: any) => {
     throw new Error('deleteFriendRequest not correctly overriden');
   },
+  setPrivateChat: (_any?: any) => {
+    throw new Error('deleteFriendRequest not correctly overriden');
+  },
 });
 
 interface Props {
   children: React.ReactNode;
 }
 
-const UserMapsContextProvider: React.FunctionComponent<Props> = ({
-  children,
-}) => {
+const UserMapsContextProvider = ({ children }: Props) => {
   const dispatch = useAppDispatch();
   const me = useAppSelector((state) => state.userReducer.me);
   const activeServer = useAppSelector(
@@ -361,7 +363,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
     (id: number) => {
       removeServerUser(id);
     },
-    [removeServerUser, serverUserMap]
+    [removeServerUser]
   );
 
   const handeUserJoinedServer = useCallback(
@@ -370,10 +372,6 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
     },
     [setServerUser]
   );
-
-  useEffect(() => {
-    console.table(serverUserMap);
-  }, [serverUserMap]);
 
   useEffect(() => {
     socket?.on('friendrequestrefused', handleFriendshipRefused);
@@ -402,6 +400,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
     handleFriendRequestCanceled,
     handleFriendshipRefused,
     handleUserLeftServer,
+    handeUserJoinedServer,
   ]);
 
   return (
@@ -412,6 +411,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
         friendMap,
         serverUserMap,
         privateChatMap,
+        setPrivateChat,
         openPrivateChat,
         setFriend,
         removeFriend,

@@ -301,10 +301,6 @@ io.on('connection', (socket: ISocket) => {
     });
     io.emit('joiningvocal', { user: socket.user_id, chan: id });
   });
-
-  socket.on('vocalchannelchange', (truc: string) => {
-    console.log(truc);
-  });
 });
 
 function get_user_status_list(user_id_list: number[]) {

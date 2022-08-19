@@ -12,6 +12,7 @@ import jwt from 'jsonwebtoken';
 const router = express.Router();
 import isAuth from '../../MiddleWares/isAuth';
 import IRequest from '../../Interfaces/IRequest';
+import { io } from '../../index';
 
 const userRepository = AppDataSource.getRepository(User);
 const serverRepository = AppDataSource.getRepository(Server);
@@ -116,8 +117,16 @@ router.get('/home', isAuth, (_req: Request, res: Response) => {
 });
 
 router.post('/update', isAuth, async (req: IRequest, res: Response) => {
-  const user = await userRepository.findOneBy({
-    id: req.id,
+  const user = await userRepository.findOne({
+    where: {
+      id: req.id,
+    },
+    select: {
+      id: true,
+      picture: true,
+      join_date: true,
+      username: true,
+    },
   });
   if (!user) {
     return res.status(404).send('User not found');
@@ -130,7 +139,8 @@ router.post('/update', isAuth, async (req: IRequest, res: Response) => {
     user.picture = picture;
   }
   await userRepository.save(user);
-  return res.status(200).send('User updated');
+  io.emit('userchanged', user);
+  return res.status(200).send(user);
 });
 
 router.get('/:id', isAuth, async (req: IRequest, res: Response) => {

@@ -11,10 +11,11 @@ import {
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
-import { useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { Channel, User, VocalChan } from '../types/types';
 import logo from '../assets/discourde.png';
 import { CloseOutlined } from '@ant-design/icons';
+import { setMe } from '../redux/userSlice';
 
 export const ServerParams = (props: {
   isModalVisibleParams: boolean;
@@ -50,7 +51,7 @@ export const ServerParams = (props: {
     isModifyVoc,
     setIsModifyVoc,
     handleModifyChannelVoc,
-    handleDeleteChannel
+    handleDeleteChannel,
   } = props;
 
   return (
@@ -295,7 +296,8 @@ export const UserProfileModal = (props: {
     (state) => state.userReducer.activeServer
   );
   const me = useAppSelector((state) => state.userReducer.me);
-  const [userTmp, setUserTmp] = useState<User | undefined>(me);
+  const dispatch = useAppDispatch();
+  const [userTmp, setUserTmp] = useState(me);
   const [serverNickname, setServerNickname] = useState<string>('');
   const { friendMap, sendFriendRequest } = useContext(UserMapsContext);
   const isFriend = friendMap.has(user.id);
@@ -316,7 +318,7 @@ export const UserProfileModal = (props: {
           }
         )
         .then((res) => {
-          console.log(res);
+          dispatch(setMe(res.data));
         })
         .catch((err) => {
           console.log(err);

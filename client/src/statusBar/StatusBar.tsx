@@ -4,6 +4,7 @@ import { useContext, useState } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { CustomImage } from '../CustomLi/CustomLi';
 import { UserProfileModal } from '../Modals/Modals';
+import UserProfileSettings from '../Modals/UserProfileSettings';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { PrivateChatMap, User, ServerUserMap } from '../types/types';
 
@@ -87,10 +88,14 @@ export const StatusBar = () => {
                   onCancel={handleCancel}
                   footer={null}
                 >
-                  <UserProfileModal
-                    openPrivateChat={openPrivateChat}
-                    user={selectedUser ?? user}
-                  />
+                  {user.id === me?.id ? (
+                    <UserProfileSettings />
+                  ) : (
+                    <UserProfileModal
+                      openPrivateChat={openPrivateChat}
+                      user={selectedUser ?? user}
+                    />
+                  )}
                 </Modal>
               </>
             ),
@@ -146,10 +151,14 @@ export const StatusBar = () => {
                   onCancel={handleCancel}
                   footer={null}
                 >
-                  <UserProfileModal
-                    openPrivateChat={openPrivateChat}
-                    user={selectedUser ?? user}
-                  />
+                  {user.id === me?.id ? (
+                    <UserProfileSettings />
+                  ) : (
+                    <UserProfileModal
+                      openPrivateChat={openPrivateChat}
+                      user={selectedUser ?? user}
+                    />
+                  )}
                 </Modal>
               </>
             ),

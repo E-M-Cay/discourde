@@ -391,7 +391,50 @@ const UserMapsContextProvider = ({ children }: Props) => {
     [setServerUser]
   );
 
+  const handleUserProfileChange = useCallback(
+    (user: User) => {
+      console.log(user, 'user change', serverUserMap);
+      const serverUser = serverUserMap.get(user.id);
+      if (serverUser) {
+        setServerUser(user.id, { ...serverUser, user });
+      }
+
+      const friendship = friendMap.get(user.id);
+      if (friendship) {
+        setFriend(user.id, { ...friendship, friend: user });
+      }
+
+      const privateChat = privateChatMap.get(user.id);
+      if (privateChat) {
+        setPrivateChat(user.id, user);
+      }
+
+      const receivedRequest = receivedFriendRequestMap.get(user.id);
+      if (receivedRequest) {
+        setReceivedFriendRequest(user.id, { ...receivedRequest, sender: user });
+      }
+
+      const sentRequest = sentFriendRequestMap.get(user.id);
+      if (sentRequest) {
+        setSentFriendRequest(user.id, { ...sentRequest, receiver: user });
+      }
+    },
+    [
+      serverUserMap,
+      friendMap,
+      privateChatMap,
+      receivedFriendRequestMap,
+      sentFriendRequestMap,
+      setServerUser,
+      setFriend,
+      setPrivateChat,
+      setReceivedFriendRequest,
+      setSentFriendRequest,
+    ]
+  );
+
   useEffect(() => {
+    socket?.on('userchanged', handleUserProfileChange);
     socket?.on('friendrequestrefused', handleFriendshipRefused);
     socket?.on('friendrequestaccepted', handleNewFriendship);
     socket?.on('friendrequestcanceled', handleFriendRequestCanceled);
@@ -401,6 +444,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
     socket?.on('userleftserver', handleUserLeftServer);
     socket?.on('userjoinedserver', handeUserJoinedServer);
     return () => {
+      socket?.off('userchanged', handleUserProfileChange);
       socket?.off('friendrequestrefused', handleFriendshipRefused);
       socket?.off('friendRequestAccepted', handleNewFriendship);
       socket?.off('userdisconnected', handleDisconnection);

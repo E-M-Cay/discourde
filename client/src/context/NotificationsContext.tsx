@@ -68,22 +68,28 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
   );
 
   const maybeNotifyMessage = useCallback(
-    (message: PrivateMessage) => {
+    async (message: PrivateMessage) => {
       const userId = message.user1.id;
       if (userId === me?.id || (isHome && activePrivateChat === userId)) return;
+      let username = 'User';
       if (!privateChatMap.has(userId)) {
-        axios
+        await axios
           .get(`user/${userId}`, {
             headers: {
               access_token: localStorage.getItem('token') as string,
             },
           })
-          .then((res) => setPrivateChat(res.data.id, res.data));
+          .then((res) => {
+            setPrivateChat(res.data.id, res.data);
+            username = res.data.username;
+          });
+      } else {
+        username = privateChatMap.get(userId)?.username as string;
       }
 
       addNotification({
         type: 'success',
-        title: 'la personne ' + message.user1.id + ' vous a envoyé un message',
+        title: username,
         content: message.content,
       });
     },

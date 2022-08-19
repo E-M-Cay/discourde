@@ -68,9 +68,9 @@ export const Home = (props: {
   };
 
   useEffect(() => {
-    console.log('change token ??');
+    // console.log('change token ??');
     socket?.on('ready', getServers);
-    console.log(window.location.pathname.substring(1));
+    // console.log(window.location.pathname.substring(1));
     if (window.location.pathname.substring(1) !== '') {
       joinServer(window.location.pathname.substring(1));
     }

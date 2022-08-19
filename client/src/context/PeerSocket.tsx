@@ -83,7 +83,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
       port: peerPort,
       host: peerServerHost,
       path: '/',
-      debug: 3,
+      debug: 1,
       secure,
     });
     setPeer(newPeer);
@@ -100,7 +100,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
 
   const onPeerDisconnect = useCallback(() => {
     setPeerState(false);
-  }, [peer]);
+  }, []);
 
   const onConnection = useCallback(() => {
     connectPeer();
@@ -128,7 +128,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
       peer?.off('open', onPeerOpen);
       peer?.off('disconnected', onPeerDisconnect);
     };
-  }, [peer, onPeerOpen]);
+  }, [peer, onPeerOpen, onPeerDisconnect]);
 
   return (
     <PeerSocketContext.Provider

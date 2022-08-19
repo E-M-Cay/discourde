@@ -315,19 +315,37 @@ const UserMapsContextProvider = ({ children }: Props) => {
   const handleDisconnection = useCallback(
     (id: number) => {
       const user = serverUserMap.get(id) ?? null;
-      if (!user) return;
-      setServerUser(id, { ...user, user: { ...user.user, status: 0 } });
+      if (user) {
+        setServerUser(id, { ...user, user: { ...user.user, status: 0 } });
+      }
+      const friendship = friendMap.get(id) ?? null;
+
+      if (friendship) {
+        setFriend(id, {
+          ...friendship,
+          friend: { ...friendship.friend, status: 0 },
+        });
+      }
     },
-    [setServerUser, serverUserMap]
+    [setServerUser, serverUserMap, setFriend, friendMap]
   );
 
   const handleConnection = useCallback(
     (id: number) => {
       const user = serverUserMap.get(id) ?? null;
-      if (!user) return;
-      setServerUser(id, { ...user, user: { ...user.user, status: 1 } });
+      if (user) {
+        setServerUser(id, { ...user, user: { ...user.user, status: 1 } });
+      }
+
+      const friendship = friendMap.get(id) ?? null;
+      if (friendship) {
+        setFriend(id, {
+          ...friendship,
+          friend: { ...friendship.friend, status: 1 },
+        });
+      }
     },
-    [setServerUser, serverUserMap]
+    [setServerUser, serverUserMap, setFriend, friendMap]
   );
 
   const handleNewFriendRequest = useCallback(

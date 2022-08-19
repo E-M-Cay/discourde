@@ -1,11 +1,11 @@
-import { Button, Collapse, Dropdown, Menu, Modal, Typography } from "antd";
-import axios from "axios";
-import { useContext, useState } from "react";
-import { UserMapsContext } from "../context/UserMapsContext";
-import { CustomImage } from "../CustomLi/CustomLi";
-import { UserProfileModal } from "../Modals/Modals";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { PrivateChatMap, User, ServerUserMap } from "../types/types";
+import { Button, Collapse, Dropdown, Menu, Modal, Typography } from 'antd';
+import axios from 'axios';
+import { useContext, useState } from 'react';
+import { UserMapsContext } from '../context/UserMapsContext';
+import { CustomImage } from '../CustomLi/CustomLi';
+import { UserProfileModal } from '../Modals/Modals';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { PrivateChatMap, User, ServerUserMap } from '../types/types';
 
 //const { Title } = Typography;
 const { Panel } = Collapse;
@@ -38,11 +38,11 @@ export const StatusBar = () => {
       <Menu
         items={[
           (me?.id !== user.id && {
-            key: "1",
+            key: '1',
             label: (
               <a
-                target="_blank"
-                rel="noopener noreferrer"
+                target='_blank'
+                rel='noopener noreferrer'
                 onClick={() => openPrivateChat(user)}
               >
                 message
@@ -51,24 +51,24 @@ export const StatusBar = () => {
           }) ||
             null,
           {
-            key: "3",
+            key: '3',
             label: (
               <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://www.luohanacademy.com"
+                target='_blank'
+                rel='noopener noreferrer'
+                href='https://www.luohanacademy.com'
               >
                 role
               </a>
             ),
           },
           (me?.id !== user.id && {
-            key: "4",
+            key: '4',
             label: (
               <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://www.luohanacademy.com"
+                target='_blank'
+                rel='noopener noreferrer'
+                href='https://www.luohanacademy.com'
               >
                 exclure
               </a>
@@ -76,12 +76,12 @@ export const StatusBar = () => {
           }) ||
             null,
           {
-            key: "5",
+            key: '5',
             label: (
               <>
                 <div onClick={() => showModal(user)}>Profil</div>
                 <Modal
-                  title="profil"
+                  title='profil'
                   visible={isModalVisible}
                   onOk={handleOk}
                   onCancel={handleCancel}
@@ -105,37 +105,29 @@ export const StatusBar = () => {
       <Menu
         items={[
           (me?.id !== user.id && {
-            key: "1",
-            label: (
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => openPrivateChat(user)}
-              >
-                message
-              </a>
-            ),
+            key: '1',
+            label: <p onClick={() => openPrivateChat(user)}>message</p>,
           }) ||
             null,
           {
-            key: "3",
+            key: '3',
             label: (
               <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://www.luohanacademy.com"
+                target='_blank'
+                rel='noopener noreferrer'
+                href='https://www.luohanacademy.com'
               >
                 role
               </a>
             ),
           },
           (me?.id !== user.id && {
-            key: "4",
+            key: '4',
             label: (
               <a
-                target="_blank"
-                rel="noopener noreferrer"
-                href="https://www.luohanacademy.com"
+                target='_blank'
+                rel='noopener noreferrer'
+                href='https://www.luohanacademy.com'
               >
                 exclure
               </a>
@@ -143,12 +135,12 @@ export const StatusBar = () => {
           }) ||
             null,
           {
-            key: "5",
+            key: '5',
             label: (
               <>
                 <div onClick={() => showModal(user)}>Profil</div>
                 <Modal
-                  title="profil"
+                  title='profil'
                   visible={isModalVisible}
                   onOk={handleOk}
                   onCancel={handleCancel}
@@ -169,88 +161,88 @@ export const StatusBar = () => {
 
   return (
     <div
-      className={"scrollIssue"}
+      className={'scrollIssue'}
       style={{
-        height: "100vh",
+        height: '100vh',
         borderRight: 0,
         padding: 0,
-        overflowY: "scroll",
+        overflowY: 'scroll',
       }}
     >
-      <Collapse defaultActiveKey={["1", "2"]} ghost>
-        <Panel key="1" header="en ligne" style={{ margin: "0 !important" }}>
+      <Collapse defaultActiveKey={['1', '2']} ghost>
+        <Panel key='1' header='en ligne' style={{ margin: '0 !important' }}>
           {Array.from(serverUserMap.entries()).map(([id, user]) =>
             user.user.status ? (
               <Dropdown
                 key={id}
                 overlay={menu(user.user)}
-                placement="bottomLeft"
-                trigger={["click"]}
+                placement='bottomLeft'
+                trigger={['click']}
                 arrow
               >
                 <div
                   key={id}
                   style={{
-                    display: "flex",
-                    justifyContent: "space-around",
-                    alignItems: "center",
-                    maxWidth: "300px",
+                    display: 'flex',
+                    justifyContent: 'space-around',
+                    alignItems: 'center',
+                    maxWidth: '300px',
                   }}
-                  className="hoStat"
+                  className='hoStat'
                 >
-                  {" "}
-                  <CustomImage obj={user} key={id} />{" "}
+                  {' '}
+                  <CustomImage obj={user} key={id} />{' '}
                   <Typography
                     style={{
-                      width: "100%",
-                      paddingLeft: "30px",
-                      fontWeight: "bold",
-                      color: "#A1A1A1",
+                      width: '100%',
+                      paddingLeft: '30px',
+                      fontWeight: 'bold',
+                      color: '#A1A1A1',
                     }}
                   >
                     {user.nickname}
-                  </Typography>{" "}
+                  </Typography>{' '}
                 </div>
               </Dropdown>
             ) : null
           )}
         </Panel>
-        <Panel key="2" header="hors ligne" style={{ margin: "0 !important" }}>
+        <Panel key='2' header='hors ligne' style={{ margin: '0 !important' }}>
           {Array.from(serverUserMap.entries()).map(([id, user]) =>
             !user.user.status ? (
               <Dropdown
                 key={id}
                 overlay={menu2(user.user)}
-                placement="bottomLeft"
-                trigger={["click"]}
+                placement='bottomLeft'
+                trigger={['click']}
                 arrow
               >
                 <div
                   key={id}
-                  className="hoStat"
+                  className='hoStat'
                   style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    maxWidth: "300px",
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    maxWidth: '300px',
                   }}
                 >
-                  <CustomImage obj={user} key={id} />{" "}
+                  <CustomImage obj={user} key={id} />{' '}
                   <Typography
                     style={{
-                      width: "100%",
-                      height: "100%",
-                      paddingLeft: "30px",
-                      fontWeight: "bold",
-                      color: "#A1A1A1",
+                      width: '100%',
+                      height: '100%',
+                      paddingLeft: '30px',
+                      fontWeight: 'bold',
+                      color: '#A1A1A1',
                     }}
                   >
                     {user.nickname}
-                  </Typography>{" "}
+                  </Typography>{' '}
                 </div>
               </Dropdown>
             ) : (
-              ""
+              ''
             )
           )}
         </Panel>

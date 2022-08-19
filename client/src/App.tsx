@@ -15,8 +15,7 @@ import { profilePng } from './profilePng/profilePng';
 const { Title, Text } = Typography;
 
 const App = () => {
-  const { socket, peer, connectPeer, connectSocket } =
-    useContext(PeerSocketContext);
+  const { socket, peer, connectSocket } = useContext(PeerSocketContext);
   const dispatch = useAppDispatch();
   const registerUsernameRef = useRef<string>('');
   const registerEmailRef = useRef<string>('');

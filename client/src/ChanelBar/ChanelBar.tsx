@@ -481,7 +481,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
             </a>
           </Tooltip>
           {activeVocalChannel ? (
-            <Tooltip placement='top' title={'raccrochage'}>
+            <Tooltip placement='top' className='microOff' title={'raccrochage'}>
               <PhoneOutlined
                 onClick={() => dispatch(setActiveVocalChannel(0))}
               />

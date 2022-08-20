@@ -177,6 +177,9 @@ textarea {
 .inputMain:focus {
   background-color: #40444b !important;
 }
+.inputMain::selection {
+  background-color: #40444b !important;
+}
 
 .statusBar {
   background: #404040;

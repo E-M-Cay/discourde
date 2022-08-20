@@ -274,7 +274,8 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
               isTmp: true,
             });
           }
-
+          let audio = new Audio('/upset-sound-tone.mp3');
+          audio.play();
           // setNotifications(...notifications);
         })
         .catch((err) => {
@@ -453,7 +454,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
             </a>
           </Tooltip>
           {activeVocalChannel ? (
-            <Tooltip placement='top' title={'raccrochage'}>
+            <Tooltip placement='top' className='microOff' title={'raccrochage'}>
               <PhoneOutlined
                 onClick={() => dispatch(setActiveVocalChannel(0))}
               />

@@ -50,27 +50,4 @@ router.post(
   }
 );
 
-router.put('/update', isAuth, async (req: IRequest, res: Response) => {
-  if (('name' in req.body || 'hidden' in req.body) && 'id' in req.body) {
-    const channel = await VocalChannelRepository.findOneBy({
-      id: Number(req.body.id),
-    });
-    const name: string = 'name' in req.body ? req.body.name : null;
-    const hidden: boolean =
-      'hidden' in req.body ? JSON.parse(req.body.hidden) : null;
-    if (!channel) return res.status(400).send('Error server not found');
-    try {
-      if (name) channel.name = name;
-      if (hidden) channel.hidden = hidden;
-
-      await VocalChannelRepository.save(channel);
-
-      return res.status(200).send(channel);
-    } catch (error) {
-      return res.status(400).send('Error');
-    }
-  }
-  return res.status(400).send('Wrong arguments');
-});
-
 export default router;

@@ -128,6 +128,28 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
     console.log('new voc chan', chan.name);
     setVocalChannelList((prevState) => [...prevState, chan]);
   };
+  const handleVocalChannelChange = (chan: VocalChan) => {
+    setVocalChannelList((prevState) =>
+      prevState.map((c) => {
+        if (c.id === chan.id) {
+          return chan;
+        }
+        return c;
+      })
+    );
+  };
+
+  const handleTextChannelChange = (chan: Channel) => {
+    console.log(chan);
+    setTextChannelList((prevState) =>
+      prevState.map((c) => {
+        if (c.id === chan.id) {
+          return chan;
+        }
+        return c;
+      })
+    );
+  };
 
   useEffect(() => {
     socket?.on(`joiningvocal`, handleJoinVocal);
@@ -147,6 +169,14 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
       `vocalchannelcreated:server${activeServer}`,
       handleVocalChannelCreated
     );
+    socket?.on(
+      `textchannelchange:server${activeServer}`,
+      handleTextChannelChange
+    );
+    socket?.on(
+      `vocalchannelchange:server${activeServer}`,
+      handleVocalChannelChange
+    );
 
     return () => {
       socket?.off(
@@ -156,6 +186,14 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
       socket?.off(
         `vocalchannelcreated:server${activeServer}`,
         handleVocalChannelCreated
+      );
+      socket?.off(
+        `textchannelchange:server${activeServer}`,
+        handleTextChannelChange
+      );
+      socket?.off(
+        `vocalchannelchange:server${activeServer}`,
+        handleVocalChannelChange
       );
     };
   }, [socket, activeServer]);

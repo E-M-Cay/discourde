@@ -14,10 +14,10 @@ import { NotificationsContext } from '../context/NotificationsContext';
 import { useAppSelector } from '../redux/hooks';
 
 export const DropdownMenu = (params: {
-  showModal2: Function;
+  showModal2: () => void;
   showServerParamsModal: () => void;
-  showModal: Function;
-  deleteServer: Function;
+  showModal: () => void;
+  deleteServer: () => void;
   handleLeaveServer: () => void;
 }) => {
   const {

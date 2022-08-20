@@ -142,6 +142,3 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
 export default PeerSocketProvider;
 
 export { PeerSocketContext };
-function dispatch(arg0: { payload: string; type: string }) {
-  throw new Error('Function not implemented.');
-}

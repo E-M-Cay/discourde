@@ -4,7 +4,7 @@ import { NotificationsContext } from '../context/NotificationsContext';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { useAppSelector } from '../redux/hooks';
-import { PrivateChatMap, PrivateMessage, TextMessage } from '../types/types';
+import { PrivateMessage } from '../types/types';
 import { MessageItem } from './MessageItem';
 
 const PrivateMessageChat = () => {

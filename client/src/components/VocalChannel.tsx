@@ -1,15 +1,38 @@
 import { MediaConnection } from 'peerjs';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { useAppSelector } from '../redux/hooks';
 
-const VocalChannel = () => {
+interface VocalChannel {
+  stream?: MediaStream;
+  activeCalls: MediaConnection[];
+}
+
+const VocalChannelContext = createContext<VocalChannel>({
+  activeCalls: [],
+});
+
+interface Props {
+  children: React.ReactNode;
+}
+
+const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
+  children,
+}) => {
   const { peer, socket } = useContext(PeerSocketContext);
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
   );
   const streamRef = useRef<MediaStream>();
-  const [_activeCalls, setActiveCalls] = useState<MediaConnection[]>([]);
+  const [stream, setStream] = useState<MediaStream>();
+  const [activeCalls, setActiveCalls] = useState<MediaConnection[]>([]);
 
   const toggleMicrophone = async () => {
     const toto = navigator.mediaDevices;
@@ -134,7 +157,13 @@ const VocalChannel = () => {
     };
   }, [peer, callEvent, hello]);
 
-  return <></>;
+  return (
+    <VocalChannelContext.Provider value={{ stream, activeCalls }}>
+      {children}
+    </VocalChannelContext.Provider>
+  );
 };
 
-export default VocalChannel;
+export default VocalChannelContextProvider;
+
+export { VocalChannelContext };

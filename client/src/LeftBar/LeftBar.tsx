@@ -125,7 +125,7 @@ export const LeftBar = (props: {
             id='pictures'
           >
             {serverPng.map((png, key) => (
-              <option value={png || 'pipi'}>
+              <option key={key} value={png || 'pipi'}>
                 {key < 10
                   ? 'men ' + (Number(key) + 1)
                   : 'women ' + (Number(key) + 1)}

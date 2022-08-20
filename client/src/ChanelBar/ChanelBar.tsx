@@ -255,7 +255,6 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
   const [isModalVisibleInvitation, setIsModalVisibleInvitation] =
     useState(false);
   const [isModalVisibleParams, setIsModalVisibleParams] = useState(false);
-  const [channelName, setChannelName] = useState('');
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -281,15 +280,6 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
   };
   const showServerParamsModal = () => {
     setIsModalVisibleParams(true);
-  };
-
-  const handleOk3 = () => {
-    setIsModalVisibleParams(false);
-  };
-
-  const handleCancel3 = () => {
-    console.log('cancel');
-    setIsModalVisibleParams(false);
   };
 
   const handleCreateChannel = (isVocal: any) => {

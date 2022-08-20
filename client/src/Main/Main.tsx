@@ -10,7 +10,6 @@ import { GeneralSettings } from '../Modals/Modals';
 import { CallPanel } from '../CallPanel/CallPanel';
 import { ServerResponse } from '../types/types';
 
-
 export const Main = (props: {
   handleLeaveServer: () => void;
   setServers: React.Dispatch<React.SetStateAction<ServerResponse[]>>;
@@ -36,7 +35,8 @@ export const Main = (props: {
         )}
       </Col>
       <Col span={16}>
-        <CallPanel /> {/* <CallPanel /> */}
+        {/* <CallPanel /> */}
+        <Chat />
       </Col>
       <Col style={{ backgroundColor: 'grey' }} span={4}>
         {isHome ? <FriendPanel setServers={setServers} /> : <StatusBar />}

@@ -120,6 +120,15 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
     });
   };
 
+  useEffect(() => {
+    socket?.on(`joiningvocal`, handleJoinVocal);
+    socket?.on(`leftvocal`, handleLeftVocal);
+    return () => {
+      socket?.off(`joiningvocal`, handleJoinVocal);
+      socket?.off(`leftvocal`, handleLeftVocal);
+    };
+  }, [socket]);
+
   const handleTextChannelCreated = (chan: Channel) => {
     setTextChannelList((prevState) => [...prevState, chan]);
   };
@@ -151,14 +160,26 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
     );
   };
 
-  useEffect(() => {
-    socket?.on(`joiningvocal`, handleJoinVocal);
-    socket?.on(`leftvocal`, handleLeftVocal);
-    return () => {
-      socket?.off(`joiningvocal`, handleJoinVocal);
-      socket?.off(`leftvocal`, handleLeftVocal);
-    };
-  }, [socket]);
+  const handleVocalChannelDelete = useCallback(
+    (chan: number) => {
+      if (chan === activeVocalChannel) {
+        dispatch(setActiveVocalChannel(0));
+      }
+      setVocalChannelList((prevState) =>
+        prevState.filter((c) => c.id !== chan)
+      );
+    },
+    [activeVocalChannel, dispatch]
+  );
+
+  const handleTextChannelDelete = useCallback(
+    (chan: number) => {
+      if (chan === activeVocalChannel) {
+      }
+      setTextChannelList((prevState) => prevState.filter((c) => c.id !== chan));
+    },
+    [activeVocalChannel, dispatch]
+  );
 
   useEffect(() => {
     socket?.on(
@@ -176,6 +197,15 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
     socket?.on(
       `vocalchannelchange:server${activeServer}`,
       handleVocalChannelChange
+    );
+    socket?.on(
+      `vocalchannelchange:server${activeServer}`,
+      handleVocalChannelDelete
+    );
+    socket?.on(`vocalchanneldelete`, handleVocalChannelDelete);
+    socket?.on(
+      `textchanneldelete:server${activeServer}`,
+      handleTextChannelDelete
     );
 
     return () => {
@@ -195,8 +225,13 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
         `vocalchannelchange:server${activeServer}`,
         handleVocalChannelChange
       );
+      socket?.off(`vocalchanneldelete`, handleVocalChannelDelete);
+      socket?.off(
+        `textchanneldelete:server${activeServer}`,
+        handleTextChannelDelete
+      );
     };
-  }, [socket, activeServer]);
+  }, [socket, activeServer, handleVocalChannelDelete]);
 
   const [stateMic, setmicState] = useState(true);
   const [stateHead, setheadState] = useState(true);

@@ -97,9 +97,11 @@ router.delete(
 
     try {
       await ChannelRepository.delete(channel.id);
+      io.emit('textchanneldelete', channel_id);
       return res.sendStatus(204);
     } catch (error) {
-      return res.status(400).send(error);
+      console.log(error);
+      return res.status(400).send('error');
     }
   }
 );

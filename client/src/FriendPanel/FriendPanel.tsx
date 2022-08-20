@@ -155,7 +155,7 @@ export const FriendPanel = (props: {
   const menu = (user: User) => {
     return (
       <Menu
-        className='menu'
+        className='menuf'
         items={[
           {
             label: (
@@ -211,7 +211,7 @@ export const FriendPanel = (props: {
   };
 
   return (
-    <div>
+    <div style={{ backgroundColor: '#2F3136', height: '100vh' }}>
       <Tabs onChange={onChange} style={{ marginLeft: 10 }}>
         <TabPane tab='En ligne' key='1'>
           <p style={{ position: 'fixed', fontSize: 'medium' }}>EN LIGNE</p>

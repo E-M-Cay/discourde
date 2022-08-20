@@ -46,12 +46,11 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
         className={'imgS'}
         style={{
           margin: '5px auto',
-          width: 'auto',
-          maxWidth: '50px',
+          width: '60px',
           backgroundColor: isFocused ? '#4b4b4b' : '#353535',
           borderRadius: '30px',
           cursor: 'pointer',
-          height: '50px',
+          height: '60px',
         }}
         src={
           obj?.server.main_img

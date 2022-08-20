@@ -29,9 +29,14 @@ export const ChannelCollapse = (props: {
       ghost
       defaultActiveKey={['1', '2']}
       onChange={onChange}
-      style={{ backgroundColor: '#1F1F1F' }}
+      style={{ backgroundColor: '#2F3136' }}
     >
-      <Panel className='headerPanel' header={headerTxt} key='1'>
+      <Panel
+        className='headerPanel'
+        style={{ fontSize: '12px' }}
+        header={headerTxt}
+        key='1'
+      >
         {textChannelList &&
           textChannelList.map((chan) => (
             <li
@@ -45,7 +50,12 @@ export const ChannelCollapse = (props: {
           ))}
       </Panel>
 
-      <Panel className='headerPanel' header={headerVoc} key='2'>
+      <Panel
+        className='headerPanel'
+        style={{ fontSize: '12px' }}
+        header={headerVoc}
+        key='2'
+      >
         {vocalChannelList &&
           vocalChannelList.map((chan) => (
             <li

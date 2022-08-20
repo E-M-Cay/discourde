@@ -34,18 +34,20 @@ const PrivateChatBar = () => {
             picture={user.picture}
             nickname={user.username}
             onClickHandler={onClickHandler}
-          />{' '}
+          />
           <Typography
             style={{
               width: '100%',
               height: '100%',
-              paddingLeft: '30px',
+              paddingLeft: '5px',
               fontWeight: 'bold',
               color: '#A1A1A1',
             }}
           >
-            {user.username}
-          </Typography>{' '}
+            {user.username.length > 15
+              ? user.username.slice(0, 15) + '...'
+              : user.username}
+          </Typography>
         </div>
       ))}
     </div>

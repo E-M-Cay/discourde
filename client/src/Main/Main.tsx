@@ -34,7 +34,7 @@ export const Main = (props: {
           <ChanelBar handleLeaveServer={handleLeaveServer} />
         )}
       </Col>
-      <Col span={16}>
+      <Col span={18}>
         {/* <CallPanel /> */}
         <Chat />
       </Col>

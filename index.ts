@@ -268,11 +268,12 @@ io.on('connection', (socket: ISocket) => {
     global.user_id_to_status.set(socket.user_id as number, 3);
   });
 
-  socket.on('joinvocalchannel', (id: number) => {
+  socket.on('leftvocalchannel', (id: number) => {
     const currentVocalChannel = global.user_id_to_vocal_channel.get(
       socket.user_id as number
     );
-    if (currentVocalChannel && currentVocalChannel !== id) {
+
+    if (currentVocalChannel === id) {
       io.emit('leftvocal', {
         user: socket.user_id,
         chan: currentVocalChannel,
@@ -284,7 +285,9 @@ io.on('connection', (socket: ISocket) => {
         userList?.filter((u) => u !== socket.user_id) as number[]
       );
     }
+  });
 
+  socket.on('joinvocalchannel', (id: number) => {
     global.user_id_to_vocal_channel.set(socket.user_id as number, id);
     if (global.vocal_channel_to_user_list.has(id)) {
       global.vocal_channel_to_user_list.get(id)?.push(socket.user_id as number);
@@ -297,10 +300,6 @@ io.on('connection', (socket: ISocket) => {
       peer_id: socket.peer_id,
     });
     io.emit('joiningvocal', { user: socket.user_id, chan: id });
-  });
-
-  socket.on('vocalchannelchange', (truc: string) => {
-    console.log(truc);
   });
 });
 

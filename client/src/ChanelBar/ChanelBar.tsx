@@ -1,31 +1,21 @@
 import {
   AudioMutedOutlined,
   AudioOutlined,
-  BellOutlined,
-  BorderlessTableOutlined,
   CloseOutlined,
   CustomerServiceOutlined,
   DownOutlined,
-  LogoutOutlined,
-  PlusCircleOutlined,
+  PhoneOutlined,
   SettingOutlined,
-  SoundOutlined,
-  TeamOutlined,
-  UserAddOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import {
-  Button,
+  Avatar,
   Card,
   Collapse,
   Dropdown,
-  Menu,
   Space,
   Tooltip,
-  Modal,
   Typography,
-  Input,
-  Checkbox,
-  notification,
 } from 'antd';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import './ChanelBar.css';
@@ -33,23 +23,19 @@ import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
 import { PeerSocketContext } from '../context/PeerSocket';
-import {
-  Channel,
-  PrivateChatMap,
-  User,
-  ServerUserMap,
-  VocalChan,
-} from '../types/types';
+import { Channel, VocalChan } from '../types/types';
 import { CustomImage } from '../CustomLi/CustomLi';
-import { ServerChannels, ServerInvit, ServerParams } from '../Modals/Modals';
+import { ServerChannels, ServerInvit } from '../Modals/Modals';
 import { DropdownMenu } from '../DropdownMenu/DropdownMenu';
 import { ChannelCollapse } from '../ChannelCollapse/ChannelCollapse';
 import { openNotification } from '../notificationHandler/notificationHandler';
 import { NotificationsContext } from '../context/NotificationsContext';
+import ServerParamsModal from '../Modals/ServerParamsModal';
 
 const { Panel } = Collapse;
 
-export const ChanelBar = () => {
+export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
+  const { handleLeaveServer } = props;
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
   );
@@ -67,6 +53,7 @@ export const ChanelBar = () => {
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
   );
+
   const isHome = useAppSelector((state) => state.userReducer.home);
 
   const { Panel } = Collapse;
@@ -100,7 +87,6 @@ export const ChanelBar = () => {
       console.log(id, activeVocalChannel);
       if (activeVocalChannel === id) return;
       dispatch(setActiveVocalChannel(id));
-      //socket?.emit('joinvocalchannel', id);
     },
     [activeVocalChannel, dispatch]
   );
@@ -140,6 +126,110 @@ export const ChanelBar = () => {
     };
   }, [socket]);
 
+  const handleTextChannelCreated = (chan: Channel) => {
+    setTextChannelList((prevState) => [...prevState, chan]);
+  };
+
+  const handleVocalChannelCreated = (chan: VocalChan) => {
+    console.log('new voc chan', chan.name);
+    setVocalChannelList((prevState) => [...prevState, chan]);
+  };
+  const handleVocalChannelChange = (chan: VocalChan) => {
+    setVocalChannelList((prevState) =>
+      prevState.map((c) => {
+        if (c.id === chan.id) {
+          return chan;
+        }
+        return c;
+      })
+    );
+  };
+
+  const handleTextChannelChange = (chan: Channel) => {
+    console.log(chan);
+    setTextChannelList((prevState) =>
+      prevState.map((c) => {
+        if (c.id === chan.id) {
+          return chan;
+        }
+        return c;
+      })
+    );
+  };
+
+  const handleVocalChannelDelete = useCallback(
+    (chan: number) => {
+      if (chan === activeVocalChannel) {
+        dispatch(setActiveVocalChannel(0));
+      }
+      setVocalChannelList((prevState) =>
+        prevState.filter((c) => c.id !== chan)
+      );
+    },
+    [activeVocalChannel, dispatch]
+  );
+
+  const handleTextChannelDelete = useCallback(
+    (chan: number) => {
+      if (chan === activeVocalChannel) {
+      }
+      setTextChannelList((prevState) => prevState.filter((c) => c.id !== chan));
+    },
+    [activeVocalChannel, dispatch]
+  );
+
+  useEffect(() => {
+    socket?.on(
+      `textchannelcreated:server${activeServer}`,
+      handleTextChannelCreated
+    );
+    socket?.on(
+      `vocalchannelcreated:server${activeServer}`,
+      handleVocalChannelCreated
+    );
+    socket?.on(
+      `textchannelchange:server${activeServer}`,
+      handleTextChannelChange
+    );
+    socket?.on(
+      `vocalchannelchange:server${activeServer}`,
+      handleVocalChannelChange
+    );
+    socket?.on(
+      `vocalchannelchange:server${activeServer}`,
+      handleVocalChannelDelete
+    );
+    socket?.on(`vocalchanneldelete`, handleVocalChannelDelete);
+    socket?.on(
+      `textchanneldelete:server${activeServer}`,
+      handleTextChannelDelete
+    );
+
+    return () => {
+      socket?.off(
+        `textchannelcreated:server${activeServer}`,
+        handleTextChannelCreated
+      );
+      socket?.off(
+        `vocalchannelcreated:server${activeServer}`,
+        handleVocalChannelCreated
+      );
+      socket?.off(
+        `textchannelchange:server${activeServer}`,
+        handleTextChannelChange
+      );
+      socket?.off(
+        `vocalchannelchange:server${activeServer}`,
+        handleVocalChannelChange
+      );
+      socket?.off(`vocalchanneldelete`, handleVocalChannelDelete);
+      socket?.off(
+        `textchanneldelete:server${activeServer}`,
+        handleTextChannelDelete
+      );
+    };
+  }, [socket, activeServer, handleVocalChannelDelete]);
+
   const [stateMic, setmicState] = useState(true);
   const [stateHead, setheadState] = useState(true);
   const [isModify, setIsModify] = useState(0);
@@ -176,7 +266,7 @@ export const ChanelBar = () => {
   const handleCancel2 = () => {
     setIsModalVisibleInvitation(false);
   };
-  const showModal3 = () => {
+  const showServerParamsModal = () => {
     setIsModalVisibleParams(true);
   };
 
@@ -197,7 +287,7 @@ export const ChanelBar = () => {
           `/${isVocal ? 'vocalc' : 'c'}hannel/create`,
           {
             name: newTextChannelName,
-            server_id: activeServer,
+            server: activeServer,
             hidden: isAdminChannel,
           },
           {
@@ -207,16 +297,17 @@ export const ChanelBar = () => {
           }
         )
         .then((res) => {
-          isVocal
-            ? setVocalChannelList([...vocalChannelList, res.data])
-            : setTextChannelList([...textChannelList, res.data]);
-          setNewTextChannelName('');
-          addNotification({
-            type: 'success',
-            title: 'success',
-            content: 'Channel created',
-            isTmp: true,
-          });
+          if ((res.status = 204)) {
+            setNewTextChannelName('');
+            addNotification({
+              type: 'success',
+              title: 'success',
+              content: 'Channel created',
+              isTmp: true,
+            });
+          }
+          let audio = new Audio('/upset-sound-tone.mp3');
+          audio.play();
           // setNotifications(...notifications);
         })
         .catch((err) => {
@@ -228,54 +319,6 @@ export const ChanelBar = () => {
     }
   };
 
-  const handleUpdateChannel = (
-    txtChan: Channel | undefined,
-    vocChan: VocalChan | undefined
-  ) => {
-    axios
-      .put(`/${vocChan ? 'vocal' : ''}channel/update`, vocChan ?? txtChan, {
-        headers: {
-          access_token: localStorage.getItem('token') as string,
-        },
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          if (vocChan) {
-            setVocalChannelList((prevState) => {
-              return prevState.map((c) => {
-                if (c.id === vocChan.id) {
-                  return vocChan;
-                }
-                return c;
-              });
-            });
-          } else {
-            setTextChannelList((prevState: any) => {
-              return prevState.map((c: any) => {
-                if (c.id === txtChan?.id) {
-                  return txtChan;
-                }
-                return c;
-              });
-            });
-          }
-
-          addNotification({
-            type: 'success',
-            title: 'success',
-            content: 'Channel updated',
-          });
-          setNewTextChannelName('');
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        setIsModalVisible(false);
-      });
-  };
-
   const handleModifyChannelText = (chan: Channel) => {
     setModifingChannel(chan);
     setIsModify(chan.id);
@@ -283,24 +326,6 @@ export const ChanelBar = () => {
   const handleModifyChannelVoc = (chan: Channel) => {
     setModifingChannel(chan);
     setIsModifyVoc(chan.id);
-  };
-
-  const createChannel = (e: React.FormEvent<HTMLFormElement>) => {
-    console.log('bhfdksdklf');
-    e.preventDefault();
-    axios
-      .post(
-        'channel/create',
-        { name: channelName, server_id: activeServer },
-        {
-          headers: {
-            access_token: localStorage.getItem('token') as string,
-          },
-        }
-      )
-      .then((res) => {
-        setIsModalVisible(false);
-      });
   };
 
   const deleteServer = useCallback(() => {
@@ -325,134 +350,27 @@ export const ChanelBar = () => {
   };
 
   const menu = (
-    <Menu
-      className='menu'
-      items={[
-        {
-          label: (
-            <li onClick={showModal2}>
-              <UserAddOutlined
-                style={{
-                  color: 'darkgrey',
-                  fontSize: 'small',
-                }}
-              />{' '}
-              Inviter des gens{' '}
-            </li>
-          ),
-          key: '0',
-        },
-        {
-          label: (
-            <li>
-              <TeamOutlined
-                style={{
-                  color: 'darkgrey',
-                  fontSize: 'small',
-                }}
-              />{' '}
-              Gestion des membres{' '}
-            </li>
-          ),
-          key: '1',
-        },
-        {
-          type: 'divider',
-        },
-        {
-          label: (
-            <li>
-              <SettingOutlined
-                style={{
-                  color: 'darkgrey',
-                  fontSize: 'small',
-                }}
-              />{' '}
-              Paramètres du serveur{' '}
-            </li>
-          ),
-          key: '3',
-        },
-        {
-          label: (
-            <li onClick={showModal}>
-              <PlusCircleOutlined
-                style={{
-                  color: 'darkgrey',
-                  fontSize: 'small',
-                }}
-              />{' '}
-              Créer un salon{' '}
-            </li>
-          ),
-          key: '4',
-        },
-        {
-          label: (
-            <li onClick={() => deleteServer()}>
-              <PlusCircleOutlined
-                style={{
-                  color: 'darkgrey',
-                  fontSize: 'small',
-                }}
-              />{' '}
-              Supprimer serveur{' '}
-            </li>
-          ),
-          key: '5',
-        },
-        {
-          type: 'divider',
-        },
-        {
-          label: (
-            <li>
-              <BellOutlined
-                style={{
-                  color: 'darkgrey',
-                  fontSize: 'small',
-                }}
-              />{' '}
-              Notifications{' '}
-            </li>
-          ),
-          key: '6',
-        },
-        {
-          type: 'divider',
-        },
-        {
-          label: (
-            <a href=''>
-              <LogoutOutlined
-                style={{
-                  color: 'red',
-                  fontSize: 'small',
-                }}
-              />{' '}
-              Quitter le serveur{' '}
-            </a>
-          ),
-          key: '7',
-        },
-      ]}
+    <DropdownMenu
+      showModal2={showModal2}
+      showServerParamsModal={showServerParamsModal}
+      showModal={showModal}
+      deleteServer={deleteServer}
+      handleLeaveServer={handleLeaveServer}
     />
   );
+
+  const me = useAppSelector((state) => state.userReducer.me);
 
   return (
     <div
       style={{ width: '100%', backgroundColor: '#1F1F1F' }}
       className='site-layout-background'
     >
-      <ServerParams
+      <ServerParamsModal
         isModalVisibleParams={isModalVisibleParams}
-        handleOk3={handleOk3}
-        handleCancel3={handleCancel3}
         textChannelList={textChannelList}
         isModify={isModify}
-        newTextChannelName={newTextChannelName}
         setModifingChannel={setModifingChannel}
-        handleUpdateChannel={handleUpdateChannel}
         modifingChannel={modifingChannel}
         setIsModify={setIsModify}
         handleModifyChannelText={handleModifyChannelText}
@@ -460,6 +378,9 @@ export const ChanelBar = () => {
         isModifyVoc={isModifyVoc}
         setIsModifyVoc={setIsModifyVoc}
         handleModifyChannelVoc={handleModifyChannelVoc}
+        setTextChannelList={setTextChannelList}
+        setVocalChannelList={setVocalChannelList}
+        setIsModalVisibleParams={setIsModalVisibleParams}
       />
       <ServerInvit
         isModalVisibleInvitation={isModalVisibleInvitation}
@@ -513,13 +434,25 @@ export const ChanelBar = () => {
             vocalChannelList={vocalChannelList}
             onTextChannelClick={onTextChannelClick}
             onVocalChannelClick={onVocalChannelClick}
-            activeVocalChannel={activeVocalChannel}
+            activeVocalChannel={activeVocalChannel || null}
           />
         )}
       </div>
       <div style={{ backgroundColor: '#353535' }}>
         <Card
-          title='User + avatar'
+          title={
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Avatar
+                size={30}
+                src={
+                  me?.picture ||
+                  'https://randomuser.me/api/portraits/women/1.jpg'
+                }
+              />
+              <Typography>{me?.username || 'random'}</Typography>
+              <div></div>
+            </div>
+          }
           extra={
             <a href='#'>
               <Tooltip placement='top' title={'Paramètres utilisateur'}>
@@ -552,6 +485,15 @@ export const ChanelBar = () => {
               )}
             </a>
           </Tooltip>
+          {activeVocalChannel ? (
+            <Tooltip placement='top' className='microOff' title={'raccrochage'}>
+              <PhoneOutlined
+                onClick={() => dispatch(setActiveVocalChannel(0))}
+              />
+            </Tooltip>
+          ) : (
+            ''
+          )}
         </Card>
       </div>
     </div>

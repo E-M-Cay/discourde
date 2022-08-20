@@ -30,6 +30,7 @@ interface userMapsContext {
   acceptFriendRequest: (id: number, senderId: number) => void;
   refuseFriendRequest: (id: number, senderId: number) => void;
   deleteFriendRequest: (id: number, receiverId: number) => void;
+  setPrivateChat: (id: number, user: User) => void;
 }
 
 const UserMapsContext = createContext<userMapsContext>({
@@ -59,15 +60,16 @@ const UserMapsContext = createContext<userMapsContext>({
   deleteFriendRequest: (_any?: any) => {
     throw new Error('deleteFriendRequest not correctly overriden');
   },
+  setPrivateChat: (_any?: any) => {
+    throw new Error('deleteFriendRequest not correctly overriden');
+  },
 });
 
 interface Props {
   children: React.ReactNode;
 }
 
-const UserMapsContextProvider: React.FunctionComponent<Props> = ({
-  children,
-}) => {
+const UserMapsContextProvider = ({ children }: Props) => {
   const dispatch = useAppDispatch();
   const me = useAppSelector((state) => state.userReducer.me);
   const activeServer = useAppSelector(
@@ -88,7 +90,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
   const {
     set: setServerUser,
     setAll: _setAllServerUsers,
-    remove: _removeserverUser,
+    remove: removeServerUser,
     reset: resetServerUsers,
   } = serverUserActions;
 
@@ -313,23 +315,43 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
   const handleDisconnection = useCallback(
     (id: number) => {
       const user = serverUserMap.get(id) ?? null;
-      if (!user) return;
-      setServerUser(id, { ...user, user: { ...user.user, status: 0 } });
+      if (user) {
+        setServerUser(id, { ...user, user: { ...user.user, status: 0 } });
+      }
+      const friendship = friendMap.get(id) ?? null;
+
+      if (friendship) {
+        setFriend(id, {
+          ...friendship,
+          friend: { ...friendship.friend, status: 0 },
+        });
+      }
     },
-    [setServerUser, serverUserMap]
+    [setServerUser, serverUserMap, setFriend, friendMap]
   );
 
   const handleConnection = useCallback(
     (id: number) => {
       const user = serverUserMap.get(id) ?? null;
-      if (!user) return;
-      setServerUser(id, { ...user, user: { ...user.user, status: 1 } });
+      if (user) {
+        setServerUser(id, { ...user, user: { ...user.user, status: 1 } });
+      }
+
+      const friendship = friendMap.get(id) ?? null;
+      if (friendship) {
+        setFriend(id, {
+          ...friendship,
+          friend: { ...friendship.friend, status: 1 },
+        });
+      }
     },
-    [setServerUser, serverUserMap]
+    [setServerUser, serverUserMap, setFriend, friendMap]
   );
 
   const handleNewFriendRequest = useCallback(
     (friendRequest: ReceivedFriendRequest) => {
+      let audio = new Audio('/direct-545.mp3');
+      audio.play();
       setReceivedFriendRequest(friendRequest.sender.id, friendRequest);
     },
     [setReceivedFriendRequest]
@@ -357,19 +379,81 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
     [removeReceivedFriendRequest]
   );
 
+  const handleUserLeftServer = useCallback(
+    (id: number) => {
+      removeServerUser(id);
+    },
+    [removeServerUser]
+  );
+
+  const handeUserJoinedServer = useCallback(
+    (serverUser: ServerUser) => {
+      setServerUser(serverUser.user.id, serverUser);
+    },
+    [setServerUser]
+  );
+
+  const handleUserProfileChange = useCallback(
+    (user: User) => {
+      console.log(user, 'user change', serverUserMap);
+      const serverUser = serverUserMap.get(user.id);
+      if (serverUser) {
+        setServerUser(user.id, { ...serverUser, user });
+      }
+
+      const friendship = friendMap.get(user.id);
+      if (friendship) {
+        setFriend(user.id, { ...friendship, friend: user });
+      }
+
+      const privateChat = privateChatMap.get(user.id);
+      if (privateChat) {
+        setPrivateChat(user.id, user);
+      }
+
+      const receivedRequest = receivedFriendRequestMap.get(user.id);
+      if (receivedRequest) {
+        setReceivedFriendRequest(user.id, { ...receivedRequest, sender: user });
+      }
+
+      const sentRequest = sentFriendRequestMap.get(user.id);
+      if (sentRequest) {
+        setSentFriendRequest(user.id, { ...sentRequest, receiver: user });
+      }
+    },
+    [
+      serverUserMap,
+      friendMap,
+      privateChatMap,
+      receivedFriendRequestMap,
+      sentFriendRequestMap,
+      setServerUser,
+      setFriend,
+      setPrivateChat,
+      setReceivedFriendRequest,
+      setSentFriendRequest,
+    ]
+  );
+
   useEffect(() => {
+    socket?.on('userchanged', handleUserProfileChange);
     socket?.on('friendrequestrefused', handleFriendshipRefused);
     socket?.on('friendrequestaccepted', handleNewFriendship);
     socket?.on('friendrequestcanceled', handleFriendRequestCanceled);
     socket?.on('newfriendrequest', handleNewFriendRequest);
     socket?.on('userdisconnected', handleDisconnection);
     socket?.on('userconnected', handleConnection);
+    socket?.on('userleftserver', handleUserLeftServer);
+    socket?.on('userjoinedserver', handeUserJoinedServer);
     return () => {
+      socket?.off('userchanged', handleUserProfileChange);
       socket?.off('friendrequestrefused', handleFriendshipRefused);
       socket?.off('friendRequestAccepted', handleNewFriendship);
       socket?.off('userdisconnected', handleDisconnection);
       socket?.off('userconnected', handleConnection);
       socket?.off('newfriendrequest', handleNewFriendRequest);
+      socket?.off('userleftserver', handleUserLeftServer);
+      socket?.off('userjoinedserver', handeUserJoinedServer);
     };
   }, [
     socket,
@@ -379,6 +463,8 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
     handleNewFriendship,
     handleFriendRequestCanceled,
     handleFriendshipRefused,
+    handleUserLeftServer,
+    handeUserJoinedServer,
   ]);
 
   return (
@@ -389,6 +475,7 @@ const UserMapsContextProvider: React.FunctionComponent<Props> = ({
         friendMap,
         serverUserMap,
         privateChatMap,
+        setPrivateChat,
         openPrivateChat,
         setFriend,
         removeFriend,

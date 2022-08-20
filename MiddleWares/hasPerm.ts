@@ -25,74 +25,74 @@ const rolePermissionRepository = AppDataSource.getRepository(RolePermission);
 const permissionRepository = AppDataSource.getRepository(Permission);
 
 interface IJWT extends jwt.JwtPayload {
-    id?: string;
+  id?: string;
 }
 
 // Middleware : sert à intercepter la requête : Pour auth : on va regarder si on a un token et s'il est valide on autorise la requête suivante, sinon on envoie une erreur
 
-module.exports = async function (
-    req: IRequest,
-    res: Response,
-    next: NextFunction
+export default async function (
+  req: IRequest,
+  res: Response,
+  next: NextFunction
 ) {
-    const action = req.action;
-    const user_id = req.id;
-    const server_id = req.server_id;
+  const action = req.action;
+  const user_id = req.id;
+  const server_id = req.server_id;
 
-    const permission_list = await permissionRepository.countBy([
-        {
-            // relations: [
-            //     'roles',
-            //     'roles.role',
-            //     'roles.role.users',
-            //     'roles.role.users.user',
-            //     'roles.role.users.user.user',
-            //     'roles.role.users.user.server',
-            // ],
-            name: 'Permissions.',
-            roles: {
-                role: {
-                    users: {
-                        user: {
-                            user: {
-                                id: user_id,
-                            },
-                            server: {
-                                id: server_id,
-                            },
-                        },
-                    },
-                },
+  const permission_list = await permissionRepository.findBy([
+    {
+      // relations: [
+      //     'roles',
+      //     'roles.role',
+      //     'roles.role.users',
+      //     'roles.role.users.user',
+      //     'roles.role.users.user.user',
+      //     'roles.role.users.user.server',
+      // ],
+      name: 'Permissions.',
+      roles: {
+        role: {
+          users: {
+            user: {
+              user: {
+                id: user_id,
+              },
+              server: {
+                id: server_id,
+              },
             },
+          },
         },
-        {
-            name: Permissions.IS_ADMIN,
-            roles: {
-                role: {
-                    users: {
-                        user: {
-                            user: {
-                                id: user_id,
-                            },
-                            server: {
-                                id: server_id,
-                            },
-                        },
-                    },
-                },
+      },
+    },
+    {
+      name: Permissions.IS_ADMIN,
+      roles: {
+        role: {
+          users: {
+            user: {
+              user: {
+                id: user_id,
+              },
+              server: {
+                id: server_id,
+              },
             },
+          },
         },
-    ]);
+      },
+    },
+  ]);
 
-    //console.log(permission_list);
+  //console.log(permission_list);
 
-    // for (const permission of permission_list) {
-    //     //console.log(permission)
-    //     if (permission.id == action) {
-    //         next();
-    //         break;
-    //     }
-    // }
+  // for (const permission of permission_list) {
+  //     //console.log(permission)
+  //     if (permission.id == action) {
+  //         next();
+  //         break;
+  //     }
+  // }
 
-    next();
-};
+  next();
+}

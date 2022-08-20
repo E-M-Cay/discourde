@@ -97,7 +97,7 @@ const App = () => {
           dispatch(setMe(res.data.user));
           dispatch(setToken(res.data.token));
           handleOk();
-          let audio = new Audio('/asmr-tone-ooh.mp3');
+          let audio = new Audio('girl-hey-ringtone-second-version.mp3');
           audio.play();
         }
       });

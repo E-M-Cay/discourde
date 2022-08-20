@@ -45,7 +45,7 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
         onClick={onClickServer}
         className={'imgS'}
         style={{
-          margin: '5px auto',
+          margin: '7px auto',
           width: '60px',
           backgroundColor: isFocused ? '#4b4b4b' : '#353535',
           borderRadius: '30px',

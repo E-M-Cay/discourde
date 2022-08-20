@@ -155,6 +155,7 @@ export const LeftBar = (props: {
           height: '100vh',
           borderRight: 0,
           padding: 0,
+          paddingTop: '7px',
           paddingLeft: '7px',
           width: '87px',
           flexWrap: 'wrap',
@@ -178,7 +179,7 @@ export const LeftBar = (props: {
             onClick={showModal}
             className={'imgS'}
             style={{
-              margin: '5px auto',
+              margin: '7px auto',
               width: '60px',
               height: '60px',
               backgroundColor: isFocused ? '#4b4b4b' : '#353535',

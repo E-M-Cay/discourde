@@ -155,6 +155,21 @@ textarea {
   color: #e2e2e2;
 }
 
+.ant-input-group-addon {
+  background-color: #40444b !important;
+  border-color: #40444b !important;
+  cursor: pointer;
+}
+
+.emoji-picker-react {
+  box-shadow: none !important;
+}
+
+.ant-input-group-addon:hover {
+  background-color: #36393f !important;
+  border-color: #36393f !important;
+}
+
 .inputMain:hover {
   background-color: #40444b !important;
 }

@@ -138,16 +138,19 @@ router.put(
       const channel = await ChannelRepository.findOneBy({
         id: Number(req.params.id),
       });
+      const serverId = Number(req.params.server_id);
       const name: string = 'name' in req.body ? req.body.name : null;
       const hidden: boolean =
         'hidden' in req.body ? JSON.parse(req.body.hidden) : null;
       if (!channel) return res.status(400).send('Error server not found');
       try {
+        if (!serverId) return new Error('no server');
         if (name) channel.name = name;
         if (hidden) channel.hidden = hidden;
 
         await ChannelRepository.save(channel);
-        return res.status(200).send(channel);
+        io.emit(`textchannelchange:server${serverId}`, channel);
+        return res.sendStatus(204);
       } catch (error) {
         return res.status(400).send('Error');
       }
@@ -165,17 +168,21 @@ router.put(
       const channel = await VocalChannelRepository.findOneBy({
         id: Number(req.params.id),
       });
+      const serverId = Number(req.params.server_id);
       const name: string = 'name' in req.body ? req.body.name : null;
       const hidden: boolean =
         'hidden' in req.body ? JSON.parse(req.body.hidden) : null;
       if (!channel) return res.status(400).send('Error server not found');
       try {
+        if (!serverId) return new Error('no server');
         if (name) channel.name = name;
         if (hidden) channel.hidden = hidden;
 
         await ChannelRepository.save(channel);
-        return res.status(200).send(channel);
+        io.emit(`vocalchannelchange:server${serverId}`, channel);
+        return res.sendStatus(204);
       } catch (error) {
+        console.log(error);
         return res.status(400).send('Error');
       }
     }

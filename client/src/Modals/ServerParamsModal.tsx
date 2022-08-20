@@ -67,26 +67,7 @@ const ServerParamsModal = (props: {
         }
       )
       .then((res) => {
-        if (res.status === 200) {
-          if (isVocal) {
-            setVocalChannelList((prevState) => {
-              return prevState.map((c) => {
-                if (c.id === chan.id) {
-                  return chan as VocalChan;
-                }
-                return c;
-              });
-            });
-          } else {
-            setTextChannelList((prevState) => {
-              return prevState.map((c) => {
-                if (c.id === chan.id) {
-                  return chan;
-                }
-                return c;
-              });
-            });
-          }
+        if (res.status === 204) {
           setIsModify(0);
 
           addNotification({
@@ -100,8 +81,7 @@ const ServerParamsModal = (props: {
       })
       .catch((err) => {
         console.log(err);
-      })
-      .finally(() => {});
+      });
   };
 
   const handleDeleteChannel = (channelId: number, isVocal: boolean) => {

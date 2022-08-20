@@ -93,7 +93,8 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
 
   const handleJoinVocal = (data: { user: number; chan: number }) => {
     const { user, chan } = data;
-
+    let audio = new Audio('/task-completed-message-ringtone.mp3');
+    audio.play();
     setVocalChannelList((prevState) => {
       return prevState.map((c) => {
         if (c.id === chan) {
@@ -107,6 +108,8 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
   const handleLeftVocal = (data: { user: number; chan: number }) => {
     const { user, chan } = data;
     console.log('left vocal', user, chan);
+    let audio = new Audio('/abduction-265.mp3');
+    audio.play();
     setVocalChannelList((prevState) => {
       return prevState.map((c) => {
         if (c.id === chan) {

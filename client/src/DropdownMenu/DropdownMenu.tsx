@@ -15,13 +15,18 @@ import { useAppSelector } from '../redux/hooks';
 
 export const DropdownMenu = (params: {
   showModal2: Function;
-  showModal3: Function;
+  showServerParamsModal: () => void;
   showModal: Function;
   deleteServer: Function;
   handleLeaveServer: () => void;
 }) => {
-  const { showModal2, showModal3, showModal, deleteServer, handleLeaveServer } =
-    params;
+  const {
+    showModal2,
+    showServerParamsModal,
+    showModal,
+    deleteServer,
+    handleLeaveServer,
+  } = params;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { notifications, clearNotification } = useContext(NotificationsContext);
   const activeServer = useAppSelector(
@@ -87,7 +92,7 @@ export const DropdownMenu = (params: {
             label: (
               <li
                 style={{ color: 'white' }}
-                onClick={() => showModal3()}
+                onClick={() => showServerParamsModal()}
                 key={2}
               >
                 <SettingOutlined

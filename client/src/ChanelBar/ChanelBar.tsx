@@ -445,7 +445,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
           padding: 0,
           flexWrap: 'wrap',
           overflowY: 'scroll',
-          borderTop: '1px solid #353535',
+          borderTop: '1px solid rgba(26, 26, 26, 0.67)',
         }}
       >
         {!isHome && (

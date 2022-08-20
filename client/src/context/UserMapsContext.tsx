@@ -350,6 +350,8 @@ const UserMapsContextProvider = ({ children }: Props) => {
 
   const handleNewFriendRequest = useCallback(
     (friendRequest: ReceivedFriendRequest) => {
+      let audio = new Audio('/direct-545.mp3');
+      audio.play();
       setReceivedFriendRequest(friendRequest.sender.id, friendRequest);
     },
     [setReceivedFriendRequest]

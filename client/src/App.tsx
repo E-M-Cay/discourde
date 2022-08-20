@@ -97,6 +97,8 @@ const App = () => {
           dispatch(setMe(res.data.user));
           dispatch(setToken(res.data.token));
           handleOk();
+          let audio = new Audio('/asmr-tone-ooh.mp3');
+          audio.play();
         }
       });
   };

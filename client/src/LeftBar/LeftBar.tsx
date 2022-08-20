@@ -78,6 +78,8 @@ export const LeftBar = (props: {
         props.setServers((prevServerList) => {
           return [...prevServerList, res.data];
         });
+        let audio = new Audio('/upset-sound-tone.mp3');
+        audio.play();
       });
   };
 

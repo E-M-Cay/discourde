@@ -236,7 +236,8 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
               isTmp: true,
             });
           }
-
+          let audio = new Audio('/upset-sound-tone.mp3');
+          audio.play();
           // setNotifications(...notifications);
         })
         .catch((err) => {

@@ -280,7 +280,12 @@ export const GeneralSettings = () => {
 
   const handleDisconnect = () => {
     localStorage.removeItem('token');
-    window.location.href = '/';
+    let audio = new Audio('/asmr-tone-ooh.mp3');
+    audio.play();
+    // wait 2 seconds
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 1500);
   };
 
   const showModal = () => {

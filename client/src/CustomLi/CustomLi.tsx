@@ -129,7 +129,7 @@ export const CustomImageChat = (props: {
       style={{
         backgroundColor: '#535353',
         margin: '5px auto',
-        width: 'aupxto',
+        width: '45px',
         borderRadius: '22px',
         cursor: 'pointer',
         height: '45px',

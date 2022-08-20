@@ -7,6 +7,7 @@ import { FriendPanel } from '../FriendPanel/FriendPanel';
 import PrivateChatBar from '../PrivateChatBar/PrivateChatBar';
 import { useEffect } from 'react';
 import { GeneralSettings } from '../Modals/Modals';
+import { CallPanel } from '../CallPanel/CallPanel';
 
 export const Main = () => {
   const isHome = useAppSelector((state) => state.userReducer.home);
@@ -25,7 +26,7 @@ export const Main = () => {
         {isHome ? <PrivateChatBar /> : <ChanelBar />}
       </Col>
       <Col span={16}>
-        <Chat /> {/* <CallPanel /> */}
+        <CallPanel /> {/* <CallPanel /> */}
       </Col>
       <Col style={{ backgroundColor: 'grey' }} span={4}>
         {isHome ? <FriendPanel /> : <StatusBar />}

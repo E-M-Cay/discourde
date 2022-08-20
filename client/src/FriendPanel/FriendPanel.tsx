@@ -15,7 +15,6 @@ import {
   VideoCameraOutlined,
   UserDeleteOutlined,
   SearchOutlined,
-  CloseOutlined,
 } from '@ant-design/icons';
 import {
   Collapse,

@@ -1,5 +1,6 @@
 import {
   AudioMutedOutlined,
+  BoldOutlined,
   MenuOutlined,
   PhoneOutlined,
   SoundOutlined,
@@ -19,6 +20,7 @@ import {
   Tooltip,
   Input,
   Layout,
+  Slider,
 } from 'antd';
 import { Content } from 'antd/lib/layout/layout';
 import Sider from 'antd/lib/layout/Sider';
@@ -35,29 +37,31 @@ testUsers.push({ id: 1, nickName: 'Nathan' });
 
 export const CallPanel = () => {
   const { serverUserMap } = useContext(UserMapsContext);
-  // for (const obj in serveur){
-  //     console.table(`${obj} callP : ${serveur[obj].nickname}, ${serveur[obj].email}`);
-  //     }
 
   return (
     <Layout className='vocStyle'>
       <header>
-        <SoundOutlined /> Nom du chanel vocal
-        <button>
-          <MenuOutlined id='menu' />
-        </button>
+        <SoundOutlined /> %Nom du chanel vocal%
       </header>
-      <Content>
-        <p>AFFICHAGE DES PARTICIPANTS AVATAR + PSEUDO</p>
+      <Content style={{textAlign: 'center', lineHeight: '50vh'}}>
+        <p>%AFFICHAGE DES PARTICIPANTS AVATAR EN FOND + PSEUDO%</p>
       </Content>
-      <footer>
+      <footer style={{textAlign: 'center'}}>
+      <Tooltip placement='top' title={'Couper le micro'}>
         <button>
-          <AudioMutedOutlined id='audio' style={{ textAlign: 'center' }} />
+          <AudioMutedOutlined id='audio' />
         </button>
-
+        </Tooltip>
+        <Tooltip placement='top' title={'Raccrocher'}>
         <button>
           <PhoneOutlined id='phone' />
         </button>
+        </Tooltip>
+        <Tooltip placement='top' title={<Slider vertical defaultValue={50} className='volSider' />}>
+        <button>
+          <SoundOutlined id='volume' />
+        </button>
+        </Tooltip>
       </footer>
     </Layout>
   );

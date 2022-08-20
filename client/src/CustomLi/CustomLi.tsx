@@ -76,7 +76,7 @@ export const CustomImage = (props: { obj: ServerUser }) => {
       className={'imgS2'}
       style={{
         margin: '5px auto',
-        width: 'auto',
+        width: '38px',
         backgroundColor: '#4b4b4b',
         borderRadius: '30px',
         cursor: 'pointer',
@@ -100,7 +100,7 @@ export const CustomImageMess = (props: {
       style={{
         backgroundColor: '#535353',
         margin: '5px auto',
-        width: 'auto',
+        width: '45px',
         borderRadius: '22px',
         cursor: 'pointer',
         height: '45px',

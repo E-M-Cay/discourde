@@ -120,6 +120,15 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
     });
   };
 
+  useEffect(() => {
+    socket?.on(`joiningvocal`, handleJoinVocal);
+    socket?.on(`leftvocal`, handleLeftVocal);
+    return () => {
+      socket?.off(`joiningvocal`, handleJoinVocal);
+      socket?.off(`leftvocal`, handleLeftVocal);
+    };
+  }, [socket]);
+
   const handleTextChannelCreated = (chan: Channel) => {
     setTextChannelList((prevState) => [...prevState, chan]);
   };
@@ -150,15 +159,6 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
       })
     );
   };
-
-  useEffect(() => {
-    socket?.on(`joiningvocal`, handleJoinVocal);
-    socket?.on(`leftvocal`, handleLeftVocal);
-    return () => {
-      socket?.off(`joiningvocal`, handleJoinVocal);
-      socket?.off(`leftvocal`, handleLeftVocal);
-    };
-  }, [socket]);
 
   useEffect(() => {
     socket?.on(

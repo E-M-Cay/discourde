@@ -176,6 +176,7 @@ export const StatusBar = () => {
         borderRight: 0,
         padding: 0,
         overflowY: 'scroll',
+        backgroundColor: '#2F3136',
       }}
     >
       <Collapse defaultActiveKey={['1', '2']} ghost>

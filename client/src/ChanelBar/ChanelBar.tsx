@@ -366,7 +366,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
 
   return (
     <div
-      style={{ width: '100%', backgroundColor: '#1F1F1F' }}
+      style={{ width: '100%', height: '100vh', backgroundColor: '#2F3136' }}
       className='site-layout-background'
     >
       <ServerParamsModal
@@ -403,17 +403,33 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
 
       {!isHome && (
         <Dropdown overlay={menu} trigger={['click']}>
-          <ul onClick={(e) => e.preventDefault()}>
-            <Space>
-              <p style={{ color: 'white' }} className='serverName'>
-                {serverName}
-                <a onClick={() => setmenuState(!stateMenu)}>
+          <ul style={{ cursor: 'pointer' }} onClick={(e) => e.preventDefault()}>
+            <Space style={{ paddingLeft: 0 }}>
+              <p
+                style={{
+                  color: 'white',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  width: '200px',
+                  margin: '5px 0 0 0',
+                  cursor: 'pointer',
+                }}
+                className='serverName'
+              >
+                <div style={{ fontWeight: 'bold' }}>
+                  {serverName.charAt(0).toUpperCase() + serverName.slice(1)}
+                </div>
+                <div onClick={() => setmenuState(!stateMenu)}>
                   {stateMenu ? (
-                    <DownOutlined className='menuIcon' />
+                    <DownOutlined
+                      style={{ fontSize: '15px', fontWeight: 'bolder' }}
+                    />
                   ) : (
-                    <CloseOutlined className='menuIcon' />
+                    <CloseOutlined
+                      style={{ fontSize: '15px', fontWeight: 'bolder' }}
+                    />
                   )}
-                </a>
+                </div>
               </p>
             </Space>
           </ul>
@@ -429,6 +445,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
           padding: 0,
           flexWrap: 'wrap',
           overflowY: 'scroll',
+          borderTop: '1px solid #353535',
         }}
       >
         {!isHome && (
@@ -441,10 +458,16 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
           />
         )}
       </div>
-      <div style={{ backgroundColor: '#353535' }}>
+      <div style={{ backgroundColor: '#292B2F !important', height: '19vh' }}>
         <Card
           title={
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div
+              style={{
+                display: 'flex',
+                backgroundColor: '#292B2F',
+                justifyContent: 'start',
+              }}
+            >
               <Avatar
                 size={30}
                 src={
@@ -452,8 +475,10 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
                   'https://randomuser.me/api/portraits/women/1.jpg'
                 }
               />
-              <Typography>{me?.username || 'random'}</Typography>
-              <div></div>
+              {' S'}
+              <Typography style={{ color: 'white', fontWeight: 'bold' }}>
+                {me?.username || 'random'}
+              </Typography>
             </div>
           }
           extra={
@@ -468,7 +493,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
               </Tooltip>
             </a>
           }
-          style={{ backgroundColor: '#353535', border: 0 }}
+          style={{ backgroundColor: '#292B2F', border: 0, height: '19vh' }}
         >
           <Tooltip placement='top' title={'Micro'}>
             <a onClick={() => setmicState(!stateMic)}>

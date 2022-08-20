@@ -1,49 +1,79 @@
 .headerPanel {
-    font-size: medium;
+  font-size: medium;
 }
 .panelContent {
-    font-size: medium;
-    padding: 5px 10px;
-    border-radius: 8px;
-    color:#b2b2b2;
+  font-size: medium;
+  padding: 5px 10px;
+  border-radius: 8px;
+  color: #18191c;
 }
 .panelContent:hover {
-   
-    color:#e5e5e5 !important;
-    background-color: #4c4c4c;
+  color: #e5e5e5 !important;
+  background-color: #4c4c4c;
 }
 .serverName {
-    font-size: larger !important;
-    text-align: center !important;
+  font-size: larger !important;
+  text-align: center !important;
 }
-.avatarCard{
-    position: fixed;
-    width: 13vw !important;
-    background-color: #1F1F1F;
-    border: none;
-    bottom: 0;
+.avatarCard {
+  position: fixed;
+  width: 13vw !important;
+  background-color: #1f1f1f;
+  border: none;
+  bottom: 0;
 }
 .microOn {
-    color: green !important;
-    font-size: larger;
-    padding: 3px;
+  color: green !important;
+  font-size: larger;
+  padding: 3px;
 }
 .microOff {
-    color: red ! important;
-    font-size: larger;
-    padding: 3px;
+  color: red !important;
+  font-size: larger;
+  padding: 3px;
 }
 .menuIcon {
-    color: white !important;
-    font-size: larger !important;
+  color: white !important;
+  font-size: 10px !important;
+}
+.ant-dropdown-menu {
+  background-color: #18191c !important;
 }
 .menu {
-    background-color: #060606 !important;
-    border-radius: 8px;
-    position: relative;
+  background-color: #18191c !important;
+  border-radius: 8px;
+  position: relative;
+  width: 88%;
+  margin: auto;
+  padding: 3%;
+}
+.ant-dropdown-menu-item-divider {
+  max-width: 90%;
+  margin-left: 5%;
+  background-color: #33353b;
 }
 .iconChan {
-    font-style: italic !important;
+  font-style: italic !important;
 }
-
-
+.ant-dropdown-trigger {
+  padding-left: 15px;
+  margin-bottom: 10px;
+}
+.purple-item {
+  color: #515687;
+}
+.red-item {
+  color: red;
+}
+.ant-dropdown-menu-item {
+  border-radius: 3px;
+  color: #8b8f93;
+}
+.ant-dropdown-menu-item:hover {
+  background-color: #4752c4;
+  color: #ffffff !important;
+}
+.menu-hover:hover {
+  background-color: #4752c4;
+  color: #ffffff !important;
+}

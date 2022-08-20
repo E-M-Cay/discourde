@@ -155,11 +155,11 @@ export const LeftBar = (props: {
           height: '100vh',
           borderRight: 0,
           padding: 0,
-          width: '70px',
-          display: 'flex',
-          justifyContent: 'center',
+          paddingLeft: '7px',
+          width: '87px',
           flexWrap: 'wrap',
           overflowY: 'scroll',
+          backgroundColor: '#202225',
         }}
       >
         <CustomLimage key={0} />
@@ -179,11 +179,14 @@ export const LeftBar = (props: {
             className={'imgS'}
             style={{
               margin: '5px auto',
-              width: '100%',
-              height: '40px',
+              width: '60px',
+              height: '60px',
               backgroundColor: isFocused ? '#4b4b4b' : '#353535',
               borderRadius: '30px',
               cursor: 'pointer',
+              fontSize: '40px',
+              padding: '10px',
+              color: 'lightgreen',
             }}
           />
         </Tooltip>

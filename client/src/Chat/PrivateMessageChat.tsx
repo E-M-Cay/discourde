@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { NotificationsContext } from '../context/NotificationsContext';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { UserMapsContext } from '../context/UserMapsContext';
@@ -13,10 +13,12 @@ const PrivateMessageChat = () => {
   );
   const me = useAppSelector((state) => state.userReducer.me);
   const [messages, setMessages] = useState<PrivateMessage[]>([]);
-  const [name, setName] = useState<string>('user name');
+  const [name, setName] = useState<string>('');
   const { socket } = useContext(PeerSocketContext);
   const { privateChatMap } = useContext(UserMapsContext);
   const { notifications, addNotification } = useContext(NotificationsContext);
+
+  const bottomRef = useRef<any>(null);
 
   useEffect(() => {
     if (activePrivateChat) {
@@ -51,6 +53,14 @@ const PrivateMessageChat = () => {
     };
   }, [socket, receiveMessage]);
 
+  const scrollToBottom = () => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   return (
     <div className='message'>
       <div>{name}</div>
@@ -71,6 +81,7 @@ const PrivateMessageChat = () => {
           )
         );
       })}
+      <span style={{ height: 0 }} ref={bottomRef} />
     </div>
   );
 };

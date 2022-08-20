@@ -27,7 +27,7 @@ export const Main = (props: {
       className='main'
     >
       <GeneralSettings />
-      <Col style={{ backgroundColor: '#535151' }} span={3.5}>
+      <Col style={{ backgroundColor: '#535151' }} span={3}>
         {isHome ? (
           <PrivateChatBar />
         ) : (
@@ -38,7 +38,7 @@ export const Main = (props: {
         {/* <CallPanel /> */}
         <Chat />
       </Col>
-      <Col style={{ backgroundColor: 'grey' }} span={4}>
+      <Col style={{ backgroundColor: 'grey' }} span={3}>
         {isHome ? <FriendPanel setServers={setServers} /> : <StatusBar />}
       </Col>
     </Row>

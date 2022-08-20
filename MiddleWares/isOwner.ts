@@ -6,23 +6,26 @@ import { Server } from '../entities/Server';
 const serverRepository = AppDataSource.getRepository(Server);
 
 export const isOwner = async (
-    req: IRequest,
-    res: Response,
-    next: NextFunction
+  req: IRequest,
+  res: Response,
+  next: NextFunction
 ) => {
-    try {
-        const exists = await serverRepository.countBy({
-            id: Number(req.params.id),
-            owner: {
-                id: req.id,
-            },
-        });
-        if (exists) {
-            next();
-        }
-    } catch (e) {
-        return res.status(401).send({ e });
-    }
+  try {
+    const serverId = req.params.server_id || req.body.server || req.body.server_id;
 
-    return res.status(200).send({ error: 'Not owner of server' });
+    if (!serverId) throw new Error('no server id');
+
+    const exists = await serverRepository.countBy({
+      id: serverId,
+      owner: {
+        id: req.id,
+      },
+    });
+    if (!exists) {
+      return res.status(401).send({ error: 'Not owner of server' });
+    }
+    next();
+  } catch (e) {
+    return res.status(401).send('error');
+  }
 };

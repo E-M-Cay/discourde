@@ -1,0 +1,45 @@
+.vocStyle {
+    background-color: black !important;
+    width: 65vw;
+    height: 100vh;
+}
+
+.vocStyle:hover {
+    background-color: #232222 !important;
+}
+.vocStyle button {
+    display: none;  
+}
+.vocStyle header{
+    display: none;
+}
+.vocStyle:hover header{
+    font-size: 200%;
+    display: inline ;
+}
+
+.vocStyle:hover button {
+    display: inline;
+    color: grey;
+    border: none;
+    font-size: x-large;
+    cursor: pointer ;
+    background-color: #232222;
+}
+
+
+#phone:hover , #audio:hover {
+    color: red;
+    font-size: 110%;
+}
+#menu {
+    margin-right: 0 !important;
+}
+#menu:hover {
+    font-size: 110%;
+}
+
+.volSider {
+    display: 'inline-block';
+    height: 100px;
+}

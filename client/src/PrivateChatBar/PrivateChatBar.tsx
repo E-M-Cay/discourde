@@ -1,57 +1,57 @@
 import { Typography } from 'antd';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { UserMapsContext } from '../context/UserMapsContext';
 import { CustomImageChat } from '../CustomLi/CustomLi';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { setActivePrivateChat } from '../redux/userSlice';
 import { PrivateChatMap } from '../types/types';
 
-const PrivateChatBar = (props: { privateChatMap: PrivateChatMap }) => {
-    const { privateChatMap } = props;
-    const dispatch = useAppDispatch();
+const PrivateChatBar = () => {
+  const dispatch = useAppDispatch();
+  const { privateChatMap } = useContext(UserMapsContext);
 
-    // useEffect(() => {
-    //     console.log(privateChatMap, 'from bar');
-    //     console.table(Array.from(privateChatMap.entries()));
-    // }, [privateChatMap]);
+  const onClickHandler = (id: number) => {
+    dispatch(setActivePrivateChat(id));
+  };
 
-    const onClickHandler = (id: number) => {
-        dispatch(setActivePrivateChat(id));
-    };
-
-    return (
-        <div>
-            {Array.from(privateChatMap.entries()).map(([id, user]) => (
-                <div
-                    key={id}
-                    className='hoStat'
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        maxWidth: '300px',
-                    }}>
-                    <CustomImageChat
-                        key={id}
-                        id={id}
-                        picture={user.picture}
-                        nickname={user.username}
-                        onClickHandler={onClickHandler}
-                    />{' '}
-                    <Typography
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            paddingLeft: '30px',
-                            fontWeight: 'bold',
-                            color: '#A1A1A1',
-                        }}>
-                        {user.username}
-                    </Typography>{' '}
-                </div>
-            ))}
+  return (
+    <div style={{ backgroundColor: '#2F3136', height: '100vh' }}>
+      {Array.from(privateChatMap.entries()).map(([id, user]) => (
+        <div
+          key={id}
+          className='hoStat'
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            maxWidth: '300px',
+          }}
+        >
+          <CustomImageChat
+            key={id}
+            id={id}
+            picture={user.picture}
+            nickname={user.username}
+            onClickHandler={onClickHandler}
+          />
+          <Typography
+            style={{
+              width: '100%',
+              height: '100%',
+              paddingLeft: '5px',
+              fontWeight: 'bold',
+              color: '#A1A1A1',
+            }}
+          >
+            {user.username.length > 15
+              ? user.username.slice(0, 15) + '...'
+              : user.username}
+          </Typography>
         </div>
-    );
+      ))}
+    </div>
+  );
 };
 
 export default PrivateChatBar;

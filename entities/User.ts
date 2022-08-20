@@ -16,6 +16,7 @@ import { FriendRequest } from './FriendRequest';
 import { Friendship } from './Friendship';
 import { PrivateMessage } from './PrivateMessage';
 import { Server } from './Server';
+import { ServerInvitation } from './ServerInvitation';
 import { ServerUser } from './ServerUser';
 
 @Entity()
@@ -77,24 +78,16 @@ export class User {
     )
     channel_messages: ChannelMessage[];
 
-    @OneToMany(
-        () => Friendship,
-        (friendship) => {
-            friendship.user1, friendship.user2;
-        },
-        {
-            cascade: ['insert'],
-        }
-    )
+    @OneToMany(() => Friendship, (friendship) => friendship.user1, {
+        cascade: ['insert'],
+    })
     friendshipsSent: Friendship[];
 
     @OneToMany(
         () => Friendship,
         (friendship) => friendship.user1,
 
-        {
-            cascade: ['insert'],
-        }
+        { cascade: ['insert'] }
     )
     friendshipsReceived: Friendship[];
 
@@ -111,7 +104,7 @@ export class User {
     @OneToMany(() => FriendRequest, (friendRequest) => friendRequest.receiver, {
         cascade: ['insert'],
     })
-    receivedFriendRequest: FriendRequest[];
+    receivedFriendRequests: FriendRequest[];
 
     @OneToMany(() => PrivateMessage, (message) => message.user1, {
         cascade: ['insert'],
@@ -123,9 +116,26 @@ export class User {
     })
     privateMessagesReceived: PrivateMessage[];
 
+    @OneToMany(() => ServerInvitation, (invitation) => invitation.sender, {
+        cascade: ['insert'],
+    })
+    sentInvitations: ServerInvitation[];
+
+    @OneToMany(() => ServerInvitation, (invitation) => invitation.receiver, {
+        cascade: ['insert'],
+    })
+    receivedInvitations: ServerInvitation[];
+
     @AfterLoad()
     setStatus() {
         this.status = global.user_id_to_status.get(this.id) || 0;
         this.vocalChannel = 0;
     }
+
+    // // receivedServerInvitations
+    // @ManyToMany(() => Server, (server) => server.receivedInvitations, {
+    //     cascade: ['insert'],
+    // } as any)
+    // @JoinTable()
+    // receivedServerInvitations: Server[];
 }

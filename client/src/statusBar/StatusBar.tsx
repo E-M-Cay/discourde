@@ -1,161 +1,262 @@
-import { Button, Collapse, Dropdown, Menu, Typography } from 'antd';
-import { useState } from 'react';
+import { Button, Collapse, Dropdown, Menu, Modal, Typography } from 'antd';
+import axios from 'axios';
+import { useContext, useState } from 'react';
+import { UserMapsContext } from '../context/UserMapsContext';
 import { CustomImage } from '../CustomLi/CustomLi';
+import { UserProfileModal } from '../Modals/Modals';
+import UserProfileSettings from '../Modals/UserProfileSettings';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { PrivateChatMap, User, UserMap } from '../types/types';
+import { PrivateChatMap, User, ServerUserMap } from '../types/types';
 
 //const { Title } = Typography;
 const { Panel } = Collapse;
 
-export const StatusBar = (props: {
-    userMap: UserMap;
-    privateChatMap: PrivateChatMap;
-    addPrivateChat: (user: any) => void;
-}) => {
-    const { userMap, privateChatMap, addPrivateChat } = props;
-    const [activeUser, setActiveUser] = useState<User | undefined>(undefined);
+export const StatusBar = () => {
+  const { openPrivateChat, serverUserMap } = useContext(UserMapsContext);
 
-    //antd menu for dropdown
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User>();
 
-  const menu = (
-    <Menu
-      items={[
-        {
-          key: "1",
-          label: (
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => addPrivateChat(activeUser)}
-            >
-              message
-            </a>
-          ),
-        },
-        {
-          key: "2",
-          label: (
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://www.aliyun.com"
-            >
-              ajouter en ami
-            </a>
-          ),
-        },
-        {
-          key: "3",
-          label: (
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://www.luohanacademy.com"
-            >
-              role
-            </a>
-          ),
-        },
-        {
-          key: "4",
-          label: (
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://www.luohanacademy.com"
-            >
-              exclure
-            </a>
-          ),
-        },
-      ]}
-    />
-  );
+  const me = useAppSelector((state) => state.userReducer.me);
+
+  const showModal = (user: User) => {
+    setSelectedUser(user);
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  //antd menu for dropdown
+
+  const menu = (user: User) => {
+    return (
+      <Menu
+        items={[
+          (me?.id !== user.id && {
+            key: '1',
+            label: (
+              <a
+                target='_blank'
+                rel='noopener noreferrer'
+                onClick={() => openPrivateChat(user)}
+              >
+                message
+              </a>
+            ),
+          }) ||
+            null,
+          {
+            key: '3',
+            label: (
+              <a
+                target='_blank'
+                rel='noopener noreferrer'
+                href='https://www.luohanacademy.com'
+              >
+                role
+              </a>
+            ),
+          },
+          (me?.id !== user.id && {
+            key: '4',
+            label: (
+              <a
+                target='_blank'
+                rel='noopener noreferrer'
+                href='https://www.luohanacademy.com'
+              >
+                exclure
+              </a>
+            ),
+          }) ||
+            null,
+          {
+            key: '5',
+            label: (
+              <>
+                <div onClick={() => showModal(user)}>Profil</div>
+                <Modal
+                  title='profil'
+                  visible={isModalVisible}
+                  onOk={handleOk}
+                  onCancel={handleCancel}
+                  footer={null}
+                >
+                  {user.id === me?.id ? (
+                    <UserProfileSettings />
+                  ) : (
+                    <UserProfileModal
+                      openPrivateChat={openPrivateChat}
+                      user={selectedUser ?? user}
+                    />
+                  )}
+                </Modal>
+              </>
+            ),
+          },
+        ]}
+      />
+    );
+  };
+
+  const menu2 = (user: User) => {
+    return (
+      <Menu
+        items={[
+          (me?.id !== user.id && {
+            key: '1',
+            label: <p onClick={() => openPrivateChat(user)}>message</p>,
+          }) ||
+            null,
+          {
+            key: '3',
+            label: (
+              <a
+                target='_blank'
+                rel='noopener noreferrer'
+                href='https://www.luohanacademy.com'
+              >
+                role
+              </a>
+            ),
+          },
+          (me?.id !== user.id && {
+            key: '4',
+            label: (
+              <a
+                target='_blank'
+                rel='noopener noreferrer'
+                href='https://www.luohanacademy.com'
+              >
+                exclure
+              </a>
+            ),
+          }) ||
+            null,
+          {
+            key: '5',
+            label: (
+              <>
+                <div onClick={() => showModal(user)}>Profil</div>
+                <Modal
+                  title='profil'
+                  visible={isModalVisible}
+                  onOk={handleOk}
+                  onCancel={handleCancel}
+                  footer={null}
+                >
+                  {user.id === me?.id ? (
+                    <UserProfileSettings />
+                  ) : (
+                    <UserProfileModal
+                      openPrivateChat={openPrivateChat}
+                      user={selectedUser ?? user}
+                    />
+                  )}
+                </Modal>
+              </>
+            ),
+          },
+        ]}
+      />
+    );
+  };
 
   return (
     <div
-      className={"scrollIssue"}
+      className={'scrollIssue'}
       style={{
-        height: "100vh",
+        height: '100vh',
         borderRight: 0,
         padding: 0,
-        overflowY: "scroll",
+        overflowY: 'scroll',
+        backgroundColor: '#2F3136',
       }}
     >
-      <Collapse defaultActiveKey={["1", "2"]} ghost>
-        <Panel key="1" header="en ligne" style={{ margin: "0 !important" }}>
-          {Array.from(userMap.entries()).map(([id, user]) =>
+      <Collapse defaultActiveKey={['1', '2']} ghost>
+        <Panel key='1' header='en ligne' style={{ margin: '0 !important' }}>
+          {Array.from(serverUserMap.entries()).map(([id, user]) =>
             user.user.status ? (
-                <Dropdown overlay={menu}  placement="bottomLeft" arrow>
-
-              <div
+              <Dropdown
                 key={id}
-                onMouseEnter={() => setActiveUser(user.user)}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  alignItems: "center",
-                  maxWidth: "300px",
-                }}
-                className="hoStat"
+                overlay={menu(user.user)}
+                placement='bottomLeft'
+                trigger={['click']}
+                arrow
               >
-                {" "}
-                <CustomImage
-                  obj={user}
-                  privateChatMap={privateChatMap}
-                  addPrivateChat={addPrivateChat}
+                <div
                   key={id}
-                />{" "}
-                <Typography
                   style={{
-                    width: "100%",
-                    paddingLeft: "30px",
-                    fontWeight: "bold",
-                    color: "#A1A1A1",
+                    display: 'flex',
+                    justifyContent: 'space-around',
+                    alignItems: 'center',
+                    maxWidth: '300px',
                   }}
+                  className='hoStat'
                 >
-                  {user.nickname}
-                </Typography>{" "}
-              </div>
-                </Dropdown>
+                  {' '}
+                  <CustomImage obj={user} key={id} />{' '}
+                  <Typography
+                    style={{
+                      width: '100%',
+                      paddingLeft: '10px',
+                      fontWeight: 'bold',
+                      color: '#A1A1A1',
+                    }}
+                  >
+                    {user.nickname.length > 14
+                      ? user.nickname.slice(0, 14) + '...'
+                      : user.nickname}
+                  </Typography>{' '}
+                </div>
+              </Dropdown>
             ) : null
           )}
         </Panel>
-        <Panel key="2" header="hors ligne" style={{ margin: "0 !important" }}>
-          {Array.from(userMap.entries()).map(([id, user]) =>
+        <Panel key='2' header='hors ligne' style={{ margin: '0 !important' }}>
+          {Array.from(serverUserMap.entries()).map(([id, user]) =>
             !user.user.status ? (
-              <div
+              <Dropdown
                 key={id}
-                className="hoStat"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  maxWidth: "300px",
-                }}
+                overlay={menu2(user.user)}
+                placement='bottomLeft'
+                trigger={['click']}
+                arrow
               >
-                <Dropdown overlay={menu} placement="bottomLeft" arrow>
-                  <CustomImage
-                    obj={user}
-                    privateChatMap={privateChatMap}
-                    addPrivateChat={addPrivateChat}
-                    key={id}
-                  />{" "}
+                <div
+                  key={id}
+                  className='hoStat'
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    maxWidth: '300px',
+                  }}
+                >
+                  <CustomImage obj={user} key={id} />{' '}
                   <Typography
                     style={{
-                      width: "100%",
-                      height: "100%",
-                      paddingLeft: "30px",
-                      fontWeight: "bold",
-                      color: "#A1A1A1",
+                      width: '100%',
+                      height: '100%',
+                      paddingLeft: '10px',
+                      fontWeight: 'bold',
+                      color: '#A1A1A1',
                     }}
                   >
-                    {user.nickname}
-                  </Typography>{" "}
-                </Dropdown>
-              </div>
+                    {user.nickname.length > 14
+                      ? user.nickname.slice(0, 14) + '...'
+                      : user.nickname}
+                  </Typography>{' '}
+                </div>
+              </Dropdown>
             ) : (
-              ""
+              ''
             )
           )}
         </Panel>

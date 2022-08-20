@@ -1,72 +1,65 @@
 import {
   AudioMutedOutlined,
   AudioOutlined,
-  BellOutlined,
-  BorderlessTableOutlined,
   CloseOutlined,
   CustomerServiceOutlined,
   DownOutlined,
-  LogoutOutlined,
-  PlusCircleOutlined,
+  PhoneOutlined,
   SettingOutlined,
-  SoundOutlined,
-  TeamOutlined,
-  UserAddOutlined,
-} from "@ant-design/icons";
+  UserOutlined,
+} from '@ant-design/icons';
 import {
-  Button,
+  Avatar,
   Card,
   Collapse,
   Dropdown,
-  Menu,
   Space,
   Tooltip,
-  Modal,
   Typography,
-  Input,
-  Checkbox,
-} from "antd";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import "./ChanelBar.css";
-import axios from "axios";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { setActiveChannel, setActiveVocalChannel } from "../redux/userSlice";
-import { PeerSocketContext } from "../context/PeerSocket";
-import { PrivateChatMap, User, UserMap } from "../types/types";
-import { CustomImage } from "../CustomLi/CustomLi";
+} from 'antd';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import './ChanelBar.css';
+import axios from 'axios';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
+import { PeerSocketContext } from '../context/PeerSocket';
+import { Channel, VocalChan } from '../types/types';
+import { CustomImage } from '../CustomLi/CustomLi';
+import { ServerChannels, ServerInvit } from '../Modals/Modals';
+import { DropdownMenu } from '../DropdownMenu/DropdownMenu';
+import { ChannelCollapse } from '../ChannelCollapse/ChannelCollapse';
+import { openNotification } from '../notificationHandler/notificationHandler';
+import { NotificationsContext } from '../context/NotificationsContext';
+import ServerParamsModal from '../Modals/ServerParamsModal';
 
 const { Panel } = Collapse;
 
-interface Channel {
-  hidden: boolean;
-  id: number;
-  name: string;
-}
-
-interface VocalChan extends Channel {
-  users: number[];
-}
-
-export const ChanelBar = (props: {
-  userMap: UserMap;
-  privateChatMap: PrivateChatMap;
-  addPrivateChat: (user: User) => void;
-}) => {
-  const { userMap, privateChatMap, addPrivateChat } = props;
+export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
+  const { handleLeaveServer } = props;
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
   );
-  const { peer, socket } = useContext(PeerSocketContext);
+  const activeServerName = useAppSelector(
+    (state) => state.userReducer.activeServerName
+  );
+  const activeChannel = useAppSelector(
+    (state) => state.userReducer.activeChannel
+  );
+  const { socket } = useContext(PeerSocketContext);
+  const { notifications, addNotification } = useContext(NotificationsContext);
   const dispatch = useAppDispatch();
-  const headerTxt: string = "SALONS TEXTUELS";
-  const headerVoc: string = "SALONS VOCAUX";
-  const serverName: string = "TEEEST SERVEUR";
+  const headerTxt: string = 'SALONS TEXTUELS';
+  const headerVoc: string = 'SALONS VOCAUX';
+  const serverName: string = activeServerName ?? 'Serveur';
   const [vocalChannelList, setVocalChannelList] = useState<VocalChan[]>([]);
   const [textChannelList, setTextChannelList] = useState<Channel[]>([]);
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
   );
+
   const isHome = useAppSelector((state) => state.userReducer.home);
+
+  const { Panel } = Collapse;
 
   let micro: boolean = true;
 
@@ -75,14 +68,16 @@ export const ChanelBar = (props: {
       axios
         .get(`/channel/list/${activeServer}`, {
           headers: {
-            access_token: localStorage.getItem("token") as string,
+            access_token: localStorage.getItem('token') as string,
           },
         })
         .then((res) => {
           setVocalChannelList(res.data.vocal);
           setTextChannelList(res.data.text);
-          console.log(res.data.text[0]);
-          dispatch(setActiveChannel(res.data.text[0].id));
+          //   console.log(res.data.text[0]);
+          if (res.data.text.length > 0) {
+            dispatch(setActiveChannel(res.data.text[0].id));
+          }
         });
   }, [activeServer, dispatch]);
 
@@ -95,14 +90,14 @@ export const ChanelBar = (props: {
       console.log(id, activeVocalChannel);
       if (activeVocalChannel === id) return;
       dispatch(setActiveVocalChannel(id));
-      //socket?.emit('joinvocalchannel', id);
     },
-    [socket, activeVocalChannel]
+    [activeVocalChannel, dispatch]
   );
 
   const handleJoinVocal = (data: { user: number; chan: number }) => {
     const { user, chan } = data;
-
+    let audio = new Audio('/task-completed-message-ringtone.mp3');
+    audio.play();
     setVocalChannelList((prevState) => {
       return prevState.map((c) => {
         if (c.id === chan) {
@@ -115,7 +110,9 @@ export const ChanelBar = (props: {
 
   const handleLeftVocal = (data: { user: number; chan: number }) => {
     const { user, chan } = data;
-    console.log("left vocal", user, chan);
+    console.log('left vocal', user, chan);
+    let audio = new Audio('/abduction-265.mp3');
+    audio.play();
     setVocalChannelList((prevState) => {
       return prevState.map((c) => {
         if (c.id === chan) {
@@ -135,20 +132,129 @@ export const ChanelBar = (props: {
     };
   }, [socket]);
 
+  const handleTextChannelCreated = (chan: Channel) => {
+    setTextChannelList((prevState) => [...prevState, chan]);
+  };
+
+  const handleVocalChannelCreated = (chan: VocalChan) => {
+    console.log('new voc chan', chan.name);
+    setVocalChannelList((prevState) => [...prevState, chan]);
+  };
+  const handleVocalChannelChange = (chan: VocalChan) => {
+    setVocalChannelList((prevState) =>
+      prevState.map((c) => {
+        if (c.id === chan.id) {
+          return chan;
+        }
+        return c;
+      })
+    );
+  };
+
+  const handleTextChannelChange = (chan: Channel) => {
+    console.log(chan);
+    setTextChannelList((prevState) =>
+      prevState.map((c) => {
+        if (c.id === chan.id) {
+          return chan;
+        }
+        return c;
+      })
+    );
+  };
+
+  const handleVocalChannelDelete = useCallback(
+    (chan: number) => {
+      if (chan === activeVocalChannel) {
+        dispatch(setActiveVocalChannel(0));
+      }
+      setVocalChannelList((prevState) =>
+        prevState.filter((c) => c.id !== chan)
+      );
+    },
+    [activeVocalChannel, dispatch]
+  );
+
+  const handleTextChannelDelete = useCallback(
+    (chan: number) => {
+      if (chan === activeChannel) {
+        if (textChannelList.length <= 1) {
+          dispatch(setActiveChannel(0));
+        } else {
+          const other = textChannelList.find((c) => c.id !== chan);
+          if (!other) return;
+          dispatch(setActiveChannel(other.id));
+        }
+      }
+      setTextChannelList((prevState) => prevState.filter((c) => c.id !== chan));
+    },
+    [activeChannel, textChannelList, dispatch]
+  );
+
+  useEffect(() => {
+    socket?.on(
+      `textchannelcreated:server${activeServer}`,
+      handleTextChannelCreated
+    );
+    socket?.on(
+      `vocalchannelcreated:server${activeServer}`,
+      handleVocalChannelCreated
+    );
+    socket?.on(
+      `textchannelchange:server${activeServer}`,
+      handleTextChannelChange
+    );
+    socket?.on(
+      `vocalchannelchange:server${activeServer}`,
+      handleVocalChannelChange
+    );
+    socket?.on(
+      `vocalchannelchange:server${activeServer}`,
+      handleVocalChannelDelete
+    );
+    socket?.on(`vocalchanneldelete`, handleVocalChannelDelete);
+    socket?.on(
+      `textchanneldelete:server${activeServer}`,
+      handleTextChannelDelete
+    );
+
+    return () => {
+      socket?.off(
+        `textchannelcreated:server${activeServer}`,
+        handleTextChannelCreated
+      );
+      socket?.off(
+        `vocalchannelcreated:server${activeServer}`,
+        handleVocalChannelCreated
+      );
+      socket?.off(
+        `textchannelchange:server${activeServer}`,
+        handleTextChannelChange
+      );
+      socket?.off(
+        `vocalchannelchange:server${activeServer}`,
+        handleVocalChannelChange
+      );
+      socket?.off(`vocalchanneldelete`, handleVocalChannelDelete);
+      socket?.off(
+        `textchanneldelete:server${activeServer}`,
+        handleTextChannelDelete
+      );
+    };
+  }, [socket, activeServer, handleVocalChannelDelete, handleTextChannelDelete]);
+
   const [stateMic, setmicState] = useState(true);
   const [stateHead, setheadState] = useState(true);
   const [isModify, setIsModify] = useState(0);
   const [isModifyVoc, setIsModifyVoc] = useState(0);
   const [stateMenu, setmenuState] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [newTextChannelName, setNewTextChannelName] = useState("");
+  const [newTextChannelName, setNewTextChannelName] = useState('');
   const [isAdminChannel, setIsAdminChannel] = useState(false);
   const [modifingChannel, setModifingChannel] = useState<any>(null);
   const [isModalVisibleInvitation, setIsModalVisibleInvitation] =
     useState(false);
   const [isModalVisibleParams, setIsModalVisibleParams] = useState(false);
-  const [channelName, setChannelName] = useState("");
-  
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -172,56 +278,40 @@ export const ChanelBar = (props: {
   const handleCancel2 = () => {
     setIsModalVisibleInvitation(false);
   };
-  const showModal3 = () => {
+  const showServerParamsModal = () => {
     setIsModalVisibleParams(true);
   };
 
-  const handleOk3 = () => {
-    setIsModalVisibleParams(false);
-  };
-
-  const handleCancel3 = () => {
-    setIsModalVisibleParams(false);
-  };
-
-  const handleUpdateChannel = (txtChan: Channel | undefined , vocChan:  VocalChan | undefined ) => {
-      axios
-        .put(`/${vocChan ? "vocal" : ""}channel/update`, vocChan ?? txtChan, {
-          headers: {
-            access_token: localStorage.getItem("token") as string,
-          },
-        })
-        .then((res) => {
-          if (res.status === 200) {
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-  };
-
   const handleCreateChannel = (isVocal: any) => {
-    console.log(isVocal, "rcvghjbknl", newTextChannelName);
+    console.log(isVocal, 'rcvghjbknl', newTextChannelName);
     if (newTextChannelName.length > 0) {
       axios
         .post(
-          `/${isVocal ? "vocalc" : "c"}hannel/create`,
+          `/${isVocal ? 'vocalc' : 'c'}hannel/create`,
           {
             name: newTextChannelName,
-            server_id: activeServer,
+            server: activeServer,
             hidden: isAdminChannel,
           },
           {
             headers: {
-              access_token: localStorage.getItem("token") as string,
+              access_token: localStorage.getItem('token') as string,
             },
           }
         )
         .then((res) => {
-          isVocal
-            ? setVocalChannelList([...vocalChannelList, res.data])
-            : setTextChannelList([...textChannelList, res.data]);
-          setNewTextChannelName("");
+          if ((res.status = 204)) {
+            setNewTextChannelName('');
+            addNotification({
+              type: 'success',
+              title: 'success',
+              content: 'Channel created',
+              isTmp: true,
+            });
+          }
+          let audio = new Audio('/upset-sound-tone.mp3');
+          audio.play();
+          // setNotifications(...notifications);
         })
         .catch((err) => {
           console.log(err);
@@ -234,298 +324,112 @@ export const ChanelBar = (props: {
 
   const handleModifyChannelText = (chan: Channel) => {
     setModifingChannel(chan);
-    setIsModify(chan.id)
-  }
+    setIsModify(chan.id);
+  };
   const handleModifyChannelVoc = (chan: Channel) => {
     setModifingChannel(chan);
-    setIsModifyVoc(chan.id)
-  }
-
-
-
-  const createChannel = (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("bhfdksdklf");
-    e.preventDefault();
-    axios
-      .post(
-        "channel/create",
-        { name: channelName, server_id: activeServer },
-        {
-          headers: {
-            access_token: localStorage.getItem("token") as string,
-          },
-        }
-      )
-      .then((res) => {
-        setIsModalVisible(false);
-      });
+    setIsModifyVoc(chan.id);
   };
 
   const deleteServer = useCallback(() => {
     axios.delete(`/server/delete_server/${activeServer}`, {
-      headers: { access_token: localStorage.getItem("token") as string },
+      headers: {
+        access_token: localStorage.getItem('token') as string,
+      },
     });
   }, [activeServer]);
 
   const handleLinkCreation = () => {
     const id: string = Math.random().toString(16).slice(2);
     axios.post(
-      "/server/link",
+      '/server/link',
       { uuid: id, server: activeServer },
       {
         headers: {
-          access_token: localStorage.getItem("token") as string,
+          access_token: localStorage.getItem('token') as string,
         },
       }
     );
   };
 
   const menu = (
-    <Menu
-      className="menu"
-      items={[
-        {
-          label: (
-            <li style={{ color: "white" }} key={0} onClick={showModal2}>
-              <UserAddOutlined
-                style={{
-                  color: "darkgrey",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Inviter des gens{" "}
-            </li>
-          ),
-          key: "0",
-        },
-        {
-          label: (
-            <li style={{ color: "white" }} key={1}>
-              <TeamOutlined
-                style={{
-                  color: "darkgrey",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Gestion des membres{" "}
-            </li>
-          ),
-          key: "1",
-        },
-        {
-          type: "divider",
-        },
-        {
-          label: (
-            <li style={{ color: "white" }} onClick={showModal3} key={2}>
-              <SettingOutlined
-                style={{
-                  color: "darkgrey",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Paramètres du serveur{" "}
-            </li>
-          ),
-          key: "2",
-        },
-        {
-          label: (
-            <li style={{ color: "white" }} key={3} onClick={showModal}>
-              <PlusCircleOutlined
-                style={{
-                  color: "darkgrey",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Créer un salon{" "}
-            </li>
-          ),
-          key: "3",
-        },
-        {
-          label: (
-            <li
-              style={{ color: "white" }}
-              key={4}
-              onClick={() => deleteServer()}
-            >
-              <PlusCircleOutlined
-                style={{
-                  color: "darkgrey",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Supprimer serveur{" "}
-            </li>
-          ),
-          key: "4",
-        },
-        {
-          type: "divider",
-        },
-        {
-          label: (
-            <li style={{ color: "white" }} key={5}>
-              <BellOutlined
-                style={{
-                  color: "darkgrey",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Notifications{" "}
-            </li>
-          ),
-          key: "5",
-        },
-        {
-          type: "divider",
-        },
-        {
-          label: (
-            <a style={{ color: "white" }} href="">
-              <LogoutOutlined
-                style={{
-                  color: "red",
-                  fontSize: "small",
-                }}
-              />{" "}
-              Quitter le serveur{" "}
-            </a>
-          ),
-          key: "6",
-        },
-      ]}
+    <DropdownMenu
+      showModal2={showModal2}
+      showServerParamsModal={showServerParamsModal}
+      showModal={showModal}
+      deleteServer={deleteServer}
+      handleLeaveServer={handleLeaveServer}
     />
   );
 
+  const me = useAppSelector((state) => state.userReducer.me);
+
   return (
     <div
-      style={{ width: "100%", backgroundColor: "#1F1F1F" }}
-      className="site-layout-background"
+      style={{ width: '100%', height: '100vh', backgroundColor: '#2F3136' }}
+      className='site-layout-background'
     >
-      <Modal
-        title="Basic Modal"
-        visible={isModalVisibleParams}
-        onOk={handleOk3}
-        onCancel={handleCancel3}
-      >
-        <Typography.Title level={4}>Paramètres du serveur</Typography.Title>
-        <Typography.Title level={5}>Channel Textuel</Typography.Title>
-        {textChannelList.map((channel: any) => (
-            (isModify === channel.id ) ? 
-                <div>
-                    <Input
-                        placeholder="Nom du salon"
-                        defaultValue={newTextChannelName}
-                        onChange={(e) => setModifingChannel((prev: any) => ({...prev, name: e.target.value}))}
-                    />
-                    <Button type="primary" onClick={() => handleUpdateChannel(modifingChannel, undefined)}>
-                        Modifier
-                    </Button>
-                    <Button type="primary" onClick={() => setIsModify(0)}>
-                        Annuler
-                    </Button>
-                </div> 
-                :
-          <div key={channel.id} onClick={() => handleModifyChannelText(channel)} >
-            <div> 
-              <span>{channel.name}</span>
-              <span>{channel.hidden ? "Caché" : "Public"}</span>
-            </div>
-            <div></div>
-          </div>
-        ))}
-        <Typography.Title level={5}>Channel Audio</Typography.Title>
-        {vocalChannelList.map((channel: any) => (
-            (isModifyVoc === channel.id ) ?
-                <div>
-                    <Input
-                        placeholder="Nom du salon"
-                        defaultValue={channel.name}
-                        onChange={(e) => setModifingChannel((prev: any) => ({...prev, name: e.target.value}))}
-                    />
-                    <Button type="primary" onClick={() => handleUpdateChannel( undefined, modifingChannel )}>
-                        Modifier
-                    </Button>
-                    <Button type="primary" onClick={() => setIsModifyVoc(0)}>
-                        Annuler
-                    </Button>
-                </div>
-                :
-            <div key={channel.id} onClick={() => handleModifyChannelVoc(channel)} >
-                <div>
-                    <span>{channel.name}</span>
-                    <span>{channel.hidden ? "Caché" : "Public"}</span>
-                </div>
-                <div></div>
-            </div>
-        ))}
-      </Modal>
-      <Modal
-        title="Basic Modal"
-        visible={isModalVisibleInvitation}
-        onOk={handleOk2}
-        onCancel={handleCancel2}
-        style={{ backgroundColor: "#1F1F1F" }}
-      >
-        <Button onClick={(e) => handleLinkCreation()}>créer lien</Button>
-      </Modal>
-      <Modal
-        title="Basic Modal"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        style={{ backgroundColor: "#1F1F1F" }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Input placeholder="Add text channel" />
-          <Checkbox onChange={(e) => setIsAdminChannel(e.target.checked)}>
-            isAdmin
-          </Checkbox>
-          <Button type="primary" onClick={() => handleCreateChannel(false)}>
-            Create
-          </Button>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Input
-            onChange={(e) => setNewTextChannelName("kggkhgghlfghkl")}
-            placeholder="Add vocal channel"
-          />
-          <Checkbox onChange={(e) => setIsAdminChannel(e.target.checked)}>
-            isAdmin
-          </Checkbox>{" "}
-          <Button type="primary" onClick={() => handleCreateChannel(true)}>
-            Create
-          </Button>
-        </div>
-      </Modal>
+      <ServerParamsModal
+        isModalVisibleParams={isModalVisibleParams}
+        textChannelList={textChannelList}
+        isModify={isModify}
+        setModifingChannel={setModifingChannel}
+        modifingChannel={modifingChannel}
+        setIsModify={setIsModify}
+        handleModifyChannelText={handleModifyChannelText}
+        vocalChannelList={vocalChannelList}
+        isModifyVoc={isModifyVoc}
+        setIsModifyVoc={setIsModifyVoc}
+        handleModifyChannelVoc={handleModifyChannelVoc}
+        setTextChannelList={setTextChannelList}
+        setVocalChannelList={setVocalChannelList}
+        setIsModalVisibleParams={setIsModalVisibleParams}
+      />
+      <ServerInvit
+        isModalVisibleInvitation={isModalVisibleInvitation}
+        handleOk2={handleOk2}
+        handleCancel2={handleCancel2}
+        handleLinkCreation={handleLinkCreation}
+        serverId={activeServer || -1}
+      />
+      <ServerChannels
+        isModalVisible={isModalVisible}
+        handleOk={handleOk}
+        handleCancel={handleCancel}
+        setNewTextChannelName={setNewTextChannelName}
+        setIsAdminChannel={setIsAdminChannel}
+        handleCreateChannel={handleCreateChannel}
+      />
 
       {!isHome && (
-        <Dropdown overlay={menu} trigger={["click"]}>
-          <ul onClick={(e) => e.preventDefault()}>
-            <Space>
-              <p style={{ color: "white" }} className="serverName">
-                {serverName}
-                <a onClick={() => setmenuState(!stateMenu)}>
+        <Dropdown overlay={menu} trigger={['click']}>
+          <ul style={{ cursor: 'pointer' }} onClick={(e) => e.preventDefault()}>
+            <Space style={{ paddingLeft: 0 }}>
+              <p
+                style={{
+                  color: 'white',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  width: '200px',
+                  margin: '5px 0 0 0',
+                  cursor: 'pointer',
+                }}
+                className='serverName'
+              >
+                <div style={{ fontWeight: 'bold' }}>
+                  {serverName.charAt(0).toUpperCase() + serverName.slice(1)}
+                </div>
+                <div onClick={() => setmenuState(!stateMenu)}>
                   {stateMenu ? (
-                    <DownOutlined className="menuIcon" />
+                    <DownOutlined
+                      style={{ fontSize: '15px', fontWeight: 'bolder' }}
+                    />
                   ) : (
-                    <CloseOutlined className="menuIcon" />
+                    <CloseOutlined
+                      style={{ fontSize: '15px', fontWeight: 'bolder' }}
+                    />
                   )}
-                </a>
+                </div>
               </p>
             </Space>
           </ul>
@@ -533,137 +437,95 @@ export const ChanelBar = (props: {
       )}
 
       <div
-        className={"scrollIssue"}
+        className={'scrollIssue'}
         style={{
-          height: "81vh",
-          width: "100%",
+          height: '81vh',
+          width: '100%',
           borderRight: 0,
           padding: 0,
-          flexWrap: "wrap",
-          overflowY: "scroll",
+          flexWrap: 'wrap',
+          overflowY: 'scroll',
+          borderTop: '1px solid rgba(26, 26, 26, 0.67)',
         }}
       >
-        {isHome && (
-          <Panel key="3" header="hors ligne" style={{ margin: "0 !important" }}>
-            {Array.from(userMap.entries()).map(([id, user]) =>
-              !user.user.status ? (
-                <div
-                  key={id}
-                  className="hoStat"
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    maxWidth: "300px",
-                  }}
-                >
-                  <CustomImage
-                    obj={user}
-                    key={id}
-                    privateChatMap={privateChatMap}
-                    addPrivateChat={addPrivateChat}
-                  />{" "}
-                  <Typography
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      paddingLeft: "30px",
-                      fontWeight: "bold",
-                      color: "#A1A1A1",
-                    }}
-                  >
-                    {user.nickname}
-                  </Typography>{" "}
-                </div>
-              ) : null
-            )}
-          </Panel>
-        )}
         {!isHome && (
-          <Collapse
-            ghost
-            defaultActiveKey={["1", "2"]}
-            onChange={onChange}
-            style={{ backgroundColor: "#1F1F1F" }}
-          >
-            <Panel className="headerPanel" header={headerTxt} key="1">
-              {textChannelList &&
-                textChannelList.map((chan) => (
-                  <li
-                    key={chan.id}
-                    onClick={() => onTextChannelClick(chan.id)}
-                    className="panelContent"
-                  >
-                    {" "}
-                    <BorderlessTableOutlined /> {chan.name}
-                  </li>
-                ))}
-            </Panel>
-
-            <Panel className="headerPanel" header={headerVoc} key="2">
-              {vocalChannelList &&
-                vocalChannelList.map((chan) => (
-                  <li
-                    key={chan.id}
-                    onClick={() => onVocalChannelClick(chan.id)}
-                    className="panelContent"
-                  >
-                    {" "}
-                    <SoundOutlined /> {chan.name}
-                    {activeVocalChannel === chan.id && (
-                      <>
-                        <br />
-                        <BorderlessTableOutlined className="activeChannel" />
-                      </>
-                    )}
-                    {chan.users.map((u) => (
-                      <div key={u}>
-                        {userMap.get(u)?.nickname || "Error retrieving user"}
-                      </div>
-                    ))}
-                  </li>
-                ))}
-            </Panel>
-          </Collapse>
+          <ChannelCollapse
+            textChannelList={textChannelList}
+            vocalChannelList={vocalChannelList}
+            onTextChannelClick={onTextChannelClick}
+            onVocalChannelClick={onVocalChannelClick}
+            activeVocalChannel={activeVocalChannel || null}
+          />
         )}
       </div>
-      <div style={{ backgroundColor: "#353535" }}>
+      <div style={{ backgroundColor: '#292B2F !important', height: '19vh' }}>
         <Card
-          title="User + avatar"
+          title={
+            <div
+              style={{
+                display: 'flex',
+                backgroundColor: '#292B2F',
+                justifyContent: 'start',
+              }}
+            >
+              <Avatar
+                size={30}
+                src={
+                  me?.picture ||
+                  'https://randomuser.me/api/portraits/women/1.jpg'
+                }
+              />
+              {' S'}
+              <Typography style={{ color: 'white', fontWeight: 'bold' }}>
+                {me?.username || 'random'}
+              </Typography>
+            </div>
+          }
           extra={
-            <a href="#">
-              <Tooltip placement="top" title={"Paramètres utilisateur"}>
+            <a href='#'>
+              <Tooltip placement='top' title={'Paramètres utilisateur'}>
                 <SettingOutlined
                   style={{
-                    color: "darkgrey",
-                    fontSize: "large",
+                    color: 'darkgrey',
+                    fontSize: 'large',
                   }}
                 />
               </Tooltip>
             </a>
           }
-          style={{ backgroundColor: "#353535", border: 0 }}
+          style={{ backgroundColor: '#292B2F', border: 0, height: '19vh' }}
         >
-          <Tooltip placement="top" title={"Micro"}>
+          <Tooltip placement='top' title={'Micro'}>
             <a onClick={() => setmicState(!stateMic)}>
               {stateMic ? (
-                <AudioOutlined className="microOn" />
+                <AudioOutlined className='microOn' />
               ) : (
-                <AudioMutedOutlined className="microOff" />
+                <AudioMutedOutlined className='microOff' />
               )}
             </a>
           </Tooltip>
-          <Tooltip placement="top" title={"Casque"}>
+          <Tooltip placement='top' title={'Casque'}>
             <a onClick={() => setheadState(!stateHead)}>
               {stateHead ? (
-                <CustomerServiceOutlined className="microOn" />
+                <CustomerServiceOutlined className='microOn' />
               ) : (
-                <CustomerServiceOutlined className="microOff" />
+                <CustomerServiceOutlined className='microOff' />
               )}
             </a>
           </Tooltip>
+          {activeVocalChannel ? (
+            <Tooltip placement='top' className='microOff' title={'raccrochage'}>
+              <PhoneOutlined
+                onClick={() => dispatch(setActiveVocalChannel(0))}
+              />
+            </Tooltip>
+          ) : (
+            ''
+          )}
         </Card>
       </div>
     </div>
   );
 };
+
+export default ChanelBar;

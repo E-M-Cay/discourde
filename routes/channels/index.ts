@@ -68,8 +68,8 @@ router.post(
             hidden: is_hidden,
           });
           await ChannelRepository.save(channel);
-          io.emit(`channelcreated:server${req.body.server}`, channel);
-          return res.status(200).send(channel);
+          io.emit(`textchannelcreated:server${req.body.server}`, channel);
+          return res.sendStatus(204);
         } catch (error) {
           console.log(error);
           return res.status(400).send('Error');
@@ -129,27 +129,59 @@ router.delete(
   }
 );
 
-router.put('/:id', isAuth, async (req: IRequest, res: Response) => {
-  if ('name' in req.body || 'hidden' in req.body) {
-    const channel = await ChannelRepository.findOneBy({
-      id: Number(req.params.id),
-    });
-    const name: string = 'name' in req.body ? req.body.name : null;
-    const hidden: boolean =
-      'hidden' in req.body ? JSON.parse(req.body.hidden) : null;
-    if (!channel) return res.status(400).send('Error server not found');
-    try {
-      if (name) channel.name = name;
-      if (hidden) channel.hidden = hidden;
+router.put(
+  '/text/:id/server/:server_id',
+  isAuth,
+  isOwner,
+  async (req: IRequest, res: Response) => {
+    if ('name' in req.body || 'hidden' in req.body) {
+      const channel = await ChannelRepository.findOneBy({
+        id: Number(req.params.id),
+      });
+      const name: string = 'name' in req.body ? req.body.name : null;
+      const hidden: boolean =
+        'hidden' in req.body ? JSON.parse(req.body.hidden) : null;
+      if (!channel) return res.status(400).send('Error server not found');
+      try {
+        if (name) channel.name = name;
+        if (hidden) channel.hidden = hidden;
 
-      await ChannelRepository.save(channel);
-      return res.status(200).send(channel);
-    } catch (error) {
-      return res.status(400).send('Error');
+        await ChannelRepository.save(channel);
+        return res.status(200).send(channel);
+      } catch (error) {
+        return res.status(400).send('Error');
+      }
     }
+    return res.status(400).send('Wrong arguments');
   }
-  return res.status(400).send('Wrong arguments');
-});
+);
+
+router.put(
+  '/vocal/:id/server/:server_id',
+  isAuth,
+  isOwner,
+  async (req: IRequest, res: Response) => {
+    if ('name' in req.body || 'hidden' in req.body) {
+      const channel = await VocalChannelRepository.findOneBy({
+        id: Number(req.params.id),
+      });
+      const name: string = 'name' in req.body ? req.body.name : null;
+      const hidden: boolean =
+        'hidden' in req.body ? JSON.parse(req.body.hidden) : null;
+      if (!channel) return res.status(400).send('Error server not found');
+      try {
+        if (name) channel.name = name;
+        if (hidden) channel.hidden = hidden;
+
+        await ChannelRepository.save(channel);
+        return res.status(200).send(channel);
+      } catch (error) {
+        return res.status(400).send('Error');
+      }
+    }
+    return res.status(400).send('Wrong arguments');
+  }
+);
 
 router.get(
   '/message/:channel_id',

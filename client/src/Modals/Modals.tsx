@@ -11,149 +11,11 @@ import {
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
-import { useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { Channel, User, VocalChan } from '../types/types';
 import logo from '../assets/discourde.png';
 import { CloseOutlined } from '@ant-design/icons';
-
-export const ServerParams = (props: {
-  isModalVisibleParams: boolean;
-  handleOk3: Function;
-  handleCancel3: Function;
-  textChannelList: Channel[];
-  vocalChannelList: VocalChan[];
-  isModify: number;
-  newTextChannelName: string;
-  setModifingChannel: Function;
-  handleUpdateChannel: Function;
-  modifingChannel: any;
-  setIsModify: Function;
-  handleModifyChannelText: Function;
-  isModifyVoc: number;
-  setIsModifyVoc: Function;
-  handleModifyChannelVoc: Function;
-  handleDeleteChannel: Function;
-}) => {
-  const {
-    isModalVisibleParams,
-    handleOk3,
-    handleCancel3,
-    textChannelList,
-    isModify,
-    newTextChannelName,
-    setModifingChannel,
-    handleUpdateChannel,
-    modifingChannel,
-    setIsModify,
-    handleModifyChannelText,
-    vocalChannelList,
-    isModifyVoc,
-    setIsModifyVoc,
-    handleModifyChannelVoc,
-    handleDeleteChannel
-  } = props;
-
-  return (
-    <Modal
-      visible={isModalVisibleParams}
-      onOk={() => handleOk3()}
-      onCancel={() => handleCancel3()}
-      closable={false}
-      footer={null}
-    >
-      <Typography.Title level={4}>Paramètres du serveur</Typography.Title>
-      <Typography.Title level={5}>Channel Textuel</Typography.Title>
-      {textChannelList.map((channel: any) =>
-        isModify === channel.id ? (
-          <div>
-            <Input
-              placeholder='Nom du salon'
-              defaultValue={newTextChannelName}
-              onChange={(e) =>
-                setModifingChannel((prev: any) => ({
-                  ...prev,
-                  name: e.target.value,
-                }))
-              }
-            />
-            <Button
-              type='primary'
-              onClick={() => handleUpdateChannel(modifingChannel, undefined)}
-            >
-              Modifier
-            </Button>
-            <Button type='primary' onClick={() => setIsModify(0)}>
-              Annuler
-            </Button>
-            <Tooltip title='Supprimer le serveur'>
-              <Button
-                shape='circle'
-                className='DelFriendBtton'
-                icon={<CloseOutlined />}
-                danger
-                onClick={() => handleDeleteChannel(Number(channel.id), false)}
-              />
-            </Tooltip>
-          </div>
-        ) : (
-          <div
-            key={channel.id}
-            onClick={() => handleModifyChannelText(channel)}
-          >
-            <div>
-              <span>{channel.name}</span>
-              <span>{channel.hidden ? 'Caché' : 'Public'}</span>
-            </div>
-            <div></div>
-          </div>
-        )
-      )}
-      <Typography.Title level={5}>Channel Audio</Typography.Title>
-      {vocalChannelList.map((channel: any) =>
-        isModifyVoc === channel.id ? (
-          <div>
-            <Input
-              placeholder='Nom du salon'
-              defaultValue={channel.name}
-              onChange={(e) =>
-                setModifingChannel((prev: any) => ({
-                  ...prev,
-                  name: e.target.value,
-                }))
-              }
-            />
-            <Button
-              type='primary'
-              onClick={() => handleUpdateChannel(undefined, modifingChannel)}
-            >
-              Modifier
-            </Button>
-            <Button type='primary' onClick={() => setIsModifyVoc(0)}>
-              Annuler
-            </Button>
-            <Tooltip title='Supprimer le serveur'>
-              <Button
-                shape='circle'
-                className='DelFriendBtton'
-                icon={<CloseOutlined />}
-                danger
-                onClick={() => handleDeleteChannel(Number(channel.id), true)}
-              />
-            </Tooltip>
-          </div>
-        ) : (
-          <div key={channel.id} onClick={() => handleModifyChannelVoc(channel)}>
-            <div>
-              <span>{channel.name}</span>
-              <span>{channel.hidden ? 'Caché' : 'Public'}</span>
-            </div>
-            <div></div>
-          </div>
-        )
-      )}
-    </Modal>
-  );
-};
+import { setMe } from '../redux/userSlice';
 
 export const ServerInvit = (props: {
   isModalVisibleInvitation: boolean;
@@ -295,7 +157,8 @@ export const UserProfileModal = (props: {
     (state) => state.userReducer.activeServer
   );
   const me = useAppSelector((state) => state.userReducer.me);
-  const [userTmp, setUserTmp] = useState<User | undefined>(me);
+  const dispatch = useAppDispatch();
+  const [userTmp, setUserTmp] = useState(me);
   const [serverNickname, setServerNickname] = useState<string>('');
   const { friendMap, sendFriendRequest } = useContext(UserMapsContext);
   const isFriend = friendMap.has(user.id);
@@ -316,7 +179,7 @@ export const UserProfileModal = (props: {
           }
         )
         .then((res) => {
-          console.log(res);
+          dispatch(setMe(res.data));
         })
         .catch((err) => {
           console.log(err);

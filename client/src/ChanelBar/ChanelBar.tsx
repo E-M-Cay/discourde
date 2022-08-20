@@ -25,11 +25,12 @@ import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { Channel, VocalChan } from '../types/types';
 import { CustomImage } from '../CustomLi/CustomLi';
-import { ServerChannels, ServerInvit, ServerParams } from '../Modals/Modals';
+import { ServerChannels, ServerInvit } from '../Modals/Modals';
 import { DropdownMenu } from '../DropdownMenu/DropdownMenu';
 import { ChannelCollapse } from '../ChannelCollapse/ChannelCollapse';
 import { openNotification } from '../notificationHandler/notificationHandler';
 import { NotificationsContext } from '../context/NotificationsContext';
+import ServerParamsModal from '../Modals/ServerParamsModal';
 
 const { Panel } = Collapse;
 
@@ -77,31 +78,6 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
         });
   }, [activeServer, dispatch]);
 
-  const handleDeleteChannel = (channelId: number, isVocal: boolean) => {
-    axios
-      .delete(
-        `/channel/${
-          isVocal ? 'vocal' : 'text'
-        }/${channelId}/server/${activeServer}`,
-        {
-          headers: {
-            access_token: localStorage.getItem('token') as string,
-          },
-        }
-      )
-      .then((res) => {
-        console.log(res);
-        if (res.status === 200) {
-          setTextChannelList(
-            textChannelList.filter((channel) => channel.id !== channelId)
-          );
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
   const onChange = (key: any) => {};
   const onTextChannelClick = (id: number) => {
     dispatch(setActiveChannel(id));
@@ -111,7 +87,6 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
       console.log(id, activeVocalChannel);
       if (activeVocalChannel === id) return;
       dispatch(setActiveVocalChannel(id));
-      //socket?.emit('joinvocalchannel', id);
     },
     [activeVocalChannel, dispatch]
   );
@@ -145,6 +120,15 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
     });
   };
 
+  const handleTextChannelCreated = (chan: Channel) => {
+    setTextChannelList((prevState) => [...prevState, chan]);
+  };
+
+  const handleVocalChannelCreated = (chan: VocalChan) => {
+    console.log('new voc chan', chan.name);
+    setVocalChannelList((prevState) => [...prevState, chan]);
+  };
+
   useEffect(() => {
     socket?.on(`joiningvocal`, handleJoinVocal);
     socket?.on(`leftvocal`, handleLeftVocal);
@@ -153,6 +137,28 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
       socket?.off(`leftvocal`, handleLeftVocal);
     };
   }, [socket]);
+
+  useEffect(() => {
+    socket?.on(
+      `textchannelcreated:server${activeServer}`,
+      handleTextChannelCreated
+    );
+    socket?.on(
+      `vocalchannelcreated:server${activeServer}`,
+      handleVocalChannelCreated
+    );
+
+    return () => {
+      socket?.off(
+        `textchannelcreated:server${activeServer}`,
+        handleTextChannelCreated
+      );
+      socket?.off(
+        `vocalchannelcreated:server${activeServer}`,
+        handleVocalChannelCreated
+      );
+    };
+  }, [socket, activeServer]);
 
   const [stateMic, setmicState] = useState(true);
   const [stateHead, setheadState] = useState(true);
@@ -190,7 +196,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
   const handleCancel2 = () => {
     setIsModalVisibleInvitation(false);
   };
-  const showModal3 = () => {
+  const showServerParamsModal = () => {
     setIsModalVisibleParams(true);
   };
 
@@ -221,16 +227,16 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
           }
         )
         .then((res) => {
-          isVocal
-            ? setVocalChannelList([...vocalChannelList, res.data])
-            : setTextChannelList([...textChannelList, res.data]);
-          setNewTextChannelName('');
-          addNotification({
-            type: 'success',
-            title: 'success',
-            content: 'Channel created',
-            isTmp: true,
-          });
+          if ((res.status = 204)) {
+            setNewTextChannelName('');
+            addNotification({
+              type: 'success',
+              title: 'success',
+              content: 'Channel created',
+              isTmp: true,
+            });
+          }
+
           // setNotifications(...notifications);
         })
         .catch((err) => {
@@ -242,58 +248,6 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
     }
   };
 
-  const handleUpdateChannel = (txtChan?: Channel, vocChan?: VocalChan) => {
-    const chan = txtChan ?? vocChan;
-    axios
-      .put(
-        `/${vocChan ? 'vocal' : ''}channel/${
-          vocChan?.id ?? txtChan?.id
-        }/server/`,
-        vocChan ?? txtChan,
-        {
-          headers: {
-            access_token: localStorage.getItem('token') as string,
-          },
-        }
-      )
-      .then((res) => {
-        if (res.status === 200) {
-          if (vocChan) {
-            setVocalChannelList((prevState) => {
-              return prevState.map((c) => {
-                if (c.id === vocChan.id) {
-                  return vocChan;
-                }
-                return c;
-              });
-            });
-          } else {
-            setTextChannelList((prevState: any) => {
-              return prevState.map((c: any) => {
-                if (c.id === txtChan?.id) {
-                  return txtChan;
-                }
-                return c;
-              });
-            });
-          }
-
-          addNotification({
-            type: 'success',
-            title: 'success',
-            content: 'Channel updated',
-          });
-          setNewTextChannelName('');
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        setIsModalVisible(false);
-      });
-  };
-
   const handleModifyChannelText = (chan: Channel) => {
     setModifingChannel(chan);
     setIsModify(chan.id);
@@ -301,24 +255,6 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
   const handleModifyChannelVoc = (chan: Channel) => {
     setModifingChannel(chan);
     setIsModifyVoc(chan.id);
-  };
-
-  const createChannel = (e: React.FormEvent<HTMLFormElement>) => {
-    console.log('bhfdksdklf');
-    e.preventDefault();
-    axios
-      .post(
-        'channel/create',
-        { name: channelName, server_id: activeServer },
-        {
-          headers: {
-            access_token: localStorage.getItem('token') as string,
-          },
-        }
-      )
-      .then((res) => {
-        setIsModalVisible(false);
-      });
   };
 
   const deleteServer = useCallback(() => {
@@ -345,7 +281,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
   const menu = (
     <DropdownMenu
       showModal2={showModal2}
-      showModal3={showModal3}
+      showServerParamsModal={showServerParamsModal}
       showModal={showModal}
       deleteServer={deleteServer}
       handleLeaveServer={handleLeaveServer}
@@ -359,15 +295,11 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
       style={{ width: '100%', backgroundColor: '#1F1F1F' }}
       className='site-layout-background'
     >
-      <ServerParams
+      <ServerParamsModal
         isModalVisibleParams={isModalVisibleParams}
-        handleOk3={handleOk3}
-        handleCancel3={handleCancel3}
         textChannelList={textChannelList}
         isModify={isModify}
-        newTextChannelName={newTextChannelName}
         setModifingChannel={setModifingChannel}
-        handleUpdateChannel={handleUpdateChannel}
         modifingChannel={modifingChannel}
         setIsModify={setIsModify}
         handleModifyChannelText={handleModifyChannelText}
@@ -375,7 +307,9 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
         isModifyVoc={isModifyVoc}
         setIsModifyVoc={setIsModifyVoc}
         handleModifyChannelVoc={handleModifyChannelVoc}
-        handleDeleteChannel={handleDeleteChannel}
+        setTextChannelList={setTextChannelList}
+        setVocalChannelList={setVocalChannelList}
+        setIsModalVisibleParams={setIsModalVisibleParams}
       />
       <ServerInvit
         isModalVisibleInvitation={isModalVisibleInvitation}

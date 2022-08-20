@@ -122,13 +122,12 @@ const VocalChannel = () => {
       });
       return [];
     });
-    setActiveCalls([]);
   }, [activeVocalChannel]);
 
   useEffect(() => {
     peer?.on('call', callEvent);
     peer?.on('error', (e) => console.log(e));
-    console.log('my peer:', peer ? peer.id : 'none');
+    // console.log('my peer:', peer ? peer.id : 'none');
     return () => {
       peer?.off('call', callEvent);
       peer?.off('error');

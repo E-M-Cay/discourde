@@ -15,72 +15,12 @@ const FriendshipRepository = AppDataSource.getRepository(Friendship);
 const FriendRequestRepository = AppDataSource.getRepository(FriendRequest);
 
 router.get('/list', isAuth, async (req: IRequest, res: Response) => {
-  const list_des_gro_gay_de_linde = {
-    nathan: 'gros gay de la mort',
-  };
-
-  console.log(list_des_gro_gay_de_linde);
-
   try {
     const user_id = Number(req.id);
     const user = await userRepository.countBy({ id: user_id });
     if (!user) {
       throw new Error('User not found');
     }
-
-    // const friends = await userRepository.find({
-    //     where: [
-    //         {
-    //             friendshipsReceived: {
-    //                 user1: { id: req.id },
-    //             },
-    //         },
-    //         {
-    //             friendshipsSent: {
-    //                 user2: { id: req.id },
-    //             },
-    //         },
-
-    //     ], relations: {
-    //         friendshipsReceived: {
-    //             user2: {id: true}
-    //         }
-    //     },  select: {
-    //         friendshipsReceived: {
-    //             user2: {
-
-    //             }
-    //         }
-    //     }
-    // });
-
-    // const friends = await FriendshipRepository.find({
-    //     where: [
-    //         {
-    //             user1: {
-    //                 id: req.id,
-    //             },
-    //         },
-    //         {
-    //             user2: {
-    //                 id: req.id,
-    //             },
-    //         },
-    //     ],
-    //     relations: {
-    //         user1: true,
-    //         user2: true,
-    //     },
-    //     select: {
-    //         id: true,
-    //         user1: { id: true, picture: true, username: true },
-    //         user2: {
-    //             id: true,
-    //             picture: true,
-    //             username: true,
-    //         },
-    //     },
-    // });
 
     const friends = await FriendshipRepository.createQueryBuilder('friendship')
       .leftJoinAndSelect('friendship.user1', 'sender')

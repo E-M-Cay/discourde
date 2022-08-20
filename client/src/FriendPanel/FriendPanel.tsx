@@ -1,5 +1,13 @@
 import {
+  AudioMutedOutlined,
+  AudioOutlined,
+  BellOutlined,
+  BorderlessTableOutlined,
   CloseCircleOutlined,
+  CloseOutlined,
+  CustomerServiceOutlined,
+  DownOutlined,
+  LogoutOutlined,
   MenuOutlined,
   MessageOutlined,
   CheckCircleFilled,
@@ -7,7 +15,6 @@ import {
   VideoCameraOutlined,
   UserDeleteOutlined,
   SearchOutlined,
-  CloseOutlined,
 } from '@ant-design/icons';
 import {
   Collapse,

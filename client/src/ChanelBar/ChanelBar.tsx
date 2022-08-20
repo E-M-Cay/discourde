@@ -113,10 +113,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
     setVocalChannelList((prevState) => {
       return prevState.map((c) => {
         if (c.id === chan) {
-          return {
-            ...c,
-            users: c.users.filter((u) => u !== user),
-          };
+          return { ...c, users: c.users.filter((u) => u !== user) };
         }
         return c;
       });

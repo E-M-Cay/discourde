@@ -7,37 +7,39 @@
 .vocStyle:hover {
     background-color: #232222 !important;
 }
-
 .vocStyle button {
-    display: none;
-    
+    display: none;  
 }
 .vocStyle header{
     display: none;
 }
 .vocStyle:hover header{
     font-size: 200%;
-    display: block;
+    display: inline ;
 }
 
 .vocStyle:hover button {
-    display: flex;
-/*     grid-template-columns: repeat(3, 1fr);
-    grid-gap: 100px;
-    grid-auto-rows: minmax(100px, auto); */
+    display: inline;
     color: grey;
-    background-color: #232222;
     border: none;
-}
-#phone {
-/*     grid-column: 1;
-    grid-row: 1; */
-}
-#menu {
-    display: inline !important;
+    font-size: x-large;
+    cursor: pointer ;
+    background-color: #232222;
 }
 
-#phone:hover , #menu:hover , #audio:hover {
-    color: green;
+
+#phone:hover , #audio:hover {
+    color: red;
     font-size: 110%;
+}
+#menu {
+    margin-right: 0 !important;
+}
+#menu:hover {
+    font-size: 110%;
+}
+
+.volSider {
+    display: 'inline-block';
+    height: 100px;
 }

@@ -7,7 +7,9 @@ import { FriendPanel } from '../FriendPanel/FriendPanel';
 import PrivateChatBar from '../PrivateChatBar/PrivateChatBar';
 import { useEffect } from 'react';
 import { GeneralSettings } from '../Modals/Modals';
+import { CallPanel } from '../CallPanel/CallPanel';
 import { ServerResponse } from '../types/types';
+
 
 export const Main = (props: {
   handleLeaveServer: () => void;
@@ -34,7 +36,7 @@ export const Main = (props: {
         )}
       </Col>
       <Col span={16}>
-        <Chat /> {/* <CallPanel /> */}
+        <CallPanel /> {/* <CallPanel /> */}
       </Col>
       <Col style={{ backgroundColor: 'grey' }} span={4}>
         {isHome ? <FriendPanel setServers={setServers} /> : <StatusBar />}

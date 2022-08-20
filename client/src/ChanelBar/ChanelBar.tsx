@@ -42,6 +42,9 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
   const activeServerName = useAppSelector(
     (state) => state.userReducer.activeServerName
   );
+  const activeChannel = useAppSelector(
+    (state) => state.userReducer.activeChannel
+  );
   const { socket } = useContext(PeerSocketContext);
   const { notifications, addNotification } = useContext(NotificationsContext);
   const dispatch = useAppDispatch();
@@ -174,11 +177,18 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
 
   const handleTextChannelDelete = useCallback(
     (chan: number) => {
-      if (chan === activeVocalChannel) {
+      if (chan === activeChannel) {
+        if (textChannelList.length <= 1) {
+          dispatch(setActiveChannel(0));
+        } else {
+          const other = textChannelList.find((c) => c.id !== chan);
+          if (!other) return;
+          dispatch(setActiveChannel(other.id));
+        }
       }
       setTextChannelList((prevState) => prevState.filter((c) => c.id !== chan));
     },
-    [activeVocalChannel, dispatch]
+    [activeChannel, textChannelList, dispatch]
   );
 
   useEffect(() => {
@@ -231,7 +241,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
         handleTextChannelDelete
       );
     };
-  }, [socket, activeServer, handleVocalChannelDelete]);
+  }, [socket, activeServer, handleVocalChannelDelete, handleTextChannelDelete]);
 
   const [stateMic, setmicState] = useState(true);
   const [stateHead, setheadState] = useState(true);

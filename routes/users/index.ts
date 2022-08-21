@@ -15,10 +15,7 @@ import IRequest from '../../Interfaces/IRequest';
 import { io } from '../../index';
 
 const userRepository = AppDataSource.getRepository(User);
-const serverRepository = AppDataSource.getRepository(Server);
 const serverUserRepository = AppDataSource.getRepository(ServerUser);
-const vocalChannelRepository = AppDataSource.getRepository(VocalChannel);
-const channelRepository = AppDataSource.getRepository(Channel);
 
 router.post('/login', async (req: Request, res: Response) => {
   if ('email' in req.body && 'password' in req.body) {
@@ -61,42 +58,52 @@ router.post('/login', async (req: Request, res: Response) => {
 });
 
 router.post('/register', async (req: Request, res: Response) => {
-  if ('username' in req.body && 'email' in req.body && 'password' in req.body) {
-    const picture =
-      req.body.picture || 'https://randomuser.me/api/portraits/men/1.jpg';
-    const email: string = req.body.email;
-    const existing_user = await userRepository.findOneBy({ email: email });
-    if (existing_user) {
-      return res.status(400).send('User already exists');
+  try {
+    if (
+      'username' in req.body &&
+      'email' in req.body &&
+      'password' in req.body
+    ) {
+      const picture =
+        req.body.picture || 'https://randomuser.me/api/portraits/men/1.jpg';
+      const email: string = req.body.email;
+      const existing_user = await userRepository.findOneBy({ email: email });
+      if (existing_user) {
+        return res.status(400).send('User already exists');
+      }
+
+      const password: string = bcrypt.hashSync(req.body.password, 10);
+      const username: string = req.body.username;
+
+      const date = Date.now();
+
+      const user = userRepository.create({
+        username: username,
+        email: email,
+        password: password,
+        join_date: date,
+        picture: picture,
+      });
+      const serverUserRegistration = serverUserRepository.create({
+        server: { id: 1 },
+        nickname: username,
+        user: user,
+      });
+      if (!serverUserRegistration || !user) {
+        return res.status(400).send('Error while creating user');
+      }
+      const serverUser = await serverUserRepository.save(
+        serverUserRegistration
+      );
+
+      io.emit('userjoinedserver', serverUser);
+
+      return res.status(201).send('User created succesfully');
     }
-
-    const password: string = bcrypt.hashSync(req.body.password, 10);
-    const username: string = req.body.username;
-
-    const date = Date.now();
-
-    const user = userRepository.create({
-      username: username,
-      email: email,
-      password: password,
-      join_date: date,
-      picture: picture,
-    });
-    const serverUserRegistration = serverUserRepository.create({
-      server: { id: 1 },
-      nickname: username,
-      user: user,
-    });
-    if (!serverUserRegistration || !user) {
-      return res.status(400).send('Error while creating user');
-    }
-    await serverUserRepository.save(serverUserRegistration);
-
-    // await serverUserRepository.save(serverUserRegistration);
-
-    return res.status(201).send('User created succesfully');
+  } catch (e) {
+    console.log(e);
+    res.status(401).send('Error creating login');
   }
-  res.send('FAIL');
 });
 
 router.get('/token_check', isAuth, async (req: IRequest, res: Response) => {

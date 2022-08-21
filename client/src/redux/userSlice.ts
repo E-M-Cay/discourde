@@ -47,6 +47,7 @@ export const userSlice = createSlice({
     setActiveChannel: (state, action: PayloadAction<number>) => {
       state.activeChannel = action.payload;
     },
+
     setActiveVocalChannel: (state, action: PayloadAction<number>) => {
       state.activeVocalChannel = action.payload;
     },

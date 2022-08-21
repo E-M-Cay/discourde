@@ -35,8 +35,20 @@ import { ProfileCall } from '../components/ProfileCall';
 
 const { Panel } = Collapse;
 
-export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
-  const { handleLeaveServer } = props;
+export const ChanelBar = (props: {
+  vocalChannelList: VocalChan[];
+  textChannelList: Channel[];
+  setTextChannelList: React.Dispatch<React.SetStateAction<Channel[]>>;
+  setVocalChannelList: React.Dispatch<React.SetStateAction<VocalChan[]>>;
+  handleLeaveServer: () => void;
+}) => {
+  const {
+    handleLeaveServer,
+    vocalChannelList,
+    textChannelList,
+    setTextChannelList,
+    setVocalChannelList,
+  } = props;
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
   );
@@ -52,8 +64,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
   const headerTxt: string = 'SALONS TEXTUELS';
   const headerVoc: string = 'SALONS VOCAUX';
   const serverName: string = activeServerName ?? 'Serveur';
-  const [vocalChannelList, setVocalChannelList] = useState<VocalChan[]>([]);
-  const [textChannelList, setTextChannelList] = useState<Channel[]>([]);
+
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
   );
@@ -455,7 +466,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
             vocalChannelList={vocalChannelList}
             onTextChannelClick={onTextChannelClick}
             onVocalChannelClick={onVocalChannelClick}
-            activeVocalChannel={activeVocalChannel || null}
+            activeVocalChannel={activeVocalChannel}
           />
         )}
       </div>

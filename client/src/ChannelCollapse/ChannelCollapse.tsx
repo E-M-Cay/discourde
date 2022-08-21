@@ -8,9 +8,9 @@ const { Panel } = Collapse;
 export const ChannelCollapse = (props: {
   textChannelList: Channel[];
   vocalChannelList: VocalChan[];
-  onTextChannelClick: Function;
+  onTextChannelClick: (id: number) => void;
   onVocalChannelClick: Function;
-  activeVocalChannel: number | null;
+  activeVocalChannel?: number;
 }) => {
   const onChange = (key: any) => {};
   const {

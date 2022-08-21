@@ -71,7 +71,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
   const callEvent = useCallback(async (call: MediaConnection) => {
     const audioNode = new Audio();
-    // const userId = call.metadata.user_id;
+    const userId = call.metadata.user_id;
 
     if (!streamRef.current?.active) {
       await toggleMicrophone();
@@ -83,12 +83,12 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       console.log('receiving stream 2');
       console.log(stream);
       audioNode.play();
-      // setCall(userId, call);
+      setCall(userId, call);
     });
 
     call.on('close', () => {
       audioNode.remove();
-      // removeCall(userId);
+      removeCall(userId);
     });
     //}
   }, []);
@@ -99,9 +99,9 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       const audioNode = new Audio();
       console.log(streamRef.current?.getTracks());
       const call = peer?.call(id, streamRef.current as MediaStream, {
-        // metadata: {
-        //   user_id: me?.id,
-        // },
+        metadata: {
+          user_id: me?.id,
+        },
       });
 
       call?.on('stream', (stream) => {
@@ -129,7 +129,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     async (data: { user_id: number; peer_id: string }) => {
       const { user_id, peer_id } = data;
       console.log('hello');
-      console.log('peer id:', peer_id);
+      console.log('peer id:', peer_id, 'user_id', user_id);
       // const {user_id}
 
       if (!streamRef.current?.active) {
@@ -143,6 +143,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   const goodBye = useCallback(
     (user_id: number) => {
       console.log('goodbye', user_id);
+      console.log(callMap.has(user_id));
       callMap.get(user_id)?.close();
       removeCall(user_id);
     },
@@ -160,6 +161,16 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   useEffect(() => {
     if (activeVocalChannel) {
       socket?.emit('joinvocalchannel', activeVocalChannel);
+    }
+    return () => {
+      if (activeVocalChannel) {
+        socket?.emit('leftvocalchannel', activeVocalChannel);
+      }
+    };
+  }, [activeVocalChannel]);
+
+  useEffect(() => {
+    if (activeVocalChannel) {
       socket?.on(`joiningvocalchannel:${activeVocalChannel}`, hello);
       socket?.on(`leftvocalchannel:${activeVocalChannel}`, goodBye);
     }
@@ -167,7 +178,6 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       if (activeVocalChannel) {
         socket?.off(`joiningvocalchannel:${activeVocalChannel}`, hello);
         socket?.off(`leftvocalchannel:${activeVocalChannel}`, goodBye);
-        socket?.emit('leftvocalchannel', activeVocalChannel);
       }
     };
   }, [activeVocalChannel, socket, hello, goodBye]);

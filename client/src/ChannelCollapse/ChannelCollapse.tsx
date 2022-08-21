@@ -67,7 +67,7 @@ export const ChannelCollapse = (props: {
               <SoundOutlined /> {chan.name}
               {activeVocalChannel === chan.id && (
                 <>
-                  <br />
+                  {' '}
                   <BorderlessTableOutlined className='activeChannel' />
                 </>
               )}

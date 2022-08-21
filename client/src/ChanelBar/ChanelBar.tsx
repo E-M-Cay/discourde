@@ -470,73 +470,10 @@ export const ChanelBar = (props: {
           />
         )}
       </div>
-      <ProfileCall />
-      {/* <div style={{ backgroundColor: '#292B2F !important', height: '19vh' }}>
-        <Card
-          title={
-            <div
-              style={{
-                display: 'flex',
-                backgroundColor: '#292B2F',
-                justifyContent: 'start',
-              }}
-            >
-              <Avatar
-                size={30}
-                src={
-                  me?.picture ||
-                  'https://randomuser.me/api/portraits/women/1.jpg'
-                }
-              />
-              {' S'}
-              <Typography style={{ color: 'white', fontWeight: 'bold' }}>
-                {me?.username || 'random'}
-              </Typography>
-            </div>
-          }
-          extra={
-            <a href='#'>
-              <Tooltip placement='top' title={'Paramètres utilisateur'}>
-                <SettingOutlined
-                  style={{
-                    color: 'darkgrey',
-                    fontSize: 'large',
-                  }}
-                />
-              </Tooltip>
-            </a>
-          }
-          style={{ backgroundColor: '#292B2F', border: 0, height: '19vh' }}
-        >
-          <Tooltip placement='top' title={'Micro'}>
-            <a onClick={() => setmicState(!stateMic)}>
-              {stateMic ? (
-                <AudioOutlined className='microOn' />
-              ) : (
-                <AudioMutedOutlined className='microOff' />
-              )}
-            </a>
-          </Tooltip>
-          <Tooltip placement='top' title={'Casque'}>
-            <a onClick={() => setheadState(!stateHead)}>
-              {stateHead ? (
-                <CustomerServiceOutlined className='microOn' />
-              ) : (
-                <CustomerServiceOutlined className='microOff' />
-              )}
-            </a>
-          </Tooltip>
-          {activeVocalChannel ? (
-            <Tooltip placement='top' className='microOff' title={'raccrochage'}>
-              <PhoneOutlined
-                onClick={() => dispatch(setActiveVocalChannel(0))}
-              />
-            </Tooltip>
-          ) : (
-            ''
-          )}
-        </Card>
-      </div> */}
+      <ProfileCall
+        activeServerName={activeServerName}
+        vocalChannelList={vocalChannelList}
+      />
     </div>
   );
 };

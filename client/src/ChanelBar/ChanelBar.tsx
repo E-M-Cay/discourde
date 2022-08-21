@@ -31,6 +31,7 @@ import { ChannelCollapse } from '../ChannelCollapse/ChannelCollapse';
 import { openNotification } from '../notificationHandler/notificationHandler';
 import { NotificationsContext } from '../context/NotificationsContext';
 import ServerParamsModal from '../Modals/ServerParamsModal';
+import { ProfileCall } from '../components/ProfileCall';
 
 const { Panel } = Collapse;
 
@@ -458,7 +459,8 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
           />
         )}
       </div>
-      <div style={{ backgroundColor: '#292B2F !important', height: '19vh' }}>
+      <ProfileCall />
+      {/* <div style={{ backgroundColor: '#292B2F !important', height: '19vh' }}>
         <Card
           title={
             <div
@@ -523,7 +525,7 @@ export const ChanelBar = (props: { handleLeaveServer: () => void }) => {
             ''
           )}
         </Card>
-      </div>
+      </div> */}
     </div>
   );
 };

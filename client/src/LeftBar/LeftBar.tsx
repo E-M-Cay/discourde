@@ -171,7 +171,7 @@ export const LeftBar = (props: {
           mouseLeaveDelay={0.3}
           placement='left'
           style={{ fontSize: '32px' }}
-          title={'add a server'}
+          title={'Créer un serveur'}
         >
           <PlusOutlined
             onMouseEnter={() => setFocus(true)}

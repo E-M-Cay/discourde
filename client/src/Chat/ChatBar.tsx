@@ -11,10 +11,14 @@ import { PeerSocketContext } from '../context/PeerSocket';
 import { useAppSelector } from '../redux/hooks';
 import Picker from 'emoji-picker-react';
 import { CloseOutlined, SmileOutlined } from '@ant-design/icons';
-import type { InputRef } from 'antd';
+import { InputRef } from 'antd';
+import { UserMapsContext } from '../context/UserMapsContext';
+import { Channel } from '../types/types';
 
-const ChatBar = () => {
+const ChatBar = (props: { textChannelList: Channel[] }) => {
+  const { textChannelList } = props;
   const { socket } = useContext(PeerSocketContext);
+  const { privateChatMap } = useContext(UserMapsContext);
   const [input, setInput] = useState<string>('');
   const node = useRef<HTMLDivElement>(null);
   const inputRef = useRef<InputRef>(null);
@@ -26,6 +30,9 @@ const ChatBar = () => {
     (state) => state.userReducer.activePrivateChat
   );
   const isHome = useAppSelector((state) => state.userReducer.home);
+  const activeChannelName = textChannelList.find(
+    (c) => c.id === activeChannel
+  )?.name;
 
   const onEmojiClick = (event: React.MouseEvent, emojiObject: any) => {
     setInput(input + emojiObject.emoji);
@@ -35,7 +42,6 @@ const ChatBar = () => {
   const handleOutsideClick = useCallback(
     (e: any) => {
       if (node.current && !node.current.contains(e.target)) {
-        console.log('outside click', node);
         setIsSmiley(false);
       }
     },
@@ -53,12 +59,13 @@ const ChatBar = () => {
   };
 
   const onSubmitPrivateChatHandler = () => {
-    socket?.emit('privatemessage', {
-      content: input,
-      to: activePrivateChat,
-    });
-
-    setInput('');
+    if (activePrivateChat) {
+      socket?.emit('privatemessage', {
+        content: input,
+        to: activePrivateChat,
+      });
+      setInput('');
+    }
   };
 
   useEffect(() => {
@@ -84,7 +91,11 @@ const ChatBar = () => {
         <Input
           bordered={false}
           className='inputMain'
-          placeholder='Envoyer un message dans '
+          placeholder={`Envoyer un message ${
+            isHome
+              ? `à ${privateChatMap.get(activePrivateChat ?? 0)?.username}`
+              : `dans ${activeChannelName}`
+          }`}
           id='inputReturn'
           onChange={(e) => setInput(e.target.value)}
           value={input}

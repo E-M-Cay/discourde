@@ -52,13 +52,7 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
           cursor: 'pointer',
           height: '60px',
         }}
-        src={
-          obj?.server.main_img
-            ? obj?.server.main_img[0] === 'h'
-              ? obj?.server.main_img
-              : logo
-            : logo
-        }
+        src={obj?.server.main_img || logo}
       />
     </Tooltip>
   );

@@ -11,8 +11,8 @@ import { PeerSocketContext } from '../context/PeerSocket';
 import { useAppSelector } from '../redux/hooks';
 
 interface VocalChannel {
-  stream?: MediaStream;
   activeCalls: MediaConnection[];
+  stream?: MediaStream;
 }
 
 const VocalChannelContext = createContext<VocalChannel>({
@@ -31,7 +31,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     (state) => state.userReducer.activeVocalChannel
   );
   const streamRef = useRef<MediaStream>();
-  const [stream, setStream] = useState<MediaStream>();
+
   const [activeCalls, setActiveCalls] = useState<MediaConnection[]>([]);
 
   const toggleMicrophone = async () => {
@@ -97,6 +97,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         console.log('receiving stream 1');
         console.log(stream);
         audioNode.play();
+        stream.getAudioTracks().forEach((tr) => {});
         setActiveCalls((prevState) => [...prevState, call]);
       });
 
@@ -116,6 +117,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     async (data: { user_id: number; peer_id: string }) => {
       console.log('hello');
       console.log('peer id:', data.peer_id);
+      // const {user_id}
 
       if (!streamRef.current?.active) {
         await toggleMicrophone();
@@ -124,6 +126,14 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     },
     [callUser]
   );
+
+  const muteSelf = () => {
+    streamRef.current?.getAudioTracks().forEach((tr) => (tr.enabled = false));
+  };
+
+  const unmuteSelf = () => {
+    streamRef.current?.getAudioTracks().forEach((tr) => (tr.enabled = true));
+  };
 
   useEffect(() => {
     if (activeVocalChannel) {
@@ -158,7 +168,9 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   }, [peer, callEvent, hello]);
 
   return (
-    <VocalChannelContext.Provider value={{ stream, activeCalls }}>
+    <VocalChannelContext.Provider
+      value={{ stream: streamRef.current, activeCalls }}
+    >
       {children}
     </VocalChannelContext.Provider>
   );

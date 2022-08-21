@@ -5,10 +5,17 @@ import { useAppSelector } from '../redux/hooks';
 import PrivateMessageChat from './PrivateMessageChat';
 import { Channel } from '../types/types';
 import { Typography } from 'antd';
+import { BorderlessTableOutlined } from '@ant-design/icons';
 
 const Chat = (props: { textChannelList: Channel[] }) => {
   const isHome = useAppSelector((state) => state.userReducer.home);
   const { textChannelList } = props;
+  const activeChannel = useAppSelector(
+    (state) => state.userReducer.activeChannel
+  );
+  const textChannelName = textChannelList.find(
+    (chan) => chan.id === activeChannel
+  );
   return (
     <div className='chat'>
       <div
@@ -32,7 +39,10 @@ const Chat = (props: { textChannelList: Channel[] }) => {
             fontSize: '16.8px',
           }}
         >
-          Private Chats
+          <BorderlessTableOutlined
+            style={{ color: 'darkgrey', marginRight: '10px' }}
+          />
+          {textChannelName?.name ?? 'Private Chats'}
         </Typography>
       </div>
       <div className='message'>

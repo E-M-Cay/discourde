@@ -179,6 +179,14 @@ export const StatusBar = () => {
         backgroundColor: '#2F3136',
       }}
     >
+      <div
+        style={{
+          height: '42px',
+          width: '600px',
+          borderBottom: '1px solid rgba(26, 26, 26, 0.67)',
+          backgroundColor: '#36393f',
+        }}
+      ></div>
       <Collapse defaultActiveKey={['1', '2']} ghost>
         <Panel key='1' header='en ligne' style={{ margin: '0 !important' }}>
           {Array.from(serverUserMap.entries()).map(([id, user]) =>

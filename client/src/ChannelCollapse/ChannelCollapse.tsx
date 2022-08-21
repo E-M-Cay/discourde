@@ -1,8 +1,9 @@
 import { BorderlessTableOutlined, SoundOutlined } from '@ant-design/icons';
-import { Collapse } from 'antd';
+import { Avatar, Collapse } from 'antd';
 import { useContext } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { Channel, VocalChan } from '../types/types';
+import logo from '../assets/discourde.png';
 const { Panel } = Collapse;
 
 export const ChannelCollapse = (props: {
@@ -45,7 +46,10 @@ export const ChannelCollapse = (props: {
               className='panelContent'
             >
               {' '}
-              <BorderlessTableOutlined /> {chan.name}
+              <BorderlessTableOutlined />{' '}
+              {chan.name.length > 15
+                ? chan.name.substring(0, 15) + '...'
+                : chan.name}
             </li>
           ))}
       </Panel>
@@ -64,15 +68,29 @@ export const ChannelCollapse = (props: {
               className='panelContent'
             >
               {' '}
-              <SoundOutlined /> {chan.name}
-              {activeVocalChannel === chan.id && (
+              <SoundOutlined />{' '}
+              <span
+                style={{ color: activeVocalChannel === chan.id ? 'white' : '' }}
+              >
+                {chan.name}
+              </span>
+              {/* {activeVocalChannel === chan.id && (
                 <>
-                  <br />
+                  {' '}
                   <BorderlessTableOutlined className='activeChannel' />
                 </>
-              )}
+              )} */}
               {chan.users.map((u) => (
-                <div key={u}>
+                <div
+                  onClick={() => console.log(serverUserMap.get(u), 'test')}
+                  key={u}
+                  style={{ marginTop: '5px' }}
+                >
+                  <Avatar
+                    size={20}
+                    style={{ margin: '0px 5px 0px 20px' }}
+                    src={serverUserMap.get(u)?.user.picture ?? logo}
+                  />{' '}
                   {serverUserMap.get(u)?.nickname || 'Error retrieving user'}
                 </div>
               ))}

@@ -18,20 +18,14 @@ const ChatBar = () => {
   const [input, setInput] = useState<string>('');
   const node = useRef<HTMLDivElement>(null);
   const inputRef = useRef<InputRef>(null);
+  const [isSmiley, setIsSmiley] = useState(true);
   const activeChannel = useAppSelector(
     (state) => state.userReducer.activeChannel
   );
-
-  const onSubmitHandler = () => {
-    socket?.emit('message', {
-      content: input,
-      channel: activeChannel,
-    });
-
-    setInput('');
-  };
-
-  const [isSmiley, setIsSmiley] = useState(true);
+  const activePrivateChat = useAppSelector(
+    (state) => state.userReducer.activePrivateChat
+  );
+  const isHome = useAppSelector((state) => state.userReducer.home);
 
   const onEmojiClick = (event: React.MouseEvent, emojiObject: any) => {
     setInput(input + emojiObject.emoji);
@@ -40,14 +34,33 @@ const ChatBar = () => {
   };
   const handleOutsideClick = useCallback(
     (e: any) => {
-      if (node.current && node.current.contains(e.target)) {
-        return;
+      if (node.current && !node.current.contains(e.target)) {
+        console.log('outside click', node);
+        setIsSmiley(false);
       }
-      console.log('outside click', node);
-      setIsSmiley(false);
     },
     [node]
   );
+
+  const onSubmitChatChannelHandler = () => {
+    if (activeChannel) {
+      socket?.emit('message', {
+        content: input,
+        channel: activeChannel,
+      });
+      setInput('');
+    }
+  };
+
+  const onSubmitPrivateChatHandler = () => {
+    socket?.emit('privatemessage', {
+      content: input,
+      to: activePrivateChat,
+    });
+
+    setInput('');
+  };
+
   useEffect(() => {
     if (isSmiley) {
       document.addEventListener('click', handleOutsideClick, false);
@@ -60,46 +73,38 @@ const ChatBar = () => {
     };
   }, [isSmiley, handleOutsideClick]);
 
-  // const user = useAppSelector((state) => state.userReducer);
-
-  // const { peer, socket } = useContext(PeerSocketContext);
-
-  // function handleKeyDown(e: any) {
-  //     if (e.key === 'Enter') {
-  //         console.log(message);
-  //         setMessage('')
-  //       socket?.emit('message', {message: message, username: 'toto', channel: 'toto'});
-
-  //     }
-  // }
-
   return (
     <div className='chatbar'>
-      <Form style={{ width: '100%' }} onSubmitCapture={onSubmitHandler}>
-        <div ref={node}>
-          <Input
-            bordered={false}
-            className='inputMain'
-            placeholder='Envoyer un message dans '
-            id='inputReturn'
-            onChange={(e) => setInput(e.target.value)}
-            value={input}
-            ref={inputRef}
-          />
-          <SmileOutlined
-            onClick={() => setIsSmiley(!isSmiley)}
-            className='smileyA'
-            style={{
-              position: 'relative',
-              fontSize: '20px',
-              fontWeight: 'bold',
-              color: '#A1A1A1',
-              left: '1290px',
-              bottom: '33px',
-              padding: '8px',
-            }}
-          />
-        </div>
+      <Form
+        style={{ width: '100%' }}
+        onSubmitCapture={
+          isHome ? onSubmitPrivateChatHandler : onSubmitChatChannelHandler
+        }
+      >
+        <Input
+          bordered={false}
+          className='inputMain'
+          placeholder='Envoyer un message dans '
+          id='inputReturn'
+          onChange={(e) => setInput(e.target.value)}
+          value={input}
+          ref={inputRef}
+        />
+        <SmileOutlined
+          ref={node}
+          onClick={() => setIsSmiley(!isSmiley)}
+          className='smileyA'
+          style={{
+            position: 'relative',
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#A1A1A1',
+            left: '1290px',
+            bottom: '33px',
+            padding: '8px',
+          }}
+        />
+
         {isSmiley && (
           <div
             style={{ position: 'relative', bottom: '394px', right: '-1045px' }}

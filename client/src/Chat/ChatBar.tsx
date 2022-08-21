@@ -108,6 +108,7 @@ const ChatBar = () => {
               disableSearchBar
               disableAutoFocus
               onEmojiClick={onEmojiClick}
+              preload
               groupNames={{
                 smileys_people: 'visages',
                 animals_nature: 'animaux et nature',

@@ -191,3 +191,7 @@ textarea {
 .smileyA:hover {
   background: #36393f;
 }
+
+.ant-collapse-arrow {
+  color: #979797 !important;
+}

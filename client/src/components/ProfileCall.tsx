@@ -145,7 +145,7 @@ export const ProfileCall = (props: {
             justifyContent: 'space-around',
             width: '150px',
             color: 'darkgrey',
-            fontSize: '21px',
+            fontSize: '18px',
             marginRight: '10px',
           }}
         >

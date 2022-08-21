@@ -3,17 +3,20 @@ import {
   AudioOutlined,
   CustomerServiceFilled,
   CustomerServiceOutlined,
+  PhoneFilled,
+  PhoneOutlined,
   SettingFilled,
   SettingOutlined,
 } from '@ant-design/icons';
 import { Avatar, Tooltip, Typography } from 'antd';
-import { useAppSelector } from '../redux/hooks';
+import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { setActiveVocalChannel } from '../redux/userSlice';
 
 export const ProfileCall = () => {
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
   );
+  const dispatch = useAppDispatch();
   const me = useAppSelector((state) => state.userReducer.me);
   return (
     <div
@@ -23,7 +26,45 @@ export const ProfileCall = () => {
         width: '100%',
       }}
     >
-      <div style={{ height: '47%' }}>{activeVocalChannel && <div></div>}</div>
+      <div
+        style={{
+          marginTop: '14.5%',
+          height: '30%',
+          width: '100%',
+          backgroundColor: '#292B2F',
+          borderBottom: '1px solid #33353b',
+          visibility: activeVocalChannel ? 'visible' : 'hidden',
+        }}
+      >
+        {activeVocalChannel && (
+          <div
+            style={{
+              color: 'darkgrey',
+              height: '100%',
+              width: '100%',
+              fontSize: '21px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '0px 15px',
+            }}
+          >
+            <Typography.Text
+              style={{
+                color: 'darkgrey',
+                fontSize: '21px',
+              }}
+            >
+              Connecté à {activeVocalChannel}
+            </Typography.Text>
+            <Tooltip placement='top' title={'raccrochage'}>
+              <PhoneOutlined
+                onClick={() => dispatch(setActiveVocalChannel(0))}
+              />
+            </Tooltip>
+          </div>
+        )}
+      </div>
       <div
         style={{
           display: 'flex',

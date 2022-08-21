@@ -1,6 +1,7 @@
 import { Typography } from 'antd';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
+import { ProfileCall } from '../components/ProfileCall';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { CustomImageChat } from '../CustomLi/CustomLi';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
@@ -16,40 +17,66 @@ const PrivateChatBar = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#2F3136', height: '100vh' }}>
-      {Array.from(privateChatMap.entries()).map(([id, user]) => (
-        <div
-          key={id}
-          className='hoStat'
+    <div style={{ width: '100%', height: '100vh', backgroundColor: '#2F3136' }}>
+      <div
+        style={{
+          height: '41.4px',
+          width: '100%',
+          color: 'white',
+          fontWeight: 'bold',
+          fontSize: '16.8px',
+          display: 'flex',
+          alignItems: 'center',
+          borderBottom: '1px solid rgba(26, 26, 26, 0.67)',
+        }}
+      >
+        <Typography
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            maxWidth: '300px',
+            color: 'white',
+            paddingLeft: '15px',
+            fontWeight: 'bold',
+            fontSize: '16.8px',
           }}
         >
-          <CustomImageChat
+          Private Chats
+        </Typography>
+      </div>
+      <div style={{ backgroundColor: '#2F3136', height: '773.55px' }}>
+        {Array.from(privateChatMap.entries()).map(([id, user]) => (
+          <div
             key={id}
-            id={id}
-            picture={user.picture}
-            nickname={user.username}
-            onClickHandler={onClickHandler}
-          />
-          <Typography
+            className='hoStat'
             style={{
-              width: '100%',
-              height: '100%',
-              paddingLeft: '5px',
-              fontWeight: 'bold',
-              color: '#A1A1A1',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              maxWidth: '300px',
             }}
           >
-            {user.username.length > 15
-              ? user.username.slice(0, 15) + '...'
-              : user.username}
-          </Typography>
-        </div>
-      ))}
+            <CustomImageChat
+              key={id}
+              id={id}
+              picture={user.picture}
+              nickname={user.username}
+              onClickHandler={onClickHandler}
+            />
+            <Typography
+              style={{
+                width: '100%',
+                height: '100%',
+                paddingLeft: '5px',
+                fontWeight: 'bold',
+                color: '#A1A1A1',
+              }}
+            >
+              {user.username.length > 15
+                ? user.username.slice(0, 15) + '...'
+                : user.username}
+            </Typography>
+          </div>
+        ))}
+      </div>
+      <ProfileCall />
     </div>
   );
 };

@@ -272,6 +272,7 @@ io.on('connection', (socket: ISocket) => {
     );
 
     if (currentVocalChannel === id) {
+      socket.broadcast.emit(`leftvocalchannel:${id}`, socket.user_id);
       io.emit('leftvocal', {
         user: socket.user_id,
         chan: currentVocalChannel,

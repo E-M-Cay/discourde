@@ -27,7 +27,6 @@ import {
   Tooltip,
   Button,
 } from 'antd';
-import Sider from 'antd/lib/layout/Sider';
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { PeerSocketContext } from '../context/PeerSocket';
@@ -220,14 +219,20 @@ export const FriendPanel = (props: {
   return (
     <div style={{ backgroundColor: '#2F3136', height: '100vh' }}>
       <Tabs onChange={onChange} style={{ marginLeft: 10 }}>
-        <TabPane tab='En ligne' key='1'>
-          <p style={{ position: 'fixed', fontSize: 'medium' }}>EN LIGNE</p>
+        <TabPane tab='Amis' key='2'>
+          <p style={{ position: 'fixed', fontSize: 'medium' }}>
+            TOUS LES AMIS - {friendMap.size}
+          </p>
           <br />
           <br />
-          <li
+          <p style={{ position: 'fixed', fontSize: 'small' }}>
+            EN LIGNE - 
+          </p>
+          <br />
+          {<li
             className={'scrollIssue'}
             style={{
-              height: '73vh',
+              height: 'auto',
               width: '100%',
               borderRight: 0,
               padding: 0,
@@ -281,18 +286,16 @@ export const FriendPanel = (props: {
                 </div>
               ) : null
             )}
-          </li>
-        </TabPane>
-        <TabPane tab='Tous' key='2'>
-          <p style={{ position: 'fixed', fontSize: 'medium' }}>
-            TOUS LES AMIS - {friendMap.size}
+          </li>}
+          <br />
+          <p style={{ position: 'fixed', fontSize: 'small' }}>
+            HORS LIGNE - 
           </p>
           <br />
-          <br />
-          <li
+          {<li 
             className={'scrollIssue'}
             style={{
-              height: '73vh',
+              height: 'auto',
               width: '100%',
               borderRight: 0,
               padding: 0,
@@ -300,53 +303,55 @@ export const FriendPanel = (props: {
               overflowY: 'scroll',
             }}
           >
-            {Array.from(friendMap.entries()).map(([id, friendship]) => (
-              <div
-                key={id}
-                onClick={onClick}
-                className='panelContent'
-                style={{
-                  margin: 0,
-                  padding: 0,
-                  height: '8vh',
-                  fontWeight: 'bold',
-                }}
-              >
-                <Divider style={{ margin: 0 }} />
-                <CustomImageMess
-                  picture={friendship.friend.picture}
-                  nickname={friendship.friend.username}
-                />
-                {friendship.friend.username}
-                <div className='iconFriend'>
-                  {/*                             <a style={{ color: '#060606'}}><div><Tooltip placement="top" title={"Envoyer un message"}><MessageOutlined /></Tooltip></div></a>
-                   */}{' '}
-                  <Dropdown
-                    overlay={menu(friendship.friend)}
-                    trigger={['click']}
-                    placement='bottomLeft'
-                    className='DropDownFriend'
-                  >
-                    <ul onClick={(e) => e.preventDefault()}>
-                      <Space>
-                        <p>
-                          <a style={{ color: '#060606' }}>
-                            <Tooltip placement='top' title={'Actions'}>
-                              {' '}
-                              <MenuOutlined />{' '}
-                            </Tooltip>
-                          </a>
-                          <a onClick={() => setmenuState(!stateMenu)}></a>
-                        </p>
-                      </Space>
-                    </ul>
-                  </Dropdown>
+            {Array.from(friendMap.entries()).map(([id, friendship]) =>
+              !friendship.friend.status ? (
+                <div 
+                  key={id}
+                  onClick={onClick}
+                  className='panelContent'
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    height: '8vh',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  <Divider style={{ margin: 0 }} />
+                  <CustomImageMess
+                    picture={friendship.friend.picture}
+                    nickname={friendship.friend.username}
+                  />
+                  {friendship.friend.username}
+                  <div className='iconFriend' >
+                    {/*                             <a style={{ color: '#060606'}}><div><Tooltip placement="top" title={"Envoyer un message"}><MessageOutlined /></Tooltip></div></a>
+                     */}{' '}
+                    <Dropdown
+                      overlay={menu(friendship.friend)}
+                      trigger={['click']}
+                      placement='bottomLeft'
+                      className='DropDownFriend'
+                    >
+                      <ul onClick={(e) => e.preventDefault()}>
+                        <Space>
+                          <p>
+                            <a style={{ color: '#060606' }}>
+                              <Tooltip placement='top' title={'Actions'}>
+                                {' '}
+                                <MenuOutlined />{' '}
+                              </Tooltip>
+                            </a>
+                            <a onClick={() => setmenuState(!stateMenu)}></a>
+                          </p>
+                        </Space>
+                      </ul>
+                    </Dropdown>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </li>
+              ) : null
+            )}
+          </li>}
         </TabPane>
-        <TabPane tab='En attente' key='3'>
+        <TabPane tab='Demandes' key='3'>
           <p style={{ position: 'fixed', fontSize: 'medium' }}>
             EN ATTENTE - {receivedFriendRequestMap.size}
           </p>
@@ -496,20 +501,6 @@ export const FriendPanel = (props: {
               </div>
             ))}
           </li>
-        </TabPane>
-        <TabPane tab='Ajouter un ami' key='4'>
-          <p style={{ position: 'fixed', fontSize: 'medium' }}>
-            AJOUTER UN AMI
-          </p>
-          <br />
-          <br />
-          <Search
-            className='searchBar'
-            placeholder='Entrer un pseudo'
-            enterButton='Envoyer demande'
-            size='large'
-            onSearch={onSearch}
-          />
         </TabPane>
       </Tabs>
     </div>

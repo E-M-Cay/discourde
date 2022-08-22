@@ -21,9 +21,11 @@ const upsertHomeServer = async () => {
 
   const vocalChan = vocalChannelRepository.create({
     name: 'Forum',
+    id: 1,
   });
   const textChan = channelRepository.create({
     name: 'Général',
+    id: 1,
   });
   const newMainServ = serverRepository.create({
     name: 'Général',

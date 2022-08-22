@@ -125,7 +125,7 @@ export const LeftBar = (props: {
             id='pictures'
           >
             {serverPng.map((png, key) => (
-              <option value={png || 'pipi'}>
+              <option key={key} value={png || 'pipi'}>
                 {key < 10
                   ? 'men ' + (Number(key) + 1)
                   : 'women ' + (Number(key) + 1)}
@@ -155,11 +155,12 @@ export const LeftBar = (props: {
           height: '100vh',
           borderRight: 0,
           padding: 0,
-          width: '70px',
-          display: 'flex',
-          justifyContent: 'center',
+          paddingTop: '7px',
+          paddingLeft: '7px',
+          width: '87px',
           flexWrap: 'wrap',
           overflowY: 'scroll',
+          backgroundColor: '#202225',
         }}
       >
         <CustomLimage key={0} />
@@ -170,7 +171,7 @@ export const LeftBar = (props: {
           mouseLeaveDelay={0.3}
           placement='left'
           style={{ fontSize: '32px' }}
-          title={'add a server'}
+          title={'Créer un serveur'}
         >
           <PlusOutlined
             onMouseEnter={() => setFocus(true)}
@@ -178,12 +179,15 @@ export const LeftBar = (props: {
             onClick={showModal}
             className={'imgS'}
             style={{
-              margin: '5px auto',
-              width: '100%',
-              height: '40px',
+              margin: '7px auto',
+              width: '60px',
+              height: '60px',
               backgroundColor: isFocused ? '#4b4b4b' : '#353535',
               borderRadius: '30px',
               cursor: 'pointer',
+              fontSize: '40px',
+              padding: '10px',
+              color: 'lightgreen',
             }}
           />
         </Tooltip>

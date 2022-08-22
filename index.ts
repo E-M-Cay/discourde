@@ -151,53 +151,51 @@ io.on('connection', (socket: ISocket) => {
   });
 
   socket.on('message', async (content: Message) => {
-    const user = await userRepository.count({
-      where: { id: socket.user_id },
-      select: { id: true },
-    });
+    try {
+      const user = await userRepository.count({
+        where: { id: socket.user_id },
+        select: { id: true },
+      });
+
+      const channel = await ChannelRepository.count({
+        where: { id: content.channel },
+        select: { id: true },
+      });
+
+      if (channel && user) {
+        try {
+          let time: string = new Date()
+            .toISOString()
+            .slice(0, 19)
+            .replace('T', ' ');
+          const channel_message = ChannelMessageRepository.create({
+            channel: { id: content.channel },
+            content: content.content,
+            send_time: time,
+            author: { id: socket.user_id },
+          });
+          ChannelMessageRepository.save(channel_message);
+          io.emit(`message:${content.channel}`, {
+            id: content.channel,
+            content: content.content,
+            send_time: time,
+            author: socket.user_id,
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+      return;
+    }
 
     // const channedl = await ChannelRepository.findOne(1, {});
-
-    const channel = await ChannelRepository.count({
-      where: { id: content.channel },
-      select: { id: true },
-    });
-
-    if (channel && user) {
-      try {
-        let time: string = new Date()
-          .toISOString()
-          .slice(0, 19)
-          .replace('T', ' ');
-        const channel_message = ChannelMessageRepository.create({
-          channel: { id: content.channel },
-          content: content.content,
-          send_time: time,
-          author: { id: socket.user_id },
-        });
-        ChannelMessageRepository.save(channel_message);
-        io.emit(`message:${content.channel}`, {
-          id: content.channel,
-          content: content.content,
-          send_time: time,
-          author: socket.user_id,
-        });
-      } catch (e) {
-        console.log(e);
-      }
-    }
   });
 
   socket.on('privatemessage', async (message: PrivateMessageInterface) => {
-    const user = await userRepository.count({
-      where: { id: message.to },
-      select: { id: true },
-    });
-    // console.log(message.to, 'to');
-    // console.table(user_id_to_socket_id);
-    // console.log(user_id_to_socket_id.get(message.to), 'to');
+    if (!message.to) return;
 
-    // io.allSockets().then((res) => console.table(res));
     let time: string = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const private_message = PrivateMessageRepository.create({
       user1: { id: socket.user_id },
@@ -274,6 +272,7 @@ io.on('connection', (socket: ISocket) => {
     );
 
     if (currentVocalChannel === id) {
+      socket.broadcast.emit(`leftvocalchannel:${id}`, socket.user_id);
       io.emit('leftvocal', {
         user: socket.user_id,
         chan: currentVocalChannel,
@@ -296,7 +295,7 @@ io.on('connection', (socket: ISocket) => {
     }
 
     socket.broadcast.emit(`joiningvocalchannel:${id}`, {
-      user: socket.user_id,
+      user_id: socket.user_id,
       peer_id: socket.peer_id,
     });
     io.emit('joiningvocal', { user: socket.user_id, chan: id });

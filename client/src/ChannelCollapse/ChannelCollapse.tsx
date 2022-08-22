@@ -1,16 +1,17 @@
 import { BorderlessTableOutlined, SoundOutlined } from '@ant-design/icons';
-import { Collapse } from 'antd';
+import { Avatar, Collapse } from 'antd';
 import { useContext } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { Channel, VocalChan } from '../types/types';
+import logo from '../assets/discourde.png';
 const { Panel } = Collapse;
 
 export const ChannelCollapse = (props: {
   textChannelList: Channel[];
   vocalChannelList: VocalChan[];
-  onTextChannelClick: Function;
+  onTextChannelClick: (id: number) => void;
   onVocalChannelClick: Function;
-  activeVocalChannel: number | null;
+  activeVocalChannel?: number;
 }) => {
   const onChange = (key: any) => {};
   const {
@@ -29,9 +30,14 @@ export const ChannelCollapse = (props: {
       ghost
       defaultActiveKey={['1', '2']}
       onChange={onChange}
-      style={{ backgroundColor: '#1F1F1F' }}
+      style={{ backgroundColor: '#2F3136' }}
     >
-      <Panel className='headerPanel' header={headerTxt} key='1'>
+      <Panel
+        className='headerPanel'
+        style={{ fontSize: '12px' }}
+        header={headerTxt}
+        key='1'
+      >
         {textChannelList &&
           textChannelList.map((chan) => (
             <li
@@ -40,12 +46,20 @@ export const ChannelCollapse = (props: {
               className='panelContent'
             >
               {' '}
-              <BorderlessTableOutlined /> {chan.name}
+              <BorderlessTableOutlined />{' '}
+              {chan.name.length > 15
+                ? chan.name.substring(0, 15) + '...'
+                : chan.name}
             </li>
           ))}
       </Panel>
 
-      <Panel className='headerPanel' header={headerVoc} key='2'>
+      <Panel
+        className='headerPanel'
+        style={{ fontSize: '12px' }}
+        header={headerVoc}
+        key='2'
+      >
         {vocalChannelList &&
           vocalChannelList.map((chan) => (
             <li
@@ -54,15 +68,29 @@ export const ChannelCollapse = (props: {
               className='panelContent'
             >
               {' '}
-              <SoundOutlined /> {chan.name}
-              {activeVocalChannel === chan.id && (
+              <SoundOutlined />{' '}
+              <span
+                style={{ color: activeVocalChannel === chan.id ? 'white' : '' }}
+              >
+                {chan.name}
+              </span>
+              {/* {activeVocalChannel === chan.id && (
                 <>
-                  <br />
+                  {' '}
                   <BorderlessTableOutlined className='activeChannel' />
                 </>
-              )}
+              )} */}
               {chan.users.map((u) => (
-                <div key={u}>
+                <div
+                  onClick={() => console.log(serverUserMap.get(u), 'test')}
+                  key={u}
+                  style={{ marginTop: '5px' }}
+                >
+                  <Avatar
+                    size={20}
+                    style={{ margin: '0px 5px 0px 20px' }}
+                    src={serverUserMap.get(u)?.user.picture ?? logo}
+                  />{' '}
                   {serverUserMap.get(u)?.nickname || 'Error retrieving user'}
                 </div>
               ))}

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useAppDispatch } from './redux/hooks';
 import { Input, Typography } from 'antd';
 import { setUsername, setToken, setMe } from './redux/userSlice';
-import VocalChannel from './components/VocalChannel';
+import VocalChannelContextProvider from './components/VocalChannel';
 import { Home } from './Home/Home';
 import { Modal } from 'antd';
 import UserMapsContextProvider from './context/UserMapsContext';
@@ -97,7 +97,7 @@ const App = () => {
           dispatch(setMe(res.data.user));
           dispatch(setToken(res.data.token));
           handleOk();
-          let audio = new Audio('/asmr-tone-ooh.mp3');
+          let audio = new Audio('girl-hey-ringtone-second-version.mp3');
           audio.play();
         }
       });
@@ -106,129 +106,135 @@ const App = () => {
   return (
     <UserMapsContextProvider>
       <NotificationsContextProvider>
-        {peer?.open && socket?.connected ? (
-          <div>
-            <VocalChannel />
-            <Home setTokenMissing={setIsModalVisible} />
-          </div>
-        ) : (
-          <Modal
-            visible={isModalVisible}
-            closable={false}
-            footer={null}
-            // style={{backgroundColor: '#535353'}}
-          >
-            <div className='App'>
-              <>
-                <form onSubmit={(e) => onSubmitRegister(e)}>
-                  <Title level={3}>Register</Title>
-                  <div
-                    style={{
-                      maxWidth: '80%',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      margin: 'auto',
-                    }}
-                  >
-                    <Text>email</Text>
+        {' '}
+        <VocalChannelContextProvider>
+          {peer?.open && socket?.connected ? (
+            <div>
+              <Home setTokenMissing={setIsModalVisible} />
+            </div>
+          ) : (
+            <Modal
+              visible={isModalVisible}
+              closable={false}
+              footer={null}
+              // style={{backgroundColor: '#535353'}}
+            >
+              <div className='App'>
+                <>
+                  <form onSubmit={(e) => onSubmitRegister(e)}>
+                    <Title level={3}>Register</Title>
+                    <div
+                      style={{
+                        maxWidth: '80%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        margin: 'auto',
+                      }}
+                    >
+                      <Text>email</Text>
 
-                    <Input
-                      style={{ maxWidth: '50%' }}
-                      placeholder='email'
-                      id='registerEmail'
-                      onChange={(e) => onChangeHandler(e, registerEmailRef)}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      paddingTop: '10px',
-                      maxWidth: '80%',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      margin: 'auto',
-                    }}
-                  >
-                    <Text>password</Text>
-                    <Input.Password
-                      style={{ maxWidth: '50%' }}
-                      placeholder='password'
-                      id='registerPassword'
-                      onChange={(e) => onChangeHandler(e, registerPasswordRef)}
-                    />{' '}
-                  </div>
-                  <div
-                    style={{
-                      paddingTop: '10px',
-                      maxWidth: '80%',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      margin: 'auto',
-                    }}
-                  >
-                    <Text>username</Text>
-
-                    <Input
-                      placeholder='username'
+                      <Input
+                        style={{ maxWidth: '50%' }}
+                        placeholder='email'
+                        id='registerEmail'
+                        onChange={(e) => onChangeHandler(e, registerEmailRef)}
+                      />
+                    </div>
+                    <div
                       style={{
                         paddingTop: '10px',
-                        maxWidth: '50%',
+                        maxWidth: '80%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        margin: 'auto',
                       }}
-                      id='registerUsername'
-                      onChange={(e) => onChangeHandler(e, registerUsernameRef)}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      paddingTop: '10px',
-                      maxWidth: '80%',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      margin: 'auto',
-                    }}
-                  >
-                    <Text>picture</Text>
-                    <select
-                      name='pictures'
-                      onChange={(e) => setPictureLink(e.target.value)}
-                      id='pictures'
                     >
-                      {profilePng.map((png, key) => (
-                        <option value={png || 'pipi'}>
-                          {key < 10
-                            ? 'men ' + (Number(key) + 1)
-                            : 'women ' + (Number(key) + 1)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>{' '}
-                  <br />
-                  <input type='submit' />
-                </form>
-                <form onSubmit={(e) => onSubmitLogin(e)}>
-                  <Title level={3}>Login</Title>
+                      <Text>password</Text>
+                      <Input.Password
+                        style={{ maxWidth: '50%' }}
+                        placeholder='password'
+                        id='registerPassword'
+                        onChange={(e) =>
+                          onChangeHandler(e, registerPasswordRef)
+                        }
+                      />{' '}
+                    </div>
+                    <div
+                      style={{
+                        paddingTop: '10px',
+                        maxWidth: '80%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        margin: 'auto',
+                      }}
+                    >
+                      <Text>username</Text>
 
-                  <label>
-                    email
-                    <input
-                      type='text'
-                      id='loginPassword'
-                      onChange={(e) => onChangeHandler(e, loginEmailRef)}
-                    />
-                  </label>
-                  <label>
-                    password
-                    <input
-                      type='password'
-                      id='loginPassword'
-                      onChange={(e) => onChangeHandler(e, loginPasswordRef)}
-                    ></input>
-                  </label>
-                  <input type='submit' />
-                </form>{' '}
-              </>
-            </div>
-          </Modal>
-        )}
+                      <Input
+                        placeholder='username'
+                        style={{
+                          paddingTop: '10px',
+                          maxWidth: '50%',
+                        }}
+                        id='registerUsername'
+                        onChange={(e) =>
+                          onChangeHandler(e, registerUsernameRef)
+                        }
+                      />
+                    </div>
+                    <div
+                      style={{
+                        paddingTop: '10px',
+                        maxWidth: '80%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        margin: 'auto',
+                      }}
+                    >
+                      <Text>picture</Text>
+                      <select
+                        name='pictures'
+                        onChange={(e) => setPictureLink(e.target.value)}
+                        id='pictures'
+                      >
+                        {profilePng.map((png, key) => (
+                          <option key={key} value={png || 'pipi'}>
+                            {key < 10
+                              ? 'men ' + (Number(key) + 1)
+                              : 'women ' + (Number(key) + 1)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>{' '}
+                    <br />
+                    <input type='submit' />
+                  </form>
+                  <form onSubmit={(e) => onSubmitLogin(e)}>
+                    <Title level={3}>Login</Title>
+
+                    <label>
+                      email
+                      <input
+                        type='text'
+                        id='loginPassword'
+                        onChange={(e) => onChangeHandler(e, loginEmailRef)}
+                      />
+                    </label>
+                    <label>
+                      password
+                      <input
+                        type='password'
+                        id='loginPassword'
+                        onChange={(e) => onChangeHandler(e, loginPasswordRef)}
+                      ></input>
+                    </label>
+                    <input type='submit' />
+                  </form>{' '}
+                </>
+              </div>
+            </Modal>
+          )}
+        </VocalChannelContextProvider>
       </NotificationsContextProvider>
     </UserMapsContextProvider>
   );

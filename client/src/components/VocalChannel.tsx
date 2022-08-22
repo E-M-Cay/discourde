@@ -1,15 +1,46 @@
 import { MediaConnection } from 'peerjs';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { useMap } from 'usehooks-ts';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { useAppSelector } from '../redux/hooks';
 
-const VocalChannel = () => {
+interface VocalChannel {
+  stream?: MediaStream;
+  callMap: Omit<Map<number, MediaConnection>, 'delete' | 'set' | 'clear'>;
+}
+
+const VocalChannelContext = createContext<VocalChannel>({
+  callMap: new Map<number, MediaConnection>(),
+});
+
+interface Props {
+  children: React.ReactNode;
+}
+
+const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
+  children,
+}) => {
   const { peer, socket } = useContext(PeerSocketContext);
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
   );
+  const me = useAppSelector((state) => state.userReducer.me);
   const streamRef = useRef<MediaStream>();
-  const [_activeCalls, setActiveCalls] = useState<MediaConnection[]>([]);
+  const [callMap, callActions] = useMap<number, MediaConnection>();
+
+  const {
+    set: setCall,
+    remove: removeCall,
+    setAll: setAllCalls,
+    reset: resetCalls,
+  } = callActions;
 
   const toggleMicrophone = async () => {
     const toto = navigator.mediaDevices;
@@ -40,41 +71,46 @@ const VocalChannel = () => {
 
   const callEvent = useCallback(async (call: MediaConnection) => {
     const audioNode = new Audio();
+    const userId = call.metadata.user_id;
 
     if (!streamRef.current?.active) {
       await toggleMicrophone();
     }
     call.answer(streamRef.current as MediaStream);
 
-    setActiveCalls((prevState) => [...prevState, call]);
     call.on('stream', (stream) => {
       audioNode.srcObject = stream;
       console.log('receiving stream 2');
       console.log(stream);
       audioNode.play();
-      setActiveCalls((prevState) => [...prevState, call]);
+      setCall(userId, call);
     });
 
     call.on('close', () => {
       audioNode.remove();
-      setActiveCalls((prevCall) => prevCall.filter((c) => c !== call));
+      removeCall(userId);
     });
     //}
   }, []);
 
   const callUser = useCallback(
-    async (id: string) => {
+    async (id: string, userId: number) => {
       console.log('calling:', id, peer?.id);
       const audioNode = new Audio();
       console.log(streamRef.current?.getTracks());
-      const call = peer?.call(id, streamRef.current as MediaStream);
+      const call = peer?.call(id, streamRef.current as MediaStream, {
+        metadata: {
+          user_id: me?.id,
+        },
+      });
 
       call?.on('stream', (stream) => {
+        setCall(userId, call);
         audioNode.srcObject = stream;
         console.log('receiving stream 1');
         console.log(stream);
         audioNode.play();
-        setActiveCalls((prevState) => [...prevState, call]);
+        stream.getAudioTracks().forEach((tr) => {});
       });
 
       // streamRef.current
@@ -83,46 +119,77 @@ const VocalChannel = () => {
 
       call?.on('close', () => {
         audioNode.remove();
-        setActiveCalls((prevCall) => prevCall.filter((c) => c !== call));
+        removeCall(userId);
       });
     },
-    [peer]
+    [peer, me]
   );
 
   const hello = useCallback(
     async (data: { user_id: number; peer_id: string }) => {
+      const { user_id, peer_id } = data;
       console.log('hello');
-      console.log('peer id:', data.peer_id);
+      console.log('peer id:', peer_id, 'user_id', user_id);
+      // const {user_id}
 
       if (!streamRef.current?.active) {
         await toggleMicrophone();
       }
-      callUser(data.peer_id);
+      callUser(peer_id, user_id);
     },
     [callUser]
   );
 
+  const goodBye = useCallback(
+    (user_id: number) => {
+      console.log('goodbye', user_id);
+      console.log(callMap.has(user_id));
+      callMap.get(user_id)?.close();
+      removeCall(user_id);
+    },
+    [callMap]
+  );
+
+  const muteSelf = () => {
+    streamRef.current?.getAudioTracks().forEach((tr) => (tr.enabled = false));
+  };
+
+  const unmuteSelf = () => {
+    streamRef.current?.getAudioTracks().forEach((tr) => (tr.enabled = true));
+  };
+
   useEffect(() => {
     if (activeVocalChannel) {
       socket?.emit('joinvocalchannel', activeVocalChannel);
+    }
+    return () => {
+      if (activeVocalChannel) {
+        socket?.emit('leftvocalchannel', activeVocalChannel);
+      }
+    };
+  }, [activeVocalChannel]);
+
+  useEffect(() => {
+    if (activeVocalChannel) {
       socket?.on(`joiningvocalchannel:${activeVocalChannel}`, hello);
+      socket?.on(`leftvocalchannel:${activeVocalChannel}`, goodBye);
     }
     return () => {
       if (activeVocalChannel) {
         socket?.off(`joiningvocalchannel:${activeVocalChannel}`, hello);
-        socket?.emit('leftvocalchannel', activeVocalChannel);
+        socket?.off(`leftvocalchannel:${activeVocalChannel}`, goodBye);
       }
     };
-  }, [activeVocalChannel, socket, hello]);
+  }, [activeVocalChannel, socket, hello, goodBye]);
 
-  useEffect(() => {
-    setActiveCalls((prevState) => {
-      prevState.forEach((call) => {
-        call.close();
-      });
-      return [];
-    });
-  }, [activeVocalChannel]);
+  // useEffect(() => {
+  //   setActiveCalls((prevState) => {
+  //     prevState.forEach((call) => {
+  //       call.close();
+  //     });
+  //     return [];
+  //   });
+  // }, [activeVocalChannel]);
 
   useEffect(() => {
     peer?.on('call', callEvent);
@@ -134,7 +201,15 @@ const VocalChannel = () => {
     };
   }, [peer, callEvent, hello]);
 
-  return <></>;
+  return (
+    <VocalChannelContext.Provider
+      value={{ stream: streamRef.current, callMap }}
+    >
+      {children}
+    </VocalChannelContext.Provider>
+  );
 };
 
-export default VocalChannel;
+export default VocalChannelContextProvider;
+
+export { VocalChannelContext };

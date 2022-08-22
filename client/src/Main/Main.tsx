@@ -5,11 +5,10 @@ import { ChanelBar } from '../ChanelBar/ChanelBar';
 import { useAppSelector } from '../redux/hooks';
 import { FriendPanel } from '../FriendPanel/FriendPanel';
 import PrivateChatBar from '../PrivateChatBar/PrivateChatBar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { GeneralSettings } from '../Modals/Modals';
 import { CallPanel } from '../CallPanel/CallPanel';
-import { ServerResponse } from '../types/types';
-
+import { Channel, ServerResponse, VocalChan } from '../types/types';
 
 export const Main = (props: {
   handleLeaveServer: () => void;
@@ -17,6 +16,8 @@ export const Main = (props: {
 }) => {
   const { handleLeaveServer, setServers } = props;
   const isHome = useAppSelector((state) => state.userReducer.home);
+  const [vocalChannelList, setVocalChannelList] = useState<VocalChan[]>([]);
+  const [textChannelList, setTextChannelList] = useState<Channel[]>([]);
 
   return (
     <Row
@@ -28,17 +29,24 @@ export const Main = (props: {
       className='main'
     >
       <GeneralSettings />
-      <Col style={{ backgroundColor: '#535151' }} span={3.5}>
+      <Col style={{ backgroundColor: '#535151' }} span={3}>
         {isHome ? (
           <PrivateChatBar />
         ) : (
-          <ChanelBar handleLeaveServer={handleLeaveServer} />
+          <ChanelBar
+            handleLeaveServer={handleLeaveServer}
+            vocalChannelList={vocalChannelList}
+            textChannelList={textChannelList}
+            setTextChannelList={setTextChannelList}
+            setVocalChannelList={setVocalChannelList}
+          />
         )}
       </Col>
-      <Col span={16}>
-        <CallPanel /> {/* <CallPanel /> */}
+      <Col span={18}>
+        {/* <CallPanel /> */}
+        <Chat textChannelList={textChannelList} />
       </Col>
-      <Col style={{ backgroundColor: 'grey' }} span={4}>
+      <Col style={{ backgroundColor: 'grey' }} span={3}>
         {isHome ? <FriendPanel setServers={setServers} /> : <StatusBar />}
       </Col>
     </Row>

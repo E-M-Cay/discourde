@@ -14,10 +14,10 @@ import { NotificationsContext } from '../context/NotificationsContext';
 import { useAppSelector } from '../redux/hooks';
 
 export const DropdownMenu = (params: {
-  showModal2: Function;
+  showModal2: () => void;
   showServerParamsModal: () => void;
-  showModal: Function;
-  deleteServer: Function;
+  showModal: () => void;
+  deleteServer: () => void;
   handleLeaveServer: () => void;
 }) => {
   const {
@@ -56,31 +56,47 @@ export const DropdownMenu = (params: {
           {
             label: (
               <li
-                style={{ color: 'white' }}
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '14px',
+                }}
+                className='purple-item menu-hover'
                 key={0}
                 onClick={() => showModal2()}
               >
+                Inviter des gens
                 <UserAddOutlined
                   style={{
-                    color: 'darkgrey',
-                    fontSize: 'small',
+                    fontSize: '15px',
                   }}
-                />{' '}
-                Inviter des gens{' '}
+                />
               </li>
             ),
             key: '0',
           },
           {
             label: (
-              <li style={{ color: 'white' }} key={1}>
+              <li
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '14px',
+                }}
+                key={1}
+              >
+                Gestion des membres
                 <TeamOutlined
                   style={{
-                    color: 'darkgrey',
-                    fontSize: 'small',
+                    fontSize: '15px',
                   }}
-                />{' '}
-                Gestion des membres{' '}
+                />
               </li>
             ),
             key: '1',
@@ -91,17 +107,23 @@ export const DropdownMenu = (params: {
           {
             label: (
               <li
-                style={{ color: 'white' }}
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '14px',
+                }}
                 onClick={() => showServerParamsModal()}
                 key={2}
               >
+                Paramètres du serveur
                 <SettingOutlined
                   style={{
-                    color: 'darkgrey',
-                    fontSize: 'small',
+                    fontSize: '15px',
                   }}
-                />{' '}
-                Paramètres du serveur{' '}
+                />
               </li>
             ),
             key: '2',
@@ -109,17 +131,23 @@ export const DropdownMenu = (params: {
           {
             label: (
               <li
-                style={{ color: 'white' }}
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '14px',
+                }}
                 key={3}
                 onClick={() => showModal()}
               >
+                Créer un salon
                 <PlusCircleOutlined
                   style={{
-                    color: 'darkgrey',
-                    fontSize: 'small',
+                    fontSize: '15px',
                   }}
-                />{' '}
-                Créer un salon{' '}
+                />
               </li>
             ),
             key: '3',
@@ -127,17 +155,23 @@ export const DropdownMenu = (params: {
           {
             label: (
               <li
-                style={{ color: 'white' }}
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '14px',
+                }}
                 key={4}
                 onClick={() => deleteServer()}
               >
+                Supprimer serveur
                 <PlusCircleOutlined
                   style={{
-                    color: 'darkgrey',
-                    fontSize: 'small',
+                    fontSize: '15px',
                   }}
-                />{' '}
-                Supprimer serveur{' '}
+                />
               </li>
             ),
             key: '4',
@@ -148,17 +182,25 @@ export const DropdownMenu = (params: {
           {
             label: (
               <li
-                style={{ color: 'white' }}
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '14px',
+                }}
                 onClick={() => showNotificationModal()}
                 key={5}
               >
+                <span>
+                  Notifications <Badge count={notifications.length}></Badge>
+                </span>{' '}
                 <BellOutlined
                   style={{
-                    color: 'darkgrey',
-                    fontSize: 'small',
+                    fontSize: '15px',
                   }}
-                />{' '}
-                Notifications <Badge count={notifications.length}></Badge>
+                />
               </li>
             ),
             key: '5',
@@ -169,17 +211,24 @@ export const DropdownMenu = (params: {
           {
             label: (
               <li
-                style={{ color: 'white' }}
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '14px',
+                }}
+                className='red-item menu-hover'
                 key={6}
                 onClick={() => handleLeaveServer()}
               >
+                Quitter le serveur
                 <LogoutOutlined
                   style={{
-                    color: 'red',
-                    fontSize: 'small',
+                    fontSize: '15px',
                   }}
-                />{' '}
-                Quitter le serveur{' '}
+                />
               </li>
             ),
             key: '6',

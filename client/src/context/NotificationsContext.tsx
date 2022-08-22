@@ -86,7 +86,8 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
       } else {
         username = privateChatMap.get(userId)?.username as string;
       }
-
+      let audio = new Audio('/when-604.mp3');
+      audio.play();
       addNotification({
         type: 'success',
         title: username,

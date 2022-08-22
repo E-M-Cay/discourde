@@ -97,7 +97,7 @@ router.delete(
 
     try {
       await ChannelRepository.delete(channel.id);
-      io.emit('textchanneldelete', channel_id);
+      io.emit(`textchanneldelete:server${server_id}`, channel_id);
       return res.sendStatus(204);
     } catch (error) {
       console.log(error);
@@ -114,7 +114,7 @@ router.delete(
     const server_id = Number(req.params.server_id);
     const channel_id = Number(req.params.channel_id);
     if (server_id == NaN || channel_id == NaN)
-      return res.status(400).send('Error server not found');
+      return res.status(405).send('Error server not found');
 
     const server = await ServerRepository.findOneBy({ id: server_id });
     const channel = await VocalChannelRepository.findOneBy({ id: channel_id });
@@ -124,6 +124,7 @@ router.delete(
 
     try {
       await VocalChannelRepository.delete(channel.id);
+      io.emit('vocalchanneldelete', channel_id);
       return res.sendStatus(204);
     } catch (error) {
       return res.status(400).send(error);

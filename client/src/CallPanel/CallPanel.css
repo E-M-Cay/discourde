@@ -4,19 +4,20 @@
     height: 100vh;
 }
 
-.vocStyle:hover {
-    background-color: #232222 !important;
-}
+
 .vocStyle button {
     display: none;  
 }
-.vocStyle header{
+.vocStyle Header{
     display: none;
 }
-.vocStyle:hover header{
+.vocStyle:hover Header{
     font-size: 200%;
     display: inline ;
+    background-color: black;
 }
+
+
 
 .vocStyle:hover button {
     display: inline;
@@ -24,22 +25,37 @@
     border: none;
     font-size: x-large;
     cursor: pointer ;
-    background-color: #232222;
+    background-color: black;
 }
 
 
 #phone:hover , #audio:hover {
-    color: red;
-    font-size: 110%;
+    color: white;
+    font-size: 105%;
+    
 }
-#menu {
-    margin-right: 0 !important;
-}
-#menu:hover {
-    font-size: 110%;
+
+#volume:hover {
+    font-size: 105%;
+    color: white;
 }
 
 .volSider {
     display: 'inline-block';
     height: 100px;
+}
+
+.ProfilPic {
+    display: inline table !important;
+}
+.ProfilPic:hover {
+    opacity: 50% !important;
+    
+}
+.vocStyle h1 {
+    display: none;
+}
+.vocStyle:hover h1 {
+    display: inline table !important;
+    color: white !important;
 }

@@ -21,32 +21,50 @@ import {
   Input,
   Layout,
   Slider,
+  Image,
 } from 'antd';
-import { Content } from 'antd/lib/layout/layout';
+import { Content, Footer, Header } from 'antd/lib/layout/layout';
 import Sider from 'antd/lib/layout/Sider';
 import React, { useContext, useState } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
 import './CallPanel.css';
+import fakeUsers from '../mockVocUsers';
 
 const { TabPane } = Tabs;
 const { Panel } = Collapse;
 const { Search } = Input;
-
-let testUsers: Array<any> = [];
-testUsers.push({ id: 1, nickName: 'Nathan' });
-
+let src: string = "";
+let width: number = 200;
+let chanName: string = "testVocalChanel";
+let marginTopPP: string = '30vh';
 export const CallPanel = () => {
   const { serverUserMap } = useContext(UserMapsContext);
-
+  if(fakeUsers.length > 4){
+    width = 150;
+    marginTopPP = "20vh";
+  } else {marginTopPP = '40vh'}
+  const onClick = (e: number) => {
+    return (event: React.MouseEvent) => {
+      console.log('id User : ', e);
+      event.preventDefault();
+    }
+    
+  };
   return (
     <Layout className='vocStyle'>
-      <header>
-        <SoundOutlined /> %Nom du chanel vocal%
-      </header>
-      <Content style={{textAlign: 'center', lineHeight: '50vh'}}>
-        <p>%AFFICHAGE DES PARTICIPANTS AVATAR EN FOND + PSEUDO%</p>
+      <Header>
+        <SoundOutlined /> {chanName}
+      </Header>
+      <Content style={{textAlign: 'center', marginTop: marginTopPP}}>
+        {/* <p>{testUsers.map(user => {
+          return user;
+        })}</p> */}
+         {fakeUsers.map(user => {
+          src = user.avatar;
+          return <div  className='ProfilPic'><img onClick={onClick(user.id)} src={src} width={width}/><h1>{user.nickName}</h1></div>
+        })}
       </Content>
-      <footer style={{textAlign: 'center'}}>
+      <Footer style={{textAlign: 'center'}}>
       <Tooltip placement='top' title={'Couper le micro'}>
         <button>
           <AudioMutedOutlined id='audio' />
@@ -62,7 +80,7 @@ export const CallPanel = () => {
           <SoundOutlined id='volume' />
         </button>
         </Tooltip>
-      </footer>
+      </Footer>
     </Layout>
   );
 };

@@ -1,3 +1,5 @@
+import { SoundOutlined } from '@ant-design/icons';
+import { Avatar } from 'antd';
 import { MediaConnection } from 'peerjs';
 import {
   createContext,
@@ -9,15 +11,42 @@ import {
 } from 'react';
 import { useMap } from 'usehooks-ts';
 import { PeerSocketContext } from '../context/PeerSocket';
-import { useAppSelector } from '../redux/hooks';
+import { UserMapsContext } from '../context/UserMapsContext';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { VocalChan } from '../types/types';
+import logo from '../assets/discourde.png';
+import {
+  setMute,
+  setMuteAudio,
+  setUnmute,
+  setUnmuteAudio,
+} from '../redux/userSlice';
 
 interface VocalChannel {
   stream?: MediaStream;
-  callMap: Omit<Map<number, MediaConnection>, 'delete' | 'set' | 'clear'>;
+  displayActiveVocalChannel: (chan: VocalChan) => JSX.Element;
+  muteSelf: () => void;
+  unmuteSelf: () => void;
+  muteAudio: () => void;
+  unmuteAudio: () => void;
 }
 
 const VocalChannelContext = createContext<VocalChannel>({
-  callMap: new Map<number, MediaConnection>(),
+  muteSelf: (_any?: any) => {
+    throw new Error('muteSelf not correctly overridden');
+  },
+  unmuteSelf: (_any?: any) => {
+    throw new Error('unmuteSelf not correctly overridden');
+  },
+  muteAudio: (_any?: any) => {
+    throw new Error('muteAudio not correctly overridden');
+  },
+  unmuteAudio: (_any?: any) => {
+    throw new Error('unmuteAudio not correctly overridden');
+  },
+  displayActiveVocalChannel: (_any?: any) => {
+    throw new Error('displayActiveVocalChannel not correctly overridden');
+  },
 });
 
 interface Props {
@@ -33,83 +62,90 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   );
   const me = useAppSelector((state) => state.userReducer.me);
   const streamRef = useRef<MediaStream>();
-  const [callMap, callActions] = useMap<number, MediaConnection>();
+  const [calls, setCalls] = useState<MediaConnection[]>([]);
+  const [audioNodeMap, audioNodeActions] = useMap<number, HTMLAudioElement>([]);
+  const { serverUserMap } = useContext(UserMapsContext);
+  const isMute = useAppSelector((state) => state.userReducer.isMute);
+  const isMuteAudio = useAppSelector((state) => state.userReducer.isMuteAudio);
+  const dispatch = useAppDispatch();
 
   const {
-    set: setCall,
-    remove: removeCall,
-    setAll: setAllCalls,
-    reset: resetCalls,
-  } = callActions;
+    set: setAudioNode,
+    remove: removeAudioNode,
+    setAll: setAllAudioNodes,
+    reset: resetAudioNodes,
+  } = audioNodeActions;
 
-  const toggleMicrophone = async () => {
+  const turnOnMicrophone = useCallback(async () => {
     const toto = navigator.mediaDevices;
-    console.log(await toto.enumerateDevices(), 'enumerate');
+    // console.log(await toto.enumerateDevices(), 'enumerate');
 
-    if (!streamRef.current?.active) {
-      await navigator.mediaDevices
-        .getUserMedia({ audio: true })
-        .then((stream) => {
-          stream.getAudioTracks().forEach((track) => {
-            console.log(streamRef.current);
-          });
-          streamRef.current = stream;
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    } else {
-      try {
-        streamRef.current.getTracks().forEach((track) => {
-          track.stop();
-        });
-      } catch (e) {
-        console.error(e);
+    await navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
+        if (isMute) {
+          stream.getAudioTracks().forEach((tr) => (tr.enabled = false));
+        }
+        streamRef.current = stream;
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, [streamRef, isMute]);
+
+  const callEvent = useCallback(
+    async (call: MediaConnection) => {
+      const audioNode = new Audio();
+      const userId = call.metadata.user_id;
+
+      if (!streamRef.current?.active) {
+        await turnOnMicrophone();
       }
-    }
-  };
+      call.answer(streamRef.current as MediaStream);
+      setCalls((prevstate) => [...prevstate, call]);
 
-  const callEvent = useCallback(async (call: MediaConnection) => {
-    const audioNode = new Audio();
-    const userId = call.metadata.user_id;
+      call.on('stream', (stream) => {
+        audioNode.srcObject = stream;
+        console.log('receiving stream 2');
+        console.log(stream);
+        setAudioNode(userId, audioNode);
+        if (!isMuteAudio) {
+          audioNode.play();
+        }
+      });
 
-    if (!streamRef.current?.active) {
-      await toggleMicrophone();
-    }
-    call.answer(streamRef.current as MediaStream);
-
-    call.on('stream', (stream) => {
-      audioNode.srcObject = stream;
-      console.log('receiving stream 2');
-      console.log(stream);
-      audioNode.play();
-      setCall(userId, call);
-    });
-
-    call.on('close', () => {
-      audioNode.remove();
-      removeCall(userId);
-    });
-    //}
-  }, []);
+      call.on('close', () => {
+        audioNode.remove();
+        removeAudioNode(userId);
+        setCalls((prevState) => prevState.filter((c) => c !== call));
+      });
+      //}
+    },
+    [streamRef, isMuteAudio, setAudioNode, removeAudioNode, turnOnMicrophone]
+  );
 
   const callUser = useCallback(
     async (id: string, userId: number) => {
       console.log('calling:', id, peer?.id);
       const audioNode = new Audio();
       console.log(streamRef.current?.getTracks());
-      const call = peer?.call(id, streamRef.current as MediaStream, {
+      if (!peer) return;
+      const call = peer.call(id, streamRef.current as MediaStream, {
         metadata: {
           user_id: me?.id,
         },
       });
+      setCalls((prevstate) => [...prevstate, call]);
 
       call?.on('stream', (stream) => {
-        setCall(userId, call);
         audioNode.srcObject = stream;
         console.log('receiving stream 1');
         console.log(stream);
-        audioNode.play();
+        setAudioNode(userId, audioNode);
+        if (!isMuteAudio) {
+          audioNode.play();
+        }
+
         stream.getAudioTracks().forEach((tr) => {});
       });
 
@@ -119,11 +155,16 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
       call?.on('close', () => {
         audioNode.remove();
-        removeCall(userId);
+        removeAudioNode(userId);
+        setCalls((prevState) => prevState.filter((c) => c !== call));
       });
     },
-    [peer, me]
+    [peer, me, isMuteAudio, setAudioNode, removeAudioNode]
   );
+
+  // const toto = (truc: HTMLAudioElement) => {
+  //   return <>{truc}</>;
+  // };
 
   const hello = useCallback(
     async (data: { user_id: number; peer_id: string }) => {
@@ -133,29 +174,42 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       // const {user_id}
 
       if (!streamRef.current?.active) {
-        await toggleMicrophone();
+        await turnOnMicrophone();
       }
       callUser(peer_id, user_id);
     },
-    [callUser]
+    [callUser, turnOnMicrophone]
   );
 
-  const goodBye = useCallback(
-    (user_id: number) => {
-      console.log('goodbye', user_id);
-      console.log(callMap.has(user_id));
-      callMap.get(user_id)?.close();
-      removeCall(user_id);
-    },
-    [callMap]
-  );
+  const goodBye = useCallback((user_id: number) => {
+    console.log('goodbye', user_id);
+    // console.log(callMap.has(user_id));
+    // callMap.get(user_id)?.close();
+    // removeCall(user_id);
+  }, []);
 
   const muteSelf = () => {
+    console.log('mute');
     streamRef.current?.getAudioTracks().forEach((tr) => (tr.enabled = false));
+    dispatch(setMute());
   };
 
   const unmuteSelf = () => {
+    console.log('unmute');
     streamRef.current?.getAudioTracks().forEach((tr) => (tr.enabled = true));
+    dispatch(setUnmute());
+  };
+
+  const muteAudio = () => {
+    console.log('mute audio');
+    audioNodeMap.forEach((audioNode) => audioNode.pause());
+    dispatch(setMuteAudio());
+  };
+
+  const unmuteAudio = () => {
+    console.log('unmute audio');
+    audioNodeMap.forEach((audioNode) => audioNode.play());
+    dispatch(setUnmuteAudio());
   };
 
   useEffect(() => {
@@ -167,10 +221,13 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         socket?.emit('leftvocalchannel', activeVocalChannel);
       }
     };
-  }, [activeVocalChannel]);
+  }, [activeVocalChannel, socket]);
 
   useEffect(() => {
     if (activeVocalChannel) {
+      // if (!streamRef.current?.active) {
+      //   await turnOnMicrophone();
+      // }
       socket?.on(`joiningvocalchannel:${activeVocalChannel}`, hello);
       socket?.on(`leftvocalchannel:${activeVocalChannel}`, goodBye);
     }
@@ -182,14 +239,14 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     };
   }, [activeVocalChannel, socket, hello, goodBye]);
 
-  // useEffect(() => {
-  //   setActiveCalls((prevState) => {
-  //     prevState.forEach((call) => {
-  //       call.close();
-  //     });
-  //     return [];
-  //   });
-  // }, [activeVocalChannel]);
+  useEffect(() => {
+    setCalls((prevState) => {
+      prevState.forEach((call) => {
+        call.close();
+      });
+      return [];
+    });
+  }, [activeVocalChannel]);
 
   useEffect(() => {
     peer?.on('call', callEvent);
@@ -201,9 +258,105 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     };
   }, [peer, callEvent, hello]);
 
+  const mutePerson = (userId: number) => {
+    const audioNode = audioNodeMap.get(userId);
+    // console.log(audioNode, 'mute exists ?');
+    if (audioNode) {
+      audioNode.volume = 0;
+      setAudioNode(userId, audioNode);
+      // console.log(audioNode.volume, 'audionode mute');
+    }
+  };
+
+  const unmutePerson = (userId: number) => {
+    const audioNode = audioNodeMap.get(userId);
+    if (audioNode) {
+      audioNode.volume = 1;
+      setAudioNode(userId, audioNode);
+      // console.log(audioNode.volume, 'audionode unmute');
+    }
+  };
+
+  const handleChangeVolume = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    audioNode: HTMLAudioElement
+  ) => {
+    audioNode.volume = Number(e.target.value);
+    setAllAudioNodes(new Map(audioNodeMap));
+  };
+
+  const displayActiveVocalChannel = (chan: VocalChan) => {
+    return (
+      <li
+        key={chan.id}
+        // onClick={() => onVocalChannelClick(chan.id)}
+        className='panelContent'
+      >
+        {' '}
+        <SoundOutlined />{' '}
+        <span style={{ color: activeVocalChannel === chan.id ? 'white' : '' }}>
+          {chan.name}
+        </span>
+        {/* {activeVocalChannel === chan.id && (
+      <>
+        {' '}
+        <BorderlessTableOutlined className='activeChannel' />
+      </>
+    )} */}
+        {chan.users.map((u) => (
+          <div
+            onClick={() => console.log(serverUserMap.get(u), 'test')}
+            key={u}
+            style={{ marginTop: '5px' }}
+          >
+            <Avatar
+              size={20}
+              style={{ margin: '0px 5px 0px 20px' }}
+              src={serverUserMap.get(u)?.user.picture ?? logo}
+            />{' '}
+            {serverUserMap.get(u)?.nickname || 'Error retrieving user'}
+            {u !== me?.id ? ` ${audioNodeMap.get(u)?.volume ?? ''}` : null}
+            {u !== me?.id && audioNodeMap.get(u) ? (
+              <input
+                type='range'
+                id='volume'
+                name='volume'
+                min='0'
+                max='1'
+                step={0.01}
+                defaultValue={audioNodeMap.get(u)?.volume}
+                onChange={(e) =>
+                  handleChangeVolume(e, audioNodeMap.get(u) as HTMLAudioElement)
+                }
+              />
+            ) : null}
+            {u === me?.id ? null : (
+              <button
+                onClick={() =>
+                  audioNodeMap.get(u)?.volume !== 0
+                    ? mutePerson(u)
+                    : unmutePerson(u)
+                }
+              >
+                {audioNodeMap.get(u)?.volume !== 0 ? 'mute' : 'unmute'}
+              </button>
+            )}
+          </div>
+        ))}
+      </li>
+    );
+  };
+
   return (
     <VocalChannelContext.Provider
-      value={{ stream: streamRef.current, callMap }}
+      value={{
+        stream: streamRef.current,
+        muteSelf,
+        unmuteSelf,
+        muteAudio,
+        unmuteAudio,
+        displayActiveVocalChannel,
+      }}
     >
       {children}
     </VocalChannelContext.Provider>

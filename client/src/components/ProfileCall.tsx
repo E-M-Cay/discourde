@@ -10,10 +10,12 @@ import {
   WifiOutlined,
 } from '@ant-design/icons';
 import { Avatar, Tooltip, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { setActiveVocalChannel } from '../redux/userSlice';
 import { VocalChan } from '../types/types';
+import { VocalChannelContext } from './VocalChannel';
+import logo from '../assets/discourde.png';
 
 export const ProfileCall = (props: {
   activeServerName?: string;
@@ -25,6 +27,10 @@ export const ProfileCall = (props: {
   );
   const dispatch = useAppDispatch();
   const me = useAppSelector((state) => state.userReducer.me);
+  const isMute = useAppSelector((state) => state.userReducer.isMute);
+  const isMuteAudio = useAppSelector((state) => state.userReducer.isMuteAudio);
+  const { muteSelf, unmuteSelf, muteAudio, unmuteAudio } =
+    useContext(VocalChannelContext);
 
   useEffect(() => {
     const tmp = vocalChannelList?.find((v) => v.id === activeVocalChannel);
@@ -124,9 +130,7 @@ export const ProfileCall = (props: {
           <Avatar
             size={37}
             style={{ margin: 'auto 10px' }}
-            src={
-              me?.picture || 'https://randomuser.me/api/portraits/women/1.jpg'
-            }
+            src={me?.picture || logo}
           />
           <div>
             <Typography
@@ -150,10 +154,12 @@ export const ProfileCall = (props: {
           }}
         >
           <Tooltip placement='top' title={'Micro'}>
-            <AudioFilled />
+            <AudioFilled onClick={isMute ? unmuteSelf : muteSelf} />
           </Tooltip>
           <Tooltip placement='top' title={'Casque'}>
-            <CustomerServiceFilled />
+            <CustomerServiceFilled
+              onClick={isMuteAudio ? unmuteAudio : muteAudio}
+            />
           </Tooltip>
           <Tooltip placement='top' title={'Paramètres utilisateur'}>
             <SettingOutlined />

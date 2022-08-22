@@ -94,7 +94,15 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
         content: message.content,
       });
     },
-    [me, addNotification, activePrivateChat, privateChatMap, isHome]
+    [
+      me,
+      addNotification,
+      activePrivateChat,
+      privateChatMap,
+      isHome,
+      addNotification,
+      setPrivateChat,
+    ]
   );
 
   useEffect(() => {

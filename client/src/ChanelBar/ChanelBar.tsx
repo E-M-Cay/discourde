@@ -66,6 +66,7 @@ export const ChanelBar = (props: {
   const headerTxt: string = 'SALONS TEXTUELS';
   const headerVoc: string = 'SALONS VOCAUX';
   const serverName: string = activeServerName ?? 'Serveur';
+  const me = useAppSelector((state) => state.userReducer.me);
 
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
@@ -375,8 +376,6 @@ export const ChanelBar = (props: {
       handleLeaveServer={handleLeaveServer}
     />
   );
-
-  const me = useAppSelector((state) => state.userReducer.me);
 
   return (
     <div

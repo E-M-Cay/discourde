@@ -1,52 +1,62 @@
 import {
   AudioMutedOutlined,
-  BoldOutlined,
-  MenuOutlined,
   PhoneOutlined,
   SoundOutlined,
-  TeamOutlined,
 } from '@ant-design/icons';
 import {
-  Avatar,
-  Button,
-  Card,
-  Collapse,
-  Divider,
-  Dropdown,
-  Menu,
-  Skeleton,
   Space,
-  Tabs,
   Tooltip,
-  Input,
   Layout,
   Slider,
+  Image,
 } from 'antd';
-import { Content } from 'antd/lib/layout/layout';
-import Sider from 'antd/lib/layout/Sider';
+import { Content, Footer, Header } from 'antd/lib/layout/layout';
 import React, { useContext, useState } from 'react';
-import { UserMapsContext } from '../context/UserMapsContext';
 import './CallPanel.css';
+import fakeUsers from '../mockVocUsers';
 
-const { TabPane } = Tabs;
-const { Panel } = Collapse;
-const { Search } = Input;
-
-let testUsers: Array<any> = [];
-testUsers.push({ id: 1, nickName: 'Nathan' });
+let src: string = "";
+let width: number = 200;
+let chanName: string = "testVocalChanel";
+let marginTopPP: string = '20vh';
+let spaceBetween: number = 20;
+let pair: boolean;
+let n: number = 0;
 
 export const CallPanel = () => {
-  const { serverUserMap } = useContext(UserMapsContext);
 
+  if(fakeUsers.length%2 == 0) {
+    pair = true;
+  } else { pair = false;}
+
+  if(fakeUsers.length > 4){
+    width = 150;
+    marginTopPP = "20vh";
+  } else if(fakeUsers.length == 1) {marginTopPP = '40vh'}
+  const onClick = (e: number) => {
+    return (event: React.MouseEvent) => {
+      console.log('id User : ', e);
+      event.preventDefault();
+    }
+  };
+  
   return (
     <Layout className='vocStyle'>
-      <header>
-        <SoundOutlined /> %Nom du chanel vocal%
-      </header>
-      <Content style={{textAlign: 'center', lineHeight: '50vh'}}>
-        <p>%AFFICHAGE DES PARTICIPANTS AVATAR EN FOND + PSEUDO%</p>
+      <Header>
+        <SoundOutlined /> {chanName}
+      </Header>
+      <Content style={{textAlign: 'center', marginTop: marginTopPP}}>
+
+         {fakeUsers.map(user => {
+          n +=1;
+          src = user.avatar;
+          if(pair) {
+            console.log("pair ? :" + pair)
+          }
+          return <div  className='ProfilPic'><Space size={spaceBetween}><img onClick={onClick(user.id)} src={src} width={width}/><h1>{user.nickName}</h1></Space></div>
+        })}
       </Content>
-      <footer style={{textAlign: 'center'}}>
+      <Footer style={{textAlign: 'center'}}>
       <Tooltip placement='top' title={'Couper le micro'}>
         <button>
           <AudioMutedOutlined id='audio' />
@@ -62,7 +72,7 @@ export const CallPanel = () => {
           <SoundOutlined id='volume' />
         </button>
         </Tooltip>
-      </footer>
+      </Footer>
     </Layout>
   );
 };

@@ -6,7 +6,6 @@ import { UserMapsContext } from '../context/UserMapsContext';
 import { CustomImageChat } from '../CustomLi/CustomLi';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { setActivePrivateChat } from '../redux/userSlice';
-import { PrivateChatMap } from '../types/types';
 
 const PrivateChatBar = () => {
   const dispatch = useAppDispatch();

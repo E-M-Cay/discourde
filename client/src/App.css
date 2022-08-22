@@ -147,6 +147,7 @@ body {
 }
 
 input[type='text'],
+input[type='password'],
 textarea {
   background-color: #40444b;
 
@@ -194,4 +195,27 @@ textarea {
 
 .ant-collapse-arrow {
   color: #979797 !important;
+}
+
+label {
+  font-size: large;
+  font-weight: 600;
+  color: #2c2c2c;
+}
+
+.titledactive {
+  cursor: pointer;
+  color: lightgrey !important;
+}
+.titllede:hover {
+  color: lightgrey !important;
+}
+.titllede {
+  color: #4d4d4d !important;
+  cursor: pointer;
+}
+
+.ant-modal-header {
+  background-color: #2c2c2c !important;
+  border-bottom: 0 !important;
 }

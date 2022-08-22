@@ -22,7 +22,7 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
   const [input, setInput] = useState<string>('');
   const node = useRef<HTMLDivElement>(null);
   const inputRef = useRef<InputRef>(null);
-  const [isSmiley, setIsSmiley] = useState(true);
+  const [isSmiley, setIsSmiley] = useState(false);
   const activeChannel = useAppSelector(
     (state) => state.userReducer.activeChannel
   );
@@ -124,7 +124,7 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
               disableSearchBar
               disableAutoFocus
               onEmojiClick={onEmojiClick}
-              preload
+              preload={false}
               groupNames={{
                 smileys_people: 'visages',
                 animals_nature: 'animaux et nature',

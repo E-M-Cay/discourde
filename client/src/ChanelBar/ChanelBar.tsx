@@ -417,7 +417,7 @@ export const ChanelBar = (props: {
         <Dropdown overlay={menu} trigger={['click']}>
           <ul style={{ cursor: 'pointer' }} onClick={(e) => e.preventDefault()}>
             <Space style={{ paddingLeft: 0 }}>
-              <p
+              <div
                 style={{
                   color: 'white',
                   display: 'flex',
@@ -442,7 +442,7 @@ export const ChanelBar = (props: {
                     />
                   )}
                 </div>
-              </p>
+              </div>
             </Space>
           </ul>
         </Dropdown>

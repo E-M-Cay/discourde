@@ -272,6 +272,7 @@ io.on('connection', (socket: ISocket) => {
     );
 
     if (currentVocalChannel === id) {
+      socket.broadcast.emit(`leftvocalchannel:${id}`, socket.user_id);
       io.emit('leftvocal', {
         user: socket.user_id,
         chan: currentVocalChannel,
@@ -294,7 +295,7 @@ io.on('connection', (socket: ISocket) => {
     }
 
     socket.broadcast.emit(`joiningvocalchannel:${id}`, {
-      user: socket.user_id,
+      user_id: socket.user_id,
       peer_id: socket.peer_id,
     });
     io.emit('joiningvocal', { user: socket.user_id, chan: id });

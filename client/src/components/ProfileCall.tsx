@@ -154,7 +154,9 @@ export const ProfileCall = (props: {
             <Typography
               style={{ color: 'white', fontWeight: '600', fontSize: '16px' }}
             >
-              {me?.username || 'random'}
+              {me?.username.length || 0 > 9
+                ? me?.username.slice(0, 8) + '...'
+                : me?.username || 'random'}
             </Typography>
             <Typography style={{ color: 'darkgrey', fontSize: '11px' }}>
               #292B2F

@@ -3,13 +3,15 @@
 }
 .panelContent {
   font-size: medium;
-  padding: 5px 10px;
+  padding: 3px 10px;
+  margin-top: 2px;
   border-radius: 8px;
   color: #18191c;
+  cursor: pointer;
 }
 .panelContent:hover {
   color: #e5e5e5 !important;
-  background-color: #4c4c4c;
+  background-color: #42464d;
 }
 .serverName {
   font-size: larger !important;

@@ -58,50 +58,72 @@ router.get('/list', isAuth, hasPerm, async (req: IRequest, res: Response) => {
   return res.send(tempList);
 });
 
-router.post('/create_server', isAuth, async (req: IRequest, res: Response) => {
-  if ('name' in req.body && 'main_img' in req.body) {
-    const name: string = req.body.name;
-    const main_img: string = req.body.main_img;
-
-    const owner = await UserRepository.findOneBy({ id: req.id });
-
-    if (!owner) return res.status(404).send('User not found');
-
-    const vocalChan = vocalChannelRepository.create({
-      name: 'Forum',
+router.post(
+  '/update',
+  isAuth,
+  hasPerm,
+  async (req: IRequest, res: Response) => {
+    const { name, picture } = req.body;
+    const server = await ServerRepository.findOne({
+      where: {
+        id: req.body.id,
+      },
     });
-
-    //await vocalChannelRepository.save(vocalChan);
-    const textChan: Channel = channelRepository.create({
-      name: 'Général',
-    });
-    const server: Server = ServerRepository.create({
-      name: name,
-      main_img: main_img,
-      logo: '',
-      owner: { id: req.id },
-      channels: [textChan],
-      vocalChannels: [vocalChan],
-    });
-
-    const serverUser: ServerUser = ServerUserRepository.create({
-      user: { id: Number(req.id) },
-      nickname: owner.username,
-      server,
-    });
-
-    await ServerUserRepository.save(serverUser)
-      .then((serverUser) => {
-        return res.status(201).send(serverUser);
-      })
-      .catch((e) => {
-        console.log(e);
-        return res.status(401).send(e);
-      });
-  } else {
-    return res.status(401).send('Wrong arguments');
+    if (!server) return res.send('Server not found');
+    server.name = name;
+    server.main_img = picture;
+    await ServerRepository.save(server);
+    return res.send('Server updated');
   }
-});
+),
+  router.post(
+    '/create_server',
+    isAuth,
+    async (req: IRequest, res: Response) => {
+      if ('name' in req.body && 'main_img' in req.body) {
+        const name: string = req.body.name;
+        const main_img: string = req.body.main_img;
+
+        const owner = await UserRepository.findOneBy({ id: req.id });
+
+        if (!owner) return res.status(404).send('User not found');
+
+        const vocalChan = vocalChannelRepository.create({
+          name: 'Forum',
+        });
+
+        //await vocalChannelRepository.save(vocalChan);
+        const textChan: Channel = channelRepository.create({
+          name: 'Général',
+        });
+        const server: Server = ServerRepository.create({
+          name: name,
+          main_img: main_img,
+          logo: '',
+          owner: { id: req.id },
+          channels: [textChan],
+          vocalChannels: [vocalChan],
+        });
+
+        const serverUser: ServerUser = ServerUserRepository.create({
+          user: { id: Number(req.id) },
+          nickname: owner.username,
+          server,
+        });
+
+        await ServerUserRepository.save(serverUser)
+          .then((serverUser) => {
+            return res.status(201).send(serverUser);
+          })
+          .catch((e) => {
+            console.log(e);
+            return res.status(401).send(e);
+          });
+      } else {
+        return res.status(401).send('Wrong arguments');
+      }
+    }
+  );
 
 router.put(
   '/update_server/:server_id',

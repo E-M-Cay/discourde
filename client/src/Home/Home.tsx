@@ -102,7 +102,11 @@ export const Home = (props: {
         <LeftBar setServers={setServers} servers={servers} />
       </Col>
       <Col span={23}>
-        <Main handleLeaveServer={handleLeaveServer} setServers={setServers} />
+        <Main
+          servers={servers}
+          handleLeaveServer={handleLeaveServer}
+          setServers={setServers}
+        />
       </Col>
     </Row>
   );

@@ -41,6 +41,7 @@ export const ChanelBar = (props: {
   setTextChannelList: React.Dispatch<React.SetStateAction<Channel[]>>;
   setVocalChannelList: React.Dispatch<React.SetStateAction<VocalChan[]>>;
   handleLeaveServer: () => void;
+  servers: any;
 }) => {
   const {
     handleLeaveServer,
@@ -48,6 +49,7 @@ export const ChanelBar = (props: {
     textChannelList,
     setTextChannelList,
     setVocalChannelList,
+    servers,
   } = props;
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
@@ -396,6 +398,7 @@ export const ChanelBar = (props: {
         setTextChannelList={setTextChannelList}
         setVocalChannelList={setVocalChannelList}
         setIsModalVisibleParams={setIsModalVisibleParams}
+        servers={servers}
       />
       <ServerInvit
         isModalVisibleInvitation={isModalVisibleInvitation}

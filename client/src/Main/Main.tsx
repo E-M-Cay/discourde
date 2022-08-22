@@ -13,6 +13,7 @@ import { Channel, ServerResponse, VocalChan } from '../types/types';
 export const Main = (props: {
   handleLeaveServer: () => void;
   setServers: React.Dispatch<React.SetStateAction<ServerResponse[]>>;
+  servers: ServerResponse[];
 }) => {
   const { handleLeaveServer, setServers } = props;
   const isHome = useAppSelector((state) => state.userReducer.home);
@@ -34,6 +35,7 @@ export const Main = (props: {
           <PrivateChatBar />
         ) : (
           <ChanelBar
+            servers={props.servers}
             handleLeaveServer={handleLeaveServer}
             vocalChannelList={vocalChannelList}
             textChannelList={textChannelList}

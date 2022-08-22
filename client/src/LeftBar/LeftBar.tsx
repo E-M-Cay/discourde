@@ -3,7 +3,7 @@ import axios from 'axios';
 import React, { useCallback, useContext } from 'react';
 import { CustomLimage } from '../CustomLi/CustomLi';
 import fake from '../mock';
-import { Image, Typography, Tooltip } from 'antd';
+import { Image, Typography, Tooltip, Avatar, Input } from 'antd';
 
 import { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
@@ -59,7 +59,7 @@ export const LeftBar = (props: {
 
   const [isFocused, setFocus] = useState(false);
   const [serverName, setServerName] = useState('');
-  const [serverLogo, setServerLogo] = useState('');
+  const [serverLogo, setServerLogo] = useState('/profile-pictures/crane1.png');
   const createServer = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     axios
@@ -107,19 +107,34 @@ export const LeftBar = (props: {
   return (
     <Sider className='site-layout-background'>
       <Modal
-        title='Basic Modal'
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
+        footer={null}
       >
         <form onSubmit={(e) => createServer(e)}>
-          <input
-            type='text'
-            defaultValue={serverName}
-            onChange={(e) => setServerName(e.target.value)}
-            placeholder='Enter server name'
-          />
-          <select
+          <br />
+          <div
+            style={{
+              paddingTop: '10px',
+              maxWidth: '80%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              margin: 'auto',
+            }}
+          >
+            <label htmlFor='registerUsername'>Server name</label>
+
+            <Input
+              placeholder='Enter server name'
+              style={{
+                maxWidth: '50%',
+              }}
+              id='registerUsername'
+              onChange={(e) => setServerName(e.target.value)}
+            />
+          </div>
+          {/* <select
             name='pictures'
             onChange={(e) => setServerLogo(e.target.value)}
             id='pictures'
@@ -131,10 +146,55 @@ export const LeftBar = (props: {
                   : 'women ' + (Number(key) + 1)}
               </option>
             ))}
-          </select>
-          <input type='submit' value='Create' />
+          </select> */}
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              paddingTop: '20px',
+              alignItems: 'center',
+            }}
+          >
+            {serverPng.map((png, key) => (
+              <>
+                <Avatar
+                  style={{
+                    margin: '5px',
+                    border: png === serverLogo ? '4px solid green' : '',
+                  }}
+                  onClick={() => setServerLogo(png)}
+                  size={png === serverLogo ? 60 : 50}
+                  src={png}
+                />
+                {key === 4 && <br />}
+              </>
+            ))}
+          </div>
+          <br />
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              paddingBottom: '20px',
+            }}
+          >
+            <input
+              style={{
+                borderRadius: 0,
+                border: 0,
+                padding: '3px 10px',
+                color: 'grey',
+                fontSize: '1.2rem',
+                backgroundColor: '#40444b',
+              }}
+              type='submit'
+              value='Create'
+            />
+          </div>
         </form>
-        <form
+        {/* <form
           onSubmit={(e) => {
             e.preventDefault();
             joinServer();
@@ -147,7 +207,7 @@ export const LeftBar = (props: {
             placeholder='Enter server id'
           />
           <input type='submit' value='Create' />
-        </form>
+        </form> */}
       </Modal>
       <div
         className={'scrollIssue'}

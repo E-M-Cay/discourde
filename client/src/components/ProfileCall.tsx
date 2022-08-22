@@ -9,8 +9,9 @@ import {
   SettingOutlined,
   WifiOutlined,
 } from '@ant-design/icons';
-import { Avatar, Tooltip, Typography } from 'antd';
+import { Avatar, Modal, Tooltip, Typography } from 'antd';
 import { useEffect, useState } from 'react';
+import UserProfileSettings from '../Modals/UserProfileSettings';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { setActiveVocalChannel } from '../redux/userSlice';
 import { VocalChan } from '../types/types';
@@ -19,6 +20,19 @@ export const ProfileCall = (props: {
   activeServerName?: string;
   vocalChannelList?: VocalChan[];
 }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
   const { activeServerName, vocalChannelList } = props;
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
@@ -47,6 +61,14 @@ export const ProfileCall = (props: {
         width: '100%',
       }}
     >
+      <Modal
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <UserProfileSettings />
+      </Modal>
       <div
         style={{
           marginTop: '14.5%',
@@ -156,7 +178,7 @@ export const ProfileCall = (props: {
             <CustomerServiceFilled />
           </Tooltip>
           <Tooltip placement='top' title={'Paramètres utilisateur'}>
-            <SettingOutlined />
+            <SettingOutlined onClick={() => showModal()} />
           </Tooltip>
         </div>
       </div>

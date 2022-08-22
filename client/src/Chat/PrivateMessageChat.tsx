@@ -7,13 +7,14 @@ import { useAppSelector } from '../redux/hooks';
 import { PrivateMessage } from '../types/types';
 import { MessageItem } from './MessageItem';
 
-const PrivateMessageChat = () => {
+const PrivateMessageChat = (props: { name: string; setName: Function }) => {
+  const { name, setName } = props;
   const activePrivateChat = useAppSelector(
     (state) => state.userReducer.activePrivateChat
   );
   const me = useAppSelector((state) => state.userReducer.me);
   const [messages, setMessages] = useState<PrivateMessage[]>([]);
-  const [name, setName] = useState<string>('');
+
   const { socket } = useContext(PeerSocketContext);
   const { privateChatMap } = useContext(UserMapsContext);
   const { notifications, addNotification } = useContext(NotificationsContext);
@@ -63,7 +64,6 @@ const PrivateMessageChat = () => {
 
   return (
     <div className='message'>
-      <div>{name}</div>
       {messages?.map((obj: PrivateMessage, i: number) => {
         const user =
           obj.user1.id === me?.id ? me : privateChatMap.get(obj.user1.id);

@@ -46,7 +46,7 @@ export const ChannelCollapse = (props: {
               className='panelContent'
             >
               {' '}
-              <BorderlessTableOutlined />{' '}
+              <BorderlessTableOutlined style={{ marginRight: '5px' }} />{' '}
               {chan.name.length > 15
                 ? chan.name.substring(0, 15) + '...'
                 : chan.name}
@@ -68,7 +68,7 @@ export const ChannelCollapse = (props: {
               className='panelContent'
             >
               {' '}
-              <SoundOutlined />{' '}
+              <SoundOutlined style={{ marginRight: '5px' }} />{' '}
               <span
                 style={{ color: activeVocalChannel === chan.id ? 'white' : '' }}
               >

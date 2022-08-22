@@ -6,6 +6,7 @@ import PrivateMessageChat from './PrivateMessageChat';
 import { Channel } from '../types/types';
 import { Typography } from 'antd';
 import { BorderlessTableOutlined } from '@ant-design/icons';
+import { useState } from 'react';
 
 const Chat = (props: { textChannelList: Channel[] }) => {
   const isHome = useAppSelector((state) => state.userReducer.home);
@@ -16,6 +17,7 @@ const Chat = (props: { textChannelList: Channel[] }) => {
   const textChannelName = textChannelList.find(
     (chan) => chan.id === activeChannel
   );
+  const [name, setName] = useState('');
   return (
     <div className='chat'>
       <div
@@ -42,11 +44,15 @@ const Chat = (props: { textChannelList: Channel[] }) => {
           <BorderlessTableOutlined
             style={{ color: 'darkgrey', marginRight: '10px' }}
           />
-          {textChannelName?.name ?? 'Private Chats'}
+          {isHome ? name : textChannelName?.name ?? 'Private Chats'}
         </Typography>
       </div>
       <div className='message'>
-        {isHome ? <PrivateMessageChat /> : <Message />}
+        {isHome ? (
+          <PrivateMessageChat name={name} setName={setName} />
+        ) : (
+          <Message />
+        )}
       </div>
       <div className='chatbar'>
         <ChatBar textChannelList={textChannelList} />

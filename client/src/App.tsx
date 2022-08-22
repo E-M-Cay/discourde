@@ -128,15 +128,16 @@ const App = () => {
                 >
                   <Title
                     onClick={() => setIsLoggin(false)}
-                    style={{ height: '100%', margin: 0 }}
+                    style={{ height: '100%', width: '90px', margin: 0 }}
                     level={3}
                     className={isLoggin ? 'titllede' : 'titledactive'}
                   >
                     Login
                   </Title>
+                  <Avatar size={50} src={'/profile-pictures/discourde.png'} />
                   <Title
                     onClick={() => setIsLoggin(true)}
-                    style={{ height: '100%', margin: 0 }}
+                    style={{ height: '100%', width: '90px', margin: 0 }}
                     level={3}
                     className={isLoggin ? 'titledactive' : 'titllede'}
                   >

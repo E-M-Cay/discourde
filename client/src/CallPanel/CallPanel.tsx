@@ -38,8 +38,8 @@ export const CallPanel = () => {
       console.log('id User : ', e);
       event.preventDefault();
     }
-    
   };
+  
   return (
     <Layout className='vocStyle'>
       <Header>

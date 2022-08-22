@@ -43,6 +43,9 @@
 .ProfilPic {
     display: inline table !important;
     text-align: center !important;
+    background-color: #2F3136;
+    border-radius: 8px!important;
+    margin: 10px !important;
 }
 .ProfilPic:hover {
     opacity: 50% !important;

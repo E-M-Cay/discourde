@@ -29,15 +29,10 @@
 }
 
 
-#phone:hover , #audio:hover {
+#phone:hover , #audio:hover, #volume:hover {
     color: white;
     font-size: 105%;
     
-}
-
-#volume:hover {
-    font-size: 105%;
-    color: white;
 }
 
 .volSider {
@@ -47,6 +42,7 @@
 
 .ProfilPic {
     display: inline table !important;
+    text-align: center !important;
 }
 .ProfilPic:hover {
     opacity: 50% !important;

@@ -1,5 +1,5 @@
 import { SoundOutlined } from '@ant-design/icons';
-import { Avatar } from 'antd';
+import { Avatar, Dropdown, Menu } from 'antd';
 import { MediaConnection } from 'peerjs';
 import {
   createContext,
@@ -286,17 +286,70 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   };
 
   const displayActiveVocalChannel = (chan: VocalChan) => {
+    const menu = (u: any, me: any) => {
+      return (
+        <Menu
+          className='menu'
+          style={{ minWidth: '200px' }}
+          items={[
+            {
+              key: '1',
+              label: (
+                <div>
+                  {u !== me?.id ? (
+                    <input
+                      type='range'
+                      id='volume'
+                      name='volume'
+                      min='0'
+                      max='1'
+                      step={0.01}
+                      value={audioNodeMap.get(u)?.volume}
+                      onChange={(e) =>
+                        handleChangeVolume(
+                          e,
+                          audioNodeMap.get(u) as HTMLAudioElement
+                        )
+                      }
+                    />
+                  ) : null}
+                </div>
+              ),
+            },
+            {
+              key: '2',
+              label:
+                u !== me?.id ? (
+                  <div
+                    style={{ width: '100%', height: '100%' }}
+                    onClick={() =>
+                      audioNodeMap.get(u)?.volume !== 0
+                        ? mutePerson(u)
+                        : unmutePerson(u)
+                    }
+                  >
+                    {audioNodeMap.get(u)?.volume !== 0 ? 'mute' : 'unmute'}
+                  </div>
+                ) : null,
+            },
+          ]}
+        />
+      );
+    };
     return (
       <li
         key={chan.id}
         // onClick={() => onVocalChannelClick(chan.id)}
-        className='panelContent'
       >
         {' '}
-        <SoundOutlined />{' '}
-        <span style={{ color: activeVocalChannel === chan.id ? 'white' : '' }}>
-          {chan.name}
-        </span>
+        <div className='panelContent'>
+          <SoundOutlined />{' '}
+          <span
+            style={{ color: activeVocalChannel === chan.id ? 'white' : '' }}
+          >
+            {chan.name}
+          </span>
+        </div>
         {/* {activeVocalChannel === chan.id && (
       <>
         {' '}
@@ -308,39 +361,23 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
             onClick={() => console.log(serverUserMap.get(u), 'test')}
             key={u}
             style={{ marginTop: '5px' }}
+            className='panelContent'
           >
-            <Avatar
-              size={20}
-              style={{ margin: '0px 5px 0px 20px' }}
-              src={serverUserMap.get(u)?.user.picture ?? logo}
-            />{' '}
-            {serverUserMap.get(u)?.nickname || 'Error retrieving user'}
-            {u !== me?.id ? ` ${audioNodeMap.get(u)?.volume ?? ''}` : null}
-            {u !== me?.id && audioNodeMap.get(u) ? (
-              <input
-                type='range'
-                id='volume'
-                name='volume'
-                min='0'
-                max='1'
-                step={0.01}
-                defaultValue={audioNodeMap.get(u)?.volume}
-                onChange={(e) =>
-                  handleChangeVolume(e, audioNodeMap.get(u) as HTMLAudioElement)
-                }
-              />
-            ) : null}
-            {u === me?.id ? null : (
-              <button
-                onClick={() =>
-                  audioNodeMap.get(u)?.volume !== 0
-                    ? mutePerson(u)
-                    : unmutePerson(u)
-                }
-              >
-                {audioNodeMap.get(u)?.volume !== 0 ? 'mute' : 'unmute'}
-              </button>
-            )}
+            <Dropdown
+              overlay={menu(u, me)}
+              trigger={['contextMenu']}
+              disabled={u === me?.id}
+            >
+              <div className='site-dropdown-context-menu'>
+                <Avatar
+                  size={20}
+                  style={{ margin: '0px 5px 0px 20px' }}
+                  src={serverUserMap.get(u)?.user.picture ?? logo}
+                />{' '}
+                {serverUserMap.get(u)?.nickname || 'Error retrieving user'}
+                {u !== me?.id ? ` ${audioNodeMap.get(u)?.volume ?? ''}` : null}
+              </div>
+            </Dropdown>
           </div>
         ))}
       </li>

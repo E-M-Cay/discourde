@@ -10,7 +10,7 @@ import {
   WifiOutlined,
 } from '@ant-design/icons';
 import { Avatar, Modal, Tooltip, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import UserProfileSettings from '../Modals/UserProfileSettings';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { setActiveVocalChannel } from '../redux/userSlice';
@@ -178,10 +178,14 @@ export const ProfileCall = (props: {
           }}
         >
           <Tooltip placement='top' title={'Micro'}>
-            <AudioFilled onClick={isMute ? unmuteSelf : muteSelf} />
+            <AudioFilled
+              style={{ color: isMute ? 'red' : '' }}
+              onClick={isMute ? unmuteSelf : muteSelf}
+            />
           </Tooltip>
           <Tooltip placement='top' title={'Casque'}>
             <CustomerServiceFilled
+              style={{ color: isMuteAudio ? 'red' : '' }}
               onClick={isMuteAudio ? unmuteAudio : muteAudio}
             />
           </Tooltip>

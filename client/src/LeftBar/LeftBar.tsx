@@ -98,9 +98,9 @@ export const LeftBar = (props: {
   );
 
   useEffect(() => {
-    socket?.on('serverupdated', handleServerUpdate);
+    socket.on('serverupdated', handleServerUpdate);
     return () => {
-      socket?.off('serverupdated', handleServerUpdate);
+      socket.off('serverupdated', handleServerUpdate);
     };
   }, [socket, handleServerUpdate]);
 

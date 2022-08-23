@@ -1,28 +1,27 @@
-import { useContext, useEffect, useState } from "react";
-import { PeerSocketContext } from "../context/PeerSocket";
+import { useContext, useEffect, useState } from 'react';
+import { PeerSocketContext } from '../context/PeerSocket';
 
 interface Message {
-    author: string
-    message: string
+  author: string;
+  message: string;
 }
-
 
 const ChatChannel = (name: string) => {
-    const [chat, setChat] = useState<Message[]>([])
-    const { peer, socket } = useContext(PeerSocketContext);
+  const [chat, setChat] = useState<Message[]>([]);
+  const { peer, socket } = useContext(PeerSocketContext);
 
-    const incomingMessage = (incomingMessage: Message)  => {
-        setChat((prevChatState) => [...prevChatState, incomingMessage])
-    }
+  const incomingMessage = (incomingMessage: Message) => {
+    setChat((prevChatState) => [...prevChatState, incomingMessage]);
+  };
 
-    useEffect(() => {
-        socket?.on(`chatmessage`, incomingMessage)
-        return(() => {
-            socket?.off(`chatmessage:${name}`, incomingMessage)
-        })
-    })
+  useEffect(() => {
+    socket.on(`chatmessage`, incomingMessage);
+    return () => {
+      socket.off(`chatmessage:${name}`, incomingMessage);
+    };
+  });
 
-   return(<></>)
-}
+  return <></>;
+};
 
-export default ChatChannel
+export default ChatChannel;

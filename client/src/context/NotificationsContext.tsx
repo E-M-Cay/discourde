@@ -106,10 +106,10 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
   );
 
   useEffect(() => {
-    socket?.on(`privatemessage`, maybeNotifyMessage);
+    socket.on(`privatemessage`, maybeNotifyMessage);
 
     return () => {
-      socket?.off(`privatemessage`, maybeNotifyMessage);
+      socket.off(`privatemessage`, maybeNotifyMessage);
     };
   }, [socket, maybeNotifyMessage]);
 

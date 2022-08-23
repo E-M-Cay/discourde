@@ -82,7 +82,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
     set: setFriend,
     setAll: _setAllFriends,
     remove: removeFriend,
-    reset: _resetFriends,
+    reset: resetFriends,
   } = friendsActions;
 
   const [serverUserMap, serverUserActions] = useMap<number, ServerUser>([]);
@@ -99,7 +99,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
     set: setPrivateChat,
     setAll: _setAllPrivateChats,
     remove: _removePrivateChat,
-    reset: _resetPrivateChats,
+    reset: resetPrivateChats,
   } = privateChatActions;
 
   const openPrivateChat = useCallback(
@@ -274,7 +274,11 @@ const UserMapsContextProvider = ({ children }: Props) => {
           }
         );
       });
-  }, [me, setFriend, setPrivateChat]);
+    return () => {
+      resetFriends();
+      resetPrivateChats();
+    };
+  }, [me, setFriend, setPrivateChat, resetFriends, resetPrivateChats]);
 
   useEffect(() => {
     axios
@@ -284,7 +288,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
         },
       })
       .then((res) => {
-        console.log('Friendship', res.data);
+        // console.log('Friendship', res.data);
         res.data.forEach((fr: ReceivedFriendRequest) => {
           setReceivedFriendRequest(fr.sender.id, fr);
         });
@@ -302,7 +306,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
         },
       })
       .then((res) => {
-        console.log('Friendship', res.data);
+        // console.log('Friendship', res.data);
         res.data.forEach((fr: SentFriendRequest) => {
           setSentFriendRequest(fr.receiver.id, fr);
         });
@@ -436,24 +440,24 @@ const UserMapsContextProvider = ({ children }: Props) => {
   );
 
   useEffect(() => {
-    socket?.on('userchanged', handleUserProfileChange);
-    socket?.on('friendrequestrefused', handleFriendshipRefused);
-    socket?.on('friendrequestaccepted', handleNewFriendship);
-    socket?.on('friendrequestcanceled', handleFriendRequestCanceled);
-    socket?.on('newfriendrequest', handleNewFriendRequest);
-    socket?.on('userdisconnected', handleDisconnection);
-    socket?.on('userconnected', handleConnection);
-    socket?.on('userleftserver', handleUserLeftServer);
-    socket?.on('userjoinedserver', handeUserJoinedServer);
+    socket.on('userchanged', handleUserProfileChange);
+    socket.on('friendrequestrefused', handleFriendshipRefused);
+    socket.on('friendrequestaccepted', handleNewFriendship);
+    socket.on('friendrequestcanceled', handleFriendRequestCanceled);
+    socket.on('newfriendrequest', handleNewFriendRequest);
+    socket.on('userdisconnected', handleDisconnection);
+    socket.on('userconnected', handleConnection);
+    socket.on('userleftserver', handleUserLeftServer);
+    socket.on('userjoinedserver', handeUserJoinedServer);
     return () => {
-      socket?.off('userchanged', handleUserProfileChange);
-      socket?.off('friendrequestrefused', handleFriendshipRefused);
-      socket?.off('friendRequestAccepted', handleNewFriendship);
-      socket?.off('userdisconnected', handleDisconnection);
-      socket?.off('userconnected', handleConnection);
-      socket?.off('newfriendrequest', handleNewFriendRequest);
-      socket?.off('userleftserver', handleUserLeftServer);
-      socket?.off('userjoinedserver', handeUserJoinedServer);
+      socket.off('userchanged', handleUserProfileChange);
+      socket.off('friendrequestrefused', handleFriendshipRefused);
+      socket.off('friendRequestAccepted', handleNewFriendship);
+      socket.off('userdisconnected', handleDisconnection);
+      socket.off('userconnected', handleConnection);
+      socket.off('newfriendrequest', handleNewFriendRequest);
+      socket.off('userleftserver', handleUserLeftServer);
+      socket.off('userjoinedserver', handeUserJoinedServer);
     };
   }, [
     socket,

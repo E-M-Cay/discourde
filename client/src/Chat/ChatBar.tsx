@@ -50,7 +50,7 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
 
   const onSubmitChatChannelHandler = () => {
     if (activeChannel) {
-      socket?.emit('message', {
+      socket.emit('message', {
         content: input,
         channel: activeChannel,
       });
@@ -60,7 +60,7 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
 
   const onSubmitPrivateChatHandler = () => {
     if (activePrivateChat) {
-      socket?.emit('privatemessage', {
+      socket.emit('privatemessage', {
         content: input,
         to: activePrivateChat,
       });

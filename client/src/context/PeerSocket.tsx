@@ -4,135 +4,118 @@ import { host, socketPort } from '../env/host';
 import { peerPort, peerServerHost } from '../env/host';
 import Peer from 'peerjs';
 import { setUsername } from '../redux/userSlice';
+import { useAppSelector } from '../redux/hooks';
 
 interface PeerSocket {
-  peer?: Peer;
-  socket?: Socket;
-  connectPeer: () => void;
-  connectSocket: (token: string) => void;
+  peer: Peer;
+  socket: Socket;
+  isSocketConnected: boolean;
+  isPeerConnected: boolean;
+  // connectSocket: (token: string) => void;
 }
+const token = localStorage.getItem('token');
+const socket =
+  process.env.NODE_ENV === 'production'
+    ? io(`wss://${host}:${socketPort}/`, {
+        auth: {
+          token,
+        },
+      })
+    : io(`ws://${host}:${socketPort}/`, {
+        auth: {
+          token,
+        },
+      });
+const secure = process.env.NODE_ENV === 'production';
+
+const peer = new Peer({
+  config: {
+    iceServers: [
+      {
+        urls: [
+          'stun:stun.l.google.com:19302',
+          'stun:stun1.l.google.com:19302',
+          'stun:stun2.l.google.com:19302',
+        ],
+      },
+      {
+        urls: 'turn:turn.bistri.com:80',
+        credential: 'homeo',
+        username: 'homeo',
+      },
+    ],
+    sdpSemantics: 'unified-plan',
+  },
+  port: peerPort,
+  host: peerServerHost,
+  path: '/',
+  debug: 1,
+  secure,
+});
 
 const PeerSocketContext = createContext<PeerSocket>({
-  connectPeer: () => {
-    throw new Error('connectPeer not correctly overriden');
-  },
-  connectSocket: () => {
-    throw new Error('connectSocket not correctly overriden');
-  },
+  socket,
+  peer,
+  isSocketConnected: false,
+  isPeerConnected: false,
 });
 
 interface Props {
   children: React.ReactNode;
 }
 
+interface ISocket extends Socket {
+  username?: string;
+}
+
 const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
-  interface ISocket extends Socket {
-    username?: string;
-  }
-
-  const [socket, setSocket] = useState<ISocket>();
-  const [peer, setPeer] = useState<Peer>();
-  const [socketState, setSocketState] = useState(false);
-  const [peerState, setPeerState] = useState(false);
-
-  const connectSocket = (token: string) => {
-    if (process.env.NODE_ENV === 'production') {
-      setSocket(
-        io(`wss://${host}:${socketPort}/`, {
-          auth: {
-            token,
-          },
-        })
-      );
-    } else {
-      setSocket(
-        io(`ws://${host}:${socketPort}/`, {
-          auth: {
-            token,
-          },
-        })
-      );
-    }
-  };
-
-  const connectPeer = useCallback(() => {
-    console.log('connect peer');
-    let secure = false;
-    if (process.env.NODE_ENV === 'production') {
-      secure = true;
-    }
-
-    const newPeer = new Peer({
-      config: {
-        iceServers: [
-          {
-            urls: [
-              'stun:stun.l.google.com:19302',
-              'stun:stun1.l.google.com:19302',
-              'stun:stun2.l.google.com:19302',
-            ],
-          },
-          {
-            urls: 'turn:turn.bistri.com:80',
-            credential: 'homeo',
-            username: 'homeo',
-          },
-        ],
-        sdpSemantics: 'unified-plan',
-      },
-      port: peerPort,
-      host: peerServerHost,
-      path: '/',
-      debug: 1,
-      secure,
-    });
-    setPeer(newPeer);
-  }, [setPeer]);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  const [isPeerConnected, setIsPeerConnected] = useState(false);
 
   const onPeerOpen = useCallback(
     (peer_id: string) => {
       console.log('peerid:', peer_id);
-      setPeerState(true);
-      socket?.emit('peerId', { peer_id });
+      console.log('peer open');
+      socket.emit('peerId', { peer_id });
+      setIsPeerConnected(true);
     },
     [socket]
   );
 
-  const onPeerDisconnect = useCallback(() => {
-    setPeerState(false);
-  }, []);
-
-  const onConnection = useCallback(() => {
-    connectPeer();
-    setSocketState(true);
-  }, [connectPeer]);
-
-  const onDisconnection = useCallback(() => {
-    setSocketState(false);
-    setSocket(undefined);
-  }, []);
+  useEffect(() => {
+    socket.disconnect();
+    socket.auth = { token: token };
+    socket.connect();
+  }, [token]);
 
   useEffect(() => {
-    socket?.on('connect', onConnection);
-    socket?.on('disconnect', onDisconnection);
+    socket.on('connect', () => setIsSocketConnected(true));
+    socket.on('disconnect', () => setIsSocketConnected(false));
+    socket.on('connect_error', (err) => {
+      console.log('message');
+      if (err.message === 'invalid credentials') {
+        socket.auth = { token };
+        socket.connect();
+      }
+    });
     return () => {
-      socket?.off('connect', onConnection);
-      socket?.off('disconnect', onDisconnection);
+      socket.off('connect');
+      socket.off('disconnect');
     };
-  }, [socket, onConnection, onDisconnection]);
+  }, [socket, token]);
 
   useEffect(() => {
-    peer?.on('open', onPeerOpen);
-    peer?.on('disconnected', onPeerDisconnect);
+    peer.on('open', onPeerOpen);
+    peer.on('disconnected', () => setIsPeerConnected(false));
     return () => {
-      peer?.off('open', onPeerOpen);
-      peer?.off('disconnected', onPeerDisconnect);
+      peer.off('open');
+      peer.off('disconnected');
     };
-  }, [peer, onPeerOpen, onPeerDisconnect]);
+  }, [peer, onPeerOpen]);
 
   return (
     <PeerSocketContext.Provider
-      value={{ peer, socket, connectPeer, connectSocket }}
+      value={{ peer, socket, isPeerConnected, isSocketConnected }}
     >
       {children}
     </PeerSocketContext.Provider>

@@ -46,10 +46,10 @@ const PrivateMessageChat = () => {
   );
 
   useEffect(() => {
-    socket?.on(`privatemessage`, receiveMessage);
+    socket.on(`privatemessage`, receiveMessage);
 
     return () => {
-      socket?.off(`privatemessage`, receiveMessage);
+      socket.off(`privatemessage`, receiveMessage);
     };
   }, [socket, receiveMessage]);
 

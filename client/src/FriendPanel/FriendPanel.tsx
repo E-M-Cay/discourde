@@ -89,9 +89,9 @@ export const FriendPanel = (props: {
   };
 
   useEffect(() => {
-    socket?.on('newserverinvitation', handleNewServerInvitation);
+    socket.on('newserverinvitation', handleNewServerInvitation);
     return () => {
-      socket?.off('newserverinvitation', handleNewServerInvitation);
+      socket.off('newserverinvitation', handleNewServerInvitation);
     };
   }, [handleNewServerInvitation, socket]);
 

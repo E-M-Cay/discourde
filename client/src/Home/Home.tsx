@@ -10,6 +10,9 @@ import {
   setIsHome,
 } from '../redux/userSlice';
 import { ServerResponse } from '../types/types';
+import VocalChannelContextProvider from '../components/VocalChannel';
+import NotificationsContextProvider from '../context/NotificationsContext';
+import UserMapsContextProvider from '../context/UserMapsContext';
 import { PeerSocketContext } from '../context/PeerSocket';
 
 export const Home = (props: {
@@ -17,11 +20,12 @@ export const Home = (props: {
 }) => {
   const [servers, setServers] = useState<ServerResponse[]>([]);
   const dispatch = useAppDispatch();
-  const { socket } = useContext(PeerSocketContext);
+
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
   );
   const me = useAppSelector((state) => state.userReducer.me);
+  const { isPeerConnected } = useContext(PeerSocketContext);
 
   const getServers = useCallback(() => {
     axios
@@ -39,7 +43,7 @@ export const Home = (props: {
       })
       .catch((err) => {
         console.log(err);
-        if (err.response.data.e.message === 'jwt expired') {
+        if (err.message === 'jwt expired') {
           localStorage.removeItem('token');
           props.setTokenMissing(true);
         }
@@ -68,16 +72,11 @@ export const Home = (props: {
   };
 
   useEffect(() => {
-    // console.log('change token ??');
-    socket?.on('ready', getServers);
-    // console.log(window.location.pathname.substring(1));
-    if (window.location.pathname.substring(1) !== '') {
-      joinServer(window.location.pathname.substring(1));
-    }
+    getServers();
     return () => {
-      socket?.off('ready', getServers);
+      setServers([]);
     };
-  }, [getServers, socket]);
+  }, [getServers]);
 
   const joinServer = (uuid: string) => {
     axios
@@ -97,13 +96,25 @@ export const Home = (props: {
   };
 
   return (
-    <Row style={{ backgroundColor: '#353535' }}>
-      <Col span={1}>
-        <LeftBar setServers={setServers} servers={servers} />
-      </Col>
-      <Col span={23}>
-        <Main handleLeaveServer={handleLeaveServer} setServers={setServers} />
-      </Col>
-    </Row>
+    // <></>
+    <UserMapsContextProvider>
+      <NotificationsContextProvider>
+        <VocalChannelContextProvider>
+          {isPeerConnected ? (
+            <Row style={{ backgroundColor: '#353535' }}>
+              <Col span={1}>
+                <LeftBar setServers={setServers} servers={servers} />
+              </Col>
+              <Col span={23}>
+                <Main
+                  handleLeaveServer={handleLeaveServer}
+                  setServers={setServers}
+                />
+              </Col>
+            </Row>
+          ) : null}
+        </VocalChannelContextProvider>
+      </NotificationsContextProvider>
+    </UserMapsContextProvider>
   );
 };

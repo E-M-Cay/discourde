@@ -15,6 +15,7 @@ interface UserState {
   me?: User;
   isMute: boolean;
   isMuteAudio: boolean;
+  isConnected: boolean;
 }
 
 const initialUserState: UserState = {
@@ -25,6 +26,7 @@ const initialUserState: UserState = {
   home: true,
   isMute: false,
   isMuteAudio: false,
+  isConnected: false,
 };
 
 export const userSlice = createSlice({
@@ -76,6 +78,9 @@ export const userSlice = createSlice({
     setUnmuteAudio: (state) => {
       state.isMuteAudio = false;
     },
+    setIsConnected: (state, action: PayloadAction<boolean>) => {
+      state.isConnected = action.payload;
+    },
   },
 });
 
@@ -94,6 +99,7 @@ export const {
   setUnmute,
   setMuteAudio,
   setUnmuteAudio,
+  setIsConnected,
 } = userSlice.actions;
 
 export default userSlice.reducer;

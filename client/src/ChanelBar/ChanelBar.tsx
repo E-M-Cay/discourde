@@ -137,11 +137,11 @@ export const ChanelBar = (props: {
   };
 
   useEffect(() => {
-    socket?.on(`joiningvocal`, handleJoinVocal);
-    socket?.on(`leftvocal`, handleLeftVocal);
+    socket.on(`joiningvocal`, handleJoinVocal);
+    socket.on(`leftvocal`, handleLeftVocal);
     return () => {
-      socket?.off(`joiningvocal`, handleJoinVocal);
-      socket?.off(`leftvocal`, handleLeftVocal);
+      socket.off(`joiningvocal`, handleJoinVocal);
+      socket.off(`leftvocal`, handleLeftVocal);
     };
   }, [socket]);
 
@@ -205,51 +205,51 @@ export const ChanelBar = (props: {
   );
 
   useEffect(() => {
-    socket?.on(
+    socket.on(
       `textchannelcreated:server${activeServer}`,
       handleTextChannelCreated
     );
-    socket?.on(
+    socket.on(
       `vocalchannelcreated:server${activeServer}`,
       handleVocalChannelCreated
     );
-    socket?.on(
+    socket.on(
       `textchannelchange:server${activeServer}`,
       handleTextChannelChange
     );
-    socket?.on(
+    socket.on(
       `vocalchannelchange:server${activeServer}`,
       handleVocalChannelChange
     );
-    socket?.on(
+    socket.on(
       `vocalchannelchange:server${activeServer}`,
       handleVocalChannelDelete
     );
-    socket?.on(`vocalchanneldelete`, handleVocalChannelDelete);
-    socket?.on(
+    socket.on(`vocalchanneldelete`, handleVocalChannelDelete);
+    socket.on(
       `textchanneldelete:server${activeServer}`,
       handleTextChannelDelete
     );
 
     return () => {
-      socket?.off(
+      socket.off(
         `textchannelcreated:server${activeServer}`,
         handleTextChannelCreated
       );
-      socket?.off(
+      socket.off(
         `vocalchannelcreated:server${activeServer}`,
         handleVocalChannelCreated
       );
-      socket?.off(
+      socket.off(
         `textchannelchange:server${activeServer}`,
         handleTextChannelChange
       );
-      socket?.off(
+      socket.off(
         `vocalchannelchange:server${activeServer}`,
         handleVocalChannelChange
       );
-      socket?.off(`vocalchanneldelete`, handleVocalChannelDelete);
-      socket?.off(
+      socket.off(`vocalchanneldelete`, handleVocalChannelDelete);
+      socket.off(
         `textchanneldelete:server${activeServer}`,
         handleTextChannelDelete
       );

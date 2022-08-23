@@ -45,9 +45,9 @@ const Message = () => {
   }, [messages]);
 
   useEffect(() => {
-    socket?.on(`message:${activeChannel}`, receiveMessage);
+    socket.on(`message:${activeChannel}`, receiveMessage);
     return () => {
-      socket?.off(`message:${activeChannel}`, receiveMessage);
+      socket.off(`message:${activeChannel}`, receiveMessage);
     };
   }, [socket, activeChannel]);
 

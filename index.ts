@@ -140,6 +140,8 @@ io.use((socket: ISocket, next) => {
     // On ajoute l'utilisateur à la requête
     socket.user_id = Number(decoded.user.id);
     next();
+  } else {
+    next(new Error('invalid credentials'));
   }
 });
 
@@ -218,12 +220,12 @@ io.on('connection', (socket: ISocket) => {
   });
 
   socket.on('peerId', (data: { peer_id: string }) => {
+    console.log('peerid');
     socket.peer_id = data.peer_id;
     global.user_id_to_status.set(socket.user_id as number, 1);
     global.user_id_to_peer_id.set(socket.user_id as number, data.peer_id);
 
     socket.broadcast.emit('userconnected', socket.user_id);
-    socket.emit('ready');
   });
 
   socket.on('message', (message) => {

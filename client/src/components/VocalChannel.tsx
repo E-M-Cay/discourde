@@ -126,7 +126,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
   const callUser = useCallback(
     async (id: string, userId: number) => {
-      console.log('calling:', id, peer?.id);
+      console.log('calling:', id, peer.id);
       const audioNode = new Audio();
       console.log(streamRef.current?.getTracks());
       if (!peer) return;
@@ -214,11 +214,11 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
   useEffect(() => {
     if (activeVocalChannel) {
-      socket?.emit('joinvocalchannel', activeVocalChannel);
+      socket.emit('joinvocalchannel', activeVocalChannel);
     }
     return () => {
       if (activeVocalChannel) {
-        socket?.emit('leftvocalchannel', activeVocalChannel);
+        socket.emit('leftvocalchannel', activeVocalChannel);
       }
     };
   }, [activeVocalChannel, socket]);
@@ -228,13 +228,13 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       // if (!streamRef.current?.active) {
       //   await turnOnMicrophone();
       // }
-      socket?.on(`joiningvocalchannel:${activeVocalChannel}`, hello);
-      socket?.on(`leftvocalchannel:${activeVocalChannel}`, goodBye);
+      socket.on(`joiningvocalchannel:${activeVocalChannel}`, hello);
+      socket.on(`leftvocalchannel:${activeVocalChannel}`, goodBye);
     }
     return () => {
       if (activeVocalChannel) {
-        socket?.off(`joiningvocalchannel:${activeVocalChannel}`, hello);
-        socket?.off(`leftvocalchannel:${activeVocalChannel}`, goodBye);
+        socket.off(`joiningvocalchannel:${activeVocalChannel}`, hello);
+        socket.off(`leftvocalchannel:${activeVocalChannel}`, goodBye);
       }
     };
   }, [activeVocalChannel, socket, hello, goodBye]);
@@ -249,12 +249,12 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   }, [activeVocalChannel]);
 
   useEffect(() => {
-    peer?.on('call', callEvent);
-    peer?.on('error', (e) => console.log(e));
+    peer.on('call', callEvent);
+    peer.on('error', (e) => console.log(e));
     // console.log('my peer:', peer ? peer.id : 'none');
     return () => {
-      peer?.off('call', callEvent);
-      peer?.off('error');
+      peer.off('call', callEvent);
+      peer.off('error');
     };
   }, [peer, callEvent, hello]);
 

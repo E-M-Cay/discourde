@@ -62,7 +62,6 @@ interface PrivateMessageInterface {
   content: string;
 }
 
-global.user_id_to_peer_id = new Map<number, string>();
 global.user_id_to_status = new Map<number, number>();
 global.vocal_channel_to_user_list = new Map<number, number[]>();
 global.user_id_to_vocal_channel = new Map<number, number>();
@@ -129,7 +128,6 @@ const cleanUpSocket = (socket?: ISocket) => {
   if (!socket?.user_id) {
     return console.error('no user_id');
   }
-  global.user_id_to_peer_id.delete(socket.user_id);
   global.user_id_to_status.delete(socket.user_id);
   global.user_id_to_socket_id.delete(socket.user_id);
   const currentVocalChannel = global.user_id_to_vocal_channel.get(
@@ -157,10 +155,7 @@ io.use(async (socket: ISocket, next) => {
       process.env.SECRET_TOKEN || ''
     ) as JwtPayload;
     socket.user_id = Number(decoded.user.id);
-    const existing = user_id_to_socket_id.get(socket.user_id as number);
-    if (existing) {
-      io.sockets.sockets.get(existing)?.disconnect();
-    }
+
     next();
   } catch (e) {
     next(new Error('invalid credentials'));
@@ -170,6 +165,10 @@ io.use(async (socket: ISocket, next) => {
 const disconnectSocket = (socket: ISocket) => {};
 
 io.on('connection', (socket: ISocket) => {
+  const existing = user_id_to_socket_id.get(socket.user_id as number);
+  if (existing) {
+    io.sockets.sockets.get(existing)?.disconnect();
+  }
   global.user_id_to_status.set(socket.user_id as number, 1);
   user_id_to_socket_id.set(socket.user_id as number, socket.id);
   socket.on('username', (newUsername) => {
@@ -247,8 +246,6 @@ io.on('connection', (socket: ISocket) => {
   socket.on('peerId', (data: { peer_id: string }) => {
     console.log('peerid');
     socket.peer_id = data.peer_id;
-    global.user_id_to_peer_id.set(socket.user_id as number, data.peer_id);
-
     socket.broadcast.emit('userconnected', socket.user_id);
   });
 
@@ -260,9 +257,7 @@ io.on('connection', (socket: ISocket) => {
     if (!socket.user_id) {
       return console.error('no user_id');
     }
-    global.user_id_to_peer_id.delete(socket.user_id);
-    global.user_id_to_status.delete(socket.user_id);
-    global.user_id_to_socket_id.delete(socket.user_id);
+
     // console.log('disconnected socket', socket.id, reason);
     const currentVocalChannel = global.user_id_to_vocal_channel.get(
       socket.user_id as number
@@ -280,8 +275,11 @@ io.on('connection', (socket: ISocket) => {
       );
       global.user_id_to_vocal_channel.delete(socket.user_id);
     }
-
-    io.emit('userdisconnected', socket.user_id);
+    if (global.user_id_to_socket_id.get(socket.user_id) === socket.id) {
+      global.user_id_to_status.delete(socket.user_id);
+      global.user_id_to_socket_id.delete(socket.user_id);
+      io.emit('userdisconnected', socket.user_id);
+    }
   });
 
   socket.on('inactif', () => {
@@ -330,22 +328,8 @@ io.on('connection', (socket: ISocket) => {
   });
 });
 
-function get_user_status_list(user_id_list: number[]) {
-  user_id_list =
-    user_id_list.length == 0
-      ? [...global.user_id_to_peer_id.keys()]
-      : user_id_list;
-  let res = new Map<number, number>();
-  user_id_list.forEach((user_id) => {
-    //console.log(user_id);
-    res.set(user_id, get_user_status(user_id) as number);
-  });
-  console.log(res);
-  return res;
-}
-
 function get_user_status(user_id: number) {
-  return global.user_id_to_peer_id.has(user_id)
+  return global.user_id_to_status.has(user_id)
     ? global.user_id_to_status.get(user_id)
     : 0;
 }

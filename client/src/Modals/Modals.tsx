@@ -15,7 +15,8 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { Channel, User, VocalChan } from '../types/types';
 import logo from '../assets/discourde.png';
 import { CloseOutlined } from '@ant-design/icons';
-import { setMe } from '../redux/userSlice';
+import { setIsConnected, setMe } from '../redux/userSlice';
+import { PeerSocketContext } from '../context/PeerSocket';
 
 export const ServerInvit = (props: {
   isModalVisibleInvitation: boolean;
@@ -32,7 +33,6 @@ export const ServerInvit = (props: {
     serverId,
   } = props;
   const { friendMap } = useContext(UserMapsContext);
-  const me = useAppSelector((state) => state.userReducer.me);
   const handleInviteUser = (hisId: number) => {
     axios
       .post(
@@ -314,14 +314,15 @@ export const UserProfileModal = (props: {
 
 export const GeneralSettings = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const dispatch = useAppDispatch();
 
   const handleDisconnect = () => {
-    localStorage.removeItem('token');
     let audio = new Audio('/engine-391.mp3');
     audio.play();
     // wait 2 seconds
+    localStorage.removeItem('token');
     setTimeout(() => {
-      window.location.href = '/';
+      dispatch(setIsConnected(false));
     }, 1700);
   };
 
@@ -343,7 +344,7 @@ export const GeneralSettings = () => {
         showModal();
       }
     };
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

@@ -125,24 +125,52 @@ interface ISocket extends Socket {
   user_id?: number;
 }
 
-io.use(async (socket: ISocket, next) => {
-  const token = socket.handshake.auth?.token;
-  console.log('pre-decode', token);
+const cleanUpSocket = (socket?: ISocket) => {
+  if (!socket?.user_id) {
+    return console.error('no user_id');
+  }
+  global.user_id_to_peer_id.delete(socket.user_id);
+  global.user_id_to_status.delete(socket.user_id);
+  global.user_id_to_socket_id.delete(socket.user_id);
+  const currentVocalChannel = global.user_id_to_vocal_channel.get(
+    socket.user_id as number
+  );
+  if (currentVocalChannel) {
+    io.emit('leftvocal', {
+      user: socket.user_id,
+      chan: currentVocalChannel,
+    });
+    const userList = global.vocal_channel_to_user_list.get(currentVocalChannel);
+    global.vocal_channel_to_user_list.set(
+      currentVocalChannel,
+      userList?.filter((u) => u !== socket.user_id) as number[]
+    );
+    global.user_id_to_vocal_channel.delete(socket.user_id);
+  }
+};
 
+io.use(async (socket: ISocket, next) => {
+  console.log('handshake');
   try {
     const decoded = jwt.verify(
-      // content.token,
       socket.handshake.auth.token,
       process.env.SECRET_TOKEN || ''
     ) as JwtPayload;
     socket.user_id = Number(decoded.user.id);
+    const existing = user_id_to_socket_id.get(socket.user_id as number);
+    if (existing) {
+      io.sockets.sockets.get(existing)?.disconnect();
+    }
     next();
   } catch (e) {
     next(new Error('invalid credentials'));
   }
 });
 
+const disconnectSocket = (socket: ISocket) => {};
+
 io.on('connection', (socket: ISocket) => {
+  global.user_id_to_status.set(socket.user_id as number, 1);
   user_id_to_socket_id.set(socket.user_id as number, socket.id);
   socket.on('username', (newUsername) => {
     socket.username = newUsername;
@@ -219,7 +247,6 @@ io.on('connection', (socket: ISocket) => {
   socket.on('peerId', (data: { peer_id: string }) => {
     console.log('peerid');
     socket.peer_id = data.peer_id;
-    global.user_id_to_status.set(socket.user_id as number, 1);
     global.user_id_to_peer_id.set(socket.user_id as number, data.peer_id);
 
     socket.broadcast.emit('userconnected', socket.user_id);
@@ -235,7 +262,8 @@ io.on('connection', (socket: ISocket) => {
     }
     global.user_id_to_peer_id.delete(socket.user_id);
     global.user_id_to_status.delete(socket.user_id);
-    console.log('disconnected socket', socket.id, reason);
+    global.user_id_to_socket_id.delete(socket.user_id);
+    // console.log('disconnected socket', socket.id, reason);
     const currentVocalChannel = global.user_id_to_vocal_channel.get(
       socket.user_id as number
     );
@@ -250,6 +278,7 @@ io.on('connection', (socket: ISocket) => {
         currentVocalChannel,
         userList?.filter((u) => u !== socket.user_id) as number[]
       );
+      global.user_id_to_vocal_channel.delete(socket.user_id);
     }
 
     io.emit('userdisconnected', socket.user_id);

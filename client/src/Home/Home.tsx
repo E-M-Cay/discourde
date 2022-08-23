@@ -23,7 +23,7 @@ export const Home = () => {
     (state) => state.userReducer.activeServer
   );
   const me = useAppSelector((state) => state.userReducer.me);
-  const { isPeerConnected } = useContext(PeerSocketContext);
+  const { isPeerConnected, isSocketConnected } = useContext(PeerSocketContext);
 
   const getServers = useCallback(() => {
     axios
@@ -63,14 +63,20 @@ export const Home = () => {
           }
         }
       });
-  };
-
-  useEffect(() => {
-    getServers();
     return () => {
       setServers([]);
     };
-  }, [getServers]);
+  };
+
+  useEffect(() => {
+    if (isSocketConnected) {
+      getServers();
+    }
+
+    return () => {
+      setServers([]);
+    };
+  }, [getServers, isSocketConnected]);
 
   const joinServer = (uuid: string) => {
     axios

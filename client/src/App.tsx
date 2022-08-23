@@ -13,7 +13,6 @@ import { Home } from './Home/Home';
 import { Modal } from 'antd';
 import { profilePng } from './profilePng/profilePng';
 import PeerSocketProvider from './context/PeerSocket';
-import { socketPort } from './env/host';
 
 const { Title, Text } = Typography;
 
@@ -31,13 +30,15 @@ const App = () => {
     '/profile-pictures/serpent.png'
   );
 
-  const [isModalVisible, setIsModalVisible] = useState(
-    localStorage.getItem('token') ? false : true
-  );
+  // const [isModalVisible, setIsModalVisible] = useState(
+  //   localStorage.getItem('token') ? false : true
+  // );
 
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
+  const isModalVisible = !isConnected;
+
+  // const handleOk = () => {
+  //   setIsModalVisible(false);
+  // };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -54,17 +55,18 @@ const App = () => {
           if (res.data.ok) {
             console.log('res.data', res.data);
             // connectSocket(token);
-            dispatch(setIsConnected(true));
             dispatch(setMe(res.data.user));
+            dispatch(setIsConnected(true));
           }
         })
         .catch((e) => {
           console.log(e);
-          setIsModalVisible(true);
+          // setIsModalVisible(true);
         });
 
       // verifyAndRefreshToken(token);
-    } else setIsModalVisible(true);
+    }
+    // else setIsModalVisible(true);
   }, [setIsConnected, dispatch]);
 
   const onChangeHandler = (
@@ -93,12 +95,12 @@ const App = () => {
       })
       .then((res) => {
         if (res.data.token) {
+          dispatch(setToken(res.data.token));
+          dispatch(setMe(res.data.user));
           dispatch(setIsConnected(true));
           localStorage.setItem('token', res.data.token);
           console.log('res data user', res.data.user);
-          dispatch(setMe(res.data.user));
-          dispatch(setToken(res.data.token));
-          handleOk();
+          // handleOk();
           let audio = new Audio('girl-hey-ringtone-second-version.mp3');
           audio.play();
         }

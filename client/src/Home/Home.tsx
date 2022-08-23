@@ -15,9 +15,7 @@ import NotificationsContextProvider from '../context/NotificationsContext';
 import UserMapsContextProvider from '../context/UserMapsContext';
 import { PeerSocketContext } from '../context/PeerSocket';
 
-export const Home = (props: {
-  setTokenMissing: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+export const Home = () => {
   const [servers, setServers] = useState<ServerResponse[]>([]);
   const dispatch = useAppDispatch();
 
@@ -43,12 +41,8 @@ export const Home = (props: {
       })
       .catch((err) => {
         console.log(err);
-        if (err.message === 'jwt expired') {
-          localStorage.removeItem('token');
-          props.setTokenMissing(true);
-        }
       });
-  }, [dispatch, props]);
+  }, [dispatch]);
 
   const handleLeaveServer = () => {
     axios
@@ -96,7 +90,6 @@ export const Home = (props: {
   };
 
   return (
-    // <></>
     <UserMapsContextProvider>
       <NotificationsContextProvider>
         <VocalChannelContextProvider>
@@ -107,6 +100,7 @@ export const Home = (props: {
               </Col>
               <Col span={23}>
                 <Main
+                  servers={servers}
                   handleLeaveServer={handleLeaveServer}
                   setServers={setServers}
                 />

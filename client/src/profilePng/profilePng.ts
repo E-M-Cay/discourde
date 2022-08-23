@@ -7,7 +7,6 @@ export const profilePng = [
   '/profile-pictures/robot1.png',
   '/profile-pictures/robot2.png',
   '/profile-pictures/renard.png',
-  '/profile-pictures/serpent.png',
   '/profile-pictures/tigre.png',
 ];
 export const serverPng = [

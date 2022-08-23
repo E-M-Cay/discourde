@@ -48,7 +48,7 @@ export const ChannelCollapse = (props: {
               className='panelContent'
             >
               {' '}
-              <BorderlessTableOutlined />{' '}
+              <BorderlessTableOutlined style={{ marginRight: '5px' }} />{' '}
               {chan.name.length > 15
                 ? chan.name.substring(0, 15) + '...'
                 : chan.name}
@@ -65,20 +65,18 @@ export const ChannelCollapse = (props: {
         {vocalChannelList &&
           vocalChannelList.map((chan) =>
             chan.id !== activeVocalChannel ? (
-              <li
-                key={chan.id}
-                onClick={() => onVocalChannelClick(chan.id)}
-                className='panelContent'
-              >
+              <li key={chan.id} onClick={() => onVocalChannelClick(chan.id)}>
                 {' '}
-                <SoundOutlined />{' '}
-                <span
-                  style={{
-                    color: activeVocalChannel === chan.id ? 'white' : '',
-                  }}
-                >
-                  {chan.name}
-                </span>
+                <div className='panelContent'>
+                  <SoundOutlined style={{ marginRight: '5px' }} />{' '}
+                  <span
+                    style={{
+                      color: activeVocalChannel === chan.id ? 'white' : '',
+                    }}
+                  >
+                    {chan.name}
+                  </span>
+                </div>
                 {/* {activeVocalChannel === chan.id && (
                 <>
                   {' '}
@@ -89,7 +87,8 @@ export const ChannelCollapse = (props: {
                   <div
                     // onClick={() => console.log(serverUserMap.get(u), 'test')}
                     key={u}
-                    style={{ marginTop: '5px' }}
+                    style={{ marginTop: '5px', marginLeft: '20px' }}
+                    className='panelContent'
                   >
                     <Avatar
                       size={20}

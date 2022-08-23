@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import './App.css';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { Input, Typography } from 'antd';
+import { Avatar, Input, Select, Typography } from 'antd';
 import {
   setUsername,
   setToken,
@@ -13,6 +13,7 @@ import { Home } from './Home/Home';
 import { Modal } from 'antd';
 import { profilePng } from './profilePng/profilePng';
 import PeerSocketProvider from './context/PeerSocket';
+import { socketPort } from './env/host';
 
 const { Title, Text } = Typography;
 
@@ -23,25 +24,16 @@ const App = () => {
   const loginEmailRef = useRef<string>('');
   const registerPasswordRef = useRef<string>('');
   const loginPasswordRef = useRef<string>('');
-  const isConnected = useAppSelector((state) => state.userReducer.isConnected);
+  const { isConnected, token } = useAppSelector((state) => state.userReducer);
+  const [isLoggin, setIsLoggin] = useState(false);
 
   const [pictureLink, setPictureLink] = useState(
-    'https://randomuser.me/api/portraits/men/1.jpg'
+    '/profile-pictures/serpent.png'
   );
 
   const [isModalVisible, setIsModalVisible] = useState(
     localStorage.getItem('token') ? false : true
   );
-
-  useEffect(() => {
-    console.log('modal visible ?', isModalVisible);
-  }, [isModalVisible]);
-
-  // const showModal = () => {
-  //   setIsModalVisible(true);
-  // };
-
-  //const verifyAndRefreshToken = (tk: string) => {};
 
   const handleOk = () => {
     setIsModalVisible(false);
@@ -114,131 +106,236 @@ const App = () => {
   };
 
   return (
-    <div>
-      {
-        <>
-          <PeerSocketProvider>
-            {isConnected && <Home setTokenMissing={setIsModalVisible} />}
-          </PeerSocketProvider>
-          <Modal
-            visible={isModalVisible}
-            closable={false}
-            footer={null}
-            // style={{backgroundColor: '#535353'}}
+    <>
+      <PeerSocketProvider>{isConnected && <Home />}</PeerSocketProvider>
+      <Modal
+        visible={isModalVisible}
+        closable={false}
+        footer={null}
+        title={
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-end',
+            }}
           >
-            <div className='App'>
-              <>
-                <form onSubmit={(e) => onSubmitRegister(e)}>
-                  <Title level={3}>Register</Title>
-                  <div
-                    style={{
-                      maxWidth: '80%',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      margin: 'auto',
-                    }}
-                  >
-                    <Text>email</Text>
+            <Title
+              onClick={() => setIsLoggin(false)}
+              style={{ height: '100%', width: '90px', margin: 0 }}
+              level={3}
+              className={isLoggin ? 'titllede' : 'titledactive'}
+            >
+              Login
+            </Title>
+            <Avatar size={50} src={'/profile-pictures/discourde.png'} />
+            <Title
+              onClick={() => setIsLoggin(true)}
+              style={{ height: '100%', width: '90px', margin: 0 }}
+              level={3}
+              className={isLoggin ? 'titledactive' : 'titllede'}
+            >
+              Register
+            </Title>
+          </div>
+        }
+        // style={{backgroundColor: '#535353'}}
+      >
+        <div className='App'>
+          <>
+            <form
+              style={{ display: isLoggin ? '' : 'none' }}
+              onSubmit={(e) => onSubmitRegister(e)}
+            >
+              <Title style={{ color: '#2c2c2c' }} level={3}>
+                Register
+              </Title>
+              <div
+                style={{
+                  maxWidth: '80%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  margin: 'auto',
+                }}
+              >
+                <label htmlFor='registerEmail'>Email</label>
 
-                    <Input
-                      style={{ maxWidth: '50%' }}
-                      placeholder='email'
-                      id='registerEmail'
-                      onChange={(e) => onChangeHandler(e, registerEmailRef)}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      paddingTop: '10px',
-                      maxWidth: '80%',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      margin: 'auto',
-                    }}
-                  >
-                    <Text>password</Text>
-                    <Input.Password
-                      style={{ maxWidth: '50%' }}
-                      placeholder='password'
-                      id='registerPassword'
-                      onChange={(e) => onChangeHandler(e, registerPasswordRef)}
-                    />{' '}
-                  </div>
-                  <div
-                    style={{
-                      paddingTop: '10px',
-                      maxWidth: '80%',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      margin: 'auto',
-                    }}
-                  >
-                    <Text>username</Text>
+                <Input
+                  style={{ maxWidth: '50%' }}
+                  placeholder='email'
+                  id='registerEmail'
+                  onChange={(e) => onChangeHandler(e, registerEmailRef)}
+                />
+              </div>
+              <div
+                style={{
+                  paddingTop: '10px',
+                  maxWidth: '80%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  margin: 'auto',
+                }}
+              >
+                <label htmlFor='registerPassword'>Password</label>
+                <Input
+                  type={'password'}
+                  style={{ maxWidth: '50%' }}
+                  placeholder='password'
+                  id='registerPassword'
+                  onChange={(e) => onChangeHandler(e, registerPasswordRef)}
+                />{' '}
+              </div>
+              <div
+                style={{
+                  paddingTop: '10px',
+                  maxWidth: '80%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  margin: 'auto',
+                }}
+              >
+                <label htmlFor='registerUsername'>Username</label>
 
-                    <Input
-                      placeholder='username'
+                <Input
+                  placeholder='username'
+                  style={{
+                    paddingTop: '10px',
+                    maxWidth: '50%',
+                  }}
+                  id='registerUsername'
+                  onChange={(e) => onChangeHandler(e, registerUsernameRef)}
+                />
+              </div>
+              {/* <div
                       style={{
                         paddingTop: '10px',
-                        maxWidth: '50%',
+                        maxWidth: '80%',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        margin: 'auto',
                       }}
-                      id='registerUsername'
-                      onChange={(e) => onChangeHandler(e, registerUsernameRef)}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      paddingTop: '10px',
-                      maxWidth: '80%',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      margin: 'auto',
-                    }}
-                  >
-                    <Text>picture</Text>
-                    <select
-                      name='pictures'
-                      onChange={(e) => setPictureLink(e.target.value)}
-                      id='pictures'
                     >
-                      {profilePng.map((png, key) => (
-                        <option key={key} value={png || 'pipi'}>
-                          {key < 10
-                            ? 'men ' + (Number(key) + 1)
-                            : 'women ' + (Number(key) + 1)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>{' '}
-                  <br />
-                  <input type='submit' />
-                </form>
-                <form onSubmit={(e) => onSubmitLogin(e)}>
-                  <Title level={3}>Login</Title>
-
-                  <label>
-                    email
-                    <input
-                      type='text'
-                      id='loginPassword'
-                      onChange={(e) => onChangeHandler(e, loginEmailRef)}
+                      <Text>picture</Text>
+                      <Select
+                        onChange={(e) => setPictureLink(e)}
+                        id='pictures'
+                        defaultValue={profilePng[0]}
+                        style={{
+                          width: '50%',
+                          backgroundColor: '#535353 !important',
+                        }}
+                      >
+                        {profilePng.map((png, key) => (
+                          <option
+                            key={key}
+                            value={
+                              png ||
+                              'https://randomuser.me/api/portraits/men/1.jpg'
+                            }
+                          >
+                            <Avatar
+                              style={{ marginRight: '10px' }}
+                              size={25}
+                              src={png}
+                            />
+                            {png.split('/')[2].split('.')[0]}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>{' '} */}
+              <div style={{ marginTop: '30px' }}>
+                {profilePng.map((png, key) => (
+                  <>
+                    <Avatar
+                      style={{
+                        margin: '5px',
+                        border: png === pictureLink ? '4px solid green' : '',
+                      }}
+                      onClick={() => setPictureLink(png)}
+                      size={png === pictureLink ? 60 : 50}
+                      src={png}
                     />
-                  </label>
-                  <label>
-                    password
-                    <input
-                      type='password'
-                      id='loginPassword'
-                      onChange={(e) => onChangeHandler(e, loginPasswordRef)}
-                    ></input>
-                  </label>
-                  <input type='submit' />
-                </form>{' '}
-              </>
-            </div>
-          </Modal>
-        </>
-      }
-    </div>
+                    {key === 4 && <br />}
+                  </>
+                ))}
+              </div>
+              <br />
+              <input
+                style={{
+                  borderRadius: 0,
+                  border: 0,
+                  padding: '3px 10px',
+                  color: 'grey',
+                  backgroundColor: '#40444b',
+                }}
+                type='submit'
+              />
+            </form>
+            <form
+              style={{ display: isLoggin ? 'none' : '' }}
+              onSubmit={(e) => onSubmitLogin(e)}
+            >
+              <Title style={{ color: '#2c2c2c' }} level={3}>
+                Login
+              </Title>
+              <div
+                style={{
+                  paddingTop: '10px',
+
+                  maxWidth: '80%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  margin: 'auto',
+                }}
+              >
+                <label htmlFor='loginPassword'>Email</label>
+                <Input
+                  type='text'
+                  id='loginPassword'
+                  onChange={(e) => onChangeHandler(e, loginEmailRef)}
+                  placeholder='email'
+                  style={{
+                    width: '50%',
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  padding: '10px 0',
+
+                  maxWidth: '80%',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  margin: 'auto',
+                }}
+              >
+                <label htmlFor='loginPassword'>Password</label>
+                <Input
+                  type='password'
+                  id='loginPassword'
+                  placeholder='password'
+                  onChange={(e) => onChangeHandler(e, loginPasswordRef)}
+                  style={{
+                    width: '50%',
+                  }}
+                ></Input>
+              </div>
+              <input
+                style={{
+                  borderRadius: 0,
+                  border: 0,
+                  marginTop: '20px',
+                  padding: '3px 10px',
+                  color: 'grey',
+                  backgroundColor: '#40444b',
+                }}
+                type='submit'
+              />
+            </form>{' '}
+          </>
+        </div>
+      </Modal>
+    </>
   );
 };
 

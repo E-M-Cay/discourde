@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import express, { Express, Request, Response } from 'express';
 import { createServer } from 'http';
 import dotenv from 'dotenv';
@@ -125,22 +125,19 @@ interface ISocket extends Socket {
   user_id?: number;
 }
 
-io.use((socket: ISocket, next) => {
+io.use(async (socket: ISocket, next) => {
   const token = socket.handshake.auth?.token;
-  if (!token) return;
+  console.log('pre-decode', token);
 
-  const decoded: any = jwt.verify(
-    // content.token,
-    socket.handshake.auth.token,
-    process.env.SECRET_TOKEN || ''
-  );
-  if (decoded) {
-    console.log('handshake');
-
-    // On ajoute l'utilisateur à la requête
+  try {
+    const decoded = jwt.verify(
+      // content.token,
+      socket.handshake.auth.token,
+      process.env.SECRET_TOKEN || ''
+    ) as JwtPayload;
     socket.user_id = Number(decoded.user.id);
     next();
-  } else {
+  } catch (e) {
     next(new Error('invalid credentials'));
   }
 });

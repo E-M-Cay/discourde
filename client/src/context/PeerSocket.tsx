@@ -13,17 +13,17 @@ interface PeerSocket {
   isPeerConnected: boolean;
   // connectSocket: (token: string) => void;
 }
-const token = localStorage.getItem('token');
+
 const socket =
   process.env.NODE_ENV === 'production'
     ? io(`wss://${host}:${socketPort}/`, {
         auth: {
-          token,
+          token: localStorage.getItem('token'),
         },
       })
     : io(`ws://${host}:${socketPort}/`, {
         auth: {
-          token,
+          token: localStorage.getItem('token'),
         },
       });
 const secure = process.env.NODE_ENV === 'production';
@@ -71,6 +71,7 @@ interface ISocket extends Socket {
 const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [isPeerConnected, setIsPeerConnected] = useState(false);
+  const { isConnected, token } = useAppSelector((state) => state.userReducer);
 
   const onPeerOpen = useCallback(
     (peer_id: string) => {
@@ -83,10 +84,20 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
   );
 
   useEffect(() => {
-    socket.disconnect();
-    socket.auth = { token: token };
+    console.log('token change');
+    // socket.disconnect();
+    socket.auth = { token };
     socket.connect();
   }, [token]);
+
+  // useEffect(() => {
+  //   if (isConnected) {
+  //     socket.connect();
+  //   }
+  //   if (!isConnected) {
+  //     socket.close();
+  //   }
+  // }, [socket, isConnected]);
 
   useEffect(() => {
     socket.on('connect', () => setIsSocketConnected(true));
@@ -94,13 +105,13 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
     socket.on('connect_error', (err) => {
       console.log('message');
       if (err.message === 'invalid credentials') {
-        socket.auth = { token };
-        socket.connect();
+        socket.disconnect();
       }
     });
     return () => {
       socket.off('connect');
       socket.off('disconnect');
+      socket.off('connect_error');
     };
   }, [socket, token]);
 

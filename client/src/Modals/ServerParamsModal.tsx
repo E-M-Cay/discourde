@@ -1,10 +1,11 @@
 import { CloseOutlined } from '@ant-design/icons';
-import { Modal, Typography, Input, Button, Tooltip } from 'antd';
+import { Modal, Typography, Input, Button, Tooltip, Avatar } from 'antd';
 import axios from 'axios';
 import { useContext, useState } from 'react';
 import { NotificationsContext } from '../context/NotificationsContext';
 import { useAppSelector } from '../redux/hooks';
-import { Channel, VocalChan } from '../types/types';
+import { Channel, ServerResponse, VocalChan } from '../types/types';
+import { serverPng } from '../profilePng/profilePng';
 
 const ServerParamsModal = (props: {
   isModalVisibleParams: boolean;
@@ -21,6 +22,7 @@ const ServerParamsModal = (props: {
   setIsModalVisibleParams: React.Dispatch<React.SetStateAction<boolean>>;
   setTextChannelList: React.Dispatch<React.SetStateAction<Channel[]>>;
   setVocalChannelList: React.Dispatch<React.SetStateAction<VocalChan[]>>;
+  servers: ServerResponse[];
 }) => {
   const {
     isModalVisibleParams,
@@ -37,13 +39,19 @@ const ServerParamsModal = (props: {
     setIsModalVisibleParams,
     setVocalChannelList,
     setTextChannelList,
+    servers,
   } = props;
 
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
   );
+  let tmp = servers.find((server) => server.server.id === activeServer);
+  const activeServerObject = tmp?.server;
+  console.log(activeServerObject, 'activeServerObject');
   const { addNotification } = useContext(NotificationsContext);
   const [newTextChannelName, setNewTextChannelName] = useState('');
+  const [pictureLink, setPictureLink] = useState(activeServerObject?.main_img);
+  const [serverName, setServerName] = useState(activeServerObject?.name);
 
   const handleOk = () => {
     setIsModalVisibleParams(false);
@@ -213,6 +221,43 @@ const ServerParamsModal = (props: {
           </div>
         )
       )}
+      <div>
+        <div
+          style={{
+            maxWidth: '80%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            margin: 'auto',
+          }}
+        >
+          <label htmlFor='serverName'>Server name</label>
+
+          <Input
+            style={{ maxWidth: '50%' }}
+            placeholder='Server name'
+            id='serverName'
+            onChange={(e) => setServerName(e.target.value)}
+          />
+        </div>
+        <div style={{ marginTop: '30px', width: '100%' }}>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            {serverPng.map((png, key) => (
+              <>
+                <Avatar
+                  style={{
+                    margin: '5px',
+                    border: png === pictureLink ? '4px solid green' : '',
+                  }}
+                  onClick={() => setPictureLink(png)}
+                  size={png === pictureLink ? 60 : 50}
+                  src={png}
+                />
+                {key === 4 && <br />}
+              </>
+            ))}
+          </div>
+        </div>
+      </div>
     </Modal>
   );
 };

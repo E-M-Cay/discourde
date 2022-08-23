@@ -211,7 +211,7 @@ export const UserProfileModal = (props: {
     }
   };
   return (
-    <div style={{ minHeight: '500px' }}>
+    <div style={{ height: '120px' }}>
       <div
         style={{
           display: 'flex',
@@ -219,19 +219,56 @@ export const UserProfileModal = (props: {
           alignItems: 'center',
         }}
       >
-        <Avatar size={64} src={user.picture ?? logo} />
-        <Title level={2}>{' ' + user.username}</Title>
-        <div></div>
+        <div style={{ width: '39%' }}>
+          <Avatar size={64} src={user.picture ?? logo} />
+        </div>
+        <Title style={{ color: 'darkgrey', width: '30%' }} level={2}>
+          {user.username}
+        </Title>
+        <div style={{ color: 'darkgrey', width: '30%' }}></div>
       </div>
-      <div style={{ marginTop: '24px' }}>
+      <div
+        style={{
+          marginTop: '10px',
+          display: 'flex',
+          justifyContent: 'space-around',
+        }}
+      >
         {isFriend === false && me?.id !== user.id ? (
-          <Button onClick={() => sendFriendRequest(user)}>Add as friend</Button>
+          <button
+            style={{
+              borderRadius: 0,
+              border: 0,
+              marginTop: '20px',
+              padding: '7px 10px',
+              color: 'darkgrey',
+              backgroundColor: '#40444b',
+              width: '150px',
+              fontWeight: 'bold',
+            }}
+            onClick={() => sendFriendRequest(user)}
+          >
+            Add as friend
+          </button>
         ) : me?.id !== user.id ? (
           <Typography>You are friends</Typography>
         ) : null}
-        <br />
         {me?.id !== user.id && (
-          <Button onClick={() => openPrivateChat(user)}>Message</Button>
+          <button
+            style={{
+              borderRadius: 0,
+              border: 0,
+              marginTop: '20px',
+              padding: '7px 10px',
+              color: 'darkgrey',
+              backgroundColor: '#40444b',
+              width: '150px',
+              fontWeight: 'bold',
+            }}
+            onClick={() => openPrivateChat(user)}
+          >
+            Message
+          </button>
         )}
         {me?.id === user.id && (
           <>

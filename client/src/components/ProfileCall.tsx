@@ -9,8 +9,9 @@ import {
   SettingOutlined,
   WifiOutlined,
 } from '@ant-design/icons';
-import { Avatar, Tooltip, Typography } from 'antd';
+import { Avatar, Modal, Tooltip, Typography } from 'antd';
 import { useContext, useEffect, useState } from 'react';
+import UserProfileSettings from '../Modals/UserProfileSettings';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { setActiveVocalChannel } from '../redux/userSlice';
 import { VocalChan } from '../types/types';
@@ -21,6 +22,19 @@ export const ProfileCall = (props: {
   activeServerName?: string;
   vocalChannelList?: VocalChan[];
 }) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
   const { activeServerName, vocalChannelList } = props;
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
@@ -53,6 +67,14 @@ export const ProfileCall = (props: {
         width: '100%',
       }}
     >
+      <Modal
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+      >
+        <UserProfileSettings />
+      </Modal>
       <div
         style={{
           marginTop: '14.5%',
@@ -136,7 +158,9 @@ export const ProfileCall = (props: {
             <Typography
               style={{ color: 'white', fontWeight: '600', fontSize: '16px' }}
             >
-              {me?.username || 'random'}
+              {me?.username.length || 0 > 9
+                ? me?.username.slice(0, 8) + '...'
+                : me?.username || 'random'}
             </Typography>
             <Typography style={{ color: 'darkgrey', fontSize: '11px' }}>
               #292B2F
@@ -154,15 +178,19 @@ export const ProfileCall = (props: {
           }}
         >
           <Tooltip placement='top' title={'Micro'}>
-            <AudioFilled onClick={isMute ? unmuteSelf : muteSelf} />
+            <AudioFilled
+              style={{ color: isMute ? 'red' : '' }}
+              onClick={isMute ? unmuteSelf : muteSelf}
+            />
           </Tooltip>
           <Tooltip placement='top' title={'Casque'}>
             <CustomerServiceFilled
+              style={{ color: isMuteAudio ? 'red' : '' }}
               onClick={isMuteAudio ? unmuteAudio : muteAudio}
             />
           </Tooltip>
           <Tooltip placement='top' title={'Paramètres utilisateur'}>
-            <SettingOutlined />
+            <SettingOutlined onClick={() => showModal()} />
           </Tooltip>
         </div>
       </div>

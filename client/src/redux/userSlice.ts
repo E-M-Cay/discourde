@@ -43,6 +43,7 @@ export const userSlice = createSlice({
       state.serverUsername = action.payload;
     },
     setToken: (state, action: PayloadAction<string>) => {
+      console.log('putain');
       state.token = action.payload;
     },
     setActiveServerName: (state, action: PayloadAction<string>) => {

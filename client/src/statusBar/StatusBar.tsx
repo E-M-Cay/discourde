@@ -37,42 +37,50 @@ export const StatusBar = () => {
   const menu = (user: User) => {
     return (
       <Menu
+        className='menu'
         items={[
           (me?.id !== user.id && {
             key: '1',
             label: (
-              <a
-                target='_blank'
-                rel='noopener noreferrer'
+              <span
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  fontSize: '14px',
+                }}
                 onClick={() => openPrivateChat(user)}
               >
                 message
-              </a>
+              </span>
             ),
           }) ||
             null,
           {
             key: '3',
             label: (
-              <a
-                target='_blank'
-                rel='noopener noreferrer'
-                href='https://www.luohanacademy.com'
+              <span
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  fontSize: '14px',
+                }}
               >
                 role
-              </a>
+              </span>
             ),
           },
           (me?.id !== user.id && {
             key: '4',
             label: (
-              <a
-                target='_blank'
-                rel='noopener noreferrer'
-                href='https://www.luohanacademy.com'
+              <span
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  fontSize: '14px',
+                }}
               >
                 exclure
-              </a>
+              </span>
             ),
           }) ||
             null,
@@ -80,7 +88,16 @@ export const StatusBar = () => {
             key: '5',
             label: (
               <>
-                <div onClick={() => showModal(user)}>Profil</div>
+                <div
+                  style={{
+                    fontWeight: '600',
+                    width: '100%',
+                    fontSize: '14px',
+                  }}
+                  onClick={() => showModal(user)}
+                >
+                  Profil
+                </div>
                 <Modal
                   title='profil'
                   visible={isModalVisible}
@@ -108,34 +125,50 @@ export const StatusBar = () => {
   const menu2 = (user: User) => {
     return (
       <Menu
+        className='menu'
         items={[
           (me?.id !== user.id && {
             key: '1',
-            label: <p onClick={() => openPrivateChat(user)}>message</p>,
+            label: (
+              <span
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  fontSize: '14px',
+                }}
+                onClick={() => openPrivateChat(user)}
+              >
+                message
+              </span>
+            ),
           }) ||
             null,
           {
             key: '3',
             label: (
-              <a
-                target='_blank'
-                rel='noopener noreferrer'
-                href='https://www.luohanacademy.com'
+              <span
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  fontSize: '14px',
+                }}
               >
                 role
-              </a>
+              </span>
             ),
           },
           (me?.id !== user.id && {
             key: '4',
             label: (
-              <a
-                target='_blank'
-                rel='noopener noreferrer'
-                href='https://www.luohanacademy.com'
+              <span
+                style={{
+                  fontWeight: '600',
+                  width: '100%',
+                  fontSize: '14px',
+                }}
               >
                 exclure
-              </a>
+              </span>
             ),
           }) ||
             null,
@@ -143,9 +176,17 @@ export const StatusBar = () => {
             key: '5',
             label: (
               <>
-                <div onClick={() => showModal(user)}>Profil</div>
+                <div
+                  style={{
+                    fontWeight: '600',
+                    width: '100%',
+                    fontSize: '14px',
+                  }}
+                  onClick={() => showModal(user)}
+                >
+                  Profil
+                </div>
                 <Modal
-                  title='profil'
                   visible={isModalVisible}
                   onOk={handleOk}
                   onCancel={handleCancel}
@@ -191,13 +232,7 @@ export const StatusBar = () => {
         <Panel key='1' header='en ligne' style={{ margin: '0 !important' }}>
           {Array.from(serverUserMap.entries()).map(([id, user]) =>
             user.user.status ? (
-              <Dropdown
-                key={id}
-                overlay={menu(user.user)}
-                placement='bottomLeft'
-                trigger={['click']}
-                arrow
-              >
+              <Dropdown key={id} overlay={menu(user.user)} trigger={['click']}>
                 <div
                   key={id}
                   style={{
@@ -235,7 +270,6 @@ export const StatusBar = () => {
                 overlay={menu2(user.user)}
                 placement='bottomLeft'
                 trigger={['click']}
-                arrow
               >
                 <div
                   key={id}

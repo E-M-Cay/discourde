@@ -3,6 +3,7 @@ import {
   Avatar,
   Button,
   Checkbox,
+  Divider,
   Input,
   Modal,
   Tooltip,
@@ -62,26 +63,41 @@ export const ServerInvit = (props: {
       closable={false}
       footer={null}
     >
-      <div style={{ minHeight: '500px' }}>
-        <Button onClick={(e) => handleLinkCreation()}>créer lien</Button>
+      <div style={{ color: '#2c2c2c' }}>
+        {/* <Button onClick={(e) => handleLinkCreation()}>créer lien</Button> */}
         <>
-          <Typography.Title level={4}>Inviter un ami</Typography.Title>
-          {Array.from(friendMap.entries()).map(([id, friendShip]) => {
-            return (
-              <div key={id}>
-                <Avatar src={friendShip.friend.picture ?? logo} />
-                <span>{friendShip.friend.username}</span>
-                <Button onClick={() => handleInviteUser(id)} type='primary'>
-                  Inviter
-                </Button>
-              </div>
-            );
-          })}
+          {Array.from(friendMap.entries()).length !== 0 ? (
+            <>
+              <Typography.Title style={{ color: '#2c2c2c' }} level={4}>
+                Inviter un ami
+              </Typography.Title>
+              {Array.from(friendMap.entries()).map(([id, friendShip]) => {
+                return (
+                  <div key={id}>
+                    <Avatar src={friendShip.friend.picture ?? logo} />
+                    <span>{friendShip.friend.username}</span>
+                    <Button onClick={() => handleInviteUser(id)} type='primary'>
+                      Inviter
+                    </Button>
+                  </div>
+                );
+              })}
+            </>
+          ) : (
+            <Typography.Title
+              style={{ color: '#2c2c2c', textAlign: 'center' }}
+              level={4}
+            >
+              Désolé tu n'as aucun ami n'hésite pas à échanger sur le serveur
+              général pour rencontrer des utilisateurs :)
+            </Typography.Title>
+          )}
         </>
       </div>
     </Modal>
   );
 };
+
 export const ServerChannels = (props: {
   isModalVisible: boolean;
   handleOk: Function;
@@ -108,40 +124,141 @@ export const ServerChannels = (props: {
       footer={null}
     >
       <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
+        style={
+          {
+            // display: 'flex',
+            // justifyContent: 'space-between',
+            // alignItems: 'center',
+          }
+        }
       >
+        <Typography.Title
+          style={{ textAlign: 'center', color: '#2c2c2c' }}
+          level={4}
+        >
+          Créer channel texte
+        </Typography.Title>
         <Input
           placeholder='Add text channel'
           onChange={(e) => setNewTextChannelName(e.target.value)}
         />
-        <Checkbox onChange={(e) => setIsAdminChannel(e.target.checked)}>
-          isAdmin
-        </Checkbox>
-        <Button type='primary' onClick={() => handleCreateChannel(false)}>
-          Create
-        </Button>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: '10px',
+          }}
+        >
+          {/* <Checkbox
+            
+            onChange={(e) => setIsAdminChannel(e.target.checked)}
+          >
+            
+          </Checkbox> */}
+          <label
+            style={{ marginTop: '10px', color: '#2c2c2c', fontSize: '15px' }}
+            htmlFor='scales'
+          >
+            Serveur caché
+          </label>
+          <input
+            style={{
+              marginTop: '10px',
+              marginLeft: '10px',
+              color: '#2c2c2c',
+              accentColor: '#40444b',
+              backgroundColor: '#40444b',
+            }}
+            type='checkbox'
+            onChange={(e) => setIsAdminChannel(e.target.checked)}
+            id='scales'
+            name='scales'
+          />
+          <button
+            style={{
+              borderRadius: 0,
+              border: 0,
+              padding: '3px 10px',
+              color: 'grey',
+              backgroundColor: '#40444b',
+              marginTop: '10px',
+              marginLeft: '30px',
+            }}
+            onClick={() => handleCreateChannel(false)}
+          >
+            Créer
+          </button>
+        </div>
       </div>
+      <Divider style={{ borderTop: '1px solid #2c2c2c', marginTop: '30px' }} />
+
       <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
+      // style={{
+      //   display: 'flex',
+      //   justifyContent: 'space-between',
+      //   alignItems: 'center',
+      // }}
       >
+        <Typography.Title
+          style={{ textAlign: 'center', color: '#2c2c2c', marginTop: '20px' }}
+          level={4}
+        >
+          Créer channel vocal
+        </Typography.Title>
         <Input
           onChange={(e) => setNewTextChannelName(e.target.value)}
           placeholder='Add vocal channel'
         />
-        <Checkbox onChange={(e) => setIsAdminChannel(e.target.checked)}>
-          isAdmin
-        </Checkbox>{' '}
-        <Button type='primary' onClick={() => handleCreateChannel(true)}>
-          Create
-        </Button>
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: '10px',
+          }}
+        >
+          {/* <Checkbox
+            
+            onChange={(e) => setIsAdminChannel(e.target.checked)}
+          >
+            
+          </Checkbox> */}
+          <label
+            style={{ marginTop: '10px', color: '#2c2c2c', fontSize: '15px' }}
+            htmlFor='scales'
+          >
+            Serveur caché
+          </label>
+          <input
+            style={{
+              marginTop: '10px',
+              marginLeft: '10px',
+              color: '#2c2c2c',
+              accentColor: '#40444b',
+              backgroundColor: '#40444b',
+            }}
+            type='checkbox'
+            onChange={(e) => setIsAdminChannel(e.target.checked)}
+            id='scales'
+            name='scales'
+          />
+          <button
+            style={{
+              borderRadius: 0,
+              border: 0,
+              padding: '3px 10px',
+              color: 'grey',
+              backgroundColor: '#40444b',
+              marginTop: '10px',
+              marginLeft: '30px',
+            }}
+            onClick={() => handleCreateChannel(true)}
+          >
+            Créer
+          </button>
+        </div>
       </div>
     </Modal>
   );

@@ -236,7 +236,6 @@ export const DropdownMenu = (params: {
         ]}
       />
       <Modal
-        title='Notification'
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}

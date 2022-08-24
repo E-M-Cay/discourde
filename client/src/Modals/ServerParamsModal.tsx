@@ -175,10 +175,15 @@ const ServerParamsModal = (props: {
       closable={false}
       footer={null}
     >
-      <Typography.Title style={{ textAlign: 'center' }} level={3}>
+      <Typography.Title
+        style={{ textAlign: 'center', color: '#2c2c2c' }}
+        level={3}
+      >
         Paramètres des channels
       </Typography.Title>
-      <Typography.Title level={4}>Channel Textuel</Typography.Title>
+      <Typography.Title style={{ color: '#2c2c2c' }} level={4}>
+        Channel Textuel
+      </Typography.Title>
       {textChannelList.map((channel) =>
         isModify === channel.id ? (
           <div key={channel.id}>
@@ -192,37 +197,77 @@ const ServerParamsModal = (props: {
                 }))
               }
             />
-            <Button
-              type='primary'
-              onClick={() => handleUpdateChannel(modifingChannel, false)}
-            >
-              Modifier
-            </Button>
-            <Button type='primary' onClick={() => setIsModify(0)}>
-              Annuler
-            </Button>
-            <Tooltip title='Supprimer le serveur'>
-              <Button
-                shape='circle'
-                className='DelFriendBtton'
-                icon={<CloseOutlined />}
-                danger
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <button
+                style={{
+                  borderRadius: 0,
+                  border: 0,
+                  padding: '3px 10px',
+                  color: 'grey',
+                  backgroundColor: '#40444b',
+                  marginTop: '10px',
+                  marginRight: '10px',
+                }}
+                onClick={() => handleUpdateChannel(modifingChannel, false)}
+              >
+                Modifier
+              </button>
+
+              <button
+                style={{
+                  borderRadius: 0,
+                  border: 0,
+                  padding: '3px 10px',
+                  color: 'grey',
+                  backgroundColor: '#40444b',
+                  marginTop: '10px',
+                }}
                 onClick={() => handleDeleteChannel(Number(channel.id), false)}
-              />
-            </Tooltip>
+              >
+                Supprimer
+              </button>
+              <button
+                style={{
+                  borderRadius: 0,
+                  border: 0,
+                  padding: '3px 10px',
+                  color: 'grey',
+                  backgroundColor: '#40444b',
+                  marginTop: '10px',
+                  marginLeft: '10px',
+                }}
+                onClick={() => setIsModify(0)}
+              >
+                Annuler
+              </button>
+            </div>
           </div>
         ) : (
           <div
             key={channel.id}
             onClick={() => handleModifyChannelText(channel)}
-            style={{ cursor: 'pointer' }}
           >
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               {/* <span>
                 {channel.hidden ? <EyeInvisibleOutlined /> : <EyeOutlined />}
               </span> */}
-              <span style={{ fontSize: '1.2rem' }}>{channel.name}</span>
-              <div style={{ paddingLeft: '5px', marginBottom: '5px' }}>
+              <span
+                style={{
+                  fontSize: '1.2rem',
+                  color: '#2c2c2c',
+                  cursor: 'pointer',
+                }}
+              >
+                {channel.name}
+              </span>
+              <div
+                style={{
+                  paddingLeft: '5px',
+                  marginBottom: '5px',
+                  color: '#2c2c2c',
+                  cursor: 'pointer',
+                }}
+              >
                 <EditOutlined />
               </div>
             </div>
@@ -230,7 +275,9 @@ const ServerParamsModal = (props: {
           </div>
         )
       )}
-      <Typography.Title level={4}>Channel Audio</Typography.Title>
+      <Typography.Title style={{ color: '#2c2c2c' }} level={4}>
+        Channel Audio
+      </Typography.Title>
 
       {vocalChannelList.map((channel: VocalChan) =>
         isModifyVoc === channel.id ? (
@@ -245,24 +292,50 @@ const ServerParamsModal = (props: {
                 }))
               }
             />
-            <Button
-              type='primary'
-              onClick={() => handleUpdateChannel(modifingChannel, true)}
-            >
-              Modifier
-            </Button>
-            <Button type='primary' onClick={() => setIsModifyVoc(0)}>
-              Annuler
-            </Button>
-            <Tooltip title='Supprimer le canal'>
-              <Button
-                shape='circle'
-                className='DelFriendBtton'
-                icon={<CloseOutlined />}
-                danger
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <button
+                style={{
+                  borderRadius: 0,
+                  border: 0,
+                  padding: '3px 10px',
+                  color: 'grey',
+                  backgroundColor: '#40444b',
+                  marginTop: '10px',
+                  marginRight: '10px',
+                }}
+                onClick={() => handleUpdateChannel(modifingChannel, true)}
+              >
+                Modifier
+              </button>
+
+              <button
+                style={{
+                  borderRadius: 0,
+                  border: 0,
+                  padding: '3px 10px',
+                  color: 'grey',
+                  backgroundColor: '#40444b',
+                  marginTop: '10px',
+                }}
                 onClick={() => handleDeleteChannel(Number(channel.id), true)}
-              />
-            </Tooltip>
+              >
+                Supprimer
+              </button>
+              <button
+                style={{
+                  borderRadius: 0,
+                  border: 0,
+                  padding: '3px 10px',
+                  color: 'grey',
+                  backgroundColor: '#40444b',
+                  marginTop: '10px',
+                  marginLeft: '10px',
+                }}
+                onClick={() => setIsModifyVoc(0)}
+              >
+                Annuler
+              </button>
+            </div>
           </div>
         ) : (
           // <div key={channel.id} onClick={() => handleModifyChannelVoc(channel)}>
@@ -276,14 +349,35 @@ const ServerParamsModal = (props: {
           <div
             key={channel.id}
             onClick={() => handleModifyChannelVoc(channel)}
-            style={{ cursor: 'pointer' }}
+            style={{}}
           >
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
               {/* <span>
               {channel.hidden ? <EyeInvisibleOutlined /> : <EyeOutlined />}
             </span> */}
-              <span style={{ fontSize: '1.2rem' }}>{channel.name}</span>
-              <div style={{ paddingLeft: '5px', marginBottom: '5px' }}>
+
+              <span
+                style={{
+                  fontSize: '1.2rem',
+                  color: '#2c2c2c',
+                  cursor: 'pointer',
+                }}
+              >
+                {channel.name}
+              </span>
+              <div
+                style={{
+                  paddingLeft: '5px',
+                  marginBottom: '5px',
+                  color: '#2c2c2c',
+                  cursor: 'pointer',
+                }}
+              >
                 <EditOutlined />
               </div>
             </div>
@@ -291,8 +385,11 @@ const ServerParamsModal = (props: {
           </div>
         )
       )}
-      <Divider />
-      <Typography.Title style={{ textAlign: 'center' }} level={3}>
+      <Divider style={{ borderTop: '1px solid #2c2c2c' }} />
+      <Typography.Title
+        style={{ textAlign: 'center', color: '#2c2c2c' }}
+        level={3}
+      >
         Paramètres du serveur
       </Typography.Title>
       <br />
@@ -314,7 +411,7 @@ const ServerParamsModal = (props: {
             onChange={(e) => setServerName(e.target.value)}
           />
         </div>
-        <div style={{ marginTop: '30px', width: '100%' }}>
+        <div style={{ marginTop: '20px', width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             {serverPng.map((png, key) => (
               <>

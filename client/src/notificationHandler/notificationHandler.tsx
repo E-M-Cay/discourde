@@ -32,7 +32,7 @@ export const openNotification = (
     description: content,
     placement: 'topRight',
     className: 'notificationHandler',
-    btn,
+    onClick: () => openPrivateChat(user),
     style: { color: '#e2e2e2' },
     icon: (
       <Avatar

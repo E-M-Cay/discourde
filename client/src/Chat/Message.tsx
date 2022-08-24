@@ -57,7 +57,15 @@ const Message = () => {
   };
 
   return (
-    <div style={{ maxHeight: '100%' }} className='message'>
+    <div
+      style={{
+        maxHeight: 'calc(95vh -44px)',
+        display: 'table-cell',
+        verticalAlign: 'bottom',
+        overflowX: 'auto',
+      }}
+      className='message'
+    >
       <div>{name}</div>
       {messages?.map((obj: TextMessage, i: number) => {
         const user = serverUserMap.get(obj.author);

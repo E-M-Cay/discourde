@@ -194,7 +194,12 @@ export const DropdownMenu = (params: {
                 key={5}
               >
                 <span>
-                  Notifications <Badge count={notifications.length}></Badge>
+                  Notifications{' '}
+                  <Badge
+                    count={notifications.length}
+                    style={{ marginBottom: '10px' }}
+                    size='small'
+                  ></Badge>
                 </span>{' '}
                 <BellOutlined
                   style={{

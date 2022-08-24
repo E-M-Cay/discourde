@@ -23,6 +23,7 @@ interface Notification {
   isTmp?: boolean;
   picture?: string;
   user?: User;
+  openPrivateChat?: Function;
 }
 interface NotificationsContextInterface {
   notifications: Notification[];
@@ -96,6 +97,8 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
           });
       } else {
         username = privateChatMap.get(userId)?.username as string;
+        picture = privateChatMap.get(userId)?.picture as string;
+        user = privateChatMap.get(userId);
       }
       let audio = new Audio('/when-604.mp3');
       audio.play();
@@ -105,6 +108,7 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
         content: message.content,
         picture: picture,
         user: user,
+        openPrivateChat: openPrivateChat,
       });
     },
     [
@@ -112,6 +116,7 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
       addNotification,
       activePrivateChat,
       privateChatMap,
+      openPrivateChat,
       isHome,
       setPrivateChat,
     ]

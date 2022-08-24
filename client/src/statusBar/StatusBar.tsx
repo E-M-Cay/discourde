@@ -244,7 +244,12 @@ export const StatusBar = () => {
                   className='hoStat'
                 >
                   {' '}
-                  <CustomImage obj={user} key={id} />{' '}
+                  <CustomImage
+                    username={user.nickname}
+                    status={user.user.status}
+                    picture={user.user.picture}
+                    key={id}
+                  />{' '}
                   <Typography
                     style={{
                       width: '100%',
@@ -281,7 +286,12 @@ export const StatusBar = () => {
                     maxWidth: '300px',
                   }}
                 >
-                  <CustomImage obj={user} key={id} />{' '}
+                  <CustomImage
+                    username={user.nickname}
+                    status={user.user.status}
+                    picture={user.user.picture}
+                    key={id}
+                  />{' '}
                   <Typography
                     style={{
                       width: '100%',

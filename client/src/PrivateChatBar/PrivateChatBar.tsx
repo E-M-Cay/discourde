@@ -57,6 +57,7 @@ const PrivateChatBar = () => {
               id={id}
               picture={user.picture}
               nickname={user.username}
+              status={user.status}
               onClickHandler={onClickHandler}
             />
             <Typography

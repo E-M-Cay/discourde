@@ -1,4 +1,4 @@
-import { Image, Typography, Tooltip } from 'antd';
+import { Image, Typography, Tooltip, Avatar, Badge } from 'antd';
 import logo from '../assets/discourde.png';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
@@ -58,24 +58,44 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
   );
 };
 
-export const CustomImage = (props: { obj: ServerUser }) => {
-  const { obj } = props;
+export const CustomImage = (props: {
+  status: number;
+  username: string;
+  picture?: string;
+}) => {
+  const { status, username, picture } = props;
   const [isFocused, setFocus] = useState(false);
 
+  const returnColor = (status: number) => {
+    switch (status) {
+      case 0:
+        return '';
+      case 1:
+        return '3px solid green';
+      case 2:
+        return '3px solid yellow';
+      case 3:
+        return '3px solid red';
+      default:
+        console.log('could not read status');
+    }
+  };
+
   return (
-    <img
-      alt={obj.user.username}
-      onMouseEnter={() => setFocus(true)}
-      onMouseLeave={() => setFocus(false)}
+    <Avatar
+      alt={username}
+      // onMouseEnter={() => setFocus(true)}
+      // onMouseLeave={() => setFocus(false)}
       className={'imgS2'}
       style={{
+        border: returnColor(status),
         margin: '5px auto',
         width: '38px',
         backgroundColor: '#4b4b4b',
         borderRadius: '30px',
         cursor: 'pointer',
       }}
-      src={obj.user.picture ?? logo}
+      src={picture ?? logo}
     />
   );
 };
@@ -110,17 +130,35 @@ export const CustomImageChat = (props: {
   id: number;
   picture?: string;
   nickname: string;
+  status: number;
   onClickHandler: (id: number) => void;
 }) => {
   const [isFocused, setFocus] = useState(false);
-  const { nickname, picture, onClickHandler, id } = props;
+  const { nickname, picture, onClickHandler, id, status } = props;
+
+  const returnColor = (status: number) => {
+    switch (status) {
+      case 0:
+        return '';
+      case 1:
+        return '3px solid green';
+      case 2:
+        return '3px solid yellow';
+      case 3:
+        return '3px solid red';
+      default:
+        console.log('could not read status');
+    }
+  };
+
   return (
-    <img
+    <Avatar
       alt={nickname}
-      onMouseEnter={() => setFocus(true)}
-      onMouseLeave={() => setFocus(false)}
+      // onMouseEnter={() => setFocus(true)}
+      // onMouseLeave={() => setFocus(false)}
       onClick={() => onClickHandler(id)}
       style={{
+        border: returnColor(status),
         backgroundColor: '#535353',
         margin: '5px auto',
         width: '45px',

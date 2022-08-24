@@ -316,40 +316,66 @@ const UserMapsContextProvider = ({ children }: Props) => {
     };
   }, [setSentFriendRequest, resetSentFriendRequests]);
 
-  const handleDisconnection = useCallback(
-    (id: number) => {
-      const user = serverUserMap.get(id) ?? null;
+  const handleStatusChange = useCallback(
+    (status: number, id: number) => {
+      console.log('connection', id);
+      const user = serverUserMap.get(id);
       if (user) {
-        setServerUser(id, { ...user, user: { ...user.user, status: 0 } });
+        setServerUser(id, { ...user, user: { ...user.user, status } });
       }
-      const friendship = friendMap.get(id) ?? null;
 
+      const friendship = friendMap.get(id);
       if (friendship) {
         setFriend(id, {
           ...friendship,
-          friend: { ...friendship.friend, status: 0 },
+          friend: { ...friendship.friend, status },
+        });
+      }
+
+      const privateChat = privateChatMap.get(id);
+      if (privateChat) {
+        setPrivateChat(id, {
+          ...privateChat,
+          status,
         });
       }
     },
-    [setServerUser, serverUserMap, setFriend, friendMap]
+    [
+      setServerUser,
+      serverUserMap,
+      setFriend,
+      friendMap,
+      setPrivateChat,
+      privateChatMap,
+    ]
+  );
+
+  const handleDisconnection = useCallback(
+    (id: number) => {
+      handleStatusChange(0, id);
+    },
+    [handleStatusChange]
   );
 
   const handleConnection = useCallback(
     (id: number) => {
-      const user = serverUserMap.get(id) ?? null;
-      if (user) {
-        setServerUser(id, { ...user, user: { ...user.user, status: 1 } });
-      }
-
-      const friendship = friendMap.get(id) ?? null;
-      if (friendship) {
-        setFriend(id, {
-          ...friendship,
-          friend: { ...friendship.friend, status: 1 },
-        });
-      }
+      handleStatusChange(1, id);
     },
-    [setServerUser, serverUserMap, setFriend, friendMap]
+    [handleStatusChange]
+  );
+
+  const handleAway = useCallback(
+    (id: number) => {
+      handleStatusChange(2, id);
+    },
+    [handleStatusChange]
+  );
+
+  const handleDnd = useCallback(
+    (id: number) => {
+      handleStatusChange(3, id);
+    },
+    [handleStatusChange]
   );
 
   const handleNewFriendRequest = useCallback(

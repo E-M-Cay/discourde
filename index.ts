@@ -124,29 +124,6 @@ interface ISocket extends Socket {
   user_id?: number;
 }
 
-const cleanUpSocket = (socket?: ISocket) => {
-  if (!socket?.user_id) {
-    return console.error('no user_id');
-  }
-  global.user_id_to_status.delete(socket.user_id);
-  global.user_id_to_socket_id.delete(socket.user_id);
-  const currentVocalChannel = global.user_id_to_vocal_channel.get(
-    socket.user_id as number
-  );
-  if (currentVocalChannel) {
-    io.emit('leftvocal', {
-      user: socket.user_id,
-      chan: currentVocalChannel,
-    });
-    const userList = global.vocal_channel_to_user_list.get(currentVocalChannel);
-    global.vocal_channel_to_user_list.set(
-      currentVocalChannel,
-      userList?.filter((u) => u !== socket.user_id) as number[]
-    );
-    global.user_id_to_vocal_channel.delete(socket.user_id);
-  }
-};
-
 io.use(async (socket: ISocket, next) => {
   console.log('handshake');
   try {
@@ -162,13 +139,12 @@ io.use(async (socket: ISocket, next) => {
   }
 });
 
-const disconnectSocket = (socket: ISocket) => {};
-
 io.on('connection', (socket: ISocket) => {
   const existing = user_id_to_socket_id.get(socket.user_id as number);
   if (existing) {
     io.sockets.sockets.get(existing)?.disconnect();
   }
+  io.emit('userconnected', socket.user_id);
   global.user_id_to_status.set(socket.user_id as number, 1);
   user_id_to_socket_id.set(socket.user_id as number, socket.id);
   socket.on('username', (newUsername) => {
@@ -246,7 +222,6 @@ io.on('connection', (socket: ISocket) => {
   socket.on('peerId', (data: { peer_id: string }) => {
     console.log('peerid');
     socket.peer_id = data.peer_id;
-    socket.broadcast.emit('userconnected', socket.user_id);
   });
 
   socket.on('message', (message) => {
@@ -283,13 +258,13 @@ io.on('connection', (socket: ISocket) => {
   });
 
   socket.on('inactif', () => {
-    global.user_id_to_status.delete(socket.user_id as number);
     global.user_id_to_status.set(socket.user_id as number, 2);
+    io.emit('useraway', socket.id);
   });
 
   socket.on('dnd', () => {
-    global.user_id_to_status.delete(socket.user_id as number);
     global.user_id_to_status.set(socket.user_id as number, 3);
+    io.emit('userdnd', socket.id);
   });
 
   socket.on('leftvocalchannel', (id: number) => {
@@ -327,9 +302,3 @@ io.on('connection', (socket: ISocket) => {
     io.emit('joiningvocal', { user: socket.user_id, chan: id });
   });
 });
-
-function get_user_status(user_id: number) {
-  return global.user_id_to_status.has(user_id)
-    ? global.user_id_to_status.get(user_id)
-    : 0;
-}

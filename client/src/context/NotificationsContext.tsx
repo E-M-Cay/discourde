@@ -72,7 +72,7 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
       );
       setId(id + 1);
     },
-    [setNotifications, id, notifications]
+    [setNotifications, id, notifications, openPrivateChat]
   );
 
   const maybeNotifyMessage = useCallback(

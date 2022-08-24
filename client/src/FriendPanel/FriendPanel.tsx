@@ -32,7 +32,7 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { UserMapsContext } from '../context/UserMapsContext';
-import { CustomImageChat, CustomImageMess } from '../CustomLi/CustomLi';
+import { CustomImage, CustomImageMess } from '../CustomLi/CustomLi';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveServer, setIsHome } from '../redux/userSlice';
 import { User, Server, ServerResponse } from '../types/types';
@@ -249,9 +249,10 @@ export const FriendPanel = (props: {
                   }}
                 >
                   <Divider style={{ margin: 0 }} />
-                  <CustomImageMess
+                  <CustomImage
                     picture={friendship.friend.picture}
-                    nickname={friendship.friend.username}
+                    username={friendship.friend.username}
+                    status={friendship.friend.status}
                   />
                   {friendship.friend.username}
                   <div className='iconFriend'>
@@ -313,9 +314,10 @@ export const FriendPanel = (props: {
                 }}
               >
                 <Divider style={{ margin: 0 }} />
-                <CustomImageMess
+                <CustomImage
                   picture={friendship.friend.picture}
-                  nickname={friendship.friend.username}
+                  username={friendship.friend.username}
+                  status={friendship.friend.status}
                 />
                 {friendship.friend.username}
                 <div className='iconFriend'>

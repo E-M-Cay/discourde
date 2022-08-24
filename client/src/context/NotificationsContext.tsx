@@ -9,7 +9,7 @@ import {
 
 import { openNotification } from '../notificationHandler/notificationHandler';
 import { useAppSelector } from '../redux/hooks';
-import { PrivateMessage } from '../types/types';
+import { PrivateMessage, User } from '../types/types';
 import { PeerSocketContext } from './PeerSocket';
 import { UserMapsContext } from './UserMapsContext';
 
@@ -22,6 +22,7 @@ interface Notification {
   content: string;
   isTmp?: boolean;
   picture?: string;
+  user?: User;
 }
 interface NotificationsContextInterface {
   notifications: Notification[];
@@ -53,7 +54,8 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
   const [id, setId] = useState(0);
   const { socket } = useContext(PeerSocketContext);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const { privateChatMap, setPrivateChat } = useContext(UserMapsContext);
+  const { privateChatMap, setPrivateChat, openPrivateChat } =
+    useContext(UserMapsContext);
 
   const addNotification = useCallback(
     (notification: Notification) => {
@@ -63,7 +65,9 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
         notification.type,
         notification.title,
         notification.content,
-        notification.picture
+        openPrivateChat,
+        notification.picture,
+        notification.user
       );
       setId(id + 1);
     },
@@ -76,6 +80,7 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
       if (userId === me?.id || (isHome && activePrivateChat === userId)) return;
       let username = 'User';
       let picture = '/profile-pictures/serpent.png';
+      let user: User | undefined;
       if (!privateChatMap.has(userId)) {
         await axios
           .get(`user/${userId}`, {
@@ -87,6 +92,7 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
             setPrivateChat(res.data.id, res.data);
             username = res.data.username;
             picture = res.data.picture;
+            user = res.data;
           });
       } else {
         username = privateChatMap.get(userId)?.username as string;
@@ -98,6 +104,7 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
         title: username,
         content: message.content,
         picture: picture,
+        user: user,
       });
     },
     [

@@ -1,4 +1,5 @@
 import { Avatar, notification } from 'antd';
+import { User } from '../types/types';
 
 type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
@@ -6,15 +7,27 @@ export const openNotification = (
   type: NotificationType,
   title: string,
   content: string,
-  picture?: string
+  openPrivateChat: Function,
+  picture?: string,
+  user?: User
 ) => {
   // notification[type]({
   notification.open({
-    message: title,
+    message: picture ? 'Nouveau message de ' + title : title,
     description: content,
-    placement: 'topLeft',
+    placement: 'topRight',
     className: 'notificationHandler',
-    duration: 999,
-    icon: <Avatar src={picture ?? '/profile-pictures/crane1.png'} />,
+    onClick: () => {
+      if (user) {
+        openPrivateChat(user);
+      }
+    },
+    icon: (
+      <Avatar
+        size={38}
+        style={{ marginRight: '50px' }}
+        src={picture ?? '/profile-pictures/crane1.png'}
+      />
+    ),
   });
 };

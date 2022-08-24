@@ -465,6 +465,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
     handleFriendshipRefused,
     handleUserLeftServer,
     handeUserJoinedServer,
+    handleUserProfileChange,
   ]);
 
   return (

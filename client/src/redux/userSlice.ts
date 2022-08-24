@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { stat } from 'fs';
 import { User } from '../types/types';
 
 interface UserState {
@@ -12,6 +13,8 @@ interface UserState {
   activePrivateChat?: number;
   home: boolean;
   me?: User;
+  isMute: boolean;
+  isMuteAudio: boolean;
 }
 
 const initialUserState: UserState = {
@@ -20,6 +23,8 @@ const initialUserState: UserState = {
     : undefined,
   username: '',
   home: true,
+  isMute: false,
+  isMuteAudio: false,
 };
 
 export const userSlice = createSlice({
@@ -57,6 +62,20 @@ export const userSlice = createSlice({
     setMe: (state, action: PayloadAction<User>) => {
       state.me = action.payload;
     },
+    setMute: (state) => {
+      // console.log('truc1');
+      state.isMute = true;
+    },
+    setUnmute: (state) => {
+      // console.log('truc2');
+      state.isMute = false;
+    },
+    setMuteAudio: (state) => {
+      state.isMuteAudio = true;
+    },
+    setUnmuteAudio: (state) => {
+      state.isMuteAudio = false;
+    },
   },
 });
 
@@ -71,6 +90,10 @@ export const {
   setActiveVocalChannel,
   setActivePrivateChat,
   setMe,
+  setMute,
+  setUnmute,
+  setMuteAudio,
+  setUnmuteAudio,
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -357,15 +357,6 @@ export const FriendPanel = (props: {
           </p>
           <br />
           <br />
-          <Search
-            className='searchBar2'
-            placeholder='Rechercher'
-            enterButton={<SearchOutlined />}
-            size='middle'
-            onSearch={onSearch}
-          />
-          <br />
-          <br />
           <li
             className={'scrollIssue'}
             style={{

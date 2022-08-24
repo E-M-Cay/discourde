@@ -4,6 +4,7 @@ import { useContext } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { Channel, VocalChan } from '../types/types';
 import logo from '../assets/discourde.png';
+import { VocalChannelContext } from '../components/VocalChannel';
 const { Panel } = Collapse;
 
 export const ChannelCollapse = (props: {
@@ -24,6 +25,7 @@ export const ChannelCollapse = (props: {
   const headerTxt: string = 'SALONS TEXTUELS';
   const headerVoc: string = 'SALONS VOCAUX';
   const { serverUserMap } = useContext(UserMapsContext);
+  const { displayActiveVocalChannel } = useContext(VocalChannelContext);
 
   return (
     <Collapse
@@ -61,41 +63,47 @@ export const ChannelCollapse = (props: {
         key='2'
       >
         {vocalChannelList &&
-          vocalChannelList.map((chan) => (
-            <li
-              key={chan.id}
-              onClick={() => onVocalChannelClick(chan.id)}
-              className='panelContent'
-            >
-              {' '}
-              <SoundOutlined />{' '}
-              <span
-                style={{ color: activeVocalChannel === chan.id ? 'white' : '' }}
+          vocalChannelList.map((chan) =>
+            chan.id !== activeVocalChannel ? (
+              <li
+                key={chan.id}
+                onClick={() => onVocalChannelClick(chan.id)}
+                className='panelContent'
               >
-                {chan.name}
-              </span>
-              {/* {activeVocalChannel === chan.id && (
+                {' '}
+                <SoundOutlined />{' '}
+                <span
+                  style={{
+                    color: activeVocalChannel === chan.id ? 'white' : '',
+                  }}
+                >
+                  {chan.name}
+                </span>
+                {/* {activeVocalChannel === chan.id && (
                 <>
                   {' '}
                   <BorderlessTableOutlined className='activeChannel' />
                 </>
               )} */}
-              {chan.users.map((u) => (
-                <div
-                  onClick={() => console.log(serverUserMap.get(u), 'test')}
-                  key={u}
-                  style={{ marginTop: '5px' }}
-                >
-                  <Avatar
-                    size={20}
-                    style={{ margin: '0px 5px 0px 20px' }}
-                    src={serverUserMap.get(u)?.user.picture ?? logo}
-                  />{' '}
-                  {serverUserMap.get(u)?.nickname || 'Error retrieving user'}
-                </div>
-              ))}
-            </li>
-          ))}
+                {chan.users.map((u) => (
+                  <div
+                    // onClick={() => console.log(serverUserMap.get(u), 'test')}
+                    key={u}
+                    style={{ marginTop: '5px' }}
+                  >
+                    <Avatar
+                      size={20}
+                      style={{ margin: '0px 5px 0px 20px' }}
+                      src={serverUserMap.get(u)?.user.picture ?? logo}
+                    />{' '}
+                    {serverUserMap.get(u)?.nickname || 'Error retrieving user'}
+                  </div>
+                ))}
+              </li>
+            ) : (
+              displayActiveVocalChannel(chan)
+            )
+          )}
       </Panel>
     </Collapse>
   );

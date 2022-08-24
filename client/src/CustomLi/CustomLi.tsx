@@ -7,13 +7,7 @@ import {
   setIsHome,
   setActiveServerName,
 } from '../redux/userSlice';
-import {
-  PrivateChatMap,
-  ServerResponse,
-  ServerUser,
-  User,
-} from '../types/types';
-import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
+import { ServerResponse } from '../types/types';
 
 export const CustomLimage = (props: { obj?: ServerResponse }) => {
   const { obj } = props;

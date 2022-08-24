@@ -1,11 +1,5 @@
 import { CustomImageMess } from '../CustomLi/CustomLi';
-import {
-  PrivateChatMap,
-  TextMessage,
-  PrivateMessage,
-  ServerUser,
-  User,
-} from '../types/types';
+import { ServerUser } from '../types/types';
 import logo from '../assets/discourde.png';
 
 type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;

@@ -6,8 +6,7 @@ import {
   TeamOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
-import { Avatar, Badge, Menu, Modal } from 'antd';
-import axios from 'axios';
+import { Badge, Menu, Modal } from 'antd';
 import { useContext, useState } from 'react';
 import { NotificationsComponent } from '../components/NotificationsComponent';
 import { NotificationsContext } from '../context/NotificationsContext';

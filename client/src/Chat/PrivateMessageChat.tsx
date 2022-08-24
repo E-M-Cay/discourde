@@ -8,7 +8,7 @@ import { PrivateMessage } from '../types/types';
 import { MessageItem } from './MessageItem';
 
 const PrivateMessageChat = (props: { name: string; setName: Function }) => {
-  const { name, setName } = props;
+  const { setName } = props;
   const activePrivateChat = useAppSelector(
     (state) => state.userReducer.activePrivateChat
   );
@@ -17,7 +17,7 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
 
   const { socket } = useContext(PeerSocketContext);
   const { privateChatMap } = useContext(UserMapsContext);
-  const { notifications, addNotification } = useContext(NotificationsContext);
+  const { addNotification } = useContext(NotificationsContext);
 
   const bottomRef = useRef<any>(null);
 

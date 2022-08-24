@@ -1,13 +1,5 @@
 import {
-  AudioMutedOutlined,
-  AudioOutlined,
-  BellOutlined,
-  BorderlessTableOutlined,
-  CloseCircleOutlined,
   CloseOutlined,
-  CustomerServiceOutlined,
-  DownOutlined,
-  LogoutOutlined,
   MenuOutlined,
   MessageOutlined,
   CheckCircleFilled,

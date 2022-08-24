@@ -5,7 +5,7 @@ import { MessageItem } from './MessageItem';
 import axios from 'axios';
 import { useAppSelector } from '../redux/hooks';
 import { PeerSocketContext } from '../context/PeerSocket';
-import { ServerUserMap, TextMessage } from '../types/types';
+import { TextMessage } from '../types/types';
 import { UserMapsContext } from '../context/UserMapsContext';
 
 const Message = () => {

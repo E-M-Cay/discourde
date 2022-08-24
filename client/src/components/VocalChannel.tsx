@@ -107,8 +107,8 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
       call.on('stream', (stream) => {
         audioNode.srcObject = stream;
-        console.log('receiving stream 2');
-        console.log(stream);
+        // console.log('receiving stream 2');
+        // console.log(stream);
         setAudioNode(userId, audioNode);
         if (!isMuteAudio) {
           audioNode.play();
@@ -140,8 +140,8 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
       call?.on('stream', (stream) => {
         audioNode.srcObject = stream;
-        console.log('receiving stream 1');
-        console.log(stream);
+        // console.log('receiving stream 1');
+        // console.log(stream);
         setAudioNode(userId, audioNode);
         if (!isMuteAudio) {
           audioNode.play();

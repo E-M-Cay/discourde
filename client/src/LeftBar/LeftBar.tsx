@@ -2,27 +2,21 @@ import Sider from 'antd/lib/layout/Sider';
 import axios from 'axios';
 import React, { useCallback, useContext } from 'react';
 import { CustomLimage } from '../CustomLi/CustomLi';
-import fake from '../mock';
-import { Image, Typography, Tooltip, Avatar, Input } from 'antd';
+import { Tooltip, Avatar, Input } from 'antd';
 
 import { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
-import { useAppSelector } from '../redux/hooks';
-import { setServers } from 'dns';
 import { Server, ServerResponse } from '../types/types';
 import { serverPng } from '../profilePng/profilePng';
 import { PeerSocketContext } from '../context/PeerSocket';
-import { truncate } from 'fs';
 
 export const LeftBar = (props: {
   servers: ServerResponse[];
   setServers: React.Dispatch<React.SetStateAction<ServerResponse[]>>;
 }) => {
-  const { servers, setServers } = props;
+  const { setServers } = props;
   const { socket } = useContext(PeerSocketContext);
-
-  const [channelName, setChannelName] = useState('');
 
   const joinServer = () => {
     axios

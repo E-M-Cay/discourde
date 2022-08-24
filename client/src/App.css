@@ -227,3 +227,7 @@ label {
 .ant-collapse-content-box {
   padding-top: 0px !important;
 }
+
+.notificationHandler {
+  background: #36393f !important;
+}

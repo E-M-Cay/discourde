@@ -1,5 +1,18 @@
-import { CloseOutlined } from '@ant-design/icons';
-import { Modal, Typography, Input, Button, Tooltip, Avatar } from 'antd';
+import {
+  CloseOutlined,
+  EditOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined,
+} from '@ant-design/icons';
+import {
+  Modal,
+  Typography,
+  Input,
+  Button,
+  Tooltip,
+  Avatar,
+  Divider,
+} from 'antd';
 import axios from 'axios';
 import { useContext, useState } from 'react';
 import { NotificationsContext } from '../context/NotificationsContext';
@@ -123,6 +136,37 @@ const ServerParamsModal = (props: {
       });
   };
 
+  const handleUpdateServer = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    axios
+      .post(
+        `/server/update`,
+        {
+          name: serverName,
+          main_img: pictureLink,
+          id: activeServer,
+        },
+        {
+          headers: {
+            access_token: localStorage.getItem('token') as string,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.status === 200) {
+          addNotification({
+            type: 'success',
+            title: 'success',
+            content: 'Server updated',
+          });
+          // setIsModalVisibleParams(false);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <Modal
       visible={isModalVisibleParams}
@@ -131,8 +175,10 @@ const ServerParamsModal = (props: {
       closable={false}
       footer={null}
     >
-      <Typography.Title level={4}>Paramètres du serveur</Typography.Title>
-      <Typography.Title level={5}>Channel Textuel</Typography.Title>
+      <Typography.Title style={{ textAlign: 'center' }} level={3}>
+        Paramètres des channels
+      </Typography.Title>
+      <Typography.Title level={4}>Channel Textuel</Typography.Title>
       {textChannelList.map((channel) =>
         isModify === channel.id ? (
           <div key={channel.id}>
@@ -169,16 +215,23 @@ const ServerParamsModal = (props: {
           <div
             key={channel.id}
             onClick={() => handleModifyChannelText(channel)}
+            style={{ cursor: 'pointer' }}
           >
-            <div>
-              <span>{channel.name}</span>
-              <span>{channel.hidden ? 'Caché' : 'Public'}</span>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              {/* <span>
+                {channel.hidden ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+              </span> */}
+              <span style={{ fontSize: '1.2rem' }}>{channel.name}</span>
+              <div style={{ paddingLeft: '5px', marginBottom: '5px' }}>
+                <EditOutlined />
+              </div>
             </div>
             <div></div>
           </div>
         )
       )}
-      <Typography.Title level={5}>Channel Audio</Typography.Title>
+      <Typography.Title level={4}>Channel Audio</Typography.Title>
+
       {vocalChannelList.map((channel: VocalChan) =>
         isModifyVoc === channel.id ? (
           <div key={channel.id}>
@@ -212,16 +265,38 @@ const ServerParamsModal = (props: {
             </Tooltip>
           </div>
         ) : (
-          <div key={channel.id} onClick={() => handleModifyChannelVoc(channel)}>
-            <div>
-              <span>{channel.name}</span>
-              <span>{channel.hidden ? 'Caché' : 'Public'}</span>
+          // <div key={channel.id} onClick={() => handleModifyChannelVoc(channel)}>
+          //   <div>
+          //     <span>{channel.name}</span>
+          //     {/* <span>{channel.hidden ? 'Caché' : 'Public'}</span> */}
+          //     <EditOutlined style={{ paddingLeft: '5px' }} />
+          //   </div>
+          //   <div></div>
+          // </div>
+          <div
+            key={channel.id}
+            onClick={() => handleModifyChannelVoc(channel)}
+            style={{ cursor: 'pointer' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              {/* <span>
+              {channel.hidden ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+            </span> */}
+              <span style={{ fontSize: '1.2rem' }}>{channel.name}</span>
+              <div style={{ paddingLeft: '5px', marginBottom: '5px' }}>
+                <EditOutlined />
+              </div>
             </div>
             <div></div>
           </div>
         )
       )}
-      <div>
+      <Divider />
+      <Typography.Title style={{ textAlign: 'center' }} level={3}>
+        Paramètres du serveur
+      </Typography.Title>
+      <br />
+      <form onSubmit={(e) => handleUpdateServer(e)}>
         <div
           style={{
             maxWidth: '80%',
@@ -257,7 +332,27 @@ const ServerParamsModal = (props: {
             ))}
           </div>
         </div>
-      </div>
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <input
+            style={{
+              borderRadius: 0,
+              border: 0,
+              padding: '3px 10px',
+              color: 'grey',
+              backgroundColor: '#40444b',
+              marginTop: '30px',
+            }}
+            type='submit'
+            value='Modifier'
+          />
+        </div>
+      </form>
     </Modal>
   );
 };

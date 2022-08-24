@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
 } from 'react';
+
 import { openNotification } from '../notificationHandler/notificationHandler';
 import { useAppSelector } from '../redux/hooks';
 import { PrivateMessage } from '../types/types';
@@ -20,6 +21,7 @@ interface Notification {
   title: string;
   content: string;
   isTmp?: boolean;
+  picture?: string;
 }
 interface NotificationsContextInterface {
   notifications: Notification[];
@@ -60,7 +62,8 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
       openNotification(
         notification.type,
         notification.title,
-        notification.content
+        notification.content,
+        notification.picture
       );
       setId(id + 1);
     },
@@ -72,6 +75,7 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
       const userId = message.user1.id;
       if (userId === me?.id || (isHome && activePrivateChat === userId)) return;
       let username = 'User';
+      let picture = '/profile-pictures/serpent.png';
       if (!privateChatMap.has(userId)) {
         await axios
           .get(`user/${userId}`, {
@@ -82,6 +86,7 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
           .then((res) => {
             setPrivateChat(res.data.id, res.data);
             username = res.data.username;
+            picture = res.data.picture;
           });
       } else {
         username = privateChatMap.get(userId)?.username as string;
@@ -92,6 +97,7 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
         type: 'success',
         title: username,
         content: message.content,
+        picture: picture,
       });
     },
     [
@@ -100,7 +106,6 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
       activePrivateChat,
       privateChatMap,
       isHome,
-      addNotification,
       setPrivateChat,
     ]
   );

@@ -10,86 +10,90 @@ const userRepository = AppDataSource.getRepository(User);
 const privateMessageRepository = AppDataSource.getRepository(PrivateMessage);
 
 router.get('/messages/:id', isAuth, async (req: IRequest, res: Response) => {
-    const user_id = Number(req.params.id);
-    const user = await userRepository.findOne({
-        where: {
-            id: user_id,
+  const user_id = Number(req.params.id);
+  const user = await userRepository.findOne({
+    where: {
+      id: user_id,
+    },
+    select: {
+      username: true,
+    },
+  });
+  if (!user) return res.status(401).send('user not found');
+  try {
+    const messages = await privateMessageRepository.find({
+      where: [
+        {
+          user1: { id: req.id },
+          user2: { id: user_id },
         },
-        select: {
-            username: true,
+        {
+          user1: { id: user_id },
+          user2: { id: req.id },
         },
+      ],
+      relations: {
+        user1: true,
+      },
+      select: {
+        user1: {
+          id: true,
+        },
+      },
+      order: {
+        send_time: 'ASC',
+      },
     });
-    if (!user) return res.status(401).send('user not found');
-    try {
-        const messages = await privateMessageRepository.find({
-            where: [
-                {
-                    user1: { id: req.id },
-                    user2: { id: user_id },
-                },
-                {
-                    user1: { id: user_id },
-                    user2: { id: req.id },
-                },
-            ],
-            relations: {
-                user1: true,
-            },
-            select: {
-                user1: {
-                    id: true,
-                },
-            },
-            order: {
-                send_time: 'ASC',
-            },
-        });
-        res.status(201).send({ messages, username: user.username });
-    } catch (e) {
-        console.log(e);
-        res.status(401).send('error');
-    }
+    res.status(201).send({ messages, username: user.username });
+  } catch (e) {
+    console.log(e);
+    res.status(401).send('error');
+  }
 });
 
 router.get('/userlist', isAuth, async (req: IRequest, res: Response) => {
-    try {
-        const users = await userRepository
-            .createQueryBuilder('user')
-            .select(['user.id', 'user.username', 'user.picture'])
-            .leftJoin('user.privateMessagesSent', 'sent')
-            .leftJoin('user.privateMessagesReceived', 'received')
-            .where('received.user1=:id', { id: req.id })
-            .orWhere('sent.user2=:id', { id: req.id })
-            .getMany();
-        // find({
-        //     where: [
+  try {
+    const users = await userRepository
+      .createQueryBuilder('user')
+      .select(['user.id', 'user.username', 'user.picture', 'user.join_date'])
+      .leftJoin('user.privateMessagesSent', 'sent')
+      .leftJoin('user.privateMessagesReceived', 'received')
+      .addSelect('sent.send_time', 'send')
+      .addSelect('received.send_time', 'receive')
+      .where('received.user1=:id', { id: req.id })
+      .orWhere('sent.user2=:id', { id: req.id })
+      .orderBy('send', 'ASC')
+      .addOrderBy('receive', 'ASC')
+      .getMany();
+    // find({
+    //     where: [
 
-        //         {
-        //             privateMessagesSent: {
-        //                 user2: {
-        //                     id: req.id,
-        //                 },
-        //             },
-        //         },
-        //         {
-        //             privateMessagesReceived: {
-        //                 user1: {
-        //                     id: req.id,
-        //                 },
-        //             },
-        //         },
-        //     ],
-        //     select: {
-        //         username: true,
-        //         id: true,
-        //         picture: true,
-        //     },
-        // });
+    //         {
+    //             privateMessagesSent: {
+    //                 user2: {
+    //                     id: req.id,
+    //                 },
+    //             },
+    //         },
+    //         {
+    //             privateMessagesReceived: {
+    //                 user1: {
+    //                     id: req.id,
+    //                 },
+    //             },
+    //         },
+    //     ],
+    //     select: {
+    //         username: true,
+    //         id: true,
+    //         picture: true,
+    //     },
+    // });
 
-        res.status(201).send(users);
-    } catch (e) {
-        console.log(e);
-    }
+    res.status(201).send(users);
+  } catch (e) {
+    console.log(e);
+  }
 });
 
 export default router;

@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { User, VocalChan } from '../types/types';
 import logo from '../assets/discourde.png';
 import {
+  setActiveVocalChannel,
   setMute,
   setMuteAudio,
   setUnmute,
@@ -80,7 +81,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     const toto = navigator.mediaDevices;
     // console.log(await toto.enumerateDevices(), 'enumerate');
 
-    await navigator.mediaDevices
+    navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
         if (isMute) {
@@ -89,7 +90,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         streamRef.current = stream;
       })
       .catch((e) => {
-        console.log(e);
+        dispatch(setActiveVocalChannel(0));
       });
   }, [streamRef, isMute]);
 
@@ -213,21 +214,31 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   };
 
   useEffect(() => {
+    streamRef.current?.addEventListener('removetrack', () =>
+      dispatch(setActiveVocalChannel(0))
+    );
     if (activeVocalChannel) {
-      socket.emit('joinvocalchannel', activeVocalChannel);
+      if (!streamRef.current?.active) {
+        turnOnMicrophone().then((_res) =>
+          socket.emit('joinvocalchannel', activeVocalChannel)
+        );
+      } else {
+        socket.emit('joinvocalchannel', activeVocalChannel);
+      }
+      // socket.emit('joinvocalchannel', activeVocalChannel);
     }
     return () => {
       if (activeVocalChannel) {
         socket.emit('leftvocalchannel', activeVocalChannel);
       }
+      // streamRef.current?.addEventListener('removetrack', () =>
+      //   dispatch(setActiveVocalChannel(0))
+      // );
     };
   }, [activeVocalChannel, socket]);
 
   useEffect(() => {
     if (activeVocalChannel) {
-      // if (!streamRef.current?.active) {
-      //   await turnOnMicrophone();
-      // }
       socket.on(`joiningvocalchannel:${activeVocalChannel}`, hello);
       socket.on(`leftvocalchannel:${activeVocalChannel}`, goodBye);
     }

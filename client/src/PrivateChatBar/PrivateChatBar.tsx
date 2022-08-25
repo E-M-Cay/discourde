@@ -47,24 +47,28 @@ const PrivateChatBar = () => {
             className='hoStat'
             style={{
               display: 'flex',
-              justifyContent: 'space-between',
+              justifyContent: 'flex-start',
               alignItems: 'center',
               maxWidth: '300px',
+              margin: '10px',
+              paddingLeft: '0px',
+              cursor: 'pointer',
             }}
+            onClick={() => onClickHandler(id)}
           >
             <CustomImageChat
+              onClickHandler={onClickHandler}
               key={id}
               id={id}
               picture={user.picture}
               nickname={user.username}
               status={user.status}
-              onClickHandler={onClickHandler}
             />
             <Typography
               style={{
-                width: '100%',
+                // width: '100%',
                 height: '100%',
-                paddingLeft: '5px',
+                paddingLeft: '10px',
                 fontWeight: 'bold',
                 color: '#A1A1A1',
               }}

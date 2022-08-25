@@ -6,6 +6,7 @@ import {
   setActiveServer,
   setIsHome,
   setActiveServerName,
+  setActiveServerOwner,
 } from '../redux/userSlice';
 import {
   PrivateChatMap,
@@ -19,17 +20,23 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
   const { obj } = props;
   const [isFocused, setFocus] = useState(false);
   const dispatch = useAppDispatch();
+  const isHome = useAppSelector((state) => state.userReducer.home);
 
   const onClickServer = () => {
     if (obj) {
       dispatch(setActiveServer(obj.server.id));
       dispatch(setActiveServerName(obj.server.name));
+      dispatch(setActiveServerOwner(obj.server.owner?.id || -1));
       dispatch(setIsHome(false));
     } else {
       dispatch(setIsHome(true));
       dispatch(setActiveServer(0));
     }
   };
+
+  const activeServer = useAppSelector(
+    (state) => state.userReducer.activeServer
+  );
 
   return (
     <Tooltip
@@ -38,6 +45,21 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
       style={{ fontSize: '32px' }}
       title={obj?.server.name || 'Home'}
     >
+      {(obj?.server.id === activeServer && !isHome) || (!obj && isHome) ? (
+        <div
+          style={{
+            height: '0',
+            paddingBottom: '30px',
+            width: '30px',
+            backgroundColor: '#FFFFFF',
+            position: 'relative',
+            top: '21px',
+            left: '-33px',
+            borderRadius: '8px',
+          }}
+        />
+      ) : null}
+
       <img
         onMouseEnter={() => setFocus(true)}
         alt={obj?.server.name || 'Home'}
@@ -45,9 +67,13 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
         onClick={onClickServer}
         className={'imgS'}
         style={{
-          margin: '7px auto',
+          margin:
+            (obj?.server.id === activeServer && !isHome) || (!obj && isHome)
+              ? '-23px auto 7px auto'
+              : '7px auto',
           width: '60px',
           backgroundColor: isFocused ? '#4b4b4b' : '#353535',
+          opacity: isFocused ? 0.7 : 1,
           borderRadius: '30px',
           cursor: 'pointer',
           height: '60px',
@@ -69,34 +95,40 @@ export const CustomImage = (props: {
   const returnColor = (status: number) => {
     switch (status) {
       case 0:
-        return '';
+        return 'grey';
       case 1:
-        return '3px solid green';
+        return 'green';
       case 2:
-        return '3px solid yellow';
+        return 'yellow';
       case 3:
-        return '3px solid red';
+        return 'red';
       default:
         console.log('could not read status');
     }
   };
 
   return (
-    <Avatar
-      alt={username}
-      // onMouseEnter={() => setFocus(true)}
-      // onMouseLeave={() => setFocus(false)}
-      className={'imgS2'}
-      style={{
-        border: returnColor(status),
-        margin: '5px auto',
-        width: '38px',
-        backgroundColor: '#4b4b4b',
-        borderRadius: '30px',
-        cursor: 'pointer',
-      }}
-      src={picture ?? logo}
-    />
+    <Badge
+      className='fixStatus'
+      dot
+      style={{ backgroundColor: returnColor(status) }}
+    >
+      <Avatar
+        alt={username}
+        size={33}
+        // onMouseEnter={() => setFocus(true)}
+        // onMouseLeave={() => setFocus(false)}
+        className={'imgS2'}
+        style={{
+          // border: returnColor(status),
+          margin: '5px 5px 5px 0',
+          // width: '38px',
+          backgroundColor: '#4b4b4b',
+          cursor: 'pointer',
+        }}
+        src={picture ?? logo}
+      />
+    </Badge>
   );
 };
 
@@ -139,36 +171,45 @@ export const CustomImageChat = (props: {
   const returnColor = (status: number) => {
     switch (status) {
       case 0:
-        return '';
+        return 'grey';
       case 1:
-        return '3px solid green';
+        return 'green';
       case 2:
-        return '3px solid yellow';
+        return 'yellow';
       case 3:
-        return '3px solid red';
+        return 'red';
       default:
         console.log('could not read status');
     }
   };
 
   return (
-    <Avatar
-      alt={nickname}
-      // onMouseEnter={() => setFocus(true)}
-      // onMouseLeave={() => setFocus(false)}
-      onClick={() => onClickHandler(id)}
-      style={{
-        border: returnColor(status),
-        backgroundColor: '#535353',
-        margin: '5px auto',
-        width: '45px',
-        borderRadius: '22px',
-        cursor: 'pointer',
-        height: '45px',
-        marginRight: '17px',
-        marginLeft: '10px',
-      }}
-      src={picture ?? logo}
-    />
+    <Badge
+      className='fixStatus'
+      dot
+      style={{ backgroundColor: returnColor(status) }}
+    >
+      {/* <Avatar shape='square' size='large' /> */}
+      <Avatar
+        alt={nickname}
+        // size={37}
+        // onMouseEnter={() => setFocus(true)}
+        // onMouseLeave={() => setFocus(false)}
+        // size={40}
+        onClick={() => onClickHandler(id)}
+        style={{
+          // border: returnColor(status),
+          backgroundColor: '#535353',
+          margin: '5px auto',
+          // width: '45px',
+          // borderRadius: '22px',
+          cursor: 'pointer',
+          // height: '45px',
+          // marginRight: '17px',
+          marginLeft: '10px',
+        }}
+        src={picture ?? logo}
+      />
+    </Badge>
   );
 };

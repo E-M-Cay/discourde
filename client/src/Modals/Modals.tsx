@@ -277,6 +277,11 @@ export const UserProfileModal = (props: {
   const dispatch = useAppDispatch();
   const [userTmp, setUserTmp] = useState(me);
   const [serverNickname, setServerNickname] = useState<string>('');
+  const {
+    sentFriendRequestMap,
+    receivedFriendRequestMap,
+    acceptFriendRequest,
+  } = useContext(UserMapsContext);
   const { friendMap, sendFriendRequest } = useContext(UserMapsContext);
   const isFriend = friendMap.has(user.id);
   // console.log(user);
@@ -340,7 +345,9 @@ export const UserProfileModal = (props: {
           <Avatar size={64} src={user.picture ?? logo} />
         </div>
         <Title style={{ color: 'darkgrey', width: '30%' }} level={2}>
-          {user.username}
+          {user.username.length > 8
+            ? `${user.username.substring(0, 8)}...`
+            : user.username}
         </Title>
         <div style={{ color: 'darkgrey', width: '30%' }}></div>
       </div>
@@ -349,9 +356,30 @@ export const UserProfileModal = (props: {
           marginTop: '10px',
           display: 'flex',
           justifyContent: 'space-around',
+          alignItems: 'end',
         }}
       >
-        {isFriend === false && me?.id !== user.id ? (
+        {!sentFriendRequestMap.has(user.id) &&
+          !receivedFriendRequestMap.has(user.id) &&
+          !friendMap.has(user.id) &&
+          me?.id !== user.id && (
+            <button
+              style={{
+                borderRadius: 0,
+                border: 0,
+                marginTop: '20px',
+                padding: '7px 10px',
+                color: 'darkgrey',
+                backgroundColor: '#40444b',
+                width: '150px',
+                fontWeight: 'bold',
+              }}
+              onClick={() => sendFriendRequest(user)}
+            >
+              Add as friend
+            </button>
+          )}
+        {receivedFriendRequestMap.has(user.id) && (
           <button
             style={{
               borderRadius: 0,
@@ -360,16 +388,33 @@ export const UserProfileModal = (props: {
               padding: '7px 10px',
               color: 'darkgrey',
               backgroundColor: '#40444b',
-              width: '150px',
+              width: '200px',
               fontWeight: 'bold',
             }}
-            onClick={() => sendFriendRequest(user)}
+            onClick={() =>
+              acceptFriendRequest(
+                receivedFriendRequestMap.get(user.id)?.id || -1,
+                user.id
+              )
+            }
           >
-            Add as friend
+            Accept friend request
           </button>
-        ) : me?.id !== user.id ? (
-          <Typography>You are friends</Typography>
-        ) : null}
+        )}
+        {sentFriendRequestMap.has(user.id) && (
+          <Typography
+            style={{ marginBottom: '6px', fontSize: '1rem', color: 'darkGrey' }}
+          >
+            Invitation send
+          </Typography>
+        )}
+        {friendMap.has(user.id) && (
+          <Typography
+            style={{ marginBottom: '6px', fontSize: '1rem', color: 'darkGrey' }}
+          >
+            You are friends
+          </Typography>
+        )}
         {me?.id !== user.id && (
           <button
             style={{

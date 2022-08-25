@@ -18,6 +18,7 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
   const { socket } = useContext(PeerSocketContext);
   const { privateChatMap } = useContext(UserMapsContext);
   const { notifications, addNotification } = useContext(NotificationsContext);
+  const [lastCompress, setLastCompress] = useState(true);
 
   const bottomRef = useRef<any>(null);
 
@@ -62,6 +63,37 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
     scrollToBottom();
   }, [messages]);
 
+  const messageSanitizer = (
+    message: PrivateMessage,
+    lastmessageKey: number
+  ) => {
+    if (
+      message.send_time.split(':')[0] ===
+        messages[lastmessageKey]?.send_time.split(':')[0] &&
+      message.user1.id === messages[lastmessageKey]?.user1.id &&
+      message.send_time.split(':')[1] ===
+        messages[lastmessageKey]?.send_time.split(':')[1] &&
+      (messages[lastmessageKey]?.user1.id !==
+        messages[lastmessageKey - 1]?.user1.id ||
+        messages[lastmessageKey - 1]?.send_time.split(':')[0] !==
+          messages[lastmessageKey]?.send_time.split(':')[0] ||
+        messages[lastmessageKey - 1]?.send_time.split(':')[1] !==
+          messages[lastmessageKey]?.send_time.split(':')[1])
+    ) {
+      return 3;
+    } else if (
+      message.send_time.split(':')[0] ===
+        messages[lastmessageKey]?.send_time.split(':')[0] &&
+      message.user1.id === messages[lastmessageKey]?.user1.id &&
+      message.send_time.split(':')[1] ===
+        messages[lastmessageKey]?.send_time.split(':')[1]
+    ) {
+      return 2;
+    } else {
+      return 1;
+    }
+  };
+
   return (
     <div className='message'>
       {messages?.map((obj: PrivateMessage, i: number) => {
@@ -77,6 +109,7 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
               picture={user?.picture as string}
               content={obj.content}
               send_time={obj.send_time}
+              compress={messageSanitizer(obj, i - 1)}
             />
           )
         );

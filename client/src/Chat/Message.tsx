@@ -56,10 +56,39 @@ const Message = () => {
     console.log(message, 'message');
   };
 
+  const messageSanitizer = (message: TextMessage, lastmessageKey: number) => {
+    if (
+      message.send_time.split(':')[0] ===
+        messages[lastmessageKey]?.send_time.split(':')[0] &&
+      message.author === messages[lastmessageKey]?.author &&
+      message.send_time.split(':')[1] ===
+        messages[lastmessageKey]?.send_time.split(':')[1] &&
+      (messages[lastmessageKey]?.author !==
+        messages[lastmessageKey - 1]?.author ||
+        messages[lastmessageKey - 1]?.send_time.split(':')[0] !==
+          messages[lastmessageKey]?.send_time.split(':')[0] ||
+        messages[lastmessageKey - 1]?.send_time.split(':')[1] !==
+          messages[lastmessageKey]?.send_time.split(':')[1])
+    ) {
+      return 3;
+    } else if (
+      message.send_time.split(':')[0] ===
+        messages[lastmessageKey]?.send_time.split(':')[0] &&
+      message.author === messages[lastmessageKey]?.author &&
+      message.send_time.split(':')[1] ===
+        messages[lastmessageKey]?.send_time.split(':')[1]
+    ) {
+      return 2;
+    } else {
+      return 1;
+    }
+  };
+  console.log(messages, 'message');
+
   return (
     <div
       style={{
-        maxHeight: 'calc(95vh -44px)',
+        height: 'calc(95vh -44px)',
         display: 'table-cell',
         verticalAlign: 'bottom',
         overflowX: 'auto',
@@ -78,6 +107,7 @@ const Message = () => {
               content={obj.content}
               send_time={obj.send_time}
               key={i}
+              compress={messageSanitizer(obj, i - 1)}
             />
           )
         );

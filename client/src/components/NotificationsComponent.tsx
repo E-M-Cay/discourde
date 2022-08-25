@@ -39,7 +39,7 @@ export const NotificationsComponent = () => {
                   <Avatar
                     size={35}
                     style={{ marginRight: '10px' }}
-                    src={notification.picture}
+                    src={notification.picture ?? '/profile-pictures/crane1.png'}
                   />
                   {notification.user
                     ? 'Nouveau message de ' + notification.title

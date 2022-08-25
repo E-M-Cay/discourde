@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
   setActiveServer,
   setActiveServerName,
+  setActiveServerOwner,
   setIsHome,
 } from '../redux/userSlice';
 import { ServerResponse } from '../types/types';
@@ -38,6 +39,7 @@ export const Home = () => {
         // console.log('active server:', res.data[0].server.id);
         dispatch(setActiveServer(res.data[0]?.server.id));
         dispatch(setActiveServerName(res.data[0]?.server.name));
+        dispatch(setActiveServerOwner(res.data[0]?.server?.owner.id || -1));
       })
       .catch((err) => {
         console.log(err);

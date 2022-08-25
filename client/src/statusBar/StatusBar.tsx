@@ -15,21 +15,25 @@ export const StatusBar = () => {
   const { openPrivateChat, serverUserMap } = useContext(UserMapsContext);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User>();
+  const [isModalVisible2, setIsModalVisible2] = useState(false);
+  // const [selectedUser, setSelectedUser] = useState<User>();
 
   const me = useAppSelector((state) => state.userReducer.me);
 
   const showModal = (user: User) => {
-    setSelectedUser(user);
-    setIsModalVisible(true);
+    // setSelectedUser(user);
+    setIsModalVisible(user.id === me?.id);
+    setIsModalVisible2(user.id !== me?.id);
   };
 
   const handleOk = () => {
     setIsModalVisible(false);
+    setIsModalVisible2(false);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
+    setIsModalVisible2(false);
   };
 
   //antd menu for dropdown
@@ -98,22 +102,29 @@ export const StatusBar = () => {
                 >
                   Profil
                 </div>
-                <Modal
-                  title='profil'
-                  visible={isModalVisible}
-                  onOk={handleOk}
-                  onCancel={handleCancel}
-                  footer={null}
-                >
-                  {user.id === me?.id ? (
+
+                {user.id === me?.id ? (
+                  <Modal
+                    visible={isModalVisible}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                    footer={null}
+                  >
                     <UserProfileSettings />
-                  ) : (
+                  </Modal>
+                ) : (
+                  <Modal
+                    visible={isModalVisible2}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                    footer={null}
+                  >
                     <UserProfileModal
                       openPrivateChat={openPrivateChat}
-                      user={selectedUser ?? user}
+                      user={user}
                     />
-                  )}
-                </Modal>
+                  </Modal>
+                )}
               </>
             ),
           },
@@ -186,21 +197,29 @@ export const StatusBar = () => {
                 >
                   Profil
                 </div>
-                <Modal
-                  visible={isModalVisible}
-                  onOk={handleOk}
-                  onCancel={handleCancel}
-                  footer={null}
-                >
-                  {user.id === me?.id ? (
+
+                {user.id === me?.id ? (
+                  <Modal
+                    visible={isModalVisible}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                    footer={null}
+                  >
                     <UserProfileSettings />
-                  ) : (
+                  </Modal>
+                ) : (
+                  <Modal
+                    visible={isModalVisible2}
+                    onOk={handleOk}
+                    onCancel={handleCancel}
+                    footer={null}
+                  >
                     <UserProfileModal
                       openPrivateChat={openPrivateChat}
-                      user={selectedUser ?? user}
+                      user={user}
                     />
-                  )}
-                </Modal>
+                  </Modal>
+                )}
               </>
             ),
           },
@@ -254,7 +273,9 @@ export const StatusBar = () => {
                     style={{
                       width: '100%',
                       paddingLeft: '10px',
-                      fontWeight: 'bold',
+                      fontWeight: '700',
+                      letterSpacing: '0.5px',
+                      fontSize: '1rem',
                       color: '#A1A1A1',
                     }}
                   >
@@ -298,6 +319,7 @@ export const StatusBar = () => {
                       height: '100%',
                       paddingLeft: '10px',
                       fontWeight: 'bold',
+                      fontSize: '1rem',
                       color: '#A1A1A1',
                     }}
                   >

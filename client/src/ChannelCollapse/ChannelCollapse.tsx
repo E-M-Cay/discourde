@@ -88,11 +88,11 @@ export const ChannelCollapse = (props: {
                     // onClick={() => console.log(serverUserMap.get(u), 'test')}
                     key={u}
                     style={{ marginTop: '5px', marginLeft: '20px' }}
-                    className='panelContent'
+                    className='panelContentRen'
                   >
                     <Avatar
                       size={20}
-                      style={{ margin: '0px 5px 0px 20px' }}
+                      style={{ marginRight: '5px', marginBottom: '3px' }}
                       src={serverUserMap.get(u)?.user.picture ?? logo}
                     />{' '}
                     {serverUserMap.get(u)?.nickname || 'Error retrieving user'}

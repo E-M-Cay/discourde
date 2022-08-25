@@ -16,6 +16,7 @@
 .serverName {
   font-size: larger !important;
   text-align: center !important;
+  margin-left: 10px !important;
 }
 .avatarCard {
   position: fixed;

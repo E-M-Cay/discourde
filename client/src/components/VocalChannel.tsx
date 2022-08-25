@@ -13,7 +13,7 @@ import { useMap } from 'usehooks-ts';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { User, VocalChan } from '../types/types';
+import { VocalChan } from '../types/types';
 import logo from '../assets/discourde.png';
 import {
   setMute,
@@ -126,7 +126,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
   const callUser = useCallback(
     async (id: string, userId: number) => {
-      console.log('calling:', id, peer.id);
+      console.log('calling:', id, peer?.id);
       const audioNode = new Audio();
       console.log(streamRef.current?.getTracks());
       if (!peer) return;
@@ -214,11 +214,11 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
   useEffect(() => {
     if (activeVocalChannel) {
-      socket.emit('joinvocalchannel', activeVocalChannel);
+      socket?.emit('joinvocalchannel', activeVocalChannel);
     }
     return () => {
       if (activeVocalChannel) {
-        socket.emit('leftvocalchannel', activeVocalChannel);
+        socket?.emit('leftvocalchannel', activeVocalChannel);
       }
     };
   }, [activeVocalChannel, socket]);
@@ -228,13 +228,13 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       // if (!streamRef.current?.active) {
       //   await turnOnMicrophone();
       // }
-      socket.on(`joiningvocalchannel:${activeVocalChannel}`, hello);
-      socket.on(`leftvocalchannel:${activeVocalChannel}`, goodBye);
+      socket?.on(`joiningvocalchannel:${activeVocalChannel}`, hello);
+      socket?.on(`leftvocalchannel:${activeVocalChannel}`, goodBye);
     }
     return () => {
       if (activeVocalChannel) {
-        socket.off(`joiningvocalchannel:${activeVocalChannel}`, hello);
-        socket.off(`leftvocalchannel:${activeVocalChannel}`, goodBye);
+        socket?.off(`joiningvocalchannel:${activeVocalChannel}`, hello);
+        socket?.off(`leftvocalchannel:${activeVocalChannel}`, goodBye);
       }
     };
   }, [activeVocalChannel, socket, hello, goodBye]);
@@ -249,12 +249,12 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   }, [activeVocalChannel]);
 
   useEffect(() => {
-    peer.on('call', callEvent);
-    peer.on('error', (e) => console.log(e));
+    peer?.on('call', callEvent);
+    peer?.on('error', (e) => console.log(e));
     // console.log('my peer:', peer ? peer.id : 'none');
     return () => {
-      peer.off('call', callEvent);
-      peer.off('error');
+      peer?.off('call', callEvent);
+      peer?.off('error');
     };
   }, [peer, callEvent, hello]);
 
@@ -286,7 +286,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   };
 
   const displayActiveVocalChannel = (chan: VocalChan) => {
-    const menu = (u: number, me?: User) => {
+    const menu = (u: any, me: any) => {
       return (
         <Menu
           className='menu'
@@ -361,21 +361,21 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
             onClick={() => console.log(serverUserMap.get(u), 'test')}
             key={u}
             style={{ marginTop: '5px' }}
-            className='panelContent'
+            // className='panelContentRen'
           >
             <Dropdown
               overlay={menu(u, me)}
-              trigger={['contextMenu']}
+              trigger={['click']}
               disabled={u === me?.id}
             >
-              <div className='site-dropdown-context-menu'>
+              <div className='site-dropdown-context-menu panelContentRen'>
                 <Avatar
                   size={20}
-                  style={{ margin: '0px 5px 0px 20px' }}
+                  style={{ marginRight: '5px', marginBottom: '3px' }}
                   src={serverUserMap.get(u)?.user.picture ?? logo}
                 />{' '}
                 {serverUserMap.get(u)?.nickname || 'Error retrieving user'}
-                {u !== me?.id ? ` ${audioNodeMap.get(u)?.volume ?? ''}` : null}
+                {/* {u !== me?.id ? ` ${audioNodeMap.get(u)?.volume ?? ''}` : null} */}
               </div>
             </Dropdown>
           </div>

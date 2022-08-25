@@ -40,7 +40,7 @@ const PrivateChatBar = () => {
           Private Chats
         </Typography>
       </div>
-      <div style={{ backgroundColor: '#2F3136', height: '773.55px' }}>
+      <div style={{ backgroundColor: '#2F3136', height: '763.55px' }}>
         {Array.from(privateChatMap.entries()).map(([id, user]) => (
           <div
             key={id}

@@ -166,7 +166,7 @@ io.on('connection', (socket: ISocket) => {
 
       if (channel && user) {
         try {
-          let time: string = new Date()
+          let time: string = new Date(Date.now() + 14400000)
             .toISOString()
             .slice(0, 19)
             .replace('T', ' ');
@@ -198,7 +198,18 @@ io.on('connection', (socket: ISocket) => {
   socket.on('privatemessage', async (message: PrivateMessageInterface) => {
     if (!message.to) return;
 
-    let time: string = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    let time: string = new Date(Date.now() + 14400000)
+      .toISOString()
+      .slice(0, 19)
+      .replace('T', ' ');
+    // console.log(
+    //   'time',
+    //   time,
+    //   'another',
+    //   new Date().toLocaleString().slice(0, 19).replace('T', ' '),
+    //   'newdat',
+    //   Date.now()
+    // );
     const private_message = PrivateMessageRepository.create({
       user1: { id: socket.user_id },
       content: message.content,

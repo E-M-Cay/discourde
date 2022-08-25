@@ -3,6 +3,7 @@ import { ServerUser } from '../types/types';
 import logo from '../assets/discourde.png';
 import { useState } from 'react';
 import { getByDisplayValue } from '@testing-library/react';
+import { Divider } from 'antd';
 
 type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
 
@@ -14,11 +15,27 @@ export const MessageItem = (props: {
   send_time: string;
   compress: number;
   isLast: boolean;
+  isNewDay: boolean;
+  fromNormalChat?: boolean;
   //décomposer props directement avec username, picture, id
 }) => {
-  const { picture, username, id, content, send_time, compress, isLast } = props;
+  const {
+    picture,
+    username,
+    id,
+    content,
+    send_time,
+    compress,
+    isLast,
+    isNewDay,
+    fromNormalChat,
+  } = props;
 
-  const today = new Date();
+  let today = new Date();
+
+  // let incr = fromNormalChat ? 14400000 : 0;
+
+  today = new Date(today.getTime());
 
   const testToday = today.toISOString();
 
@@ -27,7 +44,7 @@ export const MessageItem = (props: {
   let sendTime = '';
 
   if (send_time.split('T').length === 1) {
-    sendTime = testToday;
+    sendTime = new Date(send_time).toISOString();
   } else {
     sendTime = send_time;
   }
@@ -58,40 +75,58 @@ export const MessageItem = (props: {
       sendTime.split('T')[0].split('-')[0];
   }
 
+  let toLocate = new Date(send_time);
+
   return (
-    <div
-      className='messageItem'
-      style={{
-        marginTop: compress !== 1 ? '0' : '30px',
-        marginBottom: isLast ? '20px' : '0',
-        marginLeft: '10px',
-      }}
-    >
-      {compress === 1 && (
-        <div className='messageItemAvatar'>
-          <CustomImageMess nickname={username} picture={picture ?? logo} />
-        </div>
-      )}
-      <div className='messageItemContent'>
-        {compress === 1 && (
-          <div className='messageItemContentName'>
-            {' '}
-            {username}
-            <span className='time'> {displayDate}</span>
-          </div>
-        )}
+    <>
+      {isNewDay && (
         <div
-          className='messageItemContentText'
+          className='dateDividerFix'
           style={{
-            maxWidth: '100%',
-            wordBreak: 'break-word',
-            marginLeft: compress !== 1 ? '73px' : '0',
-            marginTop: compress === 3 ? '-10px' : '0',
+            width: '1340px',
+            marginLeft: '15px !important',
+            marginBottom: '-10px',
           }}
         >
-          {content}
+          <Divider className='dateBorderDivider'>
+            {toLocate.toLocaleDateString('fr-FR', { dateStyle: 'long' })}
+          </Divider>
+        </div>
+      )}
+      <div
+        className='messageItem'
+        style={{
+          marginTop: compress !== 1 ? '0' : '30px',
+          marginBottom: isLast ? '20px' : '0',
+          marginLeft: '10px',
+        }}
+      >
+        {compress === 1 && (
+          <div className='messageItemAvatar'>
+            <CustomImageMess nickname={username} picture={picture ?? logo} />
+          </div>
+        )}
+        <div className='messageItemContent'>
+          {compress === 1 && (
+            <div className='messageItemContentName'>
+              {' '}
+              {username}
+              <span className='time'> {displayDate}</span>
+            </div>
+          )}
+          <div
+            className='messageItemContentText'
+            style={{
+              maxWidth: '100%',
+              wordBreak: 'break-word',
+              marginLeft: compress !== 1 ? '72px' : '0',
+              marginTop: compress === 3 ? '-8px' : '0px',
+            }}
+          >
+            {content}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

@@ -61,12 +61,33 @@ export const ServerInvit = (props: {
               </Typography.Title>
               {Array.from(friendMap.entries()).map(([id, friendShip]) => {
                 return (
-                  <div key={id}>
+                  <div
+                    key={id}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'flex-start',
+                      alignItems: 'end',
+                    }}
+                  >
                     <Avatar src={friendShip.friend.picture ?? logo} />
-                    <span>{friendShip.friend.username}</span>
-                    <Button onClick={() => handleInviteUser(id)} type='primary'>
+                    <span style={{ fontSize: '1.2rem', marginLeft: '10px' }}>
+                      {friendShip.friend.username}
+                    </span>
+                    <button
+                      style={{
+                        borderRadius: 0,
+                        border: 0,
+                        padding: '3px 10px',
+                        color: 'grey',
+                        backgroundColor: '#40444b',
+                        // marginTop: '10px',
+                        marginLeft: '30px',
+                      }}
+                      onClick={() => handleInviteUser(id)}
+                      // type='primary'
+                    >
                       Inviter
-                    </Button>
+                    </button>
                   </div>
                 );
               })}

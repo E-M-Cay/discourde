@@ -83,7 +83,27 @@ const Message = () => {
       return 1;
     }
   };
-  console.log(messages, 'message');
+  // console.log(messages, 'message');
+
+  function newDayCheck(message: TextMessage, lastmessageKey: number) {
+    let testeur1 =
+      message.send_time.split('T').length > 1
+        ? message.send_time
+        : message.send_time.split(' ')[0] +
+          'T' +
+          message.send_time.split(' ')[1];
+    let testeur2 =
+      messages[lastmessageKey]?.send_time.split('T').length > 1
+        ? messages[lastmessageKey]?.send_time
+        : messages[lastmessageKey]?.send_time.split(' ')[0] +
+          'T' +
+          messages[lastmessageKey]?.send_time.split(' ')[1];
+    if (testeur1.split('T')[0] !== testeur2.split('T')[0]) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   return (
     <div
@@ -109,6 +129,8 @@ const Message = () => {
               key={i}
               compress={messageSanitizer(obj, i - 1)}
               isLast={i === messages.length - 1}
+              isNewDay={newDayCheck(obj, i - 1)}
+              fromNormalChat={true}
             />
           )
         );

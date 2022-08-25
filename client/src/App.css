@@ -114,7 +114,7 @@ body {
 .message {
   height: calc(95vh - 44px) !important;
   overflow-y: scroll;
-  max-width: 70vw !important;
+  width: 1380px !important;
 }
 
 .messageItemContentName {
@@ -290,4 +290,21 @@ label {
 .panelContentRen:hover {
   color: #c4c2c2 !important;
   background-color: #42464d;
+}
+
+.dateDividerFix {
+  margin-left: 20px !important;
+}
+
+.dateBorderDivider::before {
+  border-top: 0.5px solid #42464d !important;
+}
+.dateBorderDivider::after {
+  border-top: 0.5px solid #42464d !important;
+}
+
+.ant-divider-inner-text {
+  color: #99a6a0 !important;
+  font-size: 13px;
+  font-weight: 600;
 }

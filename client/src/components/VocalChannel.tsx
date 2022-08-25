@@ -30,6 +30,7 @@ interface VocalChannel {
   unmuteSelf: () => void;
   muteAudio: () => void;
   unmuteAudio: () => void;
+  turnOnMicrophone: () => Promise<boolean>;
 }
 
 const VocalChannelContext = createContext<VocalChannel>({
@@ -47,6 +48,9 @@ const VocalChannelContext = createContext<VocalChannel>({
   },
   displayActiveVocalChannel: (_any?: any) => {
     throw new Error('displayActiveVocalChannel not correctly overridden');
+  },
+  turnOnMicrophone: (any?: any) => {
+    throw new Error('turnOnMicrophone not correctly overridden');
   },
 });
 
@@ -77,20 +81,18 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     reset: resetAudioNodes,
   } = audioNodeActions;
 
-  const turnOnMicrophone = useCallback(async () => {
-    const toto = navigator.mediaDevices;
-    // //console.log(await toto.enumerateDevices(), 'enumerate');
-
-    navigator.mediaDevices
+  const turnOnMicrophone: () => Promise<boolean> = useCallback(async () => {
+    return navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
         if (isMute) {
           stream.getAudioTracks().forEach((tr) => (tr.enabled = false));
         }
         streamRef.current = stream;
+        return true;
       })
       .catch((e) => {
-        dispatch(setActiveVocalChannel(0));
+        return false;
       });
   }, [streamRef, isMute]);
 
@@ -100,7 +102,9 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       const userId = call.metadata.user_id;
 
       if (!streamRef.current?.active) {
-        await turnOnMicrophone();
+        if (!(await turnOnMicrophone())) {
+          dispatch(setActiveVocalChannel(0));
+        }
       }
       call.answer(streamRef.current as MediaStream);
       setCalls((prevstate) => [...prevstate, call]);
@@ -407,6 +411,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         muteAudio,
         unmuteAudio,
         displayActiveVocalChannel,
+        turnOnMicrophone,
       }}
     >
       {children}

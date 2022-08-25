@@ -1,10 +1,10 @@
 import { Typography } from 'antd';
 import axios from 'axios';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { ProfileCall } from '../components/ProfileCall';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { CustomImageChat } from '../CustomLi/CustomLi';
-import { useAppSelector, useAppDispatch } from '../redux/hooks';
+import { useAppDispatch } from '../redux/hooks';
 import { setActivePrivateChat } from '../redux/userSlice';
 
 const PrivateChatBar = () => {

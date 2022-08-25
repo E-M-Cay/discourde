@@ -1,18 +1,5 @@
-import {
-  CloseOutlined,
-  EditOutlined,
-  EyeInvisibleOutlined,
-  EyeOutlined,
-} from '@ant-design/icons';
-import {
-  Modal,
-  Typography,
-  Input,
-  Button,
-  Tooltip,
-  Avatar,
-  Divider,
-} from 'antd';
+import { EditOutlined } from '@ant-design/icons';
+import { Modal, Typography, Input, Avatar, Divider } from 'antd';
 import axios from 'axios';
 import { useContext, useState } from 'react';
 import { NotificationsContext } from '../context/NotificationsContext';

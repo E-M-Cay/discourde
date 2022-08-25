@@ -5,9 +5,9 @@ import { ChanelBar } from '../ChanelBar/ChanelBar';
 import { useAppSelector } from '../redux/hooks';
 import { FriendPanel } from '../FriendPanel/FriendPanel';
 import PrivateChatBar from '../PrivateChatBar/PrivateChatBar';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { GeneralSettings } from '../Modals/Modals';
-import { CallPanel } from '../CallPanel/CallPanel';
+
 import { Channel, ServerResponse, VocalChan } from '../types/types';
 
 export const Main = (props: {

@@ -8,7 +8,7 @@ import { PrivateMessage } from '../types/types';
 import { MessageItem } from './MessageItem';
 
 const PrivateMessageChat = (props: { name: string; setName: Function }) => {
-  const { name, setName } = props;
+  const { setName } = props;
   const activePrivateChat = useAppSelector(
     (state) => state.userReducer.activePrivateChat
   );
@@ -17,7 +17,7 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
 
   const { socket } = useContext(PeerSocketContext);
   const { privateChatMap } = useContext(UserMapsContext);
-  const { notifications, addNotification } = useContext(NotificationsContext);
+  const { addNotification } = useContext(NotificationsContext);
   const [lastCompress, setLastCompress] = useState(true);
 
   const bottomRef = useRef<any>(null);
@@ -95,7 +95,15 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
   };
 
   return (
-    <div className='message'>
+    <div
+      style={{
+        height: 'calc(95vh - 44px) !important',
+        display: 'table-cell',
+        verticalAlign: 'bottom',
+        overflowX: 'auto',
+      }}
+      className='message'
+    >
       {messages?.map((obj: PrivateMessage, i: number) => {
         const user =
           obj.user1.id === me?.id ? me : privateChatMap.get(obj.user1.id);
@@ -110,6 +118,7 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
               content={obj.content}
               send_time={obj.send_time}
               compress={messageSanitizer(obj, i - 1)}
+              isLast={i === messages.length - 1}
             />
           )
         );

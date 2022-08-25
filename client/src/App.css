@@ -112,7 +112,7 @@ body {
 }
 
 .message {
-  height: 95vh;
+  height: calc(95vh - 44px) !important;
   overflow-y: scroll;
   max-width: 70vw !important;
 }

@@ -1,23 +1,11 @@
-import {
-  Alert,
-  Avatar,
-  Button,
-  Checkbox,
-  Divider,
-  Input,
-  Modal,
-  Tooltip,
-  Typography,
-} from 'antd';
+import { Avatar, Button, Divider, Input, Modal, Typography } from 'antd';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { Channel, User, VocalChan } from '../types/types';
+import { User } from '../types/types';
 import logo from '../assets/discourde.png';
-import { CloseOutlined } from '@ant-design/icons';
 import { setIsConnected, setMe } from '../redux/userSlice';
-import { PeerSocketContext } from '../context/PeerSocket';
 
 export const ServerInvit = (props: {
   isModalVisibleInvitation: boolean;

@@ -1,11 +1,5 @@
 import { CustomImageMess } from '../CustomLi/CustomLi';
-import {
-  PrivateChatMap,
-  TextMessage,
-  PrivateMessage,
-  ServerUser,
-  User,
-} from '../types/types';
+import { ServerUser } from '../types/types';
 import logo from '../assets/discourde.png';
 import { useState } from 'react';
 
@@ -18,14 +12,19 @@ export const MessageItem = (props: {
   content: string;
   send_time: string;
   compress: number;
+  isLast: boolean;
   //décomposer props directement avec username, picture, id
 }) => {
-  const { picture, username, id, content, send_time, compress } = props;
+  const { picture, username, id, content, send_time, compress, isLast } = props;
 
   return (
     <div
       className='messageItem'
-      style={{ marginTop: compress !== 1 ? '0' : '20px' }}
+      style={{
+        marginTop: compress !== 1 ? '0' : '30px',
+        marginBottom: isLast ? '20px' : '0',
+        marginLeft: '10px',
+      }}
     >
       {compress === 1 && (
         <div className='messageItemAvatar'>

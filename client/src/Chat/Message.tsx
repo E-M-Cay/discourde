@@ -5,7 +5,7 @@ import { MessageItem } from './MessageItem';
 import axios from 'axios';
 import { useAppSelector } from '../redux/hooks';
 import { PeerSocketContext } from '../context/PeerSocket';
-import { ServerUserMap, TextMessage } from '../types/types';
+import { TextMessage } from '../types/types';
 import { UserMapsContext } from '../context/UserMapsContext';
 
 const Message = () => {
@@ -88,7 +88,7 @@ const Message = () => {
   return (
     <div
       style={{
-        height: 'calc(95vh -44px)',
+        height: 'calc(95vh - 44px) !important',
         display: 'table-cell',
         verticalAlign: 'bottom',
         overflowX: 'auto',
@@ -108,6 +108,7 @@ const Message = () => {
               send_time={obj.send_time}
               key={i}
               compress={messageSanitizer(obj, i - 1)}
+              isLast={i === messages.length - 1}
             />
           )
         );

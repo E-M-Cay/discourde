@@ -34,6 +34,7 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
 
   return (
     <Tooltip
+      key={obj?.server.id || 0}
       mouseLeaveDelay={0.3}
       placement='left'
       style={{ fontSize: '32px' }}

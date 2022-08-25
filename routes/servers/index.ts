@@ -173,9 +173,21 @@ router.delete(
           id: Number(req.params.user_id),
         },
       },
+      relations: {
+        server: { owner: true },
+      },
+      select: {
+        server: {
+          owner: {
+            id: true,
+          },
+        },
+      },
     });
 
     if (!serverUser) return res.status(400).send('Error server not found');
+    if (serverUser.server.owner.id === req.id)
+      return res.status(401).send('cannot leave owned server');
 
     try {
       await ServerUserRepository.delete(serverUser.id);

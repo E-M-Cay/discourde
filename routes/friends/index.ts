@@ -191,22 +191,27 @@ router.post('/create', isAuth, async (req: IRequest, res: Response) => {
   return res.status(400).send('Missing information');
 });
 
-router.delete('/delete/:id', isAuth, async (req: IRequest, res: Response) => {
-  const friendship_id = Number(req.params.friendship_id);
-  if (friendship_id == NaN)
-    return res.status(400).send('Error friendship not found');
+router.delete(
+  '/delete/:id/:user_id',
+  isAuth,
+  async (req: IRequest, res: Response) => {
+    const friendship_id = Number(req.params.id);
+    const friend_id = Number(req.params.user_id);
+    console.log('friendship', friendship_id);
 
-  try {
-    await FriendshipRepository.delete({
-      user1: { id: req.id },
-      user2: {},
-    });
-    return res.sendStatus(204);
-  } catch (error) {
-    console.log(error);
-    return res.status(400).send('error');
+    try {
+      await FriendshipRepository.delete({
+        id: friendship_id,
+      });
+      const friendSocket = global.user_id_to_socket_id.get(friend_id);
+      if (friendSocket) io.to(friendSocket).emit('friendshipremoved', req.id);
+      return res.sendStatus(204);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).send('error');
+    }
   }
-});
+);
 
 router.get(
   '/requests/received',

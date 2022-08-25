@@ -161,6 +161,7 @@ export const LeftBar = (props: {
                   onClick={() => setServerLogo(png)}
                   size={50}
                   src={png}
+                  key={png}
                 />
                 {key === 4 && <br />}
               </>

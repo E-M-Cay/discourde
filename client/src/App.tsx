@@ -207,43 +207,7 @@ const App = () => {
                   onChange={(e) => onChangeHandler(e, registerUsernameRef)}
                 />
               </div>
-              {/* <div
-                      style={{
-                        paddingTop: '10px',
-                        maxWidth: '80%',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        margin: 'auto',
-                      }}
-                    >
-                      <Text>picture</Text>
-                      <Select
-                        onChange={(e) => setPictureLink(e)}
-                        id='pictures'
-                        defaultValue={profilePng[0]}
-                        style={{
-                          width: '50%',
-                          backgroundColor: '#535353 !important',
-                        }}
-                      >
-                        {profilePng.map((png, key) => (
-                          <option
-                            key={key}
-                            value={
-                              png ||
-                              'https://randomuser.me/api/portraits/men/1.jpg'
-                            }
-                          >
-                            <Avatar
-                              style={{ marginRight: '10px' }}
-                              size={25}
-                              src={png}
-                            />
-                            {png.split('/')[2].split('.')[0]}
-                          </option>
-                        ))}
-                      </Select>
-                    </div>{' '} */}
+
               <div style={{ marginTop: '30px' }}>
                 {profilePng.map((png, key) => (
                   <>
@@ -255,6 +219,7 @@ const App = () => {
                       onClick={() => setPictureLink(png)}
                       size={png === pictureLink ? 60 : 50}
                       src={png}
+                      key={png}
                     />
                     {key === 4 && <br />}
                   </>

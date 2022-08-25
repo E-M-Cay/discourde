@@ -19,7 +19,6 @@ import {
   Tooltip,
   Button,
 } from 'antd';
-import Sider from 'antd/lib/layout/Sider';
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { PeerSocketContext } from '../context/PeerSocket';
@@ -28,7 +27,7 @@ import { CustomImage, CustomImageMess } from '../CustomLi/CustomLi';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveServer, setIsHome } from '../redux/userSlice';
 import { User, Server, ServerResponse } from '../types/types';
-// import friendsData from '../mockFriends';
+import { Friendship } from '../types/types';
 import './FriendPanel.css';
 
 const { TabPane } = Tabs;
@@ -47,6 +46,7 @@ export const FriendPanel = (props: {
     acceptFriendRequest,
     refuseFriendRequest,
     deleteFriendRequest,
+    deleteFriendship,
     openPrivateChat,
   } = useContext(UserMapsContext);
   const { socket } = useContext(PeerSocketContext);
@@ -143,27 +143,21 @@ export const FriendPanel = (props: {
 
   const [stateMenu, setmenuState] = useState(true);
 
-  const onChange = (key: any) => {
-    // //console.log(key);
-  };
-  const onClick = (e: any) => {
-    // //console.log('click ', e);
-  };
   // const onSearch = (value: any) => //console.log(value);
 
-  const menu = (user: User) => {
+  const menu = (friendship: Friendship) => {
     return (
       <Menu
         className='menuf'
         items={[
           {
             label: (
-              <li onClick={() => openPrivateChat(user)}>
+              <div onClick={() => openPrivateChat(friendship.friend)}>
                 <MessageOutlined
                   style={{ color: 'green', fontSize: 'small' }}
                 />{' '}
                 Envoyer un message{' '}
-              </li>
+              </div>
             ),
             key: '1',
           },
@@ -172,21 +166,21 @@ export const FriendPanel = (props: {
           },
           {
             label: (
-              <li>
+              <div>
                 <PhoneOutlined style={{ color: 'green', fontSize: 'small' }} />{' '}
                 Démarrer un appel vocal{' '}
-              </li>
+              </div>
             ),
             key: '2',
           },
           {
             label: (
-              <li>
+              <div>
                 <VideoCameraOutlined
                   style={{ color: 'green', fontSize: 'small' }}
                 />{' '}
                 Démarrer un appel vidéo{' '}
-              </li>
+              </div>
             ),
             key: '3',
           },
@@ -195,12 +189,12 @@ export const FriendPanel = (props: {
           },
           {
             label: (
-              <li>
+              <div onClick={() => deleteFriendship(friendship)}>
                 <UserDeleteOutlined
                   style={{ color: 'red', fontSize: 'small' }}
                 />{' '}
                 Retirer l'ami{' '}
-              </li>
+              </div>
             ),
             key: '4',
           },
@@ -211,12 +205,12 @@ export const FriendPanel = (props: {
 
   return (
     <div style={{ backgroundColor: '#2F3136', height: '100vh' }}>
-      <Tabs onChange={onChange} style={{ marginLeft: 10 }}>
+      <Tabs style={{ marginLeft: 10 }}>
         <TabPane tab='En ligne' key='1'>
           <p style={{ position: 'fixed', fontSize: 'medium' }}>EN LIGNE</p>
           <br />
           <br />
-          <li
+          <div
             className={'scrollIssue'}
             style={{
               height: '73vh',
@@ -231,7 +225,6 @@ export const FriendPanel = (props: {
               friendship.friend.status ? (
                 <div
                   key={id}
-                  onClick={onClick}
                   className='panelContent'
                   style={{
                     margin: 0,
@@ -251,7 +244,7 @@ export const FriendPanel = (props: {
                     {/*                             <a style={{ color: '#060606'}}><div><Tooltip placement="top" title={"Envoyer un message"}><MessageOutlined /></Tooltip></div></a>
                      */}{' '}
                     <Dropdown
-                      overlay={menu(friendship.friend)}
+                      overlay={menu(friendship)}
                       trigger={['click']}
                       placement='bottomLeft'
                       className='DropDownFriend'
@@ -274,7 +267,7 @@ export const FriendPanel = (props: {
                 </div>
               ) : null
             )}
-          </li>
+          </div>
         </TabPane>
         <TabPane tab='Tous' key='2'>
           <p style={{ position: 'fixed', fontSize: 'medium' }}>
@@ -282,7 +275,7 @@ export const FriendPanel = (props: {
           </p>
           <br />
           <br />
-          <li
+          <div
             className={'scrollIssue'}
             style={{
               height: '73vh',
@@ -296,7 +289,6 @@ export const FriendPanel = (props: {
             {Array.from(friendMap.entries()).map(([id, friendship]) => (
               <div
                 key={id}
-                onClick={onClick}
                 className='panelContent'
                 style={{
                   margin: 0,
@@ -316,7 +308,7 @@ export const FriendPanel = (props: {
                   {/*                             <a style={{ color: '#060606'}}><div><Tooltip placement="top" title={"Envoyer un message"}><MessageOutlined /></Tooltip></div></a>
                    */}{' '}
                   <Dropdown
-                    overlay={menu(friendship.friend)}
+                    overlay={menu(friendship)}
                     trigger={['click']}
                     placement='bottomLeft'
                     className='DropDownFriend'
@@ -338,7 +330,7 @@ export const FriendPanel = (props: {
                 </div>
               </div>
             ))}
-          </li>
+          </div>
         </TabPane>
         <TabPane tab='En attente' key='3'>
           <p style={{ position: 'fixed', fontSize: 'medium' }}>
@@ -355,7 +347,7 @@ export const FriendPanel = (props: {
           />
           <br />
           <br />
-          <li
+          <div
             className={'scrollIssue'}
             style={{
               height: '73vh',
@@ -371,7 +363,6 @@ export const FriendPanel = (props: {
               ([id, request]) => (
                 <div
                   key={id}
-                  onClick={onClick}
                   className='panelContent'
                   style={{
                     margin: 0,
@@ -416,7 +407,7 @@ export const FriendPanel = (props: {
             <p>Envoyées</p>
             {Array.from(sentFriendRequestMap.entries()).map(([id, request]) => (
               <div
-                onClick={onClick}
+                key={id}
                 className='panelContent'
                 style={{
                   margin: 0,
@@ -448,7 +439,7 @@ export const FriendPanel = (props: {
             <p>Serveurs</p>
             {serverRequests.map((invitation) => (
               <div
-                onClick={onClick}
+                key={invitation.id}
                 className='panelContent'
                 style={{
                   margin: 0,
@@ -489,7 +480,7 @@ export const FriendPanel = (props: {
                 </Tooltip>
               </div>
             ))}
-          </li>
+          </div>
         </TabPane>
         <TabPane tab='Ajouter un ami' key='4'>
           <p style={{ position: 'fixed', fontSize: 'medium' }}>

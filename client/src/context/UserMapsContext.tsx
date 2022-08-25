@@ -30,6 +30,7 @@ interface userMapsContext {
   acceptFriendRequest: (id: number, senderId: number) => void;
   refuseFriendRequest: (id: number, senderId: number) => void;
   deleteFriendRequest: (id: number, receiverId: number) => void;
+  deleteFriendship: (friendship: Friendship) => void;
   setPrivateChat: (id: number, user: User) => void;
 }
 
@@ -63,6 +64,9 @@ const UserMapsContext = createContext<userMapsContext>({
   setPrivateChat: (_any?: any) => {
     throw new Error('deleteFriendRequest not correctly overriden');
   },
+  deleteFriendship: (_any?: any) => {
+    throw new Error('deleteFriendship not correctly overriden');
+  },
 });
 
 interface Props {
@@ -71,7 +75,7 @@ interface Props {
 
 const UserMapsContextProvider = ({ children }: Props) => {
   const dispatch = useAppDispatch();
-  const me = useAppSelector((state) => state.userReducer.me);
+  const { me, token } = useAppSelector((state) => state.userReducer);
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
   );
@@ -138,6 +142,21 @@ const UserMapsContextProvider = ({ children }: Props) => {
     remove: removeSentFriendRequest,
     reset: resetSentFriendRequests,
   } = sentFriendRequestActions;
+
+  const deleteFriendship = (friendship: Friendship) => {
+    console.log(friendship);
+    axios
+      .delete(`/friends/delete/${friendship.id}/${friendship.friend.id}`, {
+        headers: {
+          access_token: token ?? '',
+        },
+      })
+      .then((res) => {
+        if (res.status === 204) {
+          removeFriend(friendship.friend.id);
+        }
+      });
+  };
 
   const sendFriendRequest = (user: User) => {
     axios
@@ -423,6 +442,13 @@ const UserMapsContextProvider = ({ children }: Props) => {
     [setServerUser]
   );
 
+  const handleFriendshipRemoved = useCallback(
+    (id: number) => {
+      removeFriend(id);
+    },
+    [removeFriend]
+  );
+
   const handleUserProfileChange = useCallback(
     (user: User) => {
       //console.log(user, 'user change', serverUserMap);
@@ -470,6 +496,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
     socket.on('friendrequestrefused', handleFriendshipRefused);
     socket.on('friendrequestaccepted', handleNewFriendship);
     socket.on('friendrequestcanceled', handleFriendRequestCanceled);
+    socket.on('friendshipremoved', handleFriendshipRemoved);
     socket.on('newfriendrequest', handleNewFriendRequest);
     socket.on('userdisconnected', handleDisconnection);
     socket.on('userconnected', handleConnection);
@@ -479,9 +506,11 @@ const UserMapsContextProvider = ({ children }: Props) => {
       socket.off('userchanged', handleUserProfileChange);
       socket.off('friendrequestrefused', handleFriendshipRefused);
       socket.off('friendRequestAccepted', handleNewFriendship);
+      socket.off('friendrequestcanceled', handleFriendRequestCanceled);
+      socket.off('friendshipremoved', handleFriendshipRemoved);
+      socket.off('newfriendrequest', handleNewFriendRequest);
       socket.off('userdisconnected', handleDisconnection);
       socket.off('userconnected', handleConnection);
-      socket.off('newfriendrequest', handleNewFriendRequest);
       socket.off('userleftserver', handleUserLeftServer);
       socket.off('userjoinedserver', handeUserJoinedServer);
     };
@@ -496,6 +525,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
     handleUserLeftServer,
     handeUserJoinedServer,
     handleUserProfileChange,
+    handleFriendshipRemoved,
   ]);
 
   return (
@@ -514,6 +544,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
         acceptFriendRequest,
         refuseFriendRequest,
         deleteFriendRequest,
+        deleteFriendship,
       }}
     >
       {children}

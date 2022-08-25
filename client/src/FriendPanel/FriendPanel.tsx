@@ -19,7 +19,6 @@ import {
   Tooltip,
   Button,
 } from 'antd';
-import Sider from 'antd/lib/layout/Sider';
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { PeerSocketContext } from '../context/PeerSocket';
@@ -28,7 +27,6 @@ import { CustomImage, CustomImageMess } from '../CustomLi/CustomLi';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveServer, setIsHome } from '../redux/userSlice';
 import { User, Server, ServerResponse } from '../types/types';
-// import friendsData from '../mockFriends';
 import './FriendPanel.css';
 
 const { TabPane } = Tabs;

@@ -81,20 +81,19 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     reset: resetAudioNodes,
   } = audioNodeActions;
 
-  const turnOnMicrophone: () => Promise<boolean> = useCallback(async () => {
+  const turnOnMicrophone: () => Promise<boolean> = async () => {
     return navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
-        if (isMute) {
-          stream.getAudioTracks().forEach((tr) => (tr.enabled = false));
-        }
         streamRef.current = stream;
         return true;
       })
       .catch((e) => {
         return false;
       });
-  }, [streamRef, isMute]);
+  };
+
+  useEffect(() => {});
 
   const callEvent = useCallback(
     async (call: MediaConnection) => {
@@ -126,7 +125,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       });
       //}
     },
-    [streamRef, isMuteAudio, setAudioNode, removeAudioNode, turnOnMicrophone]
+    [streamRef, isMuteAudio, setAudioNode, removeAudioNode, dispatch]
   );
 
   const callUser = useCallback(
@@ -183,7 +182,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       }
       callUser(peer_id, user_id);
     },
-    [callUser, turnOnMicrophone]
+    [callUser]
   );
 
   const goodBye = useCallback((user_id: number) => {
@@ -229,20 +228,24 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       } else {
         socket.emit('joinvocalchannel', activeVocalChannel);
       }
-      // socket.emit('joinvocalchannel', activeVocalChannel);
     }
-    // socket.emit('joinvocalchannel', activeVocalChannel);
-    // >>>>>>> 42ddf1a255e8692da040e53e9d5140be3bb9e57a
-    // }
+
     return () => {
       if (activeVocalChannel) {
         socket?.emit('leftvocalchannel', activeVocalChannel);
       }
-      // streamRef.current?.addEventListener('removetrack', () =>
-      //   dispatch(setActiveVocalChannel(0))
-      // );
     };
-  }, [activeVocalChannel, socket]);
+  }, [activeVocalChannel, socket, dispatch]);
+
+  useEffect(() => {
+    return () => {
+      if (isMute) {
+        streamRef.current
+          ?.getAudioTracks()
+          .forEach((tr) => (tr.enabled = false));
+      }
+    };
+  }, [streamRef]);
 
   useEffect(() => {
     if (activeVocalChannel) {

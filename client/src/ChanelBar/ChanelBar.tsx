@@ -48,7 +48,7 @@ export const ChanelBar = (props: {
   const headerTxt: string = 'SALONS TEXTUELS';
   const headerVoc: string = 'SALONS VOCAUX';
   const serverName: string = activeServerName ?? 'Serveur';
-  const me = useAppSelector((state) => state.userReducer.me);
+  const { me } = useAppSelector((state) => state.userReducer);
   const { turnOnMicrophone, stream } = useContext(VocalChannelContext);
 
   const activeVocalChannel = useAppSelector(
@@ -83,6 +83,7 @@ export const ChanelBar = (props: {
   const onTextChannelClick = (id: number) => {
     dispatch(setActiveChannel(id));
   };
+
   const onVocalChannelClick = useCallback(
     async (id: number) => {
       if (activeVocalChannel === id) return;
@@ -118,6 +119,7 @@ export const ChanelBar = (props: {
   const handleLeftVocal = useCallback(
     (data: { user: number; chan: number }) => {
       const { user, chan } = data;
+      // console.log('lol');
       if (chan === activeVocalChannel) {
         new Audio('/abduction-265.mp3').play();
       }
@@ -136,6 +138,9 @@ export const ChanelBar = (props: {
   useEffect(() => {
     socket.on(`joiningvocal`, handleJoinVocal);
     socket.on(`leftvocal`, handleLeftVocal);
+    // socket.on(`leftvocal`, (data: { user: number; chan: number }) => {
+    //   console.log(data);
+    // });
     return () => {
       socket.off(`joiningvocal`, handleJoinVocal);
       socket.off(`leftvocal`, handleLeftVocal);

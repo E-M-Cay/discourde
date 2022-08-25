@@ -1,11 +1,7 @@
 import {
   AudioFilled,
-  AudioOutlined,
   CustomerServiceFilled,
-  CustomerServiceOutlined,
-  PhoneFilled,
   PhoneOutlined,
-  SettingFilled,
   SettingOutlined,
   WifiOutlined,
 } from '@ant-design/icons';
@@ -40,9 +36,9 @@ export const ProfileCall = (props: {
     (state) => state.userReducer.activeVocalChannel
   );
   const dispatch = useAppDispatch();
-  const me = useAppSelector((state) => state.userReducer.me);
-  const isMute = useAppSelector((state) => state.userReducer.isMute);
-  const isMuteAudio = useAppSelector((state) => state.userReducer.isMuteAudio);
+  const { me, isMute, isMuteAudio } = useAppSelector(
+    (state) => state.userReducer
+  );
   const { muteSelf, unmuteSelf, muteAudio, unmuteAudio } =
     useContext(VocalChannelContext);
 

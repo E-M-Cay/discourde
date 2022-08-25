@@ -1,14 +1,9 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { Avatar, Input, Select, Typography } from 'antd';
-import {
-  setUsername,
-  setToken,
-  setMe,
-  setIsConnected,
-} from './redux/userSlice';
+import { Avatar, Input, Typography } from 'antd';
+import { setToken, setMe, setIsConnected } from './redux/userSlice';
 import { Home } from './Home/Home';
 import { Modal } from 'antd';
 import { profilePng } from './profilePng/profilePng';
@@ -23,7 +18,7 @@ const App = () => {
   const loginEmailRef = useRef<string>('');
   const registerPasswordRef = useRef<string>('');
   const loginPasswordRef = useRef<string>('');
-  const { isConnected, token } = useAppSelector((state) => state.userReducer);
+  const { isConnected } = useAppSelector((state) => state.userReducer);
   const [isLoggin, setIsLoggin] = useState(false);
 
   const [pictureLink, setPictureLink] = useState(
@@ -66,7 +61,7 @@ const App = () => {
       // verifyAndRefreshToken(token);
     }
     // else setIsModalVisible(true);
-  }, [setIsConnected, dispatch]);
+  }, [dispatch]);
 
   const onChangeHandler = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -207,43 +202,7 @@ const App = () => {
                   onChange={(e) => onChangeHandler(e, registerUsernameRef)}
                 />
               </div>
-              {/* <div
-                      style={{
-                        paddingTop: '10px',
-                        maxWidth: '80%',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        margin: 'auto',
-                      }}
-                    >
-                      <Text>picture</Text>
-                      <Select
-                        onChange={(e) => setPictureLink(e)}
-                        id='pictures'
-                        defaultValue={profilePng[0]}
-                        style={{
-                          width: '50%',
-                          backgroundColor: '#535353 !important',
-                        }}
-                      >
-                        {profilePng.map((png, key) => (
-                          <option
-                            key={key}
-                            value={
-                              png ||
-                              'https://randomuser.me/api/portraits/men/1.jpg'
-                            }
-                          >
-                            <Avatar
-                              style={{ marginRight: '10px' }}
-                              size={25}
-                              src={png}
-                            />
-                            {png.split('/')[2].split('.')[0]}
-                          </option>
-                        ))}
-                      </Select>
-                    </div>{' '} */}
+
               <div style={{ marginTop: '30px' }}>
                 {profilePng.map((png, key) => (
                   <>

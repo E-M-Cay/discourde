@@ -40,9 +40,13 @@ router.get('/list', isAuth, hasPerm, async (req: IRequest, res: Response) => {
       },
     },
     relations: {
-      server: true,
+      server: { owner: true },
+    },
+    select: {
+      server: { owner: { id: true } },
     },
   });
+  console.log(list_server);
 
   const tempList: ServerUser[] = await Promise.all(
     list_server.map(async (serv) => {

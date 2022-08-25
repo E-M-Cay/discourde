@@ -405,10 +405,11 @@ const ServerParamsModal = (props: {
                 <Avatar
                   style={{
                     margin: '5px',
+                    boxSizing: 'border-box',
                     border: png === pictureLink ? '4px solid green' : '',
                   }}
                   onClick={() => setPictureLink(png)}
-                  size={png === pictureLink ? 60 : 50}
+                  size={50}
                   src={png}
                 />
                 {key === 4 && <br />}

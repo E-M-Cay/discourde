@@ -52,6 +52,7 @@ export interface Server {
   id: number;
   main_img?: string;
   name: string;
+  owner?: User;
 }
 
 export interface Channel {

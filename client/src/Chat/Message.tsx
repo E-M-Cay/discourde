@@ -56,10 +56,59 @@ const Message = () => {
     console.log(message, 'message');
   };
 
+  const messageSanitizer = (message: TextMessage, lastmessageKey: number) => {
+    if (
+      message.send_time.split(':')[0] ===
+        messages[lastmessageKey]?.send_time.split(':')[0] &&
+      message.author === messages[lastmessageKey]?.author &&
+      message.send_time.split(':')[1] ===
+        messages[lastmessageKey]?.send_time.split(':')[1] &&
+      (messages[lastmessageKey]?.author !==
+        messages[lastmessageKey - 1]?.author ||
+        messages[lastmessageKey - 1]?.send_time.split(':')[0] !==
+          messages[lastmessageKey]?.send_time.split(':')[0] ||
+        messages[lastmessageKey - 1]?.send_time.split(':')[1] !==
+          messages[lastmessageKey]?.send_time.split(':')[1])
+    ) {
+      return 3;
+    } else if (
+      message.send_time.split(':')[0] ===
+        messages[lastmessageKey]?.send_time.split(':')[0] &&
+      message.author === messages[lastmessageKey]?.author &&
+      message.send_time.split(':')[1] ===
+        messages[lastmessageKey]?.send_time.split(':')[1]
+    ) {
+      return 2;
+    } else {
+      return 1;
+    }
+  };
+  // console.log(messages, 'message');
+
+  function newDayCheck(message: TextMessage, lastmessageKey: number) {
+    let testeur1 =
+      message.send_time.split('T').length > 1
+        ? message.send_time
+        : message.send_time.split(' ')[0] +
+          'T' +
+          message.send_time.split(' ')[1];
+    let testeur2 =
+      messages[lastmessageKey]?.send_time.split('T').length > 1
+        ? messages[lastmessageKey]?.send_time
+        : messages[lastmessageKey]?.send_time.split(' ')[0] +
+          'T' +
+          messages[lastmessageKey]?.send_time.split(' ')[1];
+    if (testeur1.split('T')[0] !== testeur2.split('T')[0]) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   return (
     <div
       style={{
-        maxHeight: 'calc(95vh -44px)',
+        height: 'calc(95vh - 44px) !important',
         display: 'table-cell',
         verticalAlign: 'bottom',
         overflowX: 'auto',
@@ -78,6 +127,10 @@ const Message = () => {
               content={obj.content}
               send_time={obj.send_time}
               key={i}
+              compress={messageSanitizer(obj, i - 1)}
+              isLast={i === messages.length - 1}
+              isNewDay={newDayCheck(obj, i - 1)}
+              fromNormalChat={true}
             />
           )
         );

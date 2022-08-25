@@ -31,6 +31,9 @@ export const DropdownMenu = (params: {
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
   );
+  const activeServerOwner = useAppSelector(
+    (state) => state.userReducer.activeServerOwner
+  );
   const me = useAppSelector((state) => state.userReducer.me);
 
   const showNotificationModal = () => {
@@ -77,56 +80,60 @@ export const DropdownMenu = (params: {
             ),
             key: '0',
           },
-          {
-            label: (
-              <li
-                style={{
-                  fontWeight: '600',
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  fontSize: '14px',
-                }}
-                key={1}
-              >
-                Gestion des membres
-                <TeamOutlined
-                  style={{
-                    fontSize: '15px',
-                  }}
-                />
-              </li>
-            ),
-            key: '1',
-          },
+          activeServerOwner === me?.id
+            ? {
+                label: (
+                  <li
+                    style={{
+                      fontWeight: '600',
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '14px',
+                    }}
+                    key={1}
+                  >
+                    Gestion des membres
+                    <TeamOutlined
+                      style={{
+                        fontSize: '15px',
+                      }}
+                    />
+                  </li>
+                ),
+                key: '1',
+              }
+            : null,
           {
             type: 'divider',
           },
-          {
-            label: (
-              <li
-                style={{
-                  fontWeight: '600',
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  fontSize: '14px',
-                }}
-                onClick={() => showServerParamsModal()}
-                key={2}
-              >
-                Paramètres du serveur
-                <SettingOutlined
-                  style={{
-                    fontSize: '15px',
-                  }}
-                />
-              </li>
-            ),
-            key: '2',
-          },
+          activeServerOwner === me?.id
+            ? {
+                label: (
+                  <li
+                    style={{
+                      fontWeight: '600',
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '14px',
+                    }}
+                    onClick={() => showServerParamsModal()}
+                    key={2}
+                  >
+                    Paramètres du serveur
+                    <SettingOutlined
+                      style={{
+                        fontSize: '15px',
+                      }}
+                    />
+                  </li>
+                ),
+                key: '2',
+              }
+            : null,
           {
             label: (
               <li
@@ -151,30 +158,32 @@ export const DropdownMenu = (params: {
             ),
             key: '3',
           },
-          {
-            label: (
-              <li
-                style={{
-                  fontWeight: '600',
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  fontSize: '14px',
-                }}
-                key={4}
-                onClick={() => deleteServer()}
-              >
-                Supprimer serveur
-                <PlusCircleOutlined
-                  style={{
-                    fontSize: '15px',
-                  }}
-                />
-              </li>
-            ),
-            key: '4',
-          },
+          activeServerOwner === me?.id
+            ? {
+                label: (
+                  <li
+                    style={{
+                      fontWeight: '600',
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '14px',
+                    }}
+                    key={4}
+                    onClick={() => deleteServer()}
+                  >
+                    Supprimer serveur
+                    <PlusCircleOutlined
+                      style={{
+                        fontSize: '15px',
+                      }}
+                    />
+                  </li>
+                ),
+                key: '4',
+              }
+            : null,
           {
             type: 'divider',
           },
@@ -209,34 +218,38 @@ export const DropdownMenu = (params: {
             ),
             key: '5',
           },
-          {
-            type: 'divider',
-          },
-          {
-            label: (
-              <li
-                style={{
-                  fontWeight: '600',
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  fontSize: '14px',
-                }}
-                className='red-item menu-hover'
-                key={6}
-                onClick={() => handleLeaveServer()}
-              >
-                Quitter le serveur
-                <LogoutOutlined
-                  style={{
-                    fontSize: '15px',
-                  }}
-                />
-              </li>
-            ),
-            key: '6',
-          },
+          activeServerOwner !== me?.id && activeServerOwner !== -1
+            ? {
+                type: 'divider',
+              }
+            : null,
+          activeServerOwner !== me?.id && activeServerOwner !== -1
+            ? {
+                label: (
+                  <li
+                    style={{
+                      fontWeight: '600',
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '14px',
+                    }}
+                    className='red-item menu-hover'
+                    key={6}
+                    onClick={() => handleLeaveServer()}
+                  >
+                    Quitter le serveur
+                    <LogoutOutlined
+                      style={{
+                        fontSize: '15px',
+                      }}
+                    />
+                  </li>
+                ),
+                key: '6',
+              }
+            : null,
         ]}
       />
       <Modal

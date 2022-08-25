@@ -18,6 +18,7 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
   const { socket } = useContext(PeerSocketContext);
   const { privateChatMap } = useContext(UserMapsContext);
   const { addNotification } = useContext(NotificationsContext);
+  const [lastCompress, setLastCompress] = useState(true);
 
   const bottomRef = useRef<any>(null);
 
@@ -62,8 +63,67 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
     scrollToBottom();
   }, [messages]);
 
+  const messageSanitizer = (
+    message: PrivateMessage,
+    lastmessageKey: number
+  ) => {
+    if (
+      message.send_time.split(':')[0] ===
+        messages[lastmessageKey]?.send_time.split(':')[0] &&
+      message.user1.id === messages[lastmessageKey]?.user1.id &&
+      message.send_time.split(':')[1] ===
+        messages[lastmessageKey]?.send_time.split(':')[1] &&
+      (messages[lastmessageKey]?.user1.id !==
+        messages[lastmessageKey - 1]?.user1.id ||
+        messages[lastmessageKey - 1]?.send_time.split(':')[0] !==
+          messages[lastmessageKey]?.send_time.split(':')[0] ||
+        messages[lastmessageKey - 1]?.send_time.split(':')[1] !==
+          messages[lastmessageKey]?.send_time.split(':')[1])
+    ) {
+      return 3;
+    } else if (
+      message.send_time.split(':')[0] ===
+        messages[lastmessageKey]?.send_time.split(':')[0] &&
+      message.user1.id === messages[lastmessageKey]?.user1.id &&
+      message.send_time.split(':')[1] ===
+        messages[lastmessageKey]?.send_time.split(':')[1]
+    ) {
+      return 2;
+    } else {
+      return 1;
+    }
+  };
+
+  function newDayCheck(message: PrivateMessage, lastmessageKey: number) {
+    let testeur1 =
+      message.send_time.split('T').length > 1
+        ? message.send_time
+        : message.send_time.split(' ')[0] +
+          'T' +
+          message.send_time.split(' ')[1];
+    let testeur2 =
+      messages[lastmessageKey]?.send_time.split('T').length > 1
+        ? messages[lastmessageKey]?.send_time
+        : messages[lastmessageKey]?.send_time.split(' ')[0] +
+          'T' +
+          messages[lastmessageKey]?.send_time.split(' ')[1];
+    if (testeur1.split('T')[0] !== testeur2.split('T')[0]) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   return (
-    <div className='message'>
+    <div
+      style={{
+        height: 'calc(95vh - 44px) !important',
+        display: 'table-cell',
+        verticalAlign: 'bottom',
+        overflowX: 'auto',
+      }}
+      className='message'
+    >
       {messages?.map((obj: PrivateMessage, i: number) => {
         const user =
           obj.user1.id === me?.id ? me : privateChatMap.get(obj.user1.id);
@@ -77,6 +137,9 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
               picture={user?.picture as string}
               content={obj.content}
               send_time={obj.send_time}
+              compress={messageSanitizer(obj, i - 1)}
+              isLast={i === messages.length - 1}
+              isNewDay={newDayCheck(obj, i - 1)}
             />
           )
         );

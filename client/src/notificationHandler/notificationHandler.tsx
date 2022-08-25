@@ -41,5 +41,6 @@ export const openNotification = (
         src={picture ?? '/profile-pictures/crane1.png'}
       />
     ),
+    maxCount: 3,
   });
 };

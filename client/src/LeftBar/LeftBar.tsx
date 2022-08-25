@@ -155,10 +155,11 @@ export const LeftBar = (props: {
                 <Avatar
                   style={{
                     margin: '5px',
+                    boxSizing: 'border-box',
                     border: png === serverLogo ? '4px solid green' : '',
                   }}
                   onClick={() => setServerLogo(png)}
-                  size={png === serverLogo ? 60 : 50}
+                  size={50}
                   src={png}
                 />
                 {key === 4 && <br />}
@@ -180,7 +181,7 @@ export const LeftBar = (props: {
                 border: 0,
                 padding: '3px 10px',
                 color: 'grey',
-                fontSize: '1.2rem',
+                fontSize: '1.1rem',
                 backgroundColor: '#40444b',
               }}
               type='submit'

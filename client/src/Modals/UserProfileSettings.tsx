@@ -36,7 +36,7 @@ const UserProfileSettings = () => {
   };
 
   return (
-    <div style={{ minHeight: '500px' }}>
+    <div>
       <div
         style={{
           display: 'flex',
@@ -53,7 +53,6 @@ const UserProfileSettings = () => {
           <div
             style={{
               padding: '10px 0',
-
               maxWidth: '80%',
               display: 'flex',
               justifyContent: 'space-between',
@@ -94,10 +93,11 @@ const UserProfileSettings = () => {
                       style={{
                         margin: '5px',
                         cursor: 'pointer',
+                        boxSizing: 'border-box',
                         border: png === pictureInput ? '4px solid green' : '',
                       }}
                       onClick={() => setPictureInput(png)}
-                      size={png === pictureInput ? 60 : 50}
+                      size={50}
                       src={png}
                     />
                   )}
@@ -112,10 +112,11 @@ const UserProfileSettings = () => {
                       style={{
                         margin: '5px',
                         cursor: 'pointer',
+                        boxSizing: 'border-box',
                         border: png === pictureInput ? '4px solid green' : '',
                       }}
                       onClick={() => setPictureInput(png)}
-                      size={png === pictureInput ? 60 : 50}
+                      size={50}
                       src={png}
                     />
                   )}

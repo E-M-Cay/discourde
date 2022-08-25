@@ -34,9 +34,9 @@ export const Home = () => {
         },
       })
       .then((res) => {
-        console.log(res.data[0], 'data');
+        //console.log(res.data[0], 'data');
         setServers(res.data);
-        // console.log('active server:', res.data[0].server.id);
+        // //console.log('active server:', res.data[0].server.id);
         dispatch(setActiveServer(res.data[0]?.server.id));
         dispatch(setActiveServerName(res.data[0]?.server.name));
         dispatch(setActiveServerOwner(res.data[0]?.server?.owner.id || -1));
@@ -92,7 +92,7 @@ export const Home = () => {
         }
       )
       .then((res) => {
-        console.log(res, 'gdhdhdhdg');
+        //console.log(res, 'gdhdhdhdg');
         // dispatch(setActiveChannel(id));
       });
   };

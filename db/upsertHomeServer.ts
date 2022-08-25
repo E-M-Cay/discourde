@@ -17,7 +17,7 @@ const upsertHomeServer = async () => {
   ) {
     return;
   }
-  console.log('upserting main server');
+  //console.log('upserting main server');
 
   const vocalChan = vocalChannelRepository.create({
     name: 'Forum',
@@ -35,7 +35,7 @@ const upsertHomeServer = async () => {
   });
   await serverRepository.save(newMainServ);
 
-  console.log('done with main server');
+  //console.log('done with main server');
 };
 
 export default upsertHomeServer;

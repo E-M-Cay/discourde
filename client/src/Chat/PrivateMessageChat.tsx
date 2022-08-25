@@ -31,7 +31,7 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
           },
         })
         .then((res) => {
-          //console.log(res.data);
+          ////console.log(res.data);
           setMessages(res.data.messages);
           setName(res.data.username);
         });
@@ -42,7 +42,7 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
     (message: PrivateMessage) => {
       if (message.user1.id === activePrivateChat || message.user1.id === me?.id)
         setMessages((prev) => [...prev, message]);
-      console.log(message, 'message');
+      //console.log(message, 'message');
     },
     [activePrivateChat, me]
   );
@@ -127,7 +127,7 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
       {messages?.map((obj: PrivateMessage, i: number) => {
         const user =
           obj.user1.id === me?.id ? me : privateChatMap.get(obj.user1.id);
-        // console.log(privateChatMap, 'user', obj.user1.id);
+        // //console.log(privateChatMap, 'user', obj.user1.id);
         return (
           user && (
             <MessageItem

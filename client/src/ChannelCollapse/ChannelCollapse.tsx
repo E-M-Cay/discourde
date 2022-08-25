@@ -85,7 +85,7 @@ export const ChannelCollapse = (props: {
               )} */}
                 {chan.users.map((u) => (
                   <div
-                    // onClick={() => console.log(serverUserMap.get(u), 'test')}
+                    // onClick={() => //console.log(serverUserMap.get(u), 'test')}
                     key={u}
                     style={{ marginTop: '5px', marginLeft: '20px' }}
                     className='panelContentRen'

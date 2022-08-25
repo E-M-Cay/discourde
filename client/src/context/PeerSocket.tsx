@@ -75,8 +75,8 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
 
   const onPeerOpen = useCallback(
     (peer_id: string) => {
-      console.log('peerid:', peer_id);
-      console.log('peer open');
+      //console.log('peerid:', peer_id);
+      //console.log('peer open');
       socket.emit('peerId', { peer_id });
       setIsPeerConnected(true);
     },
@@ -84,7 +84,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
   );
 
   useEffect(() => {
-    console.log('token change');
+    //console.log('token change');
     // socket.disconnect();
     socket.auth = { token };
     socket.connect();
@@ -93,11 +93,11 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
   useEffect(() => {
     if (!isConnected) {
       socket.disconnect();
-      console.log('disconnected');
+      //console.log('disconnected');
     }
     if (isConnected) {
       socket.connect();
-      console.log('connected');
+      //console.log('connected');
     }
   }, [socket, isConnected]);
 
@@ -110,7 +110,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
       }
     });
     socket.on('connect_error', (err) => {
-      console.log('message');
+      //console.log('message');
       if (err.message === 'invalid credentials') {
         socket.disconnect();
       }

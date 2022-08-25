@@ -47,7 +47,7 @@ const ServerParamsModal = (props: {
   );
   let tmp = servers.find((server) => server.server.id === activeServer);
   const activeServerObject = tmp?.server;
-  console.log(activeServerObject, 'activeServerObject');
+  // //console.log(activeServerObject, 'activeServerObject');
   const { addNotification } = useContext(NotificationsContext);
   const [newTextChannelName, setNewTextChannelName] = useState('');
   const [pictureLink, setPictureLink] = useState(activeServerObject?.main_img);
@@ -105,7 +105,7 @@ const ServerParamsModal = (props: {
         }
       )
       .then((res) => {
-        console.log(res);
+        //console.log(res);
         if (res.status === 200) {
           if (!isVocal) {
             setTextChannelList(

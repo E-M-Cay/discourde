@@ -97,7 +97,7 @@ export const CustomImage = (props: {
       case 3:
         return 'red';
       default:
-        console.log('could not read status');
+      //console.log('could not read status');
     }
   };
 
@@ -173,7 +173,7 @@ export const CustomImageChat = (props: {
       case 3:
         return 'red';
       default:
-        console.log('could not read status');
+      //console.log('could not read status');
     }
   };
 

@@ -3,7 +3,7 @@ import Permissions from '../types/Permissions';
 import AppDataSource from './AppDataSource';
 
 const upsertPermissions = async () => {
-  console.log('inserting permissions');
+  //console.log('inserting permissions');
   const permissionRepository = AppDataSource.getRepository(Permission);
 
   await permissionRepository.upsert({ name: Permissions.CAN_INVITE }, ['name']);
@@ -29,7 +29,7 @@ const upsertPermissions = async () => {
     'name',
   ]);
 
-  console.log('Done with permissions');
+  //console.log('Done with permissions');
 };
 
 export default upsertPermissions;

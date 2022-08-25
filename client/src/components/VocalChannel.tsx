@@ -79,7 +79,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
   const turnOnMicrophone = useCallback(async () => {
     const toto = navigator.mediaDevices;
-    // console.log(await toto.enumerateDevices(), 'enumerate');
+    // //console.log(await toto.enumerateDevices(), 'enumerate');
 
     navigator.mediaDevices
       .getUserMedia({ audio: true })
@@ -107,8 +107,8 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
       call.on('stream', (stream) => {
         audioNode.srcObject = stream;
-        // console.log('receiving stream 2');
-        // console.log(stream);
+        // //console.log('receiving stream 2');
+        // //console.log(stream);
         setAudioNode(userId, audioNode);
         if (!isMuteAudio) {
           audioNode.play();
@@ -127,9 +127,9 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
   const callUser = useCallback(
     async (id: string, userId: number) => {
-      console.log('calling:', id, peer?.id);
+      //console.log('calling:', id, peer?.id);
       const audioNode = new Audio();
-      console.log(streamRef.current?.getTracks());
+      //console.log(streamRef.current?.getTracks());
       if (!peer) return;
       const call = peer.call(id, streamRef.current as MediaStream, {
         metadata: {
@@ -140,8 +140,8 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
       call?.on('stream', (stream) => {
         audioNode.srcObject = stream;
-        // console.log('receiving stream 1');
-        // console.log(stream);
+        // //console.log('receiving stream 1');
+        // //console.log(stream);
         setAudioNode(userId, audioNode);
         if (!isMuteAudio) {
           audioNode.play();
@@ -170,8 +170,8 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   const hello = useCallback(
     async (data: { user_id: number; peer_id: string }) => {
       const { user_id, peer_id } = data;
-      console.log('hello');
-      console.log('peer id:', peer_id, 'user_id', user_id);
+      //console.log('hello');
+      //console.log('peer id:', peer_id, 'user_id', user_id);
       // const {user_id}
 
       if (!streamRef.current?.active) {
@@ -183,32 +183,32 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   );
 
   const goodBye = useCallback((user_id: number) => {
-    console.log('goodbye', user_id);
-    // console.log(callMap.has(user_id));
+    //console.log('goodbye', user_id);
+    // //console.log(callMap.has(user_id));
     // callMap.get(user_id)?.close();
     // removeCall(user_id);
   }, []);
 
   const muteSelf = () => {
-    console.log('mute');
+    //console.log('mute');
     streamRef.current?.getAudioTracks().forEach((tr) => (tr.enabled = false));
     dispatch(setMute());
   };
 
   const unmuteSelf = () => {
-    console.log('unmute');
+    //console.log('unmute');
     streamRef.current?.getAudioTracks().forEach((tr) => (tr.enabled = true));
     dispatch(setUnmute());
   };
 
   const muteAudio = () => {
-    console.log('mute audio');
+    //console.log('mute audio');
     audioNodeMap.forEach((audioNode) => audioNode.pause());
     dispatch(setMuteAudio());
   };
 
   const unmuteAudio = () => {
-    console.log('unmute audio');
+    //console.log('unmute audio');
     audioNodeMap.forEach((audioNode) => audioNode.play());
     dispatch(setUnmuteAudio());
   };
@@ -265,7 +265,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   useEffect(() => {
     peer?.on('call', callEvent);
     peer?.on('error', (e) => console.log(e));
-    // console.log('my peer:', peer ? peer.id : 'none');
+    // //console.log('my peer:', peer ? peer.id : 'none');
     return () => {
       peer?.off('call', callEvent);
       peer?.off('error');
@@ -274,11 +274,11 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
   const mutePerson = (userId: number) => {
     const audioNode = audioNodeMap.get(userId);
-    // console.log(audioNode, 'mute exists ?');
+    // //console.log(audioNode, 'mute exists ?');
     if (audioNode) {
       audioNode.volume = 0;
       setAudioNode(userId, audioNode);
-      // console.log(audioNode.volume, 'audionode mute');
+      // //console.log(audioNode.volume, 'audionode mute');
     }
   };
 
@@ -287,7 +287,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     if (audioNode) {
       audioNode.volume = 1;
       setAudioNode(userId, audioNode);
-      // console.log(audioNode.volume, 'audionode unmute');
+      // //console.log(audioNode.volume, 'audionode unmute');
     }
   };
 
@@ -372,7 +372,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     )} */}
         {chan.users.map((u) => (
           <div
-            onClick={() => console.log(serverUserMap.get(u), 'test')}
+            // onClick={() => console.log(serverUserMap.get(u), 'test')}
             key={u}
             style={{ marginTop: '5px' }}
             // className='panelContentRen'

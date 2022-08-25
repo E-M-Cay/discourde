@@ -29,7 +29,7 @@ const Message = () => {
           },
         })
         .then((res) => {
-          console.log(res.data, 'channels');
+          //console.log(res.data, 'channels');
           setMessages(res.data.response);
           setName(res.data.channelName);
         });
@@ -53,7 +53,7 @@ const Message = () => {
 
   const receiveMessage = (message: TextMessage) => {
     setMessages((prev) => [...prev, message]);
-    console.log(message, 'message');
+    //console.log(message, 'message');
   };
 
   const messageSanitizer = (message: TextMessage, lastmessageKey: number) => {
@@ -83,7 +83,7 @@ const Message = () => {
       return 1;
     }
   };
-  // console.log(messages, 'message');
+  // //console.log(messages, 'message');
 
   function newDayCheck(message: TextMessage, lastmessageKey: number) {
     let testeur1 =

@@ -1,22 +1,5 @@
-import {
-  AudioMutedOutlined,
-  AudioOutlined,
-  CloseOutlined,
-  CustomerServiceOutlined,
-  DownOutlined,
-  PhoneOutlined,
-  SettingOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
-import {
-  Avatar,
-  Card,
-  Collapse,
-  Dropdown,
-  Space,
-  Tooltip,
-  Typography,
-} from 'antd';
+import { CloseOutlined, DownOutlined } from '@ant-design/icons';
+import { Collapse, Dropdown, Space } from 'antd';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import './ChanelBar.css';
 import axios from 'axios';
@@ -24,11 +7,9 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { Channel, VocalChan } from '../types/types';
-import { CustomImage } from '../CustomLi/CustomLi';
 import { ServerChannels, ServerInvit } from '../Modals/Modals';
 import { DropdownMenu } from '../DropdownMenu/DropdownMenu';
 import { ChannelCollapse } from '../ChannelCollapse/ChannelCollapse';
-import { openNotification } from '../notificationHandler/notificationHandler';
 import { NotificationsContext } from '../context/NotificationsContext';
 import ServerParamsModal from '../Modals/ServerParamsModal';
 import { ProfileCall } from '../components/ProfileCall';
@@ -89,7 +70,7 @@ export const ChanelBar = (props: {
         .then((res) => {
           setVocalChannelList(res.data.vocal);
           setTextChannelList(res.data.text);
-          //   console.log(res.data.text[0]);
+          //   //console.log(res.data.text[0]);
           if (res.data.text.length > 0) {
             dispatch(setActiveChannel(res.data.text[0].id));
           }
@@ -102,7 +83,7 @@ export const ChanelBar = (props: {
   };
   const onVocalChannelClick = useCallback(
     (id: number) => {
-      console.log(id, activeVocalChannel);
+      //console.log(id, activeVocalChannel);
       if (activeVocalChannel === id) return;
       dispatch(setActiveVocalChannel(id));
     },
@@ -160,7 +141,7 @@ export const ChanelBar = (props: {
   };
 
   const handleVocalChannelCreated = (chan: VocalChan) => {
-    console.log('new voc chan', chan.name);
+    //console.log('new voc chan', chan.name);
     setVocalChannelList((prevState) => [...prevState, chan]);
   };
   const handleVocalChannelChange = (chan: VocalChan) => {
@@ -175,7 +156,7 @@ export const ChanelBar = (props: {
   };
 
   const handleTextChannelChange = (chan: Channel) => {
-    console.log(chan);
+    //console.log(chan);
     setTextChannelList((prevState) =>
       prevState.map((c) => {
         if (c.id === chan.id) {
@@ -306,7 +287,7 @@ export const ChanelBar = (props: {
   };
 
   const handleCreateChannel = (isVocal: any) => {
-    console.log(isVocal, 'rcvghjbknl', newTextChannelName);
+    //console.log(isVocal, 'rcvghjbknl', newTextChannelName);
     if (newTextChannelName.length > 0) {
       axios
         .post(

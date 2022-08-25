@@ -42,7 +42,6 @@ const App = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-
     if (token) {
       dispatch(setToken(token));
       axios
@@ -53,7 +52,7 @@ const App = () => {
         })
         .then((res) => {
           if (res.data.ok) {
-            console.log('res.data', res.data);
+            //console.log('res.data', res.data);
             // connectSocket(token);
             dispatch(setMe(res.data.user));
             dispatch(setIsConnected(true));
@@ -99,7 +98,7 @@ const App = () => {
           dispatch(setMe(res.data.user));
           dispatch(setIsConnected(true));
           localStorage.setItem('token', res.data.token);
-          console.log('res data user', res.data.user);
+          //console.log('res data user', res.data.user);
           // handleOk();
           let audio = new Audio('girl-hey-ringtone-second-version.mp3');
           audio.play();

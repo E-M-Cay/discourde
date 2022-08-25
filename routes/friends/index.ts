@@ -69,7 +69,7 @@ router.post('/send_request/', isAuth, async (req: IRequest, res: Response) => {
         ],
       });
 
-      // console.log(alreadyFriends, 'friends ?');
+      // //console.log(alreadyFriends, 'friends ?');
 
       if (alreadyFriends) {
         return res.status(401).send('Already friends');
@@ -88,7 +88,7 @@ router.post('/send_request/', isAuth, async (req: IRequest, res: Response) => {
         ],
       });
 
-      // console.log(alreadyExists);
+      // //console.log(alreadyExists);
 
       if (alreadyExists) {
         throw new Error('A request already exists.');
@@ -136,7 +136,7 @@ router.post('/send_request/', isAuth, async (req: IRequest, res: Response) => {
 router.post('/create', isAuth, async (req: IRequest, res: Response) => {
   if ('request' in req.body) {
     const requestId = req.body.request;
-    // console.log(requestId, 'req id');
+    // //console.log(requestId, 'req id');
     try {
       const request = await FriendRequestRepository.findOne({
         where: {
@@ -159,7 +159,7 @@ router.post('/create', isAuth, async (req: IRequest, res: Response) => {
         },
       });
 
-      // console.log(request, 'req');
+      // //console.log(request, 'req');
       if (!request) throw new Error('Request not found');
       const friendship = FriendshipRepository.create({
         user1: { id: req.id },
@@ -226,7 +226,7 @@ router.get(
           },
         },
       });
-      // console.log(friendRequests, 'FRRR', req.id);
+      // //console.log(friendRequests, 'FRRR', req.id);
       return res.status(201).send(friendRequests);
     } catch (e) {
       res.status(401).send('Could not get friends');

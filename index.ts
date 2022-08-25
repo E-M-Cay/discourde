@@ -28,7 +28,7 @@ dotenv.config();
 const app: Express = express(),
   port: string = process.env.PORT || '5001';
 
-console.log(process.env.PORT, 'port');
+//console.log(process.env.PORT, 'port');
 
 app.use(cors());
 app.use(express.json());
@@ -41,7 +41,7 @@ const PrivateMessageRepository = AppDataSource.getRepository(PrivateMessage);
 
 AppDataSource.initialize()
   .then(() => {
-    console.log('Data Source has been initialized!');
+    //console.log('Data Source has been initialized!');
     upsertPermissions();
     upsertHomeServer();
   })
@@ -125,7 +125,7 @@ interface ISocket extends Socket {
 }
 
 io.use(async (socket: ISocket, next) => {
-  console.log('handshake');
+  //console.log('handshake');
   try {
     const decoded = jwt.verify(
       socket.handshake.auth.token,
@@ -202,7 +202,7 @@ io.on('connection', (socket: ISocket) => {
       .toISOString()
       .slice(0, 19)
       .replace('T', ' ');
-    // console.log(
+    // //console.log(
     //   'time',
     //   time,
     //   'another',
@@ -219,7 +219,7 @@ io.on('connection', (socket: ISocket) => {
 
     await PrivateMessageRepository.save(private_message);
 
-    // console.log(private_message);
+    // //console.log(private_message);
     io.to(socket.id)
       .to(user_id_to_socket_id.get(message.to) as string)
       .emit(`privatemessage`, {
@@ -231,12 +231,12 @@ io.on('connection', (socket: ISocket) => {
   });
 
   socket.on('peerId', (data: { peer_id: string }) => {
-    console.log('peerid');
+    //console.log('peerid');
     socket.peer_id = data.peer_id;
   });
 
   socket.on('message', (message) => {
-    console.log(message);
+    //console.log(message);
   });
 
   socket.on('disconnecting', (reason) => {
@@ -244,7 +244,7 @@ io.on('connection', (socket: ISocket) => {
       return console.error('no user_id');
     }
 
-    // console.log('disconnected socket', socket.id, reason);
+    // //console.log('disconnected socket', socket.id, reason);
     const currentVocalChannel = global.user_id_to_vocal_channel.get(
       socket.user_id as number
     );

@@ -84,10 +84,10 @@ export default async function (
     },
   ]);
 
-  //console.log(permission_list);
+  ////console.log(permission_list);
 
   // for (const permission of permission_list) {
-  //     //console.log(permission)
+  //     ////console.log(permission)
   //     if (permission.id == action) {
   //         next();
   //         break;

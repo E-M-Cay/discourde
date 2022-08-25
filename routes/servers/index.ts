@@ -46,7 +46,7 @@ router.get('/list', isAuth, hasPerm, async (req: IRequest, res: Response) => {
       server: { owner: { id: true } },
     },
   });
-  console.log(list_server);
+  //console.log(list_server);
 
   const tempList: ServerUser[] = await Promise.all(
     list_server.map(async (serv) => {
@@ -58,7 +58,7 @@ router.get('/list', isAuth, hasPerm, async (req: IRequest, res: Response) => {
       return serv;
     })
   );
-  //console.log(tempList[0]);
+  ////console.log(tempList[0]);
   return res.send(tempList);
 });
 
@@ -238,7 +238,7 @@ router.get('/list_user/:id', isAuth, async (req: IRequest, res: Response) => {
     },
   });
 
-  //console.log(user_list);
+  ////console.log(user_list);
   return res.status(201).send(user_list);
 });
 
@@ -247,7 +247,7 @@ router.post('/add_user', isAuth, async (req: IRequest, res: Response) => {
     const user = await UserRepository.findOneBy({ id: req.id });
     if (!user) return res.status(404).send('Error');
 
-    console.log(req.id, 'req.id');
+    //console.log(req.id, 'req.id');
 
     if (!('uuid' in req.body)) return res.status(404).send('Error');
 

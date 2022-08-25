@@ -37,7 +37,7 @@ export const ServerInvit = (props: {
         }
       )
       .then((res) => {
-        console.log(res);
+        //console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -293,7 +293,7 @@ export const UserProfileModal = (props: {
   } = useContext(UserMapsContext);
   const { friendMap, sendFriendRequest } = useContext(UserMapsContext);
   const isFriend = friendMap.has(user.id);
-  // console.log(user);
+  // //console.log(user);
   const handleProfileChange = () => {
     if (userTmp?.username || userTmp?.picture) {
       axios
@@ -331,7 +331,7 @@ export const UserProfileModal = (props: {
           }
         )
         .then((res) => {
-          console.log(res);
+          //console.log(res);
         })
         .catch((err) => {
           console.log(err);

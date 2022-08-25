@@ -44,7 +44,7 @@ export const userSlice = createSlice({
       state.serverUsername = action.payload;
     },
     setToken: (state, action: PayloadAction<string>) => {
-      console.log('putain');
+      //console.log('putain');
       state.token = action.payload;
     },
     setActiveServerName: (state, action: PayloadAction<string>) => {
@@ -70,11 +70,11 @@ export const userSlice = createSlice({
       state.me = action.payload;
     },
     setMute: (state) => {
-      // console.log('truc1');
+      // //console.log('truc1');
       state.isMute = true;
     },
     setUnmute: (state) => {
-      // console.log('truc2');
+      // //console.log('truc2');
       state.isMute = false;
     },
     setMuteAudio: (state) => {

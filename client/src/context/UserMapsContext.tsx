@@ -104,7 +104,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
 
   const openPrivateChat = useCallback(
     (user: User) => {
-      console.log(privateChatMap);
+      //console.log(privateChatMap);
 
       if (user.id === me?.id) return;
       if (!privateChatMap.has(user.id)) {
@@ -164,7 +164,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
   };
 
   const acceptFriendRequest = (id: number, senderId: number) => {
-    // console.log('accept req', id);
+    // //console.log('accept req', id);
     axios
       .post(
         '/friends/create',
@@ -199,7 +199,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
       })
       .then((res) => {
         if (res.status === 204) {
-          console.log(receivedFriendRequestMap.get(senderId), 'delete ?');
+          //console.log(receivedFriendRequestMap.get(senderId), 'delete ?');
           removeReceivedFriendRequest(senderId);
         }
       });
@@ -220,7 +220,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
   };
 
   useEffect(() => {
-    // console.log(serverUserMap, 'userMapcaralho');
+    // //console.log(serverUserMap, 'userMapcaralho');
     if (activeServer)
       axios
         .get(`/server/list_user/${activeServer}`, {
@@ -229,7 +229,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
           },
         })
         .then((res) => {
-          console.log(res.data, 'user server');
+          //console.log(res.data, 'user server');
           res.data.forEach((user: ServerUser) =>
             setServerUser(user.user.id, user)
           );
@@ -249,7 +249,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
         },
       })
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
         res.data.forEach((u: User) => setPrivateChat(u.id, u));
       });
 
@@ -288,7 +288,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
         },
       })
       .then((res) => {
-        // console.log('Friendship', res.data);
+        // //console.log('Friendship', res.data);
         res.data.forEach((fr: ReceivedFriendRequest) => {
           setReceivedFriendRequest(fr.sender.id, fr);
         });
@@ -306,7 +306,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
         },
       })
       .then((res) => {
-        // console.log('Friendship', res.data);
+        // //console.log('Friendship', res.data);
         res.data.forEach((fr: SentFriendRequest) => {
           setSentFriendRequest(fr.receiver.id, fr);
         });
@@ -318,7 +318,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
 
   const handleStatusChange = useCallback(
     (status: number, id: number) => {
-      console.log('connection', id);
+      //console.log('connection', id);
       const user = serverUserMap.get(id);
       if (user) {
         setServerUser(id, { ...user, user: { ...user.user, status } });
@@ -425,7 +425,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
 
   const handleUserProfileChange = useCallback(
     (user: User) => {
-      console.log(user, 'user change', serverUserMap);
+      //console.log(user, 'user change', serverUserMap);
       const serverUser = serverUserMap.get(user.id);
       if (serverUser) {
         setServerUser(user.id, { ...serverUser, user });

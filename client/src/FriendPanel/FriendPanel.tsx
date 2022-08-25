@@ -68,7 +68,7 @@ export const FriendPanel = (props: {
         },
       })
       .then((res) => {
-        // console.log(res, 'pépon');
+        // //console.log(res, 'pépon');
         setServerRequests(res.data);
       })
       .catch((err) => {
@@ -134,7 +134,7 @@ export const FriendPanel = (props: {
             return invitation.id !== invitationId;
           })
         );
-        console.log(res);
+        //console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -144,12 +144,12 @@ export const FriendPanel = (props: {
   const [stateMenu, setmenuState] = useState(true);
 
   const onChange = (key: any) => {
-    // console.log(key);
+    // //console.log(key);
   };
   const onClick = (e: any) => {
-    // console.log('click ', e);
+    // //console.log('click ', e);
   };
-  const onSearch = (value: any) => console.log(value);
+  // const onSearch = (value: any) => //console.log(value);
 
   const menu = (user: User) => {
     return (
@@ -351,7 +351,7 @@ export const FriendPanel = (props: {
             placeholder='Rechercher'
             enterButton={<SearchOutlined />}
             size='middle'
-            onSearch={onSearch}
+            // onSearch={onSearch}
           />
           <br />
           <br />
@@ -502,7 +502,7 @@ export const FriendPanel = (props: {
             placeholder='Entrer un pseudo'
             enterButton='Envoyer demande'
             size='large'
-            onSearch={onSearch}
+            // onSearch={onSearch}
           />
         </TabPane>
       </Tabs>

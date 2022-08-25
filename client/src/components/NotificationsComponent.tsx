@@ -29,7 +29,7 @@ export const NotificationsComponent = () => {
               <div
                 className='notificationReje'
                 onClick={() => {
-                  console.log('notification', notification);
+                  //console.log('notification', notification);
                   notification.user &&
                     notification.openPrivateChat(notification.user);
                 }}

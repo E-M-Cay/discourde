@@ -232,7 +232,7 @@ router.get(
           author: message.author.id,
         });
       }
-      // console.log(response, 'response');
+      // //console.log(response, 'response');
       return res.status(200).send({ response });
     } catch (error) {
       console.log(error);

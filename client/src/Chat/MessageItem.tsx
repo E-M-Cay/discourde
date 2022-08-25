@@ -2,6 +2,7 @@ import { CustomImageMess } from '../CustomLi/CustomLi';
 import { ServerUser } from '../types/types';
 import logo from '../assets/discourde.png';
 import { useState } from 'react';
+import { getByDisplayValue } from '@testing-library/react';
 
 type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
 
@@ -16,6 +17,46 @@ export const MessageItem = (props: {
   //décomposer props directement avec username, picture, id
 }) => {
   const { picture, username, id, content, send_time, compress, isLast } = props;
+
+  const today = new Date();
+
+  const testToday = today.toISOString();
+
+  let displayDate = '';
+
+  let sendTime = '';
+
+  if (send_time.split('T').length === 1) {
+    sendTime = testToday;
+  } else {
+    sendTime = send_time;
+  }
+
+  if (testToday.split('T')[0] === sendTime.split('T')[0]) {
+    displayDate =
+      "Aujourd'hui à " +
+      sendTime.split('T')[1].split(':')[0] +
+      ':' +
+      sendTime.split('T')[1].split(':')[1];
+  } else if (
+    testToday.split('T')[0].split('-')[1] ===
+      sendTime.split('T')[0].split('-')[1] &&
+    Number(testToday.split('T')[0].split('-')[2]) - 1 ===
+      Number(sendTime.split('T')[0].split('-')[2])
+  ) {
+    displayDate =
+      'Hier à ' +
+      sendTime.split('T')[1].split(':')[0] +
+      ':' +
+      sendTime.split('T')[1].split(':')[1];
+  } else {
+    displayDate =
+      sendTime.split('T')[0].split('-')[2] +
+      '/' +
+      sendTime.split('T')[0].split('-')[1] +
+      '/' +
+      sendTime.split('T')[0].split('-')[0];
+  }
 
   return (
     <div
@@ -36,7 +77,7 @@ export const MessageItem = (props: {
           <div className='messageItemContentName'>
             {' '}
             {username}
-            <span className='time'> {send_time}</span>
+            <span className='time'> {displayDate}</span>
           </div>
         )}
         <div

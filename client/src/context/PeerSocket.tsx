@@ -3,7 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { host, socketPort } from '../env/host';
 import { peerPort, peerServerHost } from '../env/host';
 import Peer from 'peerjs';
-import { setIsConnected, setUsername } from '../redux/userSlice';
+import { setIsConnected } from '../redux/userSlice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 
 interface PeerSocket {
@@ -73,15 +73,12 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
   const { isConnected, token } = useAppSelector((state) => state.userReducer);
   const dispatch = useAppDispatch();
 
-  const onPeerOpen = useCallback(
-    (peer_id: string) => {
-      //console.log('peerid:', peer_id);
-      //console.log('peer open');
-      socket.emit('peerId', { peer_id });
-      setIsPeerConnected(true);
-    },
-    [socket]
-  );
+  const onPeerOpen = useCallback((peer_id: string) => {
+    //console.log('peerid:', peer_id);
+    //console.log('peer open');
+    socket.emit('peerId', { peer_id });
+    setIsPeerConnected(true);
+  }, []);
 
   useEffect(() => {
     //console.log('token change');
@@ -99,7 +96,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
       socket.connect();
       //console.log('connected');
     }
-  }, [socket, isConnected]);
+  }, [isConnected]);
 
   useEffect(() => {
     socket.on('connect', () => setIsSocketConnected(true));
@@ -120,7 +117,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
       socket.off('disconnect');
       socket.off('connect_error');
     };
-  }, [socket]);
+  }, [dispatch]);
 
   useEffect(() => {
     peer.on('open', onPeerOpen);
@@ -129,7 +126,7 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
       peer.off('open');
       peer.off('disconnected');
     };
-  }, [peer, onPeerOpen]);
+  }, [onPeerOpen]);
 
   return (
     <PeerSocketContext.Provider

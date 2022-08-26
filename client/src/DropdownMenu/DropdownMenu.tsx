@@ -28,9 +28,7 @@ export const DropdownMenu = (params: {
   } = params;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { notifications, clearNotification } = useContext(NotificationsContext);
-  const activeServer = useAppSelector(
-    (state) => state.userReducer.activeServer
-  );
+
   const activeServerOwner = useAppSelector(
     (state) => state.userReducer.activeServerOwner
   );

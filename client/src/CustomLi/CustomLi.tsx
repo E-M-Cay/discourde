@@ -1,4 +1,4 @@
-import { Image, Typography, Tooltip, Avatar, Badge } from 'antd';
+import { Tooltip, Avatar, Badge } from 'antd';
 import logo from '../assets/discourde.png';
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';

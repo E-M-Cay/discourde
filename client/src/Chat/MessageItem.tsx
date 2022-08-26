@@ -1,8 +1,6 @@
 import { CustomImageMess } from '../CustomLi/CustomLi';
 import { ServerUser } from '../types/types';
 import logo from '../assets/discourde.png';
-import { useState } from 'react';
-import { getByDisplayValue } from '@testing-library/react';
 import { Divider } from 'antd';
 
 type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;

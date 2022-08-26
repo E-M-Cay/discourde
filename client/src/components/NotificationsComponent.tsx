@@ -1,9 +1,9 @@
-import { Avatar, Badge, Divider, notification, Typography } from 'antd';
-import { useContext, useState } from 'react';
+import { Avatar, Divider, Typography } from 'antd';
+import { useContext } from 'react';
 import { NotificationsContext } from '../context/NotificationsContext';
 
 export const NotificationsComponent = () => {
-  const { notifications, addNotification } = useContext(NotificationsContext);
+  const { notifications } = useContext(NotificationsContext);
   return (
     <div
       style={{ maxHeight: '600px', overflowX: 'auto', marginRight: '-17px' }}

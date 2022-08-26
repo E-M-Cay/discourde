@@ -13,6 +13,7 @@ import { ChannelCollapse } from '../ChannelCollapse/ChannelCollapse';
 import { NotificationsContext } from '../context/NotificationsContext';
 import ServerParamsModal from '../Modals/ServerParamsModal';
 import { ProfileCall } from '../components/ProfileCall';
+import { VocalChannelContext } from '../components/VocalChannel';
 
 const { Panel } = Collapse;
 
@@ -42,12 +43,13 @@ export const ChanelBar = (props: {
     (state) => state.userReducer.activeChannel
   );
   const { socket } = useContext(PeerSocketContext);
-  const { notifications, addNotification } = useContext(NotificationsContext);
+  const { addNotification } = useContext(NotificationsContext);
   const dispatch = useAppDispatch();
   const headerTxt: string = 'SALONS TEXTUELS';
   const headerVoc: string = 'SALONS VOCAUX';
   const serverName: string = activeServerName ?? 'Serveur';
-  const me = useAppSelector((state) => state.userReducer.me);
+  const { me } = useAppSelector((state) => state.userReducer);
+  const { turnOnMicrophone, stream } = useContext(VocalChannelContext);
 
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
@@ -81,10 +83,15 @@ export const ChanelBar = (props: {
   const onTextChannelClick = (id: number) => {
     dispatch(setActiveChannel(id));
   };
+
   const onVocalChannelClick = useCallback(
-    (id: number) => {
-      //console.log(id, activeVocalChannel);
+    async (id: number) => {
       if (activeVocalChannel === id) return;
+      if (!stream?.active) {
+        if (!(await turnOnMicrophone())) {
+          return;
+        }
+      }
       dispatch(setActiveVocalChannel(id));
     },
     [activeVocalChannel, dispatch]
@@ -112,6 +119,7 @@ export const ChanelBar = (props: {
   const handleLeftVocal = useCallback(
     (data: { user: number; chan: number }) => {
       const { user, chan } = data;
+      // console.log('lol');
       if (chan === activeVocalChannel) {
         new Audio('/abduction-265.mp3').play();
       }
@@ -130,6 +138,9 @@ export const ChanelBar = (props: {
   useEffect(() => {
     socket.on(`joiningvocal`, handleJoinVocal);
     socket.on(`leftvocal`, handleLeftVocal);
+    // socket.on(`leftvocal`, (data: { user: number; chan: number }) => {
+    //   console.log(data);
+    // });
     return () => {
       socket.off(`joiningvocal`, handleJoinVocal);
       socket.off(`leftvocal`, handleLeftVocal);

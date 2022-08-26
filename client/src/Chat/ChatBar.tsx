@@ -10,7 +10,7 @@ import { Input, Form } from 'antd';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { useAppSelector } from '../redux/hooks';
 import Picker from 'emoji-picker-react';
-import { CloseOutlined, SmileOutlined } from '@ant-design/icons';
+import { SmileOutlined } from '@ant-design/icons';
 import { InputRef } from 'antd';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { Channel } from '../types/types';

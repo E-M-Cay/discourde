@@ -248,6 +248,7 @@ io.on('connection', (socket: ISocket) => {
     const currentVocalChannel = global.user_id_to_vocal_channel.get(
       socket.user_id as number
     );
+
     if (currentVocalChannel) {
       io.emit('leftvocal', {
         user: socket.user_id,
@@ -282,6 +283,7 @@ io.on('connection', (socket: ISocket) => {
     const currentVocalChannel = global.user_id_to_vocal_channel.get(
       socket.user_id as number
     );
+    console.log('quit');
 
     if (currentVocalChannel === id) {
       socket.broadcast.emit(`leftvocalchannel:${id}`, socket.user_id);

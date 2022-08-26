@@ -1,12 +1,11 @@
-import { Button, Collapse, Dropdown, Menu, Modal, Typography } from 'antd';
-import axios from 'axios';
+import { Collapse, Dropdown, Menu, Modal, Typography } from 'antd';
 import { useContext, useState } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { CustomImage } from '../CustomLi/CustomLi';
 import { UserProfileModal } from '../Modals/Modals';
 import UserProfileSettings from '../Modals/UserProfileSettings';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { PrivateChatMap, User, ServerUserMap } from '../types/types';
+import { useAppSelector } from '../redux/hooks';
+import { User } from '../types/types';
 
 //const { Title } = Typography;
 const { Panel } = Collapse;

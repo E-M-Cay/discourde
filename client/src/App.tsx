@@ -20,6 +20,9 @@ const App = () => {
   const loginPasswordRef = useRef<string>('');
   const { isConnected } = useAppSelector((state) => state.userReducer);
   const [isLoggin, setIsLoggin] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [registerError, setRegisterError] = useState('');
+  const [registerSuccess, setRegisterSuccess] = useState('');
 
   const [pictureLink, setPictureLink] = useState(
     '/profile-pictures/serpent.png'
@@ -72,12 +75,21 @@ const App = () => {
 
   const onSubmitRegister = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    axios.post(`/user/register`, {
-      email: registerEmailRef.current,
-      password: registerPasswordRef.current,
-      username: registerUsernameRef.current,
-      picture: pictureLink,
-    });
+    setRegisterError('');
+    setRegisterSuccess('');
+    axios
+      .post(`/user/register`, {
+        email: registerEmailRef.current,
+        password: registerPasswordRef.current,
+        username: registerUsernameRef.current,
+        picture: pictureLink,
+      })
+      .then((res) => {
+        setRegisterSuccess('Compte créé avec succès');
+      })
+      .catch((e) => {
+        setRegisterError(e.response.data.error);
+      });
   };
 
   const onSubmitLogin = (e: React.FormEvent<HTMLFormElement>) => {
@@ -89,6 +101,8 @@ const App = () => {
       })
       .then((res) => {
         if (res.data.token) {
+          setLoginError('');
+
           dispatch(setToken(res.data.token));
           dispatch(setMe(res.data.user));
           dispatch(setIsConnected(true));
@@ -97,7 +111,12 @@ const App = () => {
           // handleOk();
           let audio = new Audio('girl-hey-ringtone-second-version.mp3');
           audio.play();
+        } else {
+          setLoginError('error');
         }
+      })
+      .catch((err) => {
+        setLoginError('Le login ou le mot de passe est incorrect');
       });
   };
 
@@ -158,6 +177,7 @@ const App = () => {
 
                 <Input
                   style={{ maxWidth: '50%' }}
+                  type='email'
                   placeholder='email'
                   id='registerEmail'
                   onChange={(e) => onChangeHandler(e, registerEmailRef)}
@@ -219,6 +239,27 @@ const App = () => {
                   </>
                 ))}
               </div>
+              <span
+                style={{
+                  display: registerError !== '' ? '' : 'none',
+                  color: '#B30000',
+                  fontSize: '1rem',
+                  paddingTop: '10px',
+                }}
+              >
+                {registerError}
+              </span>
+              <span
+                style={{
+                  display: registerSuccess !== '' ? 'block' : 'none',
+                  color: '#329932',
+                  fontSize: '1rem',
+                  paddingTop: '10px',
+                  // paddingBottom: '10px',
+                }}
+              >
+                {registerSuccess}
+              </span>
               <br />
               <input
                 style={{
@@ -278,8 +319,12 @@ const App = () => {
                   style={{
                     width: '50%',
                   }}
-                ></Input>
+                />
               </div>
+              <span style={{ color: '#B30000', fontSize: '1rem' }}>
+                {loginError}
+              </span>
+              <br />
               <input
                 style={{
                   borderRadius: 0,

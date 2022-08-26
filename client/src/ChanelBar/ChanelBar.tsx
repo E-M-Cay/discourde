@@ -4,7 +4,11 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import './ChanelBar.css';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setActiveChannel, setActiveVocalChannel } from '../redux/userSlice';
+import {
+  setActiveChannel,
+  setActiveVocalChannel,
+  setAiChat,
+} from '../redux/userSlice';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { Channel, VocalChan } from '../types/types';
 import { ServerChannels, ServerInvit } from '../Modals/Modals';
@@ -42,6 +46,7 @@ export const ChanelBar = (props: {
   const activeChannel = useAppSelector(
     (state) => state.userReducer.activeChannel
   );
+  const isAiChat = useAppSelector((state) => state.userReducer.aiChat);
   const { socket } = useContext(PeerSocketContext);
   const { addNotification } = useContext(NotificationsContext);
   const dispatch = useAppDispatch();

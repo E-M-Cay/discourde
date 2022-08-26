@@ -11,6 +11,7 @@ interface UserState {
   activeVocalChannel?: number;
   activePrivateChat?: number;
   home: boolean;
+  aiChat: boolean;
   me?: User;
   isMute: boolean;
   isMuteAudio: boolean;
@@ -25,6 +26,7 @@ const initialUserState: UserState = {
   activeServer: 0,
   home: false,
   isMute: false,
+  aiChat: false,
   isMuteAudio: false,
   isConnected: false,
   activeVocalChannelServer: 0,
@@ -36,6 +38,9 @@ export const userSlice = createSlice({
   reducers: {
     setIsHome: (state, action: PayloadAction<boolean>) => {
       state.home = action.payload;
+    },
+    setAiChat: (state, action: PayloadAction<boolean>) => {
+      state.aiChat = action.payload;
     },
     setToken: (state, action: PayloadAction<string>) => {
       //console.log('putain');
@@ -86,6 +91,7 @@ export const userSlice = createSlice({
 
 export const {
   setIsHome,
+  setAiChat,
   setToken,
   setActiveServerName,
   setActiveServerOwner,

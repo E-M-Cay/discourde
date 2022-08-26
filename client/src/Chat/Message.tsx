@@ -116,25 +116,28 @@ const Message = () => {
       className='message'
     >
       <div>{name}</div>
-      {messages?.map((obj: TextMessage, i: number) => {
-        const user = serverUserMap.get(obj.author);
-        return (
-          user && (
-            <MessageItem
-              id={user.user.id}
-              username={user.nickname}
-              picture={user.user.picture}
-              content={obj.content}
-              send_time={obj.send_time}
-              key={i}
-              compress={messageSanitizer(obj, i - 1)}
-              isLast={i === messages.length - 1}
-              isNewDay={newDayCheck(obj, i - 1)}
-              fromNormalChat={true}
-            />
-          )
-        );
-      })}
+
+      {activeChannel &&
+        messages?.map((obj: TextMessage, i: number) => {
+          const user = serverUserMap.get(obj.author);
+          return (
+            user && (
+              <MessageItem
+                id={user.user.id}
+                username={user.nickname}
+                picture={user.user.picture}
+                content={obj.content}
+                send_time={obj.send_time}
+                key={i}
+                compress={messageSanitizer(obj, i - 1)}
+                isLast={i === messages.length - 1}
+                isNewDay={newDayCheck(obj, i - 1)}
+                fromNormalChat={true}
+              />
+            )
+          );
+        })}
+
       <span style={{ height: 0 }} ref={bottomRef} />
     </div>
   );

@@ -49,12 +49,14 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
   );
 
   const onSubmitChatChannelHandler = () => {
-    if (activeChannel) {
+    if (activeChannel && activeChannel !== -1 ) {
       socket.emit('message', {
         content: input,
         channel: activeChannel,
       });
       setInput('');
+    } else if (activeChannel === -1) {
+      
     }
   };
 
@@ -94,7 +96,11 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
           placeholder={`Envoyer un message ${
             isHome
               ? `à ${privateChatMap.get(activePrivateChat ?? 0)?.username}`
-              : `dans ${activeChannelName}`
+              : `dans ${
+                  activeChannel !== -1
+                    ? activeChannelName
+                    : 'le chat de notre inteligence artificielle'
+                }`
           }`}
           id='inputReturn'
           onChange={(e) => setInput(e.target.value)}

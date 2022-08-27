@@ -10,7 +10,7 @@ import { Input, Form } from 'antd';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { useAppSelector } from '../redux/hooks';
 import Picker from 'emoji-picker-react';
-import { CloseOutlined, SmileOutlined } from '@ant-design/icons';
+import { SmileOutlined } from '@ant-design/icons';
 import { InputRef } from 'antd';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { Channel } from '../types/types';
@@ -49,12 +49,14 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
   );
 
   const onSubmitChatChannelHandler = () => {
-    if (activeChannel) {
+    if (activeChannel && activeChannel !== -1 ) {
       socket.emit('message', {
         content: input,
         channel: activeChannel,
       });
       setInput('');
+    } else if (activeChannel === -1) {
+      
     }
   };
 
@@ -94,7 +96,11 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
           placeholder={`Envoyer un message ${
             isHome
               ? `à ${privateChatMap.get(activePrivateChat ?? 0)?.username}`
-              : `dans ${activeChannelName}`
+              : `dans ${
+                  activeChannel !== -1
+                    ? activeChannelName
+                    : 'le chat de notre inteligence artificielle'
+                }`
           }`}
           id='inputReturn'
           onChange={(e) => setInput(e.target.value)}

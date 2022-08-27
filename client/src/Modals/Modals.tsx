@@ -520,13 +520,78 @@ export const GeneralSettings = () => {
   return (
     <>
       <Modal
-        title='General Settings'
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={null}
+        closable={false}
       >
-        <Button onClick={() => handleDisconnect()}>Disconnect</Button>
+        {/* <h1>MENTIONS LEGALES :</h1> */}
+
+        <p style={{ textAlign: 'justify' }}>
+           
+          <br />
+          Conformément aux dispositions des articles 6-III et 19 de la Loi n°
+          2004-575 du 21 juin 2004 pour la Confiance dans l'économie numérique,
+          dite L.C.E.N., nous portons à la connaissance des utilisateurs et
+          visiteurs du site : discourde.herokuapp.com les informations suivantes
+          :
+        </p>
+
+        <p style={{ textAlign: 'justify' }}>ÉDITEUR</p>
+
+        <p style={{ textAlign: 'justify' }}>
+          Le site discourde.herokuapp.com  est la propriété exclusive de  SAS 
+          Discourde , qui l'édite.
+        </p>
+
+        <p style={{ textAlign: 'justify' }}>
+          Discourde  
+          <br />
+          SAS au capital de   100000 € Tél  : 0679524638
+        </p>
+
+        <p style={{ textAlign: 'justify' }}>
+          31 rue de la marine  12303 Vandone
+          <br />
+          Immatriculée au Registre du Commerce et des Sociétés de   Vandone B
+          794 598 813 sous le numéro   01684239547660  
+        </p>
+
+        <p style={{ textAlign: 'justify' }}>
+          Numéro TVA intracommunautaire : FR14794598813
+          <br />
+          Adresse de courrier électronique : xx-marcdark-xx@hotmail.fr  <br />
+           <br />
+          Directeur de la  publication : Alain Darkos
+          <br />
+          Contactez le responsable de la publication : alain.capone@hotmail.fr
+        </p>
+
+        <p style={{ textAlign: 'justify' }}> </p>
+
+        <p style={{ textAlign: 'justify' }}>HÉBERGEMENT</p>
+
+        <p style={{ textAlign: 'justify' }}>
+          Le site est hébergé par  heroku heroku.com 13000 marseille
+          <br />
+        </p>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <button
+            style={{
+              borderRadius: 0,
+              border: 0,
+              padding: '3px 10px',
+              color: 'grey',
+              backgroundColor: '#40444b',
+              marginTop: '10px',
+              marginRight: '10px',
+            }}
+            onClick={() => handleDisconnect()}
+          >
+            Disconnect
+          </button>
+        </div>
       </Modal>
     </>
   );

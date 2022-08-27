@@ -147,6 +147,7 @@ body {
 
 input[type='text'],
 input[type='password'],
+input[type='email'],
 textarea {
   background-color: #40444b;
 
@@ -307,4 +308,11 @@ label {
   color: #99a6a0 !important;
   font-size: 13px;
   font-weight: 600;
+}
+
+button:hover,
+input[type='submit']:hover {
+  color: #4b4040 !important;
+  background-color: grey !important;
+  cursor: pointer !important;
 }

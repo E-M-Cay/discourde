@@ -1,10 +1,15 @@
-import { BorderlessTableOutlined, SoundOutlined } from '@ant-design/icons';
+import {
+  BorderlessTableOutlined,
+  SoundOutlined,
+  WechatOutlined,
+} from '@ant-design/icons';
 import { Avatar, Collapse } from 'antd';
 import { useContext } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { Channel, VocalChan } from '../types/types';
 import logo from '../assets/discourde.png';
 import { VocalChannelContext } from '../components/VocalChannel';
+import { useAppSelector } from '../redux/hooks';
 const { Panel } = Collapse;
 
 export const ChannelCollapse = (props: {
@@ -26,6 +31,9 @@ export const ChannelCollapse = (props: {
   const headerVoc: string = 'SALONS VOCAUX';
   const { serverUserMap } = useContext(UserMapsContext);
   const { displayActiveVocalChannel } = useContext(VocalChannelContext);
+  const activeServer = useAppSelector(
+    (state) => state.userReducer.activeServer
+  );
 
   return (
     <Collapse
@@ -54,6 +62,16 @@ export const ChannelCollapse = (props: {
                 : chan.name}
             </li>
           ))}
+        {activeServer === 1 && (
+          <li
+            key={-1}
+            onClick={() => onTextChannelClick(-1)}
+            className='panelContent'
+          >
+            {' '}
+            <WechatOutlined style={{ marginRight: '5px' }} /> Ai Chat
+          </li>
+        )}
       </Panel>
 
       <Panel

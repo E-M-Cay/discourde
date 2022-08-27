@@ -5,7 +5,7 @@ import { useAppSelector } from '../redux/hooks';
 import PrivateMessageChat from './PrivateMessageChat';
 import { Channel } from '../types/types';
 import { Typography } from 'antd';
-import { BorderlessTableOutlined } from '@ant-design/icons';
+import { BorderlessTableOutlined, WechatOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 
 const Chat = (props: { textChannelList: Channel[] }) => {
@@ -22,7 +22,7 @@ const Chat = (props: { textChannelList: Channel[] }) => {
     <div className='chat'>
       <div
         style={{
-          height: isHome ? '43px' : '44px',
+          height: isHome ? '41px' : '42px',
           width: '100%',
           color: 'white',
           fontWeight: 'bold',
@@ -41,10 +41,21 @@ const Chat = (props: { textChannelList: Channel[] }) => {
             fontSize: '16.8px',
           }}
         >
-          <BorderlessTableOutlined
-            style={{ color: 'darkgrey', marginRight: '10px' }}
-          />
-          {isHome ? name : textChannelName?.name ?? 'Private Chats'}
+          {activeChannel === -1 ? (
+            <WechatOutlined
+              style={{ color: 'darkgrey', marginRight: '10px' }}
+            />
+          ) : (
+            <BorderlessTableOutlined
+              style={{ color: 'darkgrey', marginRight: '10px' }}
+            />
+          )}
+
+          {isHome
+            ? name
+            : activeChannel === -1
+            ? 'Ai Chat'
+            : textChannelName?.name ?? 'Private Chats'}
         </Typography>
       </div>
       <div className='message'>

@@ -128,19 +128,7 @@ export const LeftBar = (props: {
               onChange={(e) => setServerName(e.target.value)}
             />
           </div>
-          {/* <select
-            name='pictures'
-            onChange={(e) => setServerLogo(e.target.value)}
-            id='pictures'
-          >
-            {serverPng.map((png, key) => (
-              <option key={key} value={png || 'pipi'}>
-                {key < 10
-                  ? 'men ' + (Number(key) + 1)
-                  : 'women ' + (Number(key) + 1)}
-              </option>
-            ))}
-          </select> */}
+
           <div
             style={{
               width: '100%',
@@ -190,20 +178,6 @@ export const LeftBar = (props: {
             />
           </div>
         </form>
-        {/* <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            joinServer();
-          }}
-        >
-          <input
-            type='number'
-            defaultValue={channelName}
-            onChange={(e) => setServerId(+e.target.value)}
-            placeholder='Enter server id'
-          />
-          <input type='submit' value='Create' />
-        </form> */}
       </Modal>
       <div
         className={'scrollIssue'}

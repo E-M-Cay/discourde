@@ -27,7 +27,10 @@ import { CustomImage, CustomImageMess } from '../CustomLi/CustomLi';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveServer, setIsHome } from '../redux/userSlice';
 import { User, Server, ServerResponse } from '../types/types';
+<<<<<<< HEAD
 import { Friendship } from '../types/types';
+=======
+>>>>>>> 5b7f549960d314ca8d15f6856972a09cae0b97fb
 import './FriendPanel.css';
 
 const { TabPane } = Tabs;

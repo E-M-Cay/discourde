@@ -1,14 +1,9 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { Avatar, Input, Select, Typography } from 'antd';
-import {
-  setUsername,
-  setToken,
-  setMe,
-  setIsConnected,
-} from './redux/userSlice';
+import { Avatar, Input, Typography } from 'antd';
+import { setToken, setMe, setIsConnected } from './redux/userSlice';
 import { Home } from './Home/Home';
 import { Modal } from 'antd';
 import { profilePng } from './profilePng/profilePng';
@@ -23,8 +18,11 @@ const App = () => {
   const loginEmailRef = useRef<string>('');
   const registerPasswordRef = useRef<string>('');
   const loginPasswordRef = useRef<string>('');
-  const { isConnected, token } = useAppSelector((state) => state.userReducer);
+  const { isConnected } = useAppSelector((state) => state.userReducer);
   const [isLoggin, setIsLoggin] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [registerError, setRegisterError] = useState('');
+  const [registerSuccess, setRegisterSuccess] = useState('');
 
   const [pictureLink, setPictureLink] = useState(
     '/profile-pictures/serpent.png'
@@ -66,7 +64,7 @@ const App = () => {
       // verifyAndRefreshToken(token);
     }
     // else setIsModalVisible(true);
-  }, [setIsConnected, dispatch]);
+  }, [dispatch]);
 
   const onChangeHandler = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -77,12 +75,21 @@ const App = () => {
 
   const onSubmitRegister = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    axios.post(`/user/register`, {
-      email: registerEmailRef.current,
-      password: registerPasswordRef.current,
-      username: registerUsernameRef.current,
-      picture: pictureLink,
-    });
+    setRegisterError('');
+    setRegisterSuccess('');
+    axios
+      .post(`/user/register`, {
+        email: registerEmailRef.current,
+        password: registerPasswordRef.current,
+        username: registerUsernameRef.current,
+        picture: pictureLink,
+      })
+      .then((res) => {
+        setRegisterSuccess('Compte créé avec succès');
+      })
+      .catch((e) => {
+        setRegisterError(e.response.data.error);
+      });
   };
 
   const onSubmitLogin = (e: React.FormEvent<HTMLFormElement>) => {
@@ -94,6 +101,8 @@ const App = () => {
       })
       .then((res) => {
         if (res.data.token) {
+          setLoginError('');
+
           dispatch(setToken(res.data.token));
           dispatch(setMe(res.data.user));
           dispatch(setIsConnected(true));
@@ -102,7 +111,12 @@ const App = () => {
           // handleOk();
           let audio = new Audio('girl-hey-ringtone-second-version.mp3');
           audio.play();
+        } else {
+          setLoginError('error');
         }
+      })
+      .catch((err) => {
+        setLoginError('Le login ou le mot de passe est incorrect');
       });
   };
 
@@ -163,6 +177,7 @@ const App = () => {
 
                 <Input
                   style={{ maxWidth: '50%' }}
+                  type='email'
                   placeholder='email'
                   id='registerEmail'
                   onChange={(e) => onChangeHandler(e, registerEmailRef)}
@@ -225,6 +240,27 @@ const App = () => {
                   </>
                 ))}
               </div>
+              <span
+                style={{
+                  display: registerError !== '' ? '' : 'none',
+                  color: '#B30000',
+                  fontSize: '1rem',
+                  paddingTop: '10px',
+                }}
+              >
+                {registerError}
+              </span>
+              <span
+                style={{
+                  display: registerSuccess !== '' ? 'block' : 'none',
+                  color: '#329932',
+                  fontSize: '1rem',
+                  paddingTop: '10px',
+                  // paddingBottom: '10px',
+                }}
+              >
+                {registerSuccess}
+              </span>
               <br />
               <input
                 style={{
@@ -284,8 +320,12 @@ const App = () => {
                   style={{
                     width: '50%',
                   }}
-                ></Input>
+                />
               </div>
+              <span style={{ color: '#B30000', fontSize: '1rem' }}>
+                {loginError}
+              </span>
+              <br />
               <input
                 style={{
                   borderRadius: 0,

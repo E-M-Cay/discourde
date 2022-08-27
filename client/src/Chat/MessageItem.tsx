@@ -1,11 +1,7 @@
 import { CustomImageMess } from '../CustomLi/CustomLi';
 import { ServerUser } from '../types/types';
 import logo from '../assets/discourde.png';
-import { useState } from 'react';
-import { getByDisplayValue } from '@testing-library/react';
 import { Divider } from 'antd';
-
-type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
 
 export const MessageItem = (props: {
   id: number;
@@ -35,20 +31,20 @@ export const MessageItem = (props: {
 
   // let incr = fromNormalChat ? 14400000 : 0;
 
-  today = new Date(today.getTime());
+  today = new Date(today.getTime() + 7200000);
 
   const testToday = today.toISOString();
 
   let displayDate = '';
 
   let sendTime = '';
-
   if (send_time.split('T').length === 1) {
     sendTime = new Date(send_time).toISOString();
   } else {
     sendTime = send_time;
   }
 
+  // console.log(testToday, sendTime);
   if (testToday.split('T')[0] === sendTime.split('T')[0]) {
     displayDate =
       "Aujourd'hui à " +

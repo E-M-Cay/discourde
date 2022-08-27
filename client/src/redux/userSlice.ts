@@ -1,33 +1,35 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { stat } from 'fs';
 import { User } from '../types/types';
 
 interface UserState {
-  username: string;
   serverUsername?: string;
   token?: string;
   activeServerName?: string;
   activeServerOwner?: number;
-  activeServer?: number;
+  activeServer: number;
   activeChannel?: number;
   activeVocalChannel?: number;
   activePrivateChat?: number;
   home: boolean;
+  aiChat: boolean;
   me?: User;
   isMute: boolean;
   isMuteAudio: boolean;
   isConnected: boolean;
+  activeVocalChannelServer: number;
 }
 
 const initialUserState: UserState = {
   token: localStorage.getItem('token')
     ? (localStorage.getItem('token') as string)
     : undefined,
-  username: '',
-  home: true,
+  activeServer: 0,
+  home: false,
   isMute: false,
+  aiChat: false,
   isMuteAudio: false,
   isConnected: false,
+  activeVocalChannelServer: 0,
 };
 
 export const userSlice = createSlice({
@@ -37,11 +39,8 @@ export const userSlice = createSlice({
     setIsHome: (state, action: PayloadAction<boolean>) => {
       state.home = action.payload;
     },
-    setUsername: (state, action: PayloadAction<string>) => {
-      state.username = action.payload;
-    },
-    setServerUsername: (state, action: PayloadAction<string>) => {
-      state.serverUsername = action.payload;
+    setAiChat: (state, action: PayloadAction<boolean>) => {
+      state.aiChat = action.payload;
     },
     setToken: (state, action: PayloadAction<string>) => {
       //console.log('putain');
@@ -62,6 +61,7 @@ export const userSlice = createSlice({
 
     setActiveVocalChannel: (state, action: PayloadAction<number>) => {
       state.activeVocalChannel = action.payload;
+      state.activeVocalChannelServer = state.activeServer;
     },
     setActivePrivateChat: (state, action: PayloadAction<number>) => {
       state.activePrivateChat = action.payload;
@@ -91,13 +91,12 @@ export const userSlice = createSlice({
 
 export const {
   setIsHome,
-  setUsername,
+  setAiChat,
   setToken,
   setActiveServerName,
   setActiveServerOwner,
   setActiveServer,
   setActiveChannel,
-  setServerUsername,
   setActiveVocalChannel,
   setActivePrivateChat,
   setMe,

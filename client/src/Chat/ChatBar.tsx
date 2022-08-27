@@ -61,7 +61,10 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
       });
       setInput('');
     } else if (activeChannel === -1) {
+      let tmp1 = aiMsg;
+
       console.log(aiMsg);
+      dispatch(setAiMsg(tmp1 + '""Human: ' + input));
 
       const configuration = new Configuration({
         apiKey: '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',

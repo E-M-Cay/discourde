@@ -11,6 +11,7 @@ interface UserState {
   activeVocalChannel?: number;
   activePrivateChat?: number;
   home: boolean;
+  cameraChat: boolean;
   aiChat: boolean;
   me?: User;
   isMute: boolean;
@@ -28,6 +29,7 @@ const initialUserState: UserState = {
   home: false,
   isMute: false,
   aiChat: false,
+  cameraChat: true,
   isMuteAudio: false,
   isConnected: false,
   activeVocalChannelServer: 0,
@@ -74,6 +76,9 @@ export const userSlice = createSlice({
     setMe: (state, action: PayloadAction<User>) => {
       state.me = action.payload;
     },
+    setCameraChat: (state, action: PayloadAction<boolean>) => {
+      state.cameraChat = action.payload;
+    },
     setMute: (state) => {
       // //console.log('truc1');
       state.isMute = true;
@@ -109,6 +114,7 @@ export const {
   setActiveChannel,
   setActiveVocalChannel,
   setActivePrivateChat,
+  setCameraChat,
   setMe,
   setStatus,
   setMute,

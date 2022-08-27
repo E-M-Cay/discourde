@@ -7,9 +7,11 @@ import { Channel } from '../types/types';
 import { Typography } from 'antd';
 import { BorderlessTableOutlined, WechatOutlined } from '@ant-design/icons';
 import { useState } from 'react';
+import { CameraView } from './CameraView';
 
 const Chat = (props: { textChannelList: Channel[] }) => {
   const isHome = useAppSelector((state) => state.userReducer.home);
+  const cameraChat = useAppSelector((state) => state.userReducer.cameraChat);
   const { textChannelList } = props;
   const activeChannel = useAppSelector(
     (state) => state.userReducer.activeChannel
@@ -58,16 +60,20 @@ const Chat = (props: { textChannelList: Channel[] }) => {
             : textChannelName?.name ?? 'Private Chats'}
         </Typography>
       </div>
-      <div className='message'>
+      <div className={cameraChat ? 'messageCam' : 'message'}>
         {isHome ? (
           <PrivateMessageChat name={name} setName={setName} />
+        ) : cameraChat ? (
+          <CameraView />
         ) : (
           <Message />
         )}
       </div>
-      <div className='chatbar'>
-        <ChatBar textChannelList={textChannelList} />
-      </div>
+      {!cameraChat && (
+        <div className='chatbar'>
+          <ChatBar textChannelList={textChannelList} />
+        </div>
+      )}
     </div>
   );
 };

@@ -117,6 +117,12 @@ body {
   width: 1380px !important;
 }
 
+.messageCam {
+  height: calc(100vh - 44px) !important;
+  overflow-y: scroll;
+  width: 1380px !important;
+}
+
 .messageItemContentName {
   color: #dcdcdc;
   font-size: 15px;

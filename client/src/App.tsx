@@ -234,6 +234,7 @@ const App = () => {
                       onClick={() => setPictureLink(png)}
                       size={png === pictureLink ? 60 : 50}
                       src={png}
+                      key={png}
                     />
                     {key === 4 && <br />}
                   </>

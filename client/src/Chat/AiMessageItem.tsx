@@ -15,13 +15,13 @@ export const AiMessageItem = (props: {
 }) => {
   const { username, content, send_time } = props;
   const me = useSelector((state: any) => state.userReducer.me);
-  console.log(content, username, 'gdgdhdhjdgdghdh');
+  console.log(content === '', username, 'gdgdhdhjdgdghdh');
   return (
     <>
       <div
         className='messageItem'
         style={{
-          marginTop: '30px',
+          marginBottom: '30px',
           marginLeft: '10px',
         }}
       >

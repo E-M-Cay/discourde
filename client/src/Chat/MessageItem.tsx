@@ -46,7 +46,7 @@ export const MessageItem = (props: {
     sendTime = send_time;
   }
 
-  console.log(testToday, sendTime);
+  // console.log(testToday, sendTime);
   if (testToday.split('T')[0] === sendTime.split('T')[0]) {
     displayDate =
       "Aujourd'hui à " +

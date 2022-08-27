@@ -31,7 +31,7 @@ const initialUserState: UserState = {
   isMuteAudio: false,
   isConnected: false,
   activeVocalChannelServer: 0,
-  aiMsg: "",
+  aiMsg: '',
 };
 
 export const userSlice = createSlice({
@@ -78,6 +78,11 @@ export const userSlice = createSlice({
       // //console.log('truc1');
       state.isMute = true;
     },
+    setStatus: (state, action: PayloadAction<number>) => {
+      if (state.me) {
+        setMe({ ...state.me, status: action.payload });
+      }
+    },
     setUnmute: (state) => {
       // //console.log('truc2');
       state.isMute = false;
@@ -105,6 +110,7 @@ export const {
   setActiveVocalChannel,
   setActivePrivateChat,
   setMe,
+  setStatus,
   setMute,
   setUnmute,
   setMuteAudio,

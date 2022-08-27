@@ -279,6 +279,16 @@ io.on('connection', (socket: ISocket) => {
     io.emit('userdnd', socket.id);
   });
 
+  socket.on('online', () => {
+    global.user_id_to_status.set(socket.user_id as number, 1);
+    io.emit('userconnected', socket.user_id);
+  });
+
+  socket.on('invisible', () => {
+    global.user_id_to_status.set(socket.user_id as number, 0);
+    io.emit('userdisconnected', socket.user_id);
+  });
+
   socket.on('leftvocalchannel', (id: number) => {
     const currentVocalChannel = global.user_id_to_vocal_channel.get(
       socket.user_id as number

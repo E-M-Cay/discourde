@@ -3,22 +3,31 @@ import Message from './Message';
 import ChatBar from './ChatBar';
 import { useAppSelector } from '../redux/hooks';
 import PrivateMessageChat from './PrivateMessageChat';
-import { Channel } from '../types/types';
+import { Channel, VocalChan } from '../types/types';
 import { Typography } from 'antd';
 import { BorderlessTableOutlined, WechatOutlined } from '@ant-design/icons';
-import { useState } from 'react';
-import { CameraView } from './CameraView';
+import { useContext, useState } from 'react';
+import { VocalChannelContext } from '../components/VocalChannel';
 
-const Chat = (props: { textChannelList: Channel[] }) => {
+const Chat = (props: {
+  textChannelList: Channel[];
+  vocalChannelList: VocalChan[];
+}) => {
   const isHome = useAppSelector((state) => state.userReducer.home);
-  const cameraChat = useAppSelector((state) => state.userReducer.cameraChat);
-  const { textChannelList } = props;
+  const { cameraChat, activeVocalChannel } = useAppSelector(
+    (state) => state.userReducer
+  );
+  const { textChannelList, vocalChannelList } = props;
   const activeChannel = useAppSelector(
     (state) => state.userReducer.activeChannel
   );
   const textChannelName = textChannelList.find(
     (chan) => chan.id === activeChannel
   );
+  const currentVocalChannel = vocalChannelList.find(
+    (c) => c.id === activeVocalChannel
+  );
+  const { displayCameraView } = useContext(VocalChannelContext);
   const [name, setName] = useState('');
   return (
     <div className='chat'>
@@ -63,8 +72,8 @@ const Chat = (props: { textChannelList: Channel[] }) => {
       <div className={cameraChat ? 'messageCam' : 'message'}>
         {isHome ? (
           <PrivateMessageChat name={name} setName={setName} />
-        ) : cameraChat ? (
-          <CameraView />
+        ) : cameraChat && currentVocalChannel ? (
+          displayCameraView(currentVocalChannel)
         ) : (
           <Message />
         )}

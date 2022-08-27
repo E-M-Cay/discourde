@@ -1,9 +1,15 @@
-import React from 'react';
-import { Avatar } from 'antd';
+import { useContext } from 'react';
+import VideoStreamComponent from '../components/VideoStreamComponent';
+import { VocalChannelContext } from '../components/VocalChannel';
+import { useAppSelector } from '../redux/hooks';
 
-export const CameraView = () => {
-  const cam = ['jean', 'pierre', 'pen', 'jdjdh'];
-  const bool = false;
+export const CameraView = (props: {
+  users: number[];
+  stream?: MediaStream;
+  streamMap: Omit<Map<number, MediaStream>, 'delete' | 'set' | 'clear'>;
+}) => {
+  const me = useAppSelector((state) => state.userReducer.me);
+  const { users, stream, streamMap } = props;
   return (
     <div
       style={{
@@ -14,60 +20,12 @@ export const CameraView = () => {
         margin: 'auto',
       }}
     >
-      {cam.map((c) => (
-        <div
-          style={{
-            flexBasis: '50%',
-            width: '100%',
-            height: cam.length > 2 ? '50%' : '100%',
-            marginTop: '10px',
-            marginInline: 'auto',
-          }}
-        >
-          <div
-            className='camcam'
-            style={{
-              width: 'calc(100%-20px)',
-              height: '100%',
-              backgroundColor: '#323232',
-              margin: '10px',
-              borderRadius: '10px',
-              boxSizing: 'border-box',
-              backgroundImage: `url(/profile-pictures/robot1.png)`,
-              backgroundSize: '99999999px',
-              //   border: '8px solid rgba(0, 0, 0, 0.7)',
-            }}
-          >
-            {!bool ? (
-              <video
-                src='http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  borderRadius: '10px',
-                }}
-                autoPlay
-              />
-            ) : (
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                <Avatar
-                  src={'/profile-pictures/robot1.png'}
-                  size={100}
-                  style={{ margin: 'auto' }}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      ))}
+      <VideoStreamComponent stream={stream} />
+      {users.map((u) =>
+        u !== me?.id ? (
+          <VideoStreamComponent stream={streamMap.get(u) ?? undefined} />
+        ) : null
+      )}
     </div>
   );
 };

@@ -12,9 +12,10 @@ const VideoStreamComponent = (props: { stream?: MediaStream }) => {
   //   })
 
   useEffect(() => {
-    // if (stream && videoRef.current) {
-    //     videoRef.current?.src = stream
-    // }
+    if (stream && videoRef.current) {
+      videoRef.current.srcObject = stream;
+      videoRef.current.volume = 0;
+    }
 
     return () => {};
   }, [stream]);
@@ -44,6 +45,18 @@ const VideoStreamComponent = (props: { stream?: MediaStream }) => {
         }}
       >
         {!bool ? (
+          <video
+            ref={videoRef}
+            src='http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              borderRadius: '10px',
+            }}
+            autoPlay
+          />
+        ) : (
           <div
             style={{
               width: '100%',
@@ -58,8 +71,6 @@ const VideoStreamComponent = (props: { stream?: MediaStream }) => {
               style={{ margin: 'auto' }}
             />
           </div>
-        ) : (
-          <video ref={videoRef} />
         )}
       </div>
     </div>

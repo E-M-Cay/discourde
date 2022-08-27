@@ -25,9 +25,11 @@ import {
 } from '../redux/userSlice';
 import Meyda from 'meyda';
 import StreamVisualisation from './StreamVisualisation';
+import { CameraView } from '../Chat/CameraView';
 
 interface VocalChannel {
   displayActiveVocalChannel: (chan: VocalChan) => JSX.Element;
+  displayCameraView: (chan: VocalChan) => JSX.Element;
   muteSelf: () => void;
   unmuteSelf: () => void;
   muteAudio: () => void;
@@ -57,6 +59,9 @@ const VocalChannelContext = createContext<VocalChannel>({
     throw new Error('unmuteAudio not correctly overridden');
   },
   displayActiveVocalChannel: (_any?: any) => {
+    throw new Error('displayActiveVocalChannel not correctly overridden');
+  },
+  displayCameraView: (_any?: any) => {
     throw new Error('displayActiveVocalChannel not correctly overridden');
   },
   isStreamInitialized: false,
@@ -468,28 +473,9 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
             {chan.name}
           </span>
         </div>
-        {/* {activeVocalChannel === chan.id && (
-      <>
-        {' '}
-        <BorderlessTableOutlined className='activeChannel' />
-      </>
-    )} */}
         {chan.users.map((u) => {
-          // while (u) {
-          //   console.log(
-          //     analyzerMap.get(u)?.get()?.loudness?.total,
-          //     '!!!!!!!!!!!!!!!!!!!!!'
-          //   );
-          // }
-
           return (
-            <div
-              // onClick={() => console.log(serverUserMap.get(u), 'test')}
-              key={u}
-              style={{ marginTop: '5px' }}
-              // className='panelContentRen'
-            >
-              {/* <div>{featureMap.get(u)?.loudness?.total} TOTAL</div> */}
+            <div key={u} style={{ marginTop: '5px' }}>
               {me && (
                 <Dropdown
                   overlay={menu(u, me)}
@@ -497,32 +483,13 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
                   disabled={u === me?.id}
                 >
                   <div className='site-dropdown-context-menu panelContentRen'>
-                    {/* {u !== me?.id ? (
-                      <Avatar
-                        size={27}
-                        style={{
-                          marginRight: '5px',
-                          // marginBottom: '3px',
-                          boxSizing: 'content-box',
-                          border:
-                            Number(featureMap.get(u)?.loudness?.total) > 9
-                              ? '2px solid green'
-                              : '2px solid transparent',
-                        }}
-                        src={serverUserMap.get(u)?.user.picture ?? logo}
-                      />
-                    ) : ( */}
                     <StreamVisualisation
                       stream={
-                        u === me?.id
-                          ? (streamRef.current as MediaStream)
-                          : (streamMap.get(u) as MediaStream)
+                        u === me?.id ? streamRef.current : streamMap.get(u)
                       }
                       u={u}
                     />
-                    {/* )} */}{' '}
                     {serverUserMap.get(u)?.nickname || 'Error retrieving user'}
-                    {/* {u !== me?.id ? ` ${audioNodeMap.get(u)?.volume ?? ''}` : null} */}
                   </div>
                 </Dropdown>
               )}
@@ -530,6 +497,16 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
           );
         })}
       </li>
+    );
+  };
+
+  const displayCameraView = (chan: VocalChan) => {
+    return (
+      <CameraView
+        users={chan.users}
+        stream={streamRef.current}
+        streamMap={streamMap}
+      />
     );
   };
 
@@ -542,6 +519,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         muteAudio,
         unmuteAudio,
         displayActiveVocalChannel,
+        displayCameraView,
         isStreamInitialized,
       }}
     >

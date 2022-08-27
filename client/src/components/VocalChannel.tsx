@@ -498,14 +498,15 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
                 >
                   <div className='site-dropdown-context-menu panelContentRen'>
                     <Avatar
-                      size={20}
+                      size={27}
                       style={{
                         marginRight: '5px',
-                        marginBottom: '3px',
+                        // marginBottom: '3px',
+                        boxSizing: 'content-box',
                         border:
-                          (featureMap.get(u)?.loudness?.total || 0) > 9
+                          Number(featureMap.get(u)?.loudness?.total) > 9
                             ? '2px solid green'
-                            : '',
+                            : '2px solid transparent',
                       }}
                       src={serverUserMap.get(u)?.user.picture ?? logo}
                     />{' '}

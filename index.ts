@@ -271,12 +271,12 @@ io.on('connection', (socket: ISocket) => {
 
   socket.on('inactif', () => {
     global.user_id_to_status.set(socket.user_id as number, 2);
-    io.emit('useraway', socket.id);
+    io.emit('useraway', socket.user_id);
   });
 
   socket.on('dnd', () => {
     global.user_id_to_status.set(socket.user_id as number, 3);
-    io.emit('userdnd', socket.id);
+    io.emit('userdnd', socket.user_id);
   });
 
   socket.on('online', () => {

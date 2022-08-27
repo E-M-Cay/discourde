@@ -24,18 +24,25 @@ import {
   setUnmuteAudio,
 } from '../redux/userSlice';
 import Meyda from 'meyda';
-import { MeydaAnalyzer } from 'meyda/dist/esm/meyda-wa';
+import StreamVisualisation from './StreamVisualisation';
 
 interface VocalChannel {
-  stream?: MediaStream;
   displayActiveVocalChannel: (chan: VocalChan) => JSX.Element;
   muteSelf: () => void;
   unmuteSelf: () => void;
   muteAudio: () => void;
   unmuteAudio: () => void;
   isStreamInitialized: boolean;
+  audioContext: AudioContext;
 }
 
+interface Props {
+  children: React.ReactNode;
+}
+
+const AudioContext = window.AudioContext;
+
+const audioContext = new AudioContext();
 const VocalChannelContext = createContext<VocalChannel>({
   muteSelf: (_any?: any) => {
     throw new Error('muteSelf not correctly overridden');
@@ -53,15 +60,8 @@ const VocalChannelContext = createContext<VocalChannel>({
     throw new Error('displayActiveVocalChannel not correctly overridden');
   },
   isStreamInitialized: false,
+  audioContext,
 });
-
-interface Props {
-  children: React.ReactNode;
-}
-
-const AudioContext = window.AudioContext;
-
-const audioContext = new AudioContext();
 
 const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   children,
@@ -74,6 +74,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   const [audioNodeMap, audioNodeActions] = useMap<number, HTMLAudioElement>([]);
   const [callMap, callMapActions] = useMap<number, MediaConnection>([]);
   const [featureMap, featuresActions] = useMap<number, any>([]);
+  const [streamMap, streamActions] = useMap<number, MediaStream>([]);
   const { serverUserMap } = useContext(UserMapsContext);
   const [isStreamInitialized, setIsStreamInitialized] = useState(false);
   const isMute = useAppSelector((state) => state.userReducer.isMute);
@@ -81,6 +82,12 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   const streamRef = useRef<MediaStream>();
   const dispatch = useAppDispatch();
   const [isLeaving, setIsLeaving] = useState(false);
+
+  // useEffect(() => {
+  //   if (streamRef.current) {
+  //     streamRef.current.onremovetrack;
+  //   }
+  // });
 
   const {
     set: setAudioNode,
@@ -103,10 +110,18 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     reset: resetFeatures,
   } = featuresActions;
 
+  const {
+    set: setStream,
+    remove: removeStream,
+    setAll: setAllStreams,
+    reset: resetStreams,
+  } = streamActions;
+
   const turnOnMicrophone = async () => {
     return navigator.mediaDevices
-      .getUserMedia({ audio: true })
+      .getUserMedia({ audio: true, video: true })
       .then((stream) => {
+        stream.getVideoTracks().forEach((tr) => tr.enabled);
         streamRef.current = stream;
         setIsStreamInitialized(true);
       })
@@ -114,6 +129,10 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         throw new Error();
       });
   };
+
+  // useEffect(() => {
+  //   turnOnCamera();
+  // });
 
   const muteUnmuteStream = (mute: boolean) => {
     streamRef.current?.getTracks().forEach((tr) => (tr.enabled = !mute));
@@ -126,18 +145,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   const callEvent = useCallback(
     async (call: MediaConnection) => {
       const audioNode = new Audio();
-      const source = audioContext.createMediaElementSource(audioNode);
-      const analyzer = Meyda.createMeydaAnalyzer({
-        audioContext: audioContext,
-        source: source,
-        bufferSize: 512,
-        featureExtractors: ['loudness'],
-        callback: (features: any) => {
-          // console.log(features.loudness.total);
-          setFeature(userId, features);
-        },
-      });
-      analyzer.start();
+
       console.log('analyzer start');
       const userId = call.metadata.user_id;
 
@@ -145,8 +153,8 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       setCall(userId, call);
 
       call.on('stream', (stream) => {
+        setStream(userId, stream);
         audioNode.srcObject = stream;
-
         setAudioNode(userId, audioNode);
 
         if (!isMuteAudio) {
@@ -162,7 +170,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         console.log('close');
         audioNode.pause();
         audioNode.remove();
-        analyzer.stop();
+        removeStream(userId);
         removeFeature(userId);
         removeAudioNode(userId);
         removeCall(userId);
@@ -178,6 +186,8 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       removeAudioNode,
       setFeature,
       removeFeature,
+      setStream,
+      removeStream,
       dispatch,
     ]
   );
@@ -197,20 +207,11 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         setCall(userId, call);
 
         const audioNode = new Audio();
-        const source = audioContext.createMediaElementSource(audioNode);
-        const analyzer = Meyda.createMeydaAnalyzer({
-          audioContext: audioContext,
-          source: source,
-          bufferSize: 512,
-          featureExtractors: ['loudness'],
-          callback: (features: any) => {
-            setFeature(userId, features);
-          },
-        });
 
         call.on('stream', (stream) => {
+          setStream(userId, stream);
           audioNode.srcObject = stream;
-          analyzer.start();
+
           console.log('analyzer start');
 
           //
@@ -229,7 +230,6 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
           console.log('close');
           audioNode.pause();
           audioNode.remove();
-          analyzer.stop();
           removeFeature(userId);
           removeAudioNode(userId);
           removeCall(userId);
@@ -497,19 +497,30 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
                   disabled={u === me?.id}
                 >
                   <div className='site-dropdown-context-menu panelContentRen'>
-                    <Avatar
-                      size={27}
-                      style={{
-                        marginRight: '5px',
-                        // marginBottom: '3px',
-                        boxSizing: 'content-box',
-                        border:
-                          Number(featureMap.get(u)?.loudness?.total) > 9
-                            ? '2px solid green'
-                            : '2px solid transparent',
-                      }}
-                      src={serverUserMap.get(u)?.user.picture ?? logo}
-                    />{' '}
+                    {/* {u !== me?.id ? (
+                      <Avatar
+                        size={27}
+                        style={{
+                          marginRight: '5px',
+                          // marginBottom: '3px',
+                          boxSizing: 'content-box',
+                          border:
+                            Number(featureMap.get(u)?.loudness?.total) > 9
+                              ? '2px solid green'
+                              : '2px solid transparent',
+                        }}
+                        src={serverUserMap.get(u)?.user.picture ?? logo}
+                      />
+                    ) : ( */}
+                    <StreamVisualisation
+                      stream={
+                        u === me?.id
+                          ? (streamRef.current as MediaStream)
+                          : (streamMap.get(u) as MediaStream)
+                      }
+                      u={u}
+                    />
+                    {/* )} */}{' '}
                     {serverUserMap.get(u)?.nickname || 'Error retrieving user'}
                     {/* {u !== me?.id ? ` ${audioNodeMap.get(u)?.volume ?? ''}` : null} */}
                   </div>
@@ -525,7 +536,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   return (
     <VocalChannelContext.Provider
       value={{
-        stream: streamRef.current,
+        audioContext,
         muteSelf,
         unmuteSelf,
         muteAudio,

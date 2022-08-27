@@ -3,8 +3,6 @@ import { ServerUser } from '../types/types';
 import logo from '../assets/discourde.png';
 import { Divider } from 'antd';
 
-type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
-
 export const MessageItem = (props: {
   id: number;
   picture?: string;

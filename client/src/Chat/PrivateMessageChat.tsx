@@ -36,7 +36,7 @@ const PrivateMessageChat = (props: { name: string; setName: Function }) => {
           setName(res.data.username);
         });
     }
-  }, [activePrivateChat]);
+  }, [activePrivateChat, setName]);
 
   const receiveMessage = useCallback(
     (message: PrivateMessage) => {

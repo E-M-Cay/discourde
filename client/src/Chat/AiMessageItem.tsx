@@ -2,7 +2,7 @@ import { CustomImageMess } from '../CustomLi/CustomLi';
 import { ServerUser } from '../types/types';
 import logo from '../assets/discourde.png';
 import { Divider } from 'antd';
-import { useAppSelector } from '../redux/hooks';
+import { useSelector } from 'react-redux';
 
 type UserMap = Omit<Map<number, ServerUser>, 'delete' | 'set' | 'clear'>;
 
@@ -14,9 +14,8 @@ export const AiMessageItem = (props: {
   //décomposer props directement avec username, picture, id
 }) => {
   const { username, content, send_time } = props;
-  
-  const aiMsg = useAppSelector((state) => state.userReducer.aiMsg);
-  console.log("ICI" + aiMsg)
+  const me = useSelector((state: any) => state.userReducer.me);
+  console.log(content, username, 'gdgdhdhjdgdghdh');
   return (
     <>
       <div
@@ -27,7 +26,12 @@ export const AiMessageItem = (props: {
         }}
       >
         <div className='messageItemAvatar'>
-          <CustomImageMess nickname={username} picture={logo} />
+          <CustomImageMess
+            nickname={username}
+            picture={
+              username !== 'Inteligence Artificielle' ? me.picture : logo
+            }
+          />
         </div>
         <div className='messageItemContent'>
           <div className='messageItemContentName'>
@@ -43,7 +47,7 @@ export const AiMessageItem = (props: {
               marginLeft: '0',
             }}
           >
-            {aiMsg}
+            {content}
           </div>
         </div>
       </div>

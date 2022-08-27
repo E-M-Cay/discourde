@@ -1,4 +1,4 @@
-import { EditOutlined, SettingFilled } from '@ant-design/icons';
+import { CloseOutlined, EditOutlined, SettingFilled } from '@ant-design/icons';
 import { Modal, Typography, Input, Avatar, Divider, Tabs, Button, Dropdown } from 'antd';
 import axios from 'axios';
 import { useContext, useState } from 'react';
@@ -49,6 +49,31 @@ setIsAdminModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
     console.log("UUSSSER")
     console.log(user)
   }
+  const kickUser = (user : ServerUser) => {
+    console.log("UUSSSER")
+    let serverId: any = 0;
+    let userId: any = 0;
+    for (const [key, value] of Object.entries(user)) {
+        if(typeof value === 'object') {
+            for (const [key2, value2] of Object.entries(value)) {
+                if(key2 == 'id') {
+                    if(userId == 0) {
+                        userId = value2;
+                    }
+                    else { serverId = value2;}
+                }
+            }
+        }
+    }
+    console.log("serverID" + serverId);
+    console.log("userID" + userId);
+    axios
+     .delete(`/server/${serverId}/user/${userId}`, {
+      headers: {
+        access_token: localStorage.getItem('token') as string,
+      },
+    }); 
+}
   
   
 
@@ -89,6 +114,7 @@ setIsAdminModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
                     : user.nickname}
                 </Typography>{' '}
                 <SettingFilled style={{fontSize: 'large'}} onClick={() => onClickUserList(user)}/>
+                <CloseOutlined style={{fontSize: 'large', color: 'red'}} onClick={() => kickUser(user)}/>
               </div>
               )}
             </div>

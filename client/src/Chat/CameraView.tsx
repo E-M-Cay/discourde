@@ -1,5 +1,9 @@
+import React from 'react';
+import { Avatar } from 'antd';
+
 export const CameraView = () => {
   const cam = ['jean', 'pierre', 'pen', 'jdjdh'];
+  const bool = false;
   return (
     <div
       style={{
@@ -21,6 +25,7 @@ export const CameraView = () => {
           }}
         >
           <div
+            className='camcam'
             style={{
               width: 'calc(100%-20px)',
               height: '100%',
@@ -28,10 +33,27 @@ export const CameraView = () => {
               margin: '10px',
               borderRadius: '10px',
               boxSizing: 'border-box',
+              backgroundImage: `url(/profile-pictures/robot1.png)`,
+              backgroundSize: '99999999px',
               //   border: '8px solid rgba(0, 0, 0, 0.7)',
             }}
           >
-            {c}
+            {!bool && (
+              <div
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <Avatar
+                  src={'/profile-pictures/robot1.png'}
+                  size={100}
+                  style={{ margin: 'auto' }}
+                />
+              </div>
+            )}
           </div>
         </div>
       ))}

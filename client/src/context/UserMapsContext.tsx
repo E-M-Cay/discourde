@@ -502,6 +502,8 @@ const UserMapsContextProvider = ({ children }: Props) => {
     socket.on('userconnected', handleConnection);
     socket.on('userleftserver', handleUserLeftServer);
     socket.on('userjoinedserver', handeUserJoinedServer);
+    socket.on('userdnd', handleDnd);
+    socket.on('useraway', handleAway);
     return () => {
       socket.off('userchanged', handleUserProfileChange);
       socket.off('friendrequestrefused', handleFriendshipRefused);
@@ -513,6 +515,8 @@ const UserMapsContextProvider = ({ children }: Props) => {
       socket.off('userconnected', handleConnection);
       socket.off('userleftserver', handleUserLeftServer);
       socket.off('userjoinedserver', handeUserJoinedServer);
+      socket.off('userdnd', handleDnd);
+      socket.off('useraway', handleAway);
     };
   }, [
     socket,
@@ -526,6 +530,8 @@ const UserMapsContextProvider = ({ children }: Props) => {
     handeUserJoinedServer,
     handleUserProfileChange,
     handleFriendshipRemoved,
+    handleAway,
+    handleDnd,
   ]);
 
   return (

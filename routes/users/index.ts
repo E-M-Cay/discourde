@@ -116,11 +116,8 @@ router.get('/token_check', isAuth, async (req: IRequest, res: Response) => {
       username: true,
     },
   });
+  if (user) user.status = 1;
   res.status(201).send({ ok: 'Valid token', user });
-});
-
-router.get('/home', isAuth, (_req: Request, res: Response) => {
-  res.send('Hello fdp');
 });
 
 router.post('/update', isAuth, async (req: IRequest, res: Response) => {

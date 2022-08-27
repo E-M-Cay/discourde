@@ -8,7 +8,7 @@ interface UserState {
   activeServerOwner?: number;
   activeServer: number;
   activeChannel?: number;
-  activeVocalChannel?: number;
+  activeVocalChannel: number;
   activePrivateChat?: number;
   home: boolean;
   aiChat: boolean;
@@ -25,6 +25,7 @@ const initialUserState: UserState = {
     ? (localStorage.getItem('token') as string)
     : undefined,
   activeServer: 0,
+  activeVocalChannel: 0,
   home: false,
   isMute: false,
   aiChat: false,
@@ -72,16 +73,11 @@ export const userSlice = createSlice({
       state.activePrivateChat = action.payload;
     },
     setMe: (state, action: PayloadAction<User>) => {
+      console.log(action.payload);
       state.me = action.payload;
     },
     setMute: (state) => {
-      // //console.log('truc1');
       state.isMute = true;
-    },
-    setStatus: (state, action: PayloadAction<number>) => {
-      if (state.me) {
-        setMe({ ...state.me, status: action.payload });
-      }
     },
     setUnmute: (state) => {
       // //console.log('truc2');
@@ -110,7 +106,6 @@ export const {
   setActiveVocalChannel,
   setActivePrivateChat,
   setMe,
-  setStatus,
   setMute,
   setUnmute,
   setMuteAudio,

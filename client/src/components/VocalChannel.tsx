@@ -170,7 +170,6 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       //}
     },
     [
-      streamRef.current,
       isMuteAudio,
       setAudioNode,
       setCall,
@@ -178,7 +177,6 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       removeAudioNode,
       setFeature,
       removeFeature,
-      dispatch,
     ]
   );
 
@@ -238,7 +236,6 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       }
     },
     [
-      streamRef.current,
       peer,
       me,
       isMuteAudio,
@@ -263,7 +260,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       }
       callUser(peer_id, user_id);
     },
-    [callUser, streamRef.current?.active]
+    [callUser]
   );
 
   const goodBye = useCallback(
@@ -271,7 +268,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       callMap.get(user_id)?.close();
       removeCall(user_id);
     },
-    [callMap]
+    [callMap, removeCall]
   );
 
   const muteSelf = () => {
@@ -314,7 +311,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         ?.getAudioTracks()[0]
         ?.removeEventListener('ended', leaveVocalChannel);
     };
-  }, [streamRef.current, leaveVocalChannel]);
+  }, [leaveVocalChannel]);
 
   useEffect(() => {
     if (!isStreamInitialized && activeVocalChannel) {
@@ -322,7 +319,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         dispatch(setActiveVocalChannel(0));
       });
     }
-  }, [activeVocalChannel, isStreamInitialized]);
+  }, [activeVocalChannel, isStreamInitialized, dispatch]);
 
   useEffect(() => {
     if (!activeVocalChannel) {

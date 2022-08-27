@@ -17,11 +17,10 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import UserProfileSettings from '../Modals/UserProfileSettings';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
-import { setActiveVocalChannel, setMe, setStatus } from '../redux/userSlice';
+import { setActiveVocalChannel, setMe } from '../redux/userSlice';
 import { VocalChan } from '../types/types';
 import { VocalChannelContext } from './VocalChannel';
 import logo from '../assets/discourde.png';
-import { socketPort } from '../env/host';
 import { PeerSocketContext } from '../context/PeerSocket';
 
 export const ProfileCall = (props: {
@@ -69,9 +68,15 @@ export const ProfileCall = (props: {
 
   function statusHandler(status: string, inNumber: number) {
     socket.emit(status, me?.id);
-    dispatch(setStatus(inNumber));
+    if (me) {
+      dispatch(setMe({ ...me, status: inNumber }));
+    }
     console.log('status', status, me, 'me', inNumber, 'tmp');
   }
+
+  useEffect(() => {
+    console.log(me?.status);
+  });
 
   const menu = (
     <Menu
@@ -211,7 +216,7 @@ export const ProfileCall = (props: {
               className='fixStatus badgination'
               dot
               style={{
-                backgroundColor: returnColor(Number(me?.status)),
+                backgroundColor: returnColor(me?.status ?? 0),
                 left: '0px',
               }}
             >

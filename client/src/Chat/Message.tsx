@@ -7,6 +7,7 @@ import { useAppSelector } from '../redux/hooks';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { TextMessage } from '../types/types';
 import { UserMapsContext } from '../context/UserMapsContext';
+import { AiMessageItem } from './AiMessageItem';
 
 const Message = () => {
   const { socket } = useContext(PeerSocketContext);
@@ -117,7 +118,7 @@ const Message = () => {
     >
       <div>{name}</div>
 
-      {activeChannel &&
+      {activeChannel && activeChannel !== -1 ?
         messages?.map((obj: TextMessage, i: number) => {
           const user = serverUserMap.get(obj.author);
           return (
@@ -136,7 +137,12 @@ const Message = () => {
               />
             )
           );
-        })}
+        })
+      : <AiMessageItem 
+      content=''
+      username=''
+      send_time=''
+      />}
 
       <span style={{ height: 0 }} ref={bottomRef} />
     </div>

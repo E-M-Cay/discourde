@@ -63,18 +63,14 @@ const ServerParamsModal = (props: {
 
   const handleUpdateChannel = (chan: Channel | VocalChan, isVocal: boolean) => {
     axios
-      .put(
-        `/channel/${isVocal ? 'vocal' : 'text'}/${
-          chan.id
-        }/server/${activeServer}`,
-        chan,
-        {
-          headers: {
-            access_token: localStorage.getItem('token') as string,
-          },
-        }
-      )
-      .then((res) => {
+      .put(`/channel/${isVocal ? 'vocal' : 'text'}/${chan.id}/server/${activeServer}`,
+           chan,
+           {
+              headers: {
+              access_token: localStorage.getItem('token') as string,
+              },
+           }
+      ).then((res) => {
         if (res.status === 204) {
           setIsModify(0);
 

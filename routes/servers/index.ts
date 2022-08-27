@@ -16,12 +16,20 @@ import isAuth from '../../MiddleWares/isAuth';
 import { isOwner } from '../../MiddleWares/isOwner';
 import { io } from '../../index';
 import hasPerm from '../../MiddleWares/hasPerm';
+import { ServerUserRole } from '../../entities/ServerUserRole';
+import { Role } from '../../entities/Role';
+import { RolePermission } from '../../entities/RolePermission';
+import { Permission } from '../../entities/Permission';
 
 const UserRepository = AppDataSource.getRepository(User);
 const ServerRepository = AppDataSource.getRepository(Server);
 const vocalChannelRepository = AppDataSource.getRepository(VocalChannel);
 const channelRepository = AppDataSource.getRepository(Channel);
 const ServerUserRepository = AppDataSource.getRepository(ServerUser);
+const ServerUserRoleRepository = AppDataSource.getRepository(ServerUserRole);
+const RoleRepository = AppDataSource.getRepository(Role)
+const RolePermissionRepository = AppDataSource.getRepository(RolePermission)
+const PermissionsRepository = AppDataSource.getRepository(Permission)
 
 router.get('/list', isAuth, hasPerm, async (req: IRequest, res: Response) => {
   const user = await UserRepository.findOne({
@@ -88,6 +96,7 @@ router.post(
         const name: string = req.body.name;
         const main_img: string = req.body.main_img;
 
+
         const owner = await UserRepository.findOneBy({ id: req.id });
 
         if (!owner) return res.status(404).send('User not found');
@@ -109,6 +118,8 @@ router.post(
           vocalChannels: [vocalChan],
         });
 
+        await ServerRepository.save(server)
+
         const serverUser: ServerUser = ServerUserRepository.create({
           user: { id: Number(req.id) },
           nickname: owner.username,
@@ -116,7 +127,30 @@ router.post(
         });
 
         await ServerUserRepository.save(serverUser)
-          .then((serverUser) => {
+
+        const admin_role: Role = RoleRepository.create({
+          server: server,
+          name: "admin",
+        })
+
+        await RoleRepository.save(admin_role)
+        
+        const permission_list = await PermissionsRepository.find({})
+        for(let perm of permission_list){
+          const admin_role_permission = RolePermissionRepository.create({
+            permission: perm,
+            role: admin_role
+          })
+          await RolePermissionRepository.save(admin_role_permission)
+        }
+        
+        const admin_user: ServerUserRole = ServerUserRoleRepository.create({
+          user: serverUser,
+          role: admin_role
+        });
+
+        ServerUserRoleRepository.save(admin_user)
+          .then((ser) => {
             return res.status(201).send(serverUser);
           })
           .catch((e) => {

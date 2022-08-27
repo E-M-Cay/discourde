@@ -35,6 +35,8 @@ export default async function (
   res: Response,
   next: NextFunction
 ) {
+
+  console.log(req)
   const action = req.action;
   const user_id = req.id;
   const server_id = req.server_id;

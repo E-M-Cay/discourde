@@ -14,6 +14,7 @@ import { VocalChannel } from './entities/VocalChannel';
 import { User } from './entities/User';
 import friends from './routes/friends';
 import channels from './routes/channels';
+import role from './routes/role';
 import vocalchannels from './routes/vocalchannels';
 import users from './routes/users/index';
 import servers from './routes/servers/index';
@@ -82,6 +83,7 @@ app.use('/channel', channels);
 app.use('/friends', friends);
 app.use('/vocalchannel', vocalchannels);
 app.use('/serverinvitation', serverinvitation);
+app.use('/role', role)
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.resolve(__dirname, 'client/build')));

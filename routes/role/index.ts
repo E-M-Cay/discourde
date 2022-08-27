@@ -123,3 +123,5 @@ router.delete('/delete/:role_id', isAuth, (req: IRequest, res: Response) => {
         return res.status(400).send(error);
     }
 });
+
+export default router;

@@ -16,6 +16,7 @@ import { DropdownMenu } from '../DropdownMenu/DropdownMenu';
 import { ChannelCollapse } from '../ChannelCollapse/ChannelCollapse';
 import { NotificationsContext } from '../context/NotificationsContext';
 import ServerParamsModal from '../Modals/ServerParamsModal';
+import AdminModal from '../Modals/AdminModal';
 import { ProfileCall } from '../components/ProfileCall';
 import { VocalChannelContext } from '../components/VocalChannel';
 
@@ -275,7 +276,7 @@ export const ChanelBar = (props: {
   const [isModalVisibleInvitation, setIsModalVisibleInvitation] =
     useState(false);
   const [isModalVisibleParams, setIsModalVisibleParams] = useState(false);
-
+  const [isModalVisibleAdmin, setIsModalVisibleAdmin] = useState(false);
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -301,6 +302,10 @@ export const ChanelBar = (props: {
   const showServerParamsModal = () => {
     setIsModalVisibleParams(true);
   };
+  const showAdminModal = () => {
+    setIsModalVisibleAdmin(true);
+  };
+
 
   const handleCreateChannel = (isVocal: any) => {
     //console.log(isVocal, 'rcvghjbknl', newTextChannelName);
@@ -379,6 +384,7 @@ export const ChanelBar = (props: {
       showModal={showModal}
       deleteServer={deleteServer}
       handleLeaveServer={handleLeaveServer}
+      showAdminModal={showAdminModal}
     />
   );
 
@@ -418,6 +424,11 @@ export const ChanelBar = (props: {
         setNewTextChannelName={setNewTextChannelName}
         setIsAdminChannel={setIsAdminChannel}
         handleCreateChannel={handleCreateChannel}
+      />
+      <AdminModal 
+      isModalVisibleAdmin={isModalVisibleAdmin} 
+      setIsAdminModalVisible={setIsModalVisibleAdmin}
+      servers={servers}
       />
 
       {!isHome && (

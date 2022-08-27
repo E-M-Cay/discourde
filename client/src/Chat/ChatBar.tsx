@@ -61,6 +61,9 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
       });
       setInput('');
     } else if (activeChannel === -1) {
+      if(input == "!users") {
+        console.log("liste des users");
+      } else {
       console.log(aiMsg);
 
       const configuration = new Configuration({
@@ -97,6 +100,8 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
         });
       setInput('');
     }
+    setInput('');
+  }
   };
 
   const onSubmitPrivateChatHandler = () => {

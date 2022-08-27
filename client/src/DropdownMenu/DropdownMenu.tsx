@@ -6,11 +6,13 @@ import {
   TeamOutlined,
   UserAddOutlined,
 } from '@ant-design/icons';
-import { Badge, Menu, Modal } from 'antd';
+import { Badge, Menu, Modal, Tabs } from 'antd';
 import { useContext, useState } from 'react';
 import { NotificationsComponent } from '../components/NotificationsComponent';
 import { NotificationsContext } from '../context/NotificationsContext';
 import { useAppSelector } from '../redux/hooks';
+const { TabPane } = Tabs;
+
 
 export const DropdownMenu = (params: {
   showModal2: () => void;
@@ -18,6 +20,7 @@ export const DropdownMenu = (params: {
   showModal: () => void;
   deleteServer: () => void;
   handleLeaveServer: () => void;
+  showAdminModal: () => void;
 }) => {
   const {
     showModal2,
@@ -25,6 +28,7 @@ export const DropdownMenu = (params: {
     showModal,
     deleteServer,
     handleLeaveServer,
+    showAdminModal,
   } = params;
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { notifications, clearNotification } = useContext(NotificationsContext);
@@ -91,6 +95,7 @@ export const DropdownMenu = (params: {
                       fontSize: '14px',
                     }}
                     key={1}
+                    onClick={() => showAdminModal()}
                   >
                     Gestion des membres
                     <TeamOutlined

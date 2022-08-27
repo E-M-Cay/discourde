@@ -1,5 +1,13 @@
 import {
+  AudioMutedOutlined,
+  AudioOutlined,
+  BellOutlined,
+  BorderlessTableOutlined,
+  CloseCircleOutlined,
   CloseOutlined,
+  CustomerServiceOutlined,
+  DownOutlined,
+  LogoutOutlined,
   MenuOutlined,
   MessageOutlined,
   CheckCircleFilled,
@@ -23,10 +31,11 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { UserMapsContext } from '../context/UserMapsContext';
-import { CustomImage, CustomImageMess } from '../CustomLi/CustomLi';
+import { CustomImageChat, CustomImageMess } from '../CustomLi/CustomLi';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { setActiveServer, setIsHome } from '../redux/userSlice';
 import { User, Server, ServerResponse } from '../types/types';
+// import friendsData from '../mockFriends';
 import './FriendPanel.css';
 
 const { TabPane } = Tabs;
@@ -66,7 +75,7 @@ export const FriendPanel = (props: {
         },
       })
       .then((res) => {
-        // //console.log(res, 'pépon');
+        // console.log(res, 'pépon');
         setServerRequests(res.data);
       })
       .catch((err) => {
@@ -79,9 +88,9 @@ export const FriendPanel = (props: {
   };
 
   useEffect(() => {
-    socket.on('newserverinvitation', handleNewServerInvitation);
+    socket?.on('newserverinvitation', handleNewServerInvitation);
     return () => {
-      socket.off('newserverinvitation', handleNewServerInvitation);
+      socket?.off('newserverinvitation', handleNewServerInvitation);
     };
   }, [handleNewServerInvitation, socket]);
 
@@ -132,7 +141,7 @@ export const FriendPanel = (props: {
             return invitation.id !== invitationId;
           })
         );
-        //console.log(res);
+        console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -142,12 +151,12 @@ export const FriendPanel = (props: {
   const [stateMenu, setmenuState] = useState(true);
 
   const onChange = (key: any) => {
-    // //console.log(key);
+    // console.log(key);
   };
   const onClick = (e: any) => {
-    // //console.log('click ', e);
+    // console.log('click ', e);
   };
-  // const onSearch = (value: any) => //console.log(value);
+  const onSearch = (value: any) => console.log(value);
 
   const menu = (user: User) => {
     return (
@@ -210,14 +219,20 @@ export const FriendPanel = (props: {
   return (
     <div style={{ backgroundColor: '#2F3136', height: '100vh' }}>
       <Tabs onChange={onChange} style={{ marginLeft: 10 }}>
-        <TabPane tab='En ligne' key='1'>
-          <p style={{ position: 'fixed', fontSize: 'medium' }}>EN LIGNE</p>
+        <TabPane tab='Amis' key='2'>
+          <p style={{ position: 'fixed', fontSize: 'medium' }}>
+            TOUS LES AMIS - {friendMap.size}
+          </p>
           <br />
           <br />
-          <li
+          <p style={{ position: 'fixed', fontSize: 'small' }}>
+            EN LIGNE - 
+          </p>
+          <br />
+          {<li
             className={'scrollIssue'}
             style={{
-              height: '73vh',
+              height: 'auto',
               width: '100%',
               borderRight: 0,
               padding: 0,
@@ -239,10 +254,9 @@ export const FriendPanel = (props: {
                   }}
                 >
                   <Divider style={{ margin: 0 }} />
-                  <CustomImage
+                  <CustomImageMess
                     picture={friendship.friend.picture}
-                    username={friendship.friend.username}
-                    status={friendship.friend.status}
+                    nickname={friendship.friend.username}
                   />
                   {friendship.friend.username}
                   <div className='iconFriend'>
@@ -272,18 +286,16 @@ export const FriendPanel = (props: {
                 </div>
               ) : null
             )}
-          </li>
-        </TabPane>
-        <TabPane tab='Tous' key='2'>
-          <p style={{ position: 'fixed', fontSize: 'medium' }}>
-            TOUS LES AMIS - {friendMap.size}
+          </li>}
+          <br />
+          <p style={{ position: 'fixed', fontSize: 'small' }}>
+            HORS LIGNE - 
           </p>
           <br />
-          <br />
-          <li
+          {<li 
             className={'scrollIssue'}
             style={{
-              height: '73vh',
+              height: 'auto',
               width: '100%',
               borderRight: 0,
               padding: 0,
@@ -291,66 +303,58 @@ export const FriendPanel = (props: {
               overflowY: 'scroll',
             }}
           >
-            {Array.from(friendMap.entries()).map(([id, friendship]) => (
-              <div
-                key={id}
-                onClick={onClick}
-                className='panelContent'
-                style={{
-                  margin: 0,
-                  padding: 0,
-                  height: '8vh',
-                  fontWeight: 'bold',
-                }}
-              >
-                <Divider style={{ margin: 0 }} />
-                <CustomImage
-                  picture={friendship.friend.picture}
-                  username={friendship.friend.username}
-                  status={friendship.friend.status}
-                />
-                {friendship.friend.username}
-                <div className='iconFriend'>
-                  {/*                             <a style={{ color: '#060606'}}><div><Tooltip placement="top" title={"Envoyer un message"}><MessageOutlined /></Tooltip></div></a>
-                   */}{' '}
-                  <Dropdown
-                    overlay={menu(friendship.friend)}
-                    trigger={['click']}
-                    placement='bottomLeft'
-                    className='DropDownFriend'
-                  >
-                    <ul onClick={(e) => e.preventDefault()}>
-                      <Space>
-                        <p>
-                          <a style={{ color: '#060606' }}>
-                            <Tooltip placement='top' title={'Actions'}>
-                              {' '}
-                              <MenuOutlined />{' '}
-                            </Tooltip>
-                          </a>
-                          <a onClick={() => setmenuState(!stateMenu)}></a>
-                        </p>
-                      </Space>
-                    </ul>
-                  </Dropdown>
+            {Array.from(friendMap.entries()).map(([id, friendship]) =>
+              !friendship.friend.status ? (
+                <div 
+                  key={id}
+                  onClick={onClick}
+                  className='panelContent'
+                  style={{
+                    margin: 0,
+                    padding: 0,
+                    height: '8vh',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  <Divider style={{ margin: 0 }} />
+                  <CustomImageMess
+                    picture={friendship.friend.picture}
+                    nickname={friendship.friend.username}
+                  />
+                  {friendship.friend.username}
+                  <div className='iconFriend' >
+                    {/*                             <a style={{ color: '#060606'}}><div><Tooltip placement="top" title={"Envoyer un message"}><MessageOutlined /></Tooltip></div></a>
+                     */}{' '}
+                    <Dropdown
+                      overlay={menu(friendship.friend)}
+                      trigger={['click']}
+                      placement='bottomLeft'
+                      className='DropDownFriend'
+                    >
+                      <ul onClick={(e) => e.preventDefault()}>
+                        <Space>
+                          <p>
+                            <a style={{ color: '#060606' }}>
+                              <Tooltip placement='top' title={'Actions'}>
+                                {' '}
+                                <MenuOutlined />{' '}
+                              </Tooltip>
+                            </a>
+                            <a onClick={() => setmenuState(!stateMenu)}></a>
+                          </p>
+                        </Space>
+                      </ul>
+                    </Dropdown>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </li>
+              ) : null
+            )}
+          </li>}
         </TabPane>
-        <TabPane tab='En attente' key='3'>
+        <TabPane tab='Demandes' key='3'>
           <p style={{ position: 'fixed', fontSize: 'medium' }}>
             EN ATTENTE - {receivedFriendRequestMap.size}
           </p>
-          <br />
-          <br />
-          <Search
-            className='searchBar2'
-            placeholder='Rechercher'
-            enterButton={<SearchOutlined />}
-            size='middle'
-            // onSearch={onSearch}
-          />
           <br />
           <br />
           <li
@@ -488,20 +492,6 @@ export const FriendPanel = (props: {
               </div>
             ))}
           </li>
-        </TabPane>
-        <TabPane tab='Ajouter un ami' key='4'>
-          <p style={{ position: 'fixed', fontSize: 'medium' }}>
-            AJOUTER UN AMI
-          </p>
-          <br />
-          <br />
-          <Search
-            className='searchBar'
-            placeholder='Entrer un pseudo'
-            enterButton='Envoyer demande'
-            size='large'
-            // onSearch={onSearch}
-          />
         </TabPane>
       </Tabs>
     </div>

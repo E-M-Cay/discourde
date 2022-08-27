@@ -38,7 +38,18 @@ export const CameraView = () => {
               //   border: '8px solid rgba(0, 0, 0, 0.7)',
             }}
           >
-            {!bool && (
+            {!bool ? (
+              <video
+                src='http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  borderRadius: '10px',
+                }}
+                autoPlay
+              />
+            ) : (
               <div
                 style={{
                   width: '100%',

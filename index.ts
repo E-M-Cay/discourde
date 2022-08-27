@@ -283,7 +283,7 @@ io.on('connection', (socket: ISocket) => {
     const currentVocalChannel = global.user_id_to_vocal_channel.get(
       socket.user_id as number
     );
-    console.log('quit');
+    // console.log('quit');
 
     if (currentVocalChannel === id) {
       socket.broadcast.emit(`leftvocalchannel:${id}`, socket.user_id);
@@ -298,6 +298,10 @@ io.on('connection', (socket: ISocket) => {
         userList?.filter((u) => u !== socket.user_id) as number[]
       );
     }
+  });
+
+  socket.on('novocal', () => {
+    global.user_id_to_vocal_channel.delete(socket.user_id ?? 0);
   });
 
   socket.on('joinvocalchannel', (id: number) => {

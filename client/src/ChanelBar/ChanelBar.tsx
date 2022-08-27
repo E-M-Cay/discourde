@@ -19,8 +19,6 @@ import ServerParamsModal from '../Modals/ServerParamsModal';
 import { ProfileCall } from '../components/ProfileCall';
 import { VocalChannelContext } from '../components/VocalChannel';
 
-const { Panel } = Collapse;
-
 export const ChanelBar = (props: {
   vocalChannelList: VocalChan[];
   textChannelList: Channel[];
@@ -50,21 +48,15 @@ export const ChanelBar = (props: {
   const { socket } = useContext(PeerSocketContext);
   const { addNotification } = useContext(NotificationsContext);
   const dispatch = useAppDispatch();
-  const headerTxt: string = 'SALONS TEXTUELS';
-  const headerVoc: string = 'SALONS VOCAUX';
   const serverName: string = activeServerName ?? 'Serveur';
   const { me } = useAppSelector((state) => state.userReducer);
-  const { turnOnMicrophone, stream } = useContext(VocalChannelContext);
+  const { isStreamInitialized } = useContext(VocalChannelContext);
 
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
   );
 
   const isHome = useAppSelector((state) => state.userReducer.home);
-
-  const { Panel } = Collapse;
-
-  let micro: boolean = true;
 
   useEffect(() => {
     if (activeServer)
@@ -82,7 +74,7 @@ export const ChanelBar = (props: {
             dispatch(setActiveChannel(res.data.text[0].id));
           }
         });
-  }, [activeServer, dispatch]);
+  }, [activeServer, dispatch, setTextChannelList, setVocalChannelList]);
 
   const onChange = (key: any) => {};
   const onTextChannelClick = (id: number) => {
@@ -92,11 +84,6 @@ export const ChanelBar = (props: {
   const onVocalChannelClick = useCallback(
     async (id: number) => {
       if (activeVocalChannel === id) return;
-      if (!stream?.active) {
-        if (!(await turnOnMicrophone())) {
-          return;
-        }
-      }
       dispatch(setActiveVocalChannel(id));
     },
     [activeVocalChannel, dispatch]
@@ -105,7 +92,11 @@ export const ChanelBar = (props: {
   const handleJoinVocal = useCallback(
     (data: { user: number; chan: number }) => {
       const { user, chan } = data;
-      if (chan === activeVocalChannel && user !== me?.id) {
+      if (
+        chan === activeVocalChannel &&
+        isStreamInitialized &&
+        user !== me?.id
+      ) {
         new Audio('/task-completed-message-ringtone.mp3').play();
       }
 
@@ -118,7 +109,7 @@ export const ChanelBar = (props: {
         });
       });
     },
-    [activeVocalChannel, me]
+    [activeVocalChannel, me, setVocalChannelList, isStreamInitialized]
   );
 
   const handleLeftVocal = useCallback(
@@ -137,7 +128,7 @@ export const ChanelBar = (props: {
         });
       });
     },
-    [activeVocalChannel, me]
+    [activeVocalChannel, setVocalChannelList]
   );
 
   useEffect(() => {
@@ -150,38 +141,51 @@ export const ChanelBar = (props: {
       socket.off(`joiningvocal`, handleJoinVocal);
       socket.off(`leftvocal`, handleLeftVocal);
     };
-  }, [socket, handleJoinVocal]);
+  }, [socket, handleJoinVocal, handleLeftVocal]);
 
-  const handleTextChannelCreated = (chan: Channel) => {
-    setTextChannelList((prevState) => [...prevState, chan]);
-  };
+  const handleTextChannelCreated = useCallback(
+    (chan: Channel) => {
+      setTextChannelList((prevState) => [...prevState, chan]);
+    },
+    [setTextChannelList]
+  );
 
-  const handleVocalChannelCreated = (chan: VocalChan) => {
-    //console.log('new voc chan', chan.name);
-    setVocalChannelList((prevState) => [...prevState, chan]);
-  };
-  const handleVocalChannelChange = (chan: VocalChan) => {
-    setVocalChannelList((prevState) =>
-      prevState.map((c) => {
-        if (c.id === chan.id) {
-          return chan;
-        }
-        return c;
-      })
-    );
-  };
+  const handleVocalChannelCreated = useCallback(
+    (chan: VocalChan) => {
+      //console.log('new voc chan', chan.name);
+      setVocalChannelList((prevState) => [...prevState, chan]);
+    },
+    [setVocalChannelList]
+  );
 
-  const handleTextChannelChange = (chan: Channel) => {
-    //console.log(chan);
-    setTextChannelList((prevState) =>
-      prevState.map((c) => {
-        if (c.id === chan.id) {
-          return chan;
-        }
-        return c;
-      })
-    );
-  };
+  const handleVocalChannelChange = useCallback(
+    (chan: VocalChan) => {
+      setVocalChannelList((prevState) =>
+        prevState.map((c) => {
+          if (c.id === chan.id) {
+            return chan;
+          }
+          return c;
+        })
+      );
+    },
+    [setVocalChannelList]
+  );
+
+  const handleTextChannelChange = useCallback(
+    (chan: Channel) => {
+      //console.log(chan);
+      setTextChannelList((prevState) =>
+        prevState.map((c) => {
+          if (c.id === chan.id) {
+            return chan;
+          }
+          return c;
+        })
+      );
+    },
+    [setTextChannelList]
+  );
 
   const handleVocalChannelDelete = useCallback(
     (chan: number) => {
@@ -192,7 +196,7 @@ export const ChanelBar = (props: {
         prevState.filter((c) => c.id !== chan)
       );
     },
-    [activeVocalChannel, dispatch]
+    [activeVocalChannel, dispatch, setVocalChannelList]
   );
 
   const handleTextChannelDelete = useCallback(
@@ -208,7 +212,7 @@ export const ChanelBar = (props: {
       }
       setTextChannelList((prevState) => prevState.filter((c) => c.id !== chan));
     },
-    [activeChannel, textChannelList, dispatch]
+    [activeChannel, textChannelList, dispatch, setTextChannelList]
   );
 
   useEffect(() => {
@@ -261,10 +265,17 @@ export const ChanelBar = (props: {
         handleTextChannelDelete
       );
     };
-  }, [socket, activeServer, handleVocalChannelDelete, handleTextChannelDelete]);
+  }, [
+    socket,
+    activeServer,
+    handleVocalChannelDelete,
+    handleTextChannelDelete,
+    handleTextChannelChange,
+    handleTextChannelCreated,
+    handleVocalChannelChange,
+    handleVocalChannelCreated,
+  ]);
 
-  const [stateMic, setmicState] = useState(true);
-  const [stateHead, setheadState] = useState(true);
   const [isModify, setIsModify] = useState(0);
   const [isModifyVoc, setIsModifyVoc] = useState(0);
   const [stateMenu, setmenuState] = useState(true);

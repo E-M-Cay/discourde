@@ -7,6 +7,7 @@ import { useAppSelector } from '../redux/hooks';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { TextMessage } from '../types/types';
 import { UserMapsContext } from '../context/UserMapsContext';
+import { AiMessageItem } from './AiMessageItem';
 
 const Message = () => {
   const { socket } = useContext(PeerSocketContext);
@@ -17,6 +18,9 @@ const Message = () => {
 
   const [messages, setMessages] = useState<TextMessage[]>([]);
   const [name, setName] = useState<string>('Chan name');
+
+  const aiMsg = useAppSelector((state) => state.userReducer.aiMsg);
+  const me = useAppSelector((state) => state.userReducer.me);
 
   const bottomRef = useRef<any>(null);
 
@@ -105,6 +109,9 @@ const Message = () => {
     }
   }
 
+  let tmp: any = new Date();
+  tmp = new Date(tmp.getTime() + 7200000).toISOString();
+
   return (
     <div
       style={{
@@ -117,26 +124,52 @@ const Message = () => {
     >
       <div>{name}</div>
 
-      {activeChannel &&
-        messages?.map((obj: TextMessage, i: number) => {
-          const user = serverUserMap.get(obj.author);
-          return (
-            user && (
-              <MessageItem
-                id={user.user.id}
-                username={user.nickname}
-                picture={user.user.picture}
-                content={obj.content}
-                send_time={obj.send_time}
-                key={i}
-                compress={messageSanitizer(obj, i - 1)}
-                isLast={i === messages.length - 1}
-                isNewDay={newDayCheck(obj, i - 1)}
-                fromNormalChat={true}
-              />
-            )
-          );
-        })}
+      {activeChannel && activeChannel !== -1
+        ? messages?.map((obj: TextMessage, i: number) => {
+            const user = serverUserMap.get(obj.author);
+            return (
+              user && (
+                <MessageItem
+                  id={user.user.id}
+                  username={user.nickname}
+                  picture={user.user.picture}
+                  content={obj.content}
+                  send_time={obj.send_time}
+                  key={i}
+                  compress={messageSanitizer(obj, i - 1)}
+                  isLast={i === messages.length - 1}
+                  isNewDay={newDayCheck(obj, i - 1)}
+                  fromNormalChat={true}
+                />
+              )
+            );
+          })
+        : aiMsg.split('"').map((item, index) => {
+            console.log(item, 'testetetete');
+            return (
+              item &&
+              item
+                .replace('AI: ', '')
+                .replace('Human: ', '')
+                .replace('AI:', '')
+                .replace('Human:', '') &&
+              item !== '' && (
+                <AiMessageItem
+                  content={item
+                    .replace('AI: ', '')
+                    .replace('Human: ', '')
+                    .replace('AI:', '')
+                    .replace('Human:', '')}
+                  username={
+                    item.startsWith('Human:')
+                      ? me?.username ?? ''
+                      : 'Inteligence Artificielle'
+                  }
+                  send_time={tmp}
+                />
+              )
+            );
+          })}
 
       <span style={{ height: 0 }} ref={bottomRef} />
     </div>

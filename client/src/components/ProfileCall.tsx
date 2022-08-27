@@ -5,20 +5,32 @@ import {
   SettingOutlined,
   WifiOutlined,
 } from '@ant-design/icons';
-import { Avatar, Modal, Tooltip, Typography } from 'antd';
+import {
+  Avatar,
+  Badge,
+  Dropdown,
+  Menu,
+  Modal,
+  Tooltip,
+  Typography,
+} from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import UserProfileSettings from '../Modals/UserProfileSettings';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
-import { setActiveVocalChannel } from '../redux/userSlice';
+import { setActiveVocalChannel, setMe, setStatus } from '../redux/userSlice';
 import { VocalChan } from '../types/types';
 import { VocalChannelContext } from './VocalChannel';
 import logo from '../assets/discourde.png';
+import { socketPort } from '../env/host';
+import { PeerSocketContext } from '../context/PeerSocket';
 
 export const ProfileCall = (props: {
   activeServerName?: string;
   vocalChannelList?: VocalChan[];
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const { socket } = useContext(PeerSocketContext);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -54,6 +66,55 @@ export const ProfileCall = (props: {
       );
     }
   }, [activeVocalChannel, vocalChannelList, activeServerName]);
+
+  function statusHandler(status: string, inNumber: number) {
+    socket.emit(status, me?.id);
+    dispatch(setStatus(inNumber));
+    console.log('status', status, me, 'me', inNumber, 'tmp');
+  }
+
+  const menu = (
+    <Menu
+      style={{ width: '120px' }}
+      className='menu'
+      items={[
+        {
+          key: '1',
+          label: <div onClick={() => statusHandler('online', 1)}>En Ligne</div>,
+        },
+        {
+          key: '2',
+          label: <div onClick={() => statusHandler('inactif', 2)}>Absent</div>,
+        },
+        {
+          key: '3',
+          label: <div onClick={() => statusHandler('dnd', 3)}>Occupé</div>,
+        },
+        {
+          key: '4',
+          label: (
+            <div onClick={() => statusHandler('invisible', 0)}>Invisible</div>
+          ),
+        },
+      ]}
+    />
+  );
+
+  const returnColor = (status: number) => {
+    console.log(status);
+    switch (status) {
+      case 0:
+        return 'grey';
+      case 1:
+        return 'green';
+      case 2:
+        return 'yellow';
+      case 3:
+        return 'red';
+      default:
+      //console.log('could not read status');
+    }
+  };
 
   return (
     <div
@@ -145,11 +206,23 @@ export const ProfileCall = (props: {
             width: '100%',
           }}
         >
-          <Avatar
-            size={37}
-            style={{ margin: 'auto 10px' }}
-            src={me?.picture || logo}
-          />
+          <Dropdown overlay={menu} trigger={['click']} placement='top'>
+            <Badge
+              className='fixStatus badgination'
+              dot
+              style={{
+                backgroundColor: returnColor(Number(me?.status)),
+                left: '0px',
+              }}
+            >
+              <Avatar
+                className='paddingAvatarFix loreImg'
+                size={37}
+                style={{ margin: 'auto 10px' }}
+                src={me?.picture || logo}
+              />
+            </Badge>
+          </Dropdown>
           <div>
             <Typography
               style={{ color: 'white', fontWeight: '600', fontSize: '16px' }}

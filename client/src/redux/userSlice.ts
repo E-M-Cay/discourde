@@ -17,6 +17,7 @@ interface UserState {
   isMuteAudio: boolean;
   isConnected: boolean;
   activeVocalChannelServer: number;
+  aiMsg: string;
 }
 
 const initialUserState: UserState = {
@@ -30,6 +31,7 @@ const initialUserState: UserState = {
   isMuteAudio: false,
   isConnected: false,
   activeVocalChannelServer: 0,
+  aiMsg: '',
 };
 
 export const userSlice = createSlice({
@@ -41,6 +43,9 @@ export const userSlice = createSlice({
     },
     setAiChat: (state, action: PayloadAction<boolean>) => {
       state.aiChat = action.payload;
+    },
+    setAiMsg: (state, action: PayloadAction<string>) => {
+      state.aiMsg = action.payload;
     },
     setToken: (state, action: PayloadAction<string>) => {
       //console.log('putain');
@@ -73,6 +78,11 @@ export const userSlice = createSlice({
       // //console.log('truc1');
       state.isMute = true;
     },
+    setStatus: (state, action: PayloadAction<number>) => {
+      if (state.me) {
+        setMe({ ...state.me, status: action.payload });
+      }
+    },
     setUnmute: (state) => {
       // //console.log('truc2');
       state.isMute = false;
@@ -100,11 +110,13 @@ export const {
   setActiveVocalChannel,
   setActivePrivateChat,
   setMe,
+  setStatus,
   setMute,
   setUnmute,
   setMuteAudio,
   setUnmuteAudio,
   setIsConnected,
+  setAiMsg,
 } = userSlice.actions;
 
 export default userSlice.reducer;

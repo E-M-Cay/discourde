@@ -109,8 +109,12 @@ export const ChannelCollapse = (props: {
                     className='panelContentRen'
                   >
                     <Avatar
-                      size={20}
-                      style={{ marginRight: '5px', marginBottom: '3px' }}
+                      size={27}
+                      style={{
+                        marginRight: '5px',
+                        // marginBottom: '3px',
+                        border: '2px solid transparent',
+                      }}
                       src={serverUserMap.get(u)?.user.picture ?? logo}
                     />{' '}
                     {serverUserMap.get(u)?.nickname || 'Error retrieving user'}

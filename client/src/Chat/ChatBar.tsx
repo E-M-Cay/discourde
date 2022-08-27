@@ -8,14 +8,16 @@ import React, {
 import 'antd/dist/antd.min.css';
 import { Input, Form } from 'antd';
 import { PeerSocketContext } from '../context/PeerSocket';
-import { useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import Picker from 'emoji-picker-react';
 import { SmileOutlined } from '@ant-design/icons';
 import { InputRef } from 'antd';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { Channel } from '../types/types';
+import { setAiMsg } from '../redux/userSlice';
 
 const ChatBar = (props: { textChannelList: Channel[] }) => {
+  const dispatch = useAppDispatch();
   const { textChannelList } = props;
   const { socket } = useContext(PeerSocketContext);
   const { privateChatMap } = useContext(UserMapsContext);
@@ -26,9 +28,12 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
   const activeChannel = useAppSelector(
     (state) => state.userReducer.activeChannel
   );
+  const aiMsg = useAppSelector((state) => state.userReducer.aiMsg);
   const activePrivateChat = useAppSelector(
     (state) => state.userReducer.activePrivateChat
   );
+  const { Configuration, OpenAIApi } = require('openai');
+
   const isHome = useAppSelector((state) => state.userReducer.home);
   const activeChannelName = textChannelList.find(
     (c) => c.id === activeChannel
@@ -49,14 +54,48 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
   );
 
   const onSubmitChatChannelHandler = () => {
-    if (activeChannel && activeChannel !== -1 ) {
+    if (activeChannel && activeChannel !== -1) {
       socket.emit('message', {
         content: input,
         channel: activeChannel,
       });
       setInput('');
     } else if (activeChannel === -1) {
-      
+      console.log(aiMsg);
+
+      const configuration = new Configuration({
+        apiKey: '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',
+      });
+      const openai = new OpenAIApi(configuration);
+
+      openai
+        .createCompletion({
+          model: 'text-davinci-002',
+          prompt: 'Répond à cette question : ' + aiMsg + '""Human: ' + input,
+          temperature: 0.7,
+          max_tokens: 256,
+          top_p: 1,
+          frequency_penalty: 0,
+          presence_penalty: 0,
+        })
+        .then((response: any) => {
+          let tmp = aiMsg;
+          dispatch(
+            setAiMsg(
+              tmp +
+                '""Human: ' +
+                input +
+                '""AI: ' +
+                response.data.choices[0].text
+            )
+          );
+          console.log('REPONSE OBJET');
+          console.log(response);
+          console.log('REPONSE MSG');
+          console.log(response.data.choices[0].text);
+          console.log(aiMsg + 'aimsg');
+        });
+      setInput('');
     }
   };
 

@@ -17,6 +17,8 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { User, VocalChan } from '../types/types';
 import logo from '../assets/discourde.png';
 import {
+  disableCamera,
+  enableCamera,
   setActiveVocalChannel,
   setCameraChat,
   setMute,
@@ -35,6 +37,7 @@ interface VocalChannel {
   unmuteSelf: () => void;
   muteAudio: () => void;
   unmuteAudio: () => void;
+  turnOnCamera: (state: boolean) => void;
   isStreamInitialized: boolean;
   audioContext: AudioContext;
 }
@@ -65,6 +68,9 @@ const VocalChannelContext = createContext<VocalChannel>({
   displayCameraView: (_any?: any) => {
     throw new Error('displayActiveVocalChannel not correctly overridden');
   },
+  turnOnCamera: (_any?: any) => {
+    throw new Error('turnOnCamera not correctly overridden');
+  },
   isStreamInitialized: false,
   audioContext,
 });
@@ -86,8 +92,10 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   const isMute = useAppSelector((state) => state.userReducer.isMute);
   const isMuteAudio = useAppSelector((state) => state.userReducer.isMuteAudio);
   const streamRef = useRef<MediaStream>();
+  const videoStreamRef = useRef<MediaStream>();
   const dispatch = useAppDispatch();
   const [isLeaving, setIsLeaving] = useState(false);
+  const videoElRef = useRef<HTMLVideoElement>(null);
 
   // useEffect(() => {
   //   if (streamRef.current) {
@@ -124,10 +132,17 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   } = streamActions;
 
   const turnOnMicrophone = async () => {
+    // navigator.mediaDevices.getDisplayMedia({
+    //   video: { MediaSource: 'screen' },
+    // });
     return navigator.mediaDevices
       .getUserMedia({ audio: true, video: true })
       .then((stream) => {
-        stream.getVideoTracks().forEach((tr) => tr.enabled);
+        stream.getVideoTracks().forEach((tr) => (tr.enabled = false));
+        // console.log(stream.getVideoTracks().length, 'length');
+        // if (videoElRef.current) {
+        //   videoElRef.current.srcObject = stream;
+        // }
         streamRef.current = stream;
         setIsStreamInitialized(true);
       })
@@ -136,12 +151,24 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       });
   };
 
+  const turnOnCamera = async (state: boolean) => {
+    if (state) {
+      streamRef.current?.getVideoTracks().forEach((tr) => (tr.enabled = true));
+      socket.emit('cameraon');
+      dispatch(enableCamera());
+    } else {
+      socket.emit('cameraoff');
+      streamRef.current?.getVideoTracks().forEach((tr) => (tr.enabled = false));
+      dispatch(disableCamera());
+    }
+  };
+
   // useEffect(() => {
   //   turnOnCamera();
   // });
 
   const muteUnmuteStream = (mute: boolean) => {
-    streamRef.current?.getTracks().forEach((tr) => (tr.enabled = !mute));
+    streamRef.current?.getAudioTracks().forEach((tr) => (tr.enabled = !mute));
   };
 
   useEffect(() => {
@@ -177,24 +204,19 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         audioNode.pause();
         audioNode.remove();
         removeStream(userId);
-        removeFeature(userId);
         removeAudioNode(userId);
         removeCall(userId);
       });
       //}
     },
     [
-      streamRef.current,
       isMuteAudio,
       setAudioNode,
       setCall,
       removeCall,
       removeAudioNode,
-      setFeature,
-      removeFeature,
       setStream,
       removeStream,
-      dispatch,
     ]
   );
 
@@ -236,7 +258,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
           console.log('close');
           audioNode.pause();
           audioNode.remove();
-          removeFeature(userId);
+          removeStream(userId);
           removeAudioNode(userId);
           removeCall(userId);
           // setCalls((prevState) => prevState.filter((c) => c !== call));
@@ -244,7 +266,6 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       }
     },
     [
-      streamRef.current,
       peer,
       me,
       isMuteAudio,
@@ -252,8 +273,8 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       removeAudioNode,
       setCall,
       removeCall,
-      setFeature,
-      removeFeature,
+      setStream,
+      removeStream,
     ]
   );
 
@@ -269,7 +290,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       }
       callUser(peer_id, user_id);
     },
-    [callUser, streamRef.current?.active]
+    [callUser]
   );
 
   const goodBye = useCallback(
@@ -277,31 +298,36 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       callMap.get(user_id)?.close();
       removeCall(user_id);
     },
-    [callMap]
+    [callMap, removeCall]
   );
 
   const muteSelf = () => {
     //console.log('mute');
     // streamRef.current?.getAudioTracks().forEach((tr) => (tr.enabled = false));
     muteUnmuteStream(true);
+    socket.emit('micmuted');
     dispatch(setMute());
   };
 
   const unmuteSelf = () => {
     console.log('unmute');
     muteUnmuteStream(false);
+    socket.emit('micunmuted');
     dispatch(setUnmute());
   };
 
   const muteAudio = () => {
     //console.log('mute audio');
     audioNodeMap.forEach((audioNode) => audioNode.pause());
+    socket.emit('audiomuted');
     dispatch(setMuteAudio());
   };
 
   const unmuteAudio = () => {
     //console.log('unmute audio');
+
     audioNodeMap.forEach((audioNode) => audioNode.play());
+    socket.emit('audiounmuted');
     dispatch(setUnmuteAudio());
   };
 
@@ -320,7 +346,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         ?.getAudioTracks()[0]
         ?.removeEventListener('ended', leaveVocalChannel);
     };
-  }, [streamRef.current, leaveVocalChannel]);
+  }, [leaveVocalChannel]);
 
   useEffect(() => {
     if (!isStreamInitialized && activeVocalChannel) {
@@ -328,7 +354,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         dispatch(setActiveVocalChannel(0));
       });
     }
-  }, [activeVocalChannel, isStreamInitialized]);
+  }, [activeVocalChannel, isStreamInitialized, dispatch]);
 
   useEffect(() => {
     if (!activeVocalChannel) {
@@ -341,6 +367,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     return () => {
       if (activeVocalChannel && isStreamInitialized) {
         socket.emit('leftvocalchannel', activeVocalChannel);
+        turnOnCamera(false);
         setIsLeaving(true);
       }
     };
@@ -504,6 +531,8 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         users={chan.users}
         stream={streamRef.current}
         streamMap={streamMap}
+        turnOnCamera={turnOnCamera}
+        videoElRef={videoElRef}
       />
     );
   };
@@ -518,6 +547,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         unmuteAudio,
         displayActiveVocalChannel,
         displayCameraView,
+        turnOnCamera,
         isStreamInitialized,
       }}
     >

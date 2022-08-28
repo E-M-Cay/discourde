@@ -9,6 +9,11 @@ export interface User {
   status: number;
   username: string;
   picture?: string;
+  mediaStatus: {
+    microphone: boolean;
+    camera: boolean;
+    audio: boolean;
+  };
 }
 
 export interface ReceivedFriendRequest {

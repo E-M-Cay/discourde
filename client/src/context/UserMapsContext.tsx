@@ -491,6 +491,54 @@ const UserMapsContextProvider = ({ children }: Props) => {
     ]
   );
 
+  const handleMediaStatusChange = useCallback(
+    (payload: { kind: string; state: boolean; userId: number }) => {
+      const { kind, state, userId } = payload;
+      const serverUser = serverUserMap.get(userId);
+      if (!serverUser) return;
+
+      if (kind === 'mic') {
+        setServerUser(userId, {
+          ...serverUser,
+          user: {
+            ...serverUser.user,
+            mediaStatus: {
+              ...serverUser.user.mediaStatus,
+              microphone: state,
+            },
+          },
+        });
+      }
+
+      if (kind === 'cam') {
+        setServerUser(userId, {
+          ...serverUser,
+          user: {
+            ...serverUser.user,
+            mediaStatus: {
+              ...serverUser.user.mediaStatus,
+              camera: state,
+            },
+          },
+        });
+      }
+
+      if (kind === 'aud') {
+        setServerUser(userId, {
+          ...serverUser,
+          user: {
+            ...serverUser.user,
+            mediaStatus: {
+              ...serverUser.user.mediaStatus,
+              audio: state,
+            },
+          },
+        });
+      }
+    },
+    [setServerUser, serverUserMap]
+  );
+
   useEffect(() => {
     socket.on('userchanged', handleUserProfileChange);
     socket.on('friendrequestrefused', handleFriendshipRefused);
@@ -504,6 +552,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
     socket.on('userjoinedserver', handeUserJoinedServer);
     socket.on('userdnd', handleDnd);
     socket.on('useraway', handleAway);
+    socket.on('mediastatus', handleMediaStatusChange);
     return () => {
       socket.off('userchanged', handleUserProfileChange);
       socket.off('friendrequestrefused', handleFriendshipRefused);
@@ -517,6 +566,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
       socket.off('userjoinedserver', handeUserJoinedServer);
       socket.off('userdnd', handleDnd);
       socket.off('useraway', handleAway);
+      socket.off('mediastatus', handleMediaStatusChange);
     };
   }, [
     socket,
@@ -532,6 +582,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
     handleFriendshipRemoved,
     handleAway,
     handleDnd,
+    handleMediaStatusChange,
   ]);
 
   return (

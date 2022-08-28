@@ -1,24 +1,37 @@
 import { Avatar } from 'antd';
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { UserMapsContext } from '../context/UserMapsContext';
 
-const VideoStreamComponent = (props: { stream?: MediaStream }) => {
-  const { stream } = props;
+const VideoStreamComponent = (props: {
+  stream?: MediaStream;
+  user: number;
+}) => {
+  const { stream, user } = props;
   const cam = 'jean';
   const bool = false;
+  const { serverUserMap } = useContext(UserMapsContext);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  //   stream.getVideoTracks().forEach((tr) => {
-  //     tr.addEventListener('mute')
-  //   })
+  useEffect(() => {
+    console.log(stream?.getVideoTracks().length, 'length3');
+  });
 
   useEffect(() => {
-    if (stream && videoRef.current) {
-      videoRef.current.srcObject = stream;
-      videoRef.current.volume = 0;
+    const videoNode = videoRef.current;
+    if (stream && videoNode) {
+      // if (stream.getVideoTracks().length > 0) {
+      videoNode.srcObject = stream;
+      // }
+      videoNode.volume = 0;
+      videoNode?.play();
     }
 
-    return () => {};
-  }, [stream]);
+    return () => {
+      if (stream && videoNode) {
+        videoNode?.pause();
+      }
+    };
+  }, [stream, serverUserMap]);
 
   return (
     <div
@@ -44,17 +57,17 @@ const VideoStreamComponent = (props: { stream?: MediaStream }) => {
           //   border: '8px solid rgba(0, 0, 0, 0.7)',
         }}
       >
-        {!bool ? (
+        {serverUserMap.get(user)?.user.mediaStatus.camera ? (
           <video
             ref={videoRef}
-            src='http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+            autoPlay
+            // src='http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
             style={{
               width: '100%',
               height: '100%',
               objectFit: 'cover',
               borderRadius: '10px',
             }}
-            autoPlay
           />
         ) : (
           <div

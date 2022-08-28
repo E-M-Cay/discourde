@@ -1,36 +1,37 @@
 import 'reflect-metadata';
 import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToOne,
-    OneToMany,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { ChannelMessage } from './ChannelMessage';
 import { Server } from './Server';
 
 @Entity()
 export class Channel {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({
-        type: 'varchar',
-        length: 150,
-        nullable: false,
-    })
-    name: string;
+  @Column({
+    type: 'varchar',
+    length: 150,
+    nullable: false,
+  })
+  name: string;
 
-    @Column({ type: 'boolean', default: false })
-    hidden: boolean;
+  @Column({ type: 'boolean', default: false })
+  hidden: boolean;
 
-    @ManyToOne(() => Server, (server) => server.channels, {
-        cascade: ['insert', 'remove'],
-    })
-    server: Server;
+  @ManyToOne(() => Server, (server) => server.channels, {
+    cascade: ['insert', 'remove'],
+    onDelete: 'CASCADE',
+  })
+  server: Server;
 
-    @OneToMany(() => ChannelMessage, (message) => message.channel, {
-        cascade: ['insert'],
-    })
-    messages: ChannelMessage[];
+  @OneToMany(() => ChannelMessage, (message) => message.channel, {
+    cascade: ['insert'],
+  })
+  messages: ChannelMessage[];
 }

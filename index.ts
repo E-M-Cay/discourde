@@ -83,7 +83,7 @@ app.use('/channel', channels);
 app.use('/friends', friends);
 app.use('/vocalchannel', vocalchannels);
 app.use('/serverinvitation', serverinvitation);
-app.use('/role', role)
+app.use('/role', role);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.resolve(__dirname, 'client/build')));

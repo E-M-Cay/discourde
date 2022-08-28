@@ -13,10 +13,6 @@ const VideoStreamComponent = (props: {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    console.log(stream?.getVideoTracks().length, 'length3');
-  });
-
-  useEffect(() => {
     const videoNode = videoRef.current;
     if (stream && videoNode) {
       // if (stream.getVideoTracks().length > 0) {
@@ -33,7 +29,7 @@ const VideoStreamComponent = (props: {
     };
   }, [stream, serverUserMap]);
 
-  console.log(serverUserMap.get(user), 'test display');
+  // console.log(serverUserMap.get(user), 'test display');
 
   return (
     <div

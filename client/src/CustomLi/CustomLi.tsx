@@ -7,6 +7,7 @@ import {
   setIsHome,
   setActiveServerName,
   setActiveServerOwner,
+  setCameraChat,
 } from '../redux/userSlice';
 import { ServerResponse } from '../types/types';
 
@@ -22,9 +23,12 @@ export const CustomLimage = (props: { obj?: ServerResponse }) => {
       dispatch(setActiveServerName(obj.server.name));
       dispatch(setActiveServerOwner(obj.server.owner?.id || -1));
       dispatch(setIsHome(false));
+      dispatch(setCameraChat(false));
     } else {
       dispatch(setIsHome(true));
       dispatch(setActiveServer(0));
+      dispatch(setCameraChat(false));
+
     }
   };
 

@@ -17,7 +17,12 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import UserProfileSettings from '../Modals/UserProfileSettings';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
-import { setActiveVocalChannel, setMe, setStatus } from '../redux/userSlice';
+import {
+  setActiveVocalChannel,
+  setCameraChat,
+  setMe,
+  setStatus,
+} from '../redux/userSlice';
 import { VocalChan } from '../types/types';
 import { VocalChannelContext } from './VocalChannel';
 import logo from '../assets/discourde.png';
@@ -179,6 +184,8 @@ export const ProfileCall = (props: {
               <PhoneOutlined
                 onClick={() => {
                   dispatch(setActiveVocalChannel(0));
+                  dispatch(setCameraChat(false));
+
                   localStorage.removeItem('activeVocalChannel');
                 }}
               />

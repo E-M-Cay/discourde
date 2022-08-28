@@ -29,7 +29,7 @@ const initialUserState: UserState = {
   home: false,
   isMute: false,
   aiChat: false,
-  cameraChat: true,
+  cameraChat: false,
   isMuteAudio: false,
   isConnected: false,
   activeVocalChannelServer: 0,

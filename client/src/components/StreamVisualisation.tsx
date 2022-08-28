@@ -4,6 +4,7 @@ import { UserMapsContext } from '../context/UserMapsContext';
 import logo from '../assets/discourde.png';
 import { VocalChannelContext } from './VocalChannel';
 import Meyda from 'meyda';
+import { AudioFilled, CustomerServiceOutlined } from '@ant-design/icons';
 
 const StreamVisualisation = (props: { u: number; stream?: MediaStream }) => {
   const { serverUserMap } = useContext(UserMapsContext);
@@ -53,6 +54,8 @@ const StreamVisualisation = (props: { u: number; stream?: MediaStream }) => {
     };
   }, [stream, audioContext]);
 
+  const user = serverUserMap.get(u)?.user;
+
   return (
     <>
       <Avatar
@@ -64,7 +67,7 @@ const StreamVisualisation = (props: { u: number; stream?: MediaStream }) => {
           border:
             Number(average) > 8 ? '2px solid green' : '2px solid transparent',
         }}
-        src={serverUserMap.get(u)?.user.picture ?? logo}
+        src={user?.picture ?? logo}
       />
     </>
   );

@@ -1,5 +1,7 @@
 import {
+  AudioFilled,
   BorderlessTableOutlined,
+  CustomerServiceOutlined,
   SoundOutlined,
   WechatOutlined,
 } from '@ant-design/icons';
@@ -104,25 +106,38 @@ export const ChannelCollapse = (props: {
                   <BorderlessTableOutlined className='activeChannel' />
                 </>
               )} */}
-                {chan.users.map((u) => (
-                  <div
-                    // onClick={() => //console.log(serverUserMap.get(u), 'test')}
-                    key={u}
-                    style={{ marginTop: '5px', marginLeft: '20px' }}
-                    className='panelContentRen'
-                  >
-                    <Avatar
-                      size={27}
-                      style={{
-                        marginRight: '5px',
-                        // marginBottom: '3px',
-                        border: '2px solid transparent',
-                      }}
-                      src={serverUserMap.get(u)?.user.picture ?? logo}
-                    />{' '}
-                    {serverUserMap.get(u)?.nickname || 'Error retrieving user'}
-                  </div>
-                ))}
+                {chan.users.map((u) => {
+                  const user = serverUserMap.get(u);
+                  return (
+                    <div
+                      // onClick={() => //console.log(serverUserMap.get(u), 'test')}
+                      key={u}
+                      style={{ marginTop: '5px', marginLeft: '20px' }}
+                      className='panelContentRen'
+                    >
+                      <Avatar
+                        size={27}
+                        style={{
+                          marginRight: '5px',
+                          // marginBottom: '3px',
+                          border: '2px solid transparent',
+                        }}
+                        src={user?.user.picture ?? logo}
+                      />
+                      {serverUserMap.get(u)?.nickname ||
+                        'Error retrieving user'}
+                      {user?.user.mediaStatus.microphone === false ? (
+                        <AudioFilled style={{ color: 'red' }} />
+                      ) : null}
+                      {user?.user.mediaStatus.audio === false ? (
+                        <CustomerServiceOutlined style={{ color: 'red' }} />
+                      ) : null}
+                      {user?.user.mediaStatus.camera === true ? (
+                        <AudioFilled style={{ color: 'white' }} />
+                      ) : null}
+                    </div>
+                  );
+                })}
               </li>
             ) : (
               displayActiveVocalChannel(chan)

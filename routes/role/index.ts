@@ -125,21 +125,15 @@ router.delete('/delete/:role_id', isAuth, (req: IRequest, res: Response) => {
 
 
 router.post('/add_role/', isAuth,async (req: IRequest, res: Response) => {
-    let tab_res = []
-
     if ('role_id_list' in req.body && 'server_user_id' in req.body) {
         const role_id_list = req.body.role_id_list
         const server_user_id = req.body.server_user_id
         try{
             for(const role_id of role_id_list){
-                tab_res.push('role_id' + role_id)
-                tab_res.push('server_user_id' + server_user_id)
                 const server_user_role = await serverUserRoleRepository.findOneBy({
                     role: {id: role_id},
                     user: {id: server_user_id}
                 })
-
-                tab_res.push(server_user_role)
                 if(server_user_role){
                     serverUserRoleRepository.delete(server_user_role.id)
                     continue
@@ -147,26 +141,33 @@ router.post('/add_role/', isAuth,async (req: IRequest, res: Response) => {
 
                 const role = await RoleRepository.findOneBy({id: role_id})
                 const server_user = await ServerUserRepository.findOneBy({id: server_user_id})
-                tab_res.push(role)
-                tab_res.push(server_user)
                 if(!role || !server_user)
                     return res.status(400).send("role or server_user not found");
                 
-                    tab_res.push(role)
-                    tab_res.push(server_user)
                 const role_user = serverUserRoleRepository.create({
                     role: role,
                     user: server_user
                 })
-                tab_res.push(role_user)
                 await serverUserRoleRepository.save(role_user)
             }
             return res.status(200).send('')
         } catch(error){
-            return res.status(400).send(tab_res);
+            return res.status(400).send(error);
         }
 
     }
+});
+
+router.get('/role_list/:server_user_id', isAuth, async (req: IRequest, res: Response) => {
+    const server_user_id = Number(req.params.server_user_id);
+    try{
+        const server_user_role_list = await serverUserRoleRepository.findBy({user: {id: server_user_id}})
+        return res.status(200).send(server_user_role_list)
+    } catch(error){
+        return res.status(400).send(error);
+    }
+   
+
 });
 
 export default router;

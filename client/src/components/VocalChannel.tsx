@@ -123,10 +123,13 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   } = streamActions;
 
   const turnOnMicrophone = async () => {
+    // navigator.mediaDevices.getDisplayMedia({
+    //   video: { MediaSource: 'screen' },
+    // });
     return navigator.mediaDevices
       .getUserMedia({ audio: true, video: true })
       .then((stream) => {
-        stream.getVideoTracks().forEach((tr) => tr.enabled);
+        stream.getVideoTracks().forEach((tr) => (tr.enabled = true));
         streamRef.current = stream;
         setIsStreamInitialized(true);
       })

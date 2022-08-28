@@ -13,19 +13,21 @@ const VideoStreamComponent = (props: { stream?: MediaStream }) => {
 
   useEffect(() => {
     if (stream && videoRef.current) {
-      videoRef.current.srcObject = stream;
+      // videoRef.current.srcObject = stream;
       videoRef.current.volume = 0;
       videoRef.current?.play();
     }
 
     return () => {
-      //   if (stream && videoRef.current) {
-      //     videoRef.current?.pause();
-      //     videoRef.current?.remove();
-      //   }
+      if (stream && videoRef.current) {
+        videoRef.current?.pause();
+      }
     };
   }, [stream]);
 
+  // stream?.getVideoTracks().forEach((tr) => {
+  //   tr.stop();
+  // });
   return (
     <div
       style={{
@@ -50,7 +52,7 @@ const VideoStreamComponent = (props: { stream?: MediaStream }) => {
           //   border: '8px solid rgba(0, 0, 0, 0.7)',
         }}
       >
-        {stream ? (
+        {videoRef.current?.srcObject !== null ? (
           <video
             ref={videoRef}
             autoPlay

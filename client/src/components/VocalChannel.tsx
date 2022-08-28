@@ -1,4 +1,8 @@
-import { SoundOutlined } from '@ant-design/icons';
+import {
+  AudioFilled,
+  CustomerServiceOutlined,
+  SoundOutlined,
+} from '@ant-design/icons';
 import { Avatar, Dropdown, Menu } from 'antd';
 import { MediaConnection } from 'peerjs';
 import {
@@ -499,6 +503,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
           </span>
         </div>
         {chan.users.map((u) => {
+          const user = serverUserMap.get(u);
           return (
             <div key={u} style={{ marginTop: '5px' }}>
               {me && (
@@ -515,6 +520,15 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
                       u={u}
                     />
                     {serverUserMap.get(u)?.nickname || 'Error retrieving user'}
+                    {user?.user.mediaStatus.microphone === false ? (
+                      <AudioFilled style={{ color: 'red' }} />
+                    ) : null}
+                    {user?.user.mediaStatus.audio === false ? (
+                      <CustomerServiceOutlined style={{ color: 'red' }} />
+                    ) : null}
+                    {user?.user.mediaStatus.camera === true ? (
+                      <AudioFilled style={{ color: 'white' }} />
+                    ) : null}
                   </div>
                 </Dropdown>
               )}

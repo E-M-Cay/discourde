@@ -14,6 +14,7 @@ let userConcern: number;
 let tmpCheckedRoles: Array<any> = [];
 let checkedListRoles: Array<any> = [];
 let rolesAlreadyChecked: Array<any> = [];
+let idServer: number = -1
 
 let listOfRoles: Array<any> = [];
 const AdminModal = (props: {
@@ -37,7 +38,7 @@ const AdminModal = (props: {
     (state) => state.userReducer.activeServer
   );
 
-  let idServer: number = activeServer;
+  idServer = activeServer;
 
 
   useEffect(() => getRolesByServer())

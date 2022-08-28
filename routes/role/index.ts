@@ -140,10 +140,15 @@ router.post('/add_role/', isAuth,async (req: IRequest, res: Response) => {
                     continue
                 }
 
+                const role = await RoleRepository.findOneBy({id: role_id})
+                const server_user = await ServerUserRepository.findOneBy({id: server_user_id})
+
+                if(!role || !server_user)
+                    return res.status(400).send("role or server_user not found");
 
                 const role_user = serverUserRoleRepository.create({
-                    role: {id: role_id},
-                    user: {id: server_user_id}
+                    role: role,
+                    user: server_user
                 })
 
                 await serverUserRoleRepository.save(role_user)

@@ -108,7 +108,19 @@ const showPermModal = () => {
     }); 
 }
 const onCreateNewRole = (values: any) => {
-  console.log("Id du role : " +  values)
+  console.log(values.newRole)
+  let idServer: number = activeServer;
+  console.log(idServer)
+  let nameNewRole: string = values.newRole;
+  axios
+  .post(`/role/create/`, {
+        'name': nameNewRole,
+        'server_id': idServer
+  }, {
+   headers: {
+     access_token: localStorage.getItem('token') as string,
+   },
+ })
 };
 
 const setUserConcern = (selectUser: number) => {

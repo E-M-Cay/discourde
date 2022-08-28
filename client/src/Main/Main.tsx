@@ -46,7 +46,10 @@ export const Main = (props: {
       </Col>
       <Col span={18}>
         {/* <CallPanel /> */}
-        <Chat textChannelList={textChannelList} />
+        <Chat
+          textChannelList={textChannelList}
+          vocalChannelList={vocalChannelList}
+        />
       </Col>
       <Col style={{ backgroundColor: 'grey' }} span={3}>
         {isHome ? <FriendPanel setServers={setServers} /> : <StatusBar />}

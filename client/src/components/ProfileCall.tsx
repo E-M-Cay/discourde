@@ -184,6 +184,7 @@ export const ProfileCall = (props: {
               <PhoneOutlined
                 onClick={() => {
                   dispatch(setActiveVocalChannel(0));
+
                   localStorage.removeItem('activeVocalChannel');
                 }}
               />

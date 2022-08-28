@@ -117,6 +117,12 @@ body {
   width: 1380px !important;
 }
 
+.messageCam {
+  height: calc(100vh - 44px) !important;
+  overflow-y: scroll;
+  width: 1380px !important;
+}
+
 .messageItemContentName {
   color: #dcdcdc;
   font-size: 15px;
@@ -330,5 +336,20 @@ input[type='submit']:hover {
 
 .loreImg:hover {
   opacity: 0.8;
+  cursor: pointer;
+}
+
+.camcam:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.ant-tabs-ink-bar {
+  background-color: #42464d !important;
+}
+
+.dropdownHandlerStp:hover {
+  /* color: #42464d !important; */
+  opacity: 0.6;
   cursor: pointer;
 }

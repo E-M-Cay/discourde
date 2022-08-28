@@ -9,7 +9,8 @@ import { UserMapsContext } from '../context/UserMapsContext';
 import { Channel, VocalChan } from '../types/types';
 import logo from '../assets/discourde.png';
 import { VocalChannelContext } from '../components/VocalChannel';
-import { useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { setCameraChat } from '../redux/userSlice';
 const { Panel } = Collapse;
 
 export const ChannelCollapse = (props: {
@@ -19,6 +20,8 @@ export const ChannelCollapse = (props: {
   onVocalChannelClick: Function;
   activeVocalChannel?: number;
 }) => {
+  const dispatch = useAppDispatch();
+
   const onChange = (key: any) => {};
   const {
     textChannelList,

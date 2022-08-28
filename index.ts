@@ -66,12 +66,14 @@ global.user_id_to_status = new Map<number, number>();
 global.vocal_channel_to_user_list = new Map<number, number[]>();
 global.user_id_to_vocal_channel = new Map<number, number>();
 global.user_id_to_socket_id = new Map<number, string>();
-const user_status = new Map<number, string>();
-
-user_status.set(0, 'Disconected');
-user_status.set(1, 'Connected');
-user_status.set(2, 'Away');
-user_status.set(3, 'Do not disturb');
+global.user_id_to_media_status = new Map<
+  number,
+  {
+    microphone: boolean;
+    audio: boolean;
+    camera: boolean;
+  }
+>();
 
 const httpServer = createServer(app);
 
@@ -146,7 +148,12 @@ io.on('connection', (socket: ISocket) => {
   }
   io.emit('userconnected', socket.user_id);
   global.user_id_to_status.set(socket.user_id as number, 1);
-  user_id_to_socket_id.set(socket.user_id as number, socket.id);
+  global.user_id_to_socket_id.set(socket.user_id as number, socket.id);
+  global.user_id_to_media_status.set(socket.user_id as number, {
+    microphone: true,
+    audio: true,
+    camera: false,
+  });
   socket.on('username', (newUsername) => {
     socket.username = newUsername;
     socket.emit('username', newUsername);
@@ -261,6 +268,7 @@ io.on('connection', (socket: ISocket) => {
         userList?.filter((u) => u !== socket.user_id) as number[]
       );
       global.user_id_to_vocal_channel.delete(socket.user_id);
+      global.user_id_to_media_status.delete(socket.user_id);
     }
     if (global.user_id_to_socket_id.get(socket.user_id) === socket.id) {
       global.user_id_to_status.delete(socket.user_id);
@@ -327,5 +335,91 @@ io.on('connection', (socket: ISocket) => {
       peer_id: socket.peer_id,
     });
     io.emit('joiningvocal', { user: socket.user_id, chan: id });
+  });
+
+  socket.on('micmuted', () => {
+    const mediaStatus = global.user_id_to_media_status.get(
+      socket.user_id as number
+    );
+    if (mediaStatus) {
+      mediaStatus.microphone = false;
+    }
+    io.emit('mediastatus', {
+      userId: socket.user_id,
+      kind: 'mic',
+      state: false,
+    });
+  });
+
+  socket.on('micunmuted', () => {
+    const mediaStatus = global.user_id_to_media_status.get(
+      socket.user_id as number
+    );
+    if (mediaStatus) {
+      mediaStatus.microphone = true;
+    }
+    io.emit('mediastatus', {
+      userId: socket.user_id,
+      kind: 'mic',
+      state: true,
+    });
+  });
+
+  socket.on('audiomuted', () => {
+    const mediaStatus = global.user_id_to_media_status.get(
+      socket.user_id as number
+    );
+    if (mediaStatus) {
+      mediaStatus.audio = false;
+    }
+    io.emit('mediastatus', {
+      userId: socket.user_id,
+      kind: 'aud',
+      state: false,
+    });
+  });
+
+  socket.on('audiounmuted', () => {
+    const mediaStatus = global.user_id_to_media_status.get(
+      socket.user_id as number
+    );
+    if (mediaStatus) {
+      mediaStatus.audio = true;
+    }
+    io.emit('mediastatus', {
+      userId: socket.user_id,
+      kind: 'aud',
+      state: true,
+    });
+  });
+
+  socket.on('cameraon', () => {
+    console.log('cameraon');
+    const mediaStatus = global.user_id_to_media_status.get(
+      socket.user_id as number
+    );
+    if (mediaStatus) {
+      mediaStatus.camera = true;
+    }
+    io.emit('mediastatus', {
+      userId: socket.user_id,
+      kind: 'cam',
+      state: true,
+    });
+  });
+
+  socket.on('cameraoff', () => {
+    console.log('cameraoff');
+    const mediaStatus = global.user_id_to_media_status.get(
+      socket.user_id as number
+    );
+    if (mediaStatus) {
+      mediaStatus.camera = false;
+    }
+    io.emit('mediastatus', {
+      userId: socket.user_id,
+      kind: 'cam',
+      state: false,
+    });
   });
 });

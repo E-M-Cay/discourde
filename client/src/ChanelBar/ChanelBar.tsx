@@ -8,6 +8,7 @@ import {
   setActiveChannel,
   setActiveVocalChannel,
   setAiChat,
+  setCameraChat,
 } from '../redux/userSlice';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { Channel, VocalChan } from '../types/types';
@@ -49,7 +50,7 @@ export const ChanelBar = (props: {
   const { addNotification } = useContext(NotificationsContext);
   const dispatch = useAppDispatch();
   const serverName: string = activeServerName ?? 'Serveur';
-  const { me } = useAppSelector((state) => state.userReducer);
+  const { me, cameraChat } = useAppSelector((state) => state.userReducer);
   const { isStreamInitialized } = useContext(VocalChannelContext);
 
   const activeVocalChannel = useAppSelector(
@@ -78,11 +79,17 @@ export const ChanelBar = (props: {
 
   const onChange = (key: any) => {};
   const onTextChannelClick = (id: number) => {
+    dispatch(setCameraChat(false));
     dispatch(setActiveChannel(id));
   };
 
+  useEffect(() => {
+    console.log(cameraChat, 'carema');
+  }, [cameraChat]);
+
   const onVocalChannelClick = useCallback(
     async (id: number) => {
+      dispatch(setCameraChat(true));
       if (activeVocalChannel === id) return;
       dispatch(setActiveVocalChannel(id));
     },

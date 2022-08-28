@@ -37,7 +37,7 @@ export const AiMessageItem = (props: {
           <div className='messageItemContentName'>
             {' '}
             {username}
-            <span className='time'> {send_time}</span>
+            <span className='time'>le 1er janvier 1970 à 00 h</span>
           </div>
           <div
             className='messageItemContentText'

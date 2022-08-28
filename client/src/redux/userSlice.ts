@@ -11,12 +11,14 @@ interface UserState {
   activeVocalChannel: number;
   activePrivateChat?: number;
   home: boolean;
+  cameraChat: boolean;
   aiChat: boolean;
   me?: User;
   isMute: boolean;
   isMuteAudio: boolean;
   isConnected: boolean;
   activeVocalChannelServer: number;
+  isCameraActive: boolean;
   aiMsg: string;
 }
 
@@ -29,8 +31,10 @@ const initialUserState: UserState = {
   home: false,
   isMute: false,
   aiChat: false,
+  cameraChat: false,
   isMuteAudio: false,
   isConnected: false,
+  isCameraActive: false,
   activeVocalChannelServer: 0,
   aiMsg: '',
 };
@@ -76,6 +80,9 @@ export const userSlice = createSlice({
       console.log(action.payload);
       state.me = action.payload;
     },
+    setCameraChat: (state, action: PayloadAction<boolean>) => {
+      state.cameraChat = action.payload;
+    },
     setMute: (state) => {
       state.isMute = true;
     },
@@ -92,6 +99,12 @@ export const userSlice = createSlice({
     setIsConnected: (state, action: PayloadAction<boolean>) => {
       state.isConnected = action.payload;
     },
+    disableCamera: (state) => {
+      state.isCameraActive = false;
+    },
+    enableCamera: (state) => {
+      state.isCameraActive = true;
+    },
   },
 });
 
@@ -105,6 +118,7 @@ export const {
   setActiveChannel,
   setActiveVocalChannel,
   setActivePrivateChat,
+  setCameraChat,
   setMe,
   setMute,
   setUnmute,
@@ -112,6 +126,8 @@ export const {
   setUnmuteAudio,
   setIsConnected,
   setAiMsg,
+  enableCamera,
+  disableCamera,
 } = userSlice.actions;
 
 export default userSlice.reducer;

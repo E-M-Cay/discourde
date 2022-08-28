@@ -50,8 +50,14 @@ const ServerParamsModal = (props: {
   // //console.log(activeServerObject, 'activeServerObject');
   const { addNotification } = useContext(NotificationsContext);
   const [newTextChannelName, setNewTextChannelName] = useState('');
-  const [pictureLink, setPictureLink] = useState(activeServerObject?.main_img);
-  const [serverName, setServerName] = useState(activeServerObject?.name);
+  const [pictureLink, setPictureLink] = useState(
+    activeServerObject ? activeServerObject.main_img : ''
+  );
+  const [serverName, setServerName] = useState(
+    activeServerObject ? activeServerObject.name : ''
+  );
+
+  // console.log(activeServerObject, pictureLink, 'activeServerObject');
 
   const handleOk = () => {
     setIsModalVisibleParams(false);
@@ -146,7 +152,7 @@ const ServerParamsModal = (props: {
             title: 'success',
             content: 'Server updated',
           });
-          // setIsModalVisibleParams(false);
+          setIsModalVisibleParams(false);
         }
       })
       .catch((err) => {
@@ -395,6 +401,7 @@ const ServerParamsModal = (props: {
             style={{ maxWidth: '50%' }}
             placeholder='Server name'
             id='serverName'
+            defaultValue={serverName}
             onChange={(e) => setServerName(e.target.value)}
           />
         </div>
@@ -406,10 +413,13 @@ const ServerParamsModal = (props: {
                   style={{
                     margin: '5px',
                     boxSizing: 'border-box',
-                    border: png === pictureLink ? '4px solid green' : '',
+                    border:
+                      png === pictureLink
+                        ? '3px solid lightgreen'
+                        : '3px solid transparent',
                   }}
                   onClick={() => setPictureLink(png)}
-                  size={50}
+                  size={55}
                   src={png}
                 />
                 {key === 4 && <br />}

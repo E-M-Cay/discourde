@@ -67,7 +67,7 @@ router.post(
   isAuth,
   hasPerm,
   async (req: IRequest, res: Response) => {
-    const { name, picture } = req.body;
+    const { name, main_img } = req.body;
     const server = await ServerRepository.findOne({
       where: {
         id: req.body.id,
@@ -75,9 +75,10 @@ router.post(
     });
     if (!server) return res.send('Server not found');
     server.name = name;
-    server.main_img = picture;
+    server.main_img = main_img;
     await ServerRepository.save(server);
-    return res.send('Server updated');
+    io.emit('serverupdated', server);
+    return res.send('updated');
   }
 ),
   router.post(
@@ -164,6 +165,8 @@ router.delete(
   '/:server_id/user/:user_id',
   isAuth,
   async (req: IRequest, res: Response) => {
+    if (!req.params?.server_id || !req.params?.user_id)
+      return res.status(400).send('Server Id or User Id not found');
     const serverUser = await ServerUserRepository.findOne({
       where: {
         server: {
@@ -186,7 +189,7 @@ router.delete(
     });
 
     if (!serverUser) return res.status(400).send('Error server not found');
-    if (serverUser.server.owner.id === req.id)
+    if (serverUser.server.owner?.id === req.id)
       return res.status(401).send('cannot leave owned server');
 
     try {

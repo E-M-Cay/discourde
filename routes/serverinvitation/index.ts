@@ -101,6 +101,7 @@ router.get('/getinvitations', isAuth, async (req: IREQUEST, res: Response) => {
       server: {
         id: true,
         name: true,
+        owner: { id: true },
       },
     },
   });

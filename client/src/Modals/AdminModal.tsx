@@ -123,16 +123,16 @@ const onCreateNewRole = (values: any) => {
  })
 };
 
-const setUserConcern = (selectUser: number) => {
+const setUserConcern = async (selectUser: number) => {
 
   userConcern = selectUser;
   console.log("UserConcernOnSetUser : " + userConcern)
-  getRolesByServeUser();
+  await getRolesByServeUser();
   showRoleModal(userConcern);
   return selectUser;
 }
-const getRolesByServeUser = () => {
-  axios
+const getRolesByServeUser = async () => {
+  await axios
   .get(`/role/role_list/${userConcern}`, {
    headers: {
      access_token: localStorage.getItem('token') as string,
@@ -173,11 +173,15 @@ const onValidateAdmR = () => {
   checkedListRoles = tmpCheckedRoles;
   console.log("Id du user : " + userConcern)
   console.log("Liste des roles : " +  checkedListRoles);
+  const tab_initial_role_id = []
+  for(const role of listOfRoles)
+    tab_initial_role_id.push(role.id)
 
   axios
   .post(`/role/add_role/`, {
         'role_id_list': checkedListRoles,
-        'server_user_id': userConcern
+        'server_user_id': userConcern,
+        'role_id_initial_list': tab_initial_role_id
   }, {
    headers: {
      access_token: localStorage.getItem('token') as string,
@@ -190,6 +194,8 @@ const onValidateAdmR = () => {
 const isCheck = (idRole: any) => {
 
   var n = rolesAlreadyChecked.includes(idRole);
+  console.log(rolesAlreadyChecked)
+  console.log(idRole)
   console.log(n)
   return n
 }

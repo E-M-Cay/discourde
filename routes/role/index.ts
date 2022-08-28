@@ -125,19 +125,24 @@ router.delete('/delete/:role_id', isAuth, (req: IRequest, res: Response) => {
 
 
 router.post('/add_role/', isAuth,async (req: IRequest, res: Response) => {
-    if ('role_id_list' in req.body && 'server_user_id' in req.body) {
+    if ('role_id_list' in req.body && 'server_user_id' in req.body && 'role_id_initial_list') {
         const role_id_list = req.body.role_id_list
         const server_user_id = req.body.server_user_id
+        const role_id_initial_list = req.body.role_id_initial_list
         try{
-            for(const role_id of role_id_list){
+            for(const role_id of role_id_initial_list){
+
                 const server_user_role = await serverUserRoleRepository.findOneBy({
                     role: {id: role_id},
                     user: {id: server_user_id}
                 })
-                if(server_user_role){
+                if(server_user_role && !role_id_list.includes(role_id)){
                     serverUserRoleRepository.delete(server_user_role.id)
                     continue
                 }
+
+                if(!server_user_role && !role_id_list.includes(role_id))
+                    continue
 
                 const role = await RoleRepository.findOneBy({id: role_id})
                 const server_user = await ServerUserRepository.findOneBy({id: server_user_id})

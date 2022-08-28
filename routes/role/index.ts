@@ -124,20 +124,25 @@ router.delete('/delete/:role_id', isAuth, (req: IRequest, res: Response) => {
 });
 
 
-router.post('/add_role', isAuth,async (req: IRequest, res: Response) => {
+router.post('/add_role/', isAuth,async (req: IRequest, res: Response) => {
     if ('role_id_list' in req.body && 'server_user_id' in req.body) {
         const role_id_list = req.body.role_id
         const server_user_id = req.body.server_user_id
         try{
             for(const role_id of role_id_list){
+                console.log(role_id_list)
+                console.log(server_user_id)
                 const server_user_role = await serverUserRoleRepository.findBy({
                     role: {id: role_id},
                     user: {id: server_user_id}
                 })
+                console.log(role_id_list)
+                console.log(server_user_id)
                 if(server_user_role){
                     serverUserRoleRepository.delete(server_user_role[0].id)
                     continue
                 }
+
 
                 const role_user = serverUserRoleRepository.create({
                     role: {id: role_id},

@@ -10,6 +10,7 @@ import PermModal from './PermModal';
 
 
 const { TabPane } = Tabs;
+let userConcern: number;
 
 let listOfRoles: Array<any> = [];
 const AdminModal = (props: {
@@ -33,7 +34,7 @@ const AdminModal = (props: {
     (state) => state.userReducer.activeServer
   );
 
-  let userConcern: number;
+
   let tmpCheckedRoles: Array<any> = [];
   let checkedListRoles: Array<any> = [];
 
@@ -105,7 +106,7 @@ const showPermModal = () => {
     }); 
 }
 const onCreateNewRole = (values: any) => {
-  console.log("Id du role : " + values.id + values.name)
+  console.log("Id du role : " +  values)
 };
 
 const setUserConcern = (selectUser: number) => {
@@ -137,9 +138,19 @@ const onChangeR = (checkedValues: any) => {
 };
 const onValidateAdmR = () => {
   checkedListRoles = tmpCheckedRoles;
-    console.log("Id du user : " + userConcern)
-
+  console.log("Id du user : " + userConcern)
   console.log("Liste des roles : " +  checkedListRoles);
+
+  axios
+  .post(`/role/add_role/`, {
+        'role_id_list': checkedListRoles,
+        'server_user_id': userConcern
+  }, {
+   headers: {
+     access_token: localStorage.getItem('token') as string,
+   },
+ })
+
   setisModalVisibleRole(false);
 }
 

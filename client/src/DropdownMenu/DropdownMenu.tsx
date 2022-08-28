@@ -132,33 +132,37 @@ export const DropdownMenu = (params: {
                 key: '2',
               }
             : null,
-          {
-            type: 'divider',
-          },
-          {
-            label: (
-              <li
-                style={{
-                  fontWeight: '600',
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  fontSize: '14px',
-                }}
-                key={3}
-                onClick={() => showModal()}
-              >
-                Créer un salon
-                <PlusCircleOutlined
-                  style={{
-                    fontSize: '15px',
-                  }}
-                />
-              </li>
-            ),
-            key: '3',
-          },
+          activeServerOwner === idUser
+            ? {
+                type: 'divider',
+              }
+            : null,
+          activeServerOwner === idUser
+            ? {
+                label: (
+                  <li
+                    style={{
+                      fontWeight: '600',
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '14px',
+                    }}
+                    key={3}
+                    onClick={() => showModal()}
+                  >
+                    Créer un salon
+                    <PlusCircleOutlined
+                      style={{
+                        fontSize: '15px',
+                      }}
+                    />
+                  </li>
+                ),
+                key: '3',
+              }
+            : null,
           activeServerOwner === idUser
             ? {
                 label: (

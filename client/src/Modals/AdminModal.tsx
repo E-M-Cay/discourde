@@ -37,7 +37,8 @@ const AdminModal = (props: {
 
   let tmpCheckedRoles: Array<any> = [];
   let checkedListRoles: Array<any> = [];
-
+  let rolesAlreadyChecked: Array<any> = [];
+  
   useEffect(() => getRolesByServer())
   const getRolesByServer = () => {
     console.log("SERVEUR ID GET")
@@ -113,8 +114,27 @@ const setUserConcern = (selectUser: number) => {
 
   userConcern = selectUser;
   console.log("UserConcernOnSetUser : " + userConcern)
+  getRolesByServeUser();
   showRoleModal(userConcern);
   return selectUser;
+}
+const getRolesByServeUser = () => {
+  axios
+  .get(`/role/role_list/${userConcern}`, {
+   headers: {
+     access_token: localStorage.getItem('token') as string,
+   },
+ })
+ .then((res) => {
+  console.log("getRolesByUser");
+  console.log(res.data);
+
+  rolesAlreadyChecked= res.data;
+  rolesAlreadyChecked = rolesAlreadyChecked.map((role) => role.id);
+  console.log("second tableau roles")
+  console.log(rolesAlreadyChecked)
+
+ });  
 }
 const showRoleModal = (idUserConcern: number) => {
   console.log("ID USER DANS ROLE MODAL : " + idUserConcern)
@@ -226,6 +246,7 @@ const onValidateAdmR = () => {
             width: '100%',
             }}
             onChange={onChangeR}
+            defaultValue={rolesAlreadyChecked}
         >
         <Row>
           {listOfRoles.map((role) => (<Checkbox value={role.id}> {role.name} </Checkbox> ) )}

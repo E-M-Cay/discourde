@@ -37,7 +37,7 @@ const AdminModal = (props: {
     (state) => state.userReducer.activeServer
   );
 
-
+  let idServer: number = activeServer;
 
 
   useEffect(() => getRolesByServer())
@@ -108,10 +108,10 @@ const showPermModal = () => {
     }); 
 }
 const onCreateNewRole = (values: any) => {
-  console.log(values.newRole)
-  let idServer: number = activeServer;
-  console.log(idServer)
   let nameNewRole: string = values.newRole;
+  console.log("NameRole : " + nameNewRole)
+  console.log("idServer du role : " + idServer)
+  
   axios
   .post(`/role/create/`, {
         'name': nameNewRole,

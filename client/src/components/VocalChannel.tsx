@@ -86,26 +86,18 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   const activeVocalChannel = useAppSelector(
     (state) => state.userReducer.activeVocalChannel
   );
-  const me = useAppSelector((state) => state.userReducer.me);
+  const { me, isMute, isMuteAudio } = useAppSelector(
+    (state) => state.userReducer
+  );
   const [audioNodeMap, audioNodeActions] = useMap<number, HTMLAudioElement>([]);
   const [callMap, callMapActions] = useMap<number, MediaConnection>([]);
-  const [featureMap, featuresActions] = useMap<number, any>([]);
   const [streamMap, streamActions] = useMap<number, MediaStream>([]);
   const { serverUserMap } = useContext(UserMapsContext);
   const [isStreamInitialized, setIsStreamInitialized] = useState(false);
-  const isMute = useAppSelector((state) => state.userReducer.isMute);
-  const isMuteAudio = useAppSelector((state) => state.userReducer.isMuteAudio);
   const streamRef = useRef<MediaStream>();
-  const videoStreamRef = useRef<MediaStream>();
   const dispatch = useAppDispatch();
   const [isLeaving, setIsLeaving] = useState(false);
   const videoElRef = useRef<HTMLVideoElement>(null);
-
-  // useEffect(() => {
-  //   if (streamRef.current) {
-  //     streamRef.current.onremovetrack;
-  //   }
-  // });
 
   const {
     set: setAudioNode,
@@ -120,13 +112,6 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     setAll: setAllCalls,
     reset: resetCalls,
   } = callMapActions;
-
-  const {
-    set: setFeature,
-    remove: removeFeature,
-    setAll: setAllFeatures,
-    reset: resetFeatures,
-  } = featuresActions;
 
   const {
     set: setStream,
@@ -175,10 +160,6 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     streamRef.current?.getAudioTracks().forEach((tr) => (tr.enabled = !mute));
   };
 
-  useEffect(() => {
-    console.log('fresh');
-  });
-
   const callEvent = useCallback(
     async (call: MediaConnection) => {
       const audioNode = new Audio();
@@ -204,7 +185,6 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       });
 
       call.on('close', () => {
-        console.log('close');
         audioNode.pause();
         audioNode.remove();
         removeStream(userId);
@@ -226,9 +206,6 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
   const callUser = useCallback(
     async (id: string, userId: number) => {
-      //console.log('calling:', id, peer?.id);
-      // const audioNode = new Audio();
-      //console.log(streamRef.current?.getTracks());
       if (!peer) return;
       if (streamRef.current) {
         const call = peer.call(id, streamRef.current, {
@@ -244,9 +221,6 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
           setStream(userId, stream);
           audioNode.srcObject = stream;
 
-          console.log('analyzer start');
-
-          //
           setAudioNode(userId, audioNode);
 
           if (!isMuteAudio) {
@@ -314,7 +288,6 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   };
 
   const unmuteSelf = () => {
-    console.log('unmute');
     muteUnmuteStream(false);
     socket.emit('micunmuted');
     dispatch(setUnmute());

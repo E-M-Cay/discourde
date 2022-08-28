@@ -207,7 +207,7 @@ router.delete(
   isAuth,
   isOwner,
   async (req: IRequest, res: Response) => {
-    console.log(req.params.server_id);
+    // console.log(req.params.server_id);
     const server_id = Number(req.params.server_id);
     if (server_id == NaN) return res.status(400).send('Error server not found');
     try {

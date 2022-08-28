@@ -75,7 +75,7 @@ export const ProfileCall = (props: {
   function statusHandler(status: string, inNumber: number) {
     socket.emit(status, me?.id);
     if (me) dispatch(setMe({ ...me, status: inNumber }));
-    console.log('status', status, me, 'me', inNumber, 'tmp');
+    // console.log('status', status, me, 'me', inNumber, 'tmp');
   }
 
   const menu = (

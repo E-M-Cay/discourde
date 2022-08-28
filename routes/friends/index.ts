@@ -197,7 +197,7 @@ router.delete(
   async (req: IRequest, res: Response) => {
     const friendship_id = Number(req.params.id);
     const friend_id = Number(req.params.user_id);
-    console.log('friendship', friendship_id);
+    // console.log('friendship', friendship_id);
 
     try {
       await FriendshipRepository.delete({

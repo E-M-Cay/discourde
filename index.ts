@@ -394,7 +394,7 @@ io.on('connection', (socket: ISocket) => {
   });
 
   socket.on('cameraon', () => {
-    console.log('cameraon');
+    // console.log('cameraon');
     const mediaStatus = global.user_id_to_media_status.get(
       socket.user_id as number
     );
@@ -409,7 +409,7 @@ io.on('connection', (socket: ISocket) => {
   });
 
   socket.on('cameraoff', () => {
-    console.log('cameraoff');
+    // console.log('cameraoff');
     const mediaStatus = global.user_id_to_media_status.get(
       socket.user_id as number
     );

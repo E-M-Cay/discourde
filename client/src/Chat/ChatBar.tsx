@@ -63,7 +63,7 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
     } else if (activeChannel === -1) {
       let tmp1 = aiMsg;
 
-      console.log(aiMsg);
+      // console.log(aiMsg);
       dispatch(setAiMsg(tmp1 + '""Human: ' + input));
 
       const configuration = new Configuration({
@@ -92,11 +92,11 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
                 response.data.choices[0].text
             )
           );
-          console.log('REPONSE OBJET');
-          console.log(response);
-          console.log('REPONSE MSG');
-          console.log(response.data.choices[0].text);
-          console.log(aiMsg + 'aimsg');
+          // console.log('REPONSE OBJET');
+          // console.log(response);
+          // console.log('REPONSE MSG');
+          // console.log(response.data.choices[0].text);
+          // console.log(aiMsg + 'aimsg');
         });
       setInput('');
     }

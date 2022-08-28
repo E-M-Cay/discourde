@@ -134,13 +134,11 @@ export const FriendPanel = (props: {
         }
       )
       .then((res) => {
-        // delete server invitation in the state
         setServerRequests(
           serverRequests.filter((invitation) => {
             return invitation.id !== invitationId;
           })
         );
-        //console.log(res);
       })
       .catch((err) => {
         console.log(err);
@@ -148,9 +146,6 @@ export const FriendPanel = (props: {
   };
 
   const [stateMenu, setmenuState] = useState(true);
-
-  // const onSearch = (value: any) => //console.log(value);
-
   const menu = (friendship: Friendship) => {
     return (
       <Menu

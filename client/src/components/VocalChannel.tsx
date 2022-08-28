@@ -18,6 +18,7 @@ import { User, VocalChan } from '../types/types';
 import logo from '../assets/discourde.png';
 import {
   setActiveVocalChannel,
+  setCameraChat,
   setMute,
   setMuteAudio,
   setUnmute,
@@ -464,10 +465,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       );
     };
     return (
-      <li
-        key={chan.id}
-        // onClick={() => onVocalChannelClick(chan.id)}
-      >
+      <li key={chan.id} onClick={() => dispatch(setCameraChat(true))}>
         {' '}
         <div className='panelContent'>
           <SoundOutlined />{' '}

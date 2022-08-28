@@ -38,7 +38,8 @@ const AdminModal = (props: {
   let tmpCheckedRoles: Array<any> = [];
   let checkedListRoles: Array<any> = [];
   let rolesAlreadyChecked: Array<any> = [];
-  
+  let tempoRolesAlreadyChecked: Array<any> = [];
+
   useEffect(() => getRolesByServer())
   const getRolesByServer = () => {
     console.log("SERVEUR ID GET")
@@ -50,7 +51,7 @@ const AdminModal = (props: {
        },
      })
      .then((res) => {
-      console.log("getRoles");
+      console.log("getRolesbyServer");
      
       listOfRoles= res.data;
 
@@ -129,8 +130,12 @@ const getRolesByServeUser = () => {
   console.log("getRolesByUser");
   console.log(res.data);
 
-  rolesAlreadyChecked= res.data;
-  rolesAlreadyChecked = rolesAlreadyChecked.map((role) => role.id);
+  rolesAlreadyChecked = res.data;
+  let tempoRoles: Array<any> = [];
+  for(const obj of res.data) {
+    tempoRoles.push( "" + obj.id);
+  }
+  rolesAlreadyChecked = tempoRoles;
   console.log("second tableau roles")
   console.log(rolesAlreadyChecked)
 
@@ -240,7 +245,7 @@ const onValidateAdmR = () => {
             </TabPane>
           </Tabs>
       </Modal>
-      <Modal title="Administration des rôles" visible={isModalVisibleRole} onOk={handleRoleOk} onCancel={handleRoleCancel}>
+      <Modal title="Attribution des rôles" visible={isModalVisibleRole} onOk={handleRoleOk} onCancel={handleRoleCancel}>
         <Checkbox.Group
             style={{
             width: '100%',

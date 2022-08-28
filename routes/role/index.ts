@@ -159,10 +159,19 @@ router.post('/add_role/', isAuth,async (req: IRequest, res: Response) => {
 });
 
 router.get('/role_list/:server_user_id', isAuth, async (req: IRequest, res: Response) => {
+    let tab = []
     const server_user_id = Number(req.params.server_user_id);
     try{
-        const server_user_role_list = await serverUserRoleRepository.findBy({user: {id: server_user_id}})
-        return res.status(200).send(server_user_role_list)
+        const server_user_role_list: ServerUserRole[] = await serverUserRoleRepository.find({
+            relations: ['role'],
+            where: {user: {id: server_user_id}}
+    })
+
+        let role_id_list = []
+        for(const obj of server_user_role_list){
+            role_id_list.push(obj.role.id)
+        }
+        return res.status(200).send({role_id_list})
     } catch(error){
         return res.status(400).send(error);
     }

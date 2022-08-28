@@ -130,7 +130,6 @@ const getRolesByServeUser = () => {
   console.log(res.data);
 
   rolesAlreadyChecked= res.data;
-  rolesAlreadyChecked = rolesAlreadyChecked.map((role) => role.id);
   console.log("second tableau roles")
   console.log(rolesAlreadyChecked)
 

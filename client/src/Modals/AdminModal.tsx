@@ -11,6 +11,9 @@ import PermModal from './PermModal';
 
 const { TabPane } = Tabs;
 let userConcern: number;
+let tmpCheckedRoles: Array<any> = [];
+let checkedListRoles: Array<any> = [];
+let rolesAlreadyChecked: Array<any> = [];
 
 let listOfRoles: Array<any> = [];
 const AdminModal = (props: {
@@ -35,10 +38,7 @@ const AdminModal = (props: {
   );
 
 
-  let tmpCheckedRoles: Array<any> = [];
-  let checkedListRoles: Array<any> = [];
-  let rolesAlreadyChecked: Array<any> = [];
-  let tempoRolesAlreadyChecked: Array<any> = [];
+
 
   useEffect(() => getRolesByServer())
   const getRolesByServer = () => {
@@ -130,12 +130,8 @@ const getRolesByServeUser = () => {
   console.log("getRolesByUser");
   console.log(res.data);
 
-  rolesAlreadyChecked = res.data;
-  let tempoRoles: Array<any> = [];
-  for(const obj of res.data) {
-    tempoRoles.push( "" + obj.id);
-  }
-  rolesAlreadyChecked = tempoRoles;
+  rolesAlreadyChecked = res.data.role_id_list;
+  
   console.log("second tableau roles")
   console.log(rolesAlreadyChecked)
 
@@ -177,6 +173,13 @@ const onValidateAdmR = () => {
  })
 
   setisModalVisibleRole(false);
+}
+
+const isCheck = (idRole: any) => {
+
+  var n = rolesAlreadyChecked.includes(idRole);
+  console.log(n)
+  return n
 }
 
   return (
@@ -250,11 +253,12 @@ const onValidateAdmR = () => {
             style={{
             width: '100%',
             }}
-            onChange={onChangeR}
             defaultValue={rolesAlreadyChecked}
+            onChange={onChangeR}
+            
         >
         <Row>
-          {listOfRoles.map((role) => (<Checkbox value={role.id}> {role.name} </Checkbox> ) )}
+          {listOfRoles.map((role) => (<Checkbox checked={isCheck(role.id)} value={role.id}> {role.id} </Checkbox>  ) )}
         </Row>
         </Checkbox.Group>
         <Button onClick={onValidateAdmR}><CheckOutlined style={{color: 'green', fontSize: 'large'}} /></Button>

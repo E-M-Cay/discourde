@@ -140,7 +140,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   // });
 
   const muteUnmuteStream = (mute: boolean) => {
-    streamRef.current?.getTracks().forEach((tr) => (tr.enabled = !mute));
+    streamRef.current?.getAudioTracks().forEach((tr) => (tr.enabled = !mute));
   };
 
   useEffect(() => {
@@ -300,6 +300,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
 
   const unmuteAudio = () => {
     //console.log('unmute audio');
+
     audioNodeMap.forEach((audioNode) => audioNode.play());
     dispatch(setUnmuteAudio());
   };

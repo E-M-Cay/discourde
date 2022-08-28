@@ -15,9 +15,15 @@ const VideoStreamComponent = (props: { stream?: MediaStream }) => {
     if (stream && videoRef.current) {
       videoRef.current.srcObject = stream;
       videoRef.current.volume = 0;
+      videoRef.current?.play();
     }
 
-    return () => {};
+    return () => {
+      //   if (stream && videoRef.current) {
+      //     videoRef.current?.pause();
+      //     videoRef.current?.remove();
+      //   }
+    };
   }, [stream]);
 
   return (
@@ -44,17 +50,17 @@ const VideoStreamComponent = (props: { stream?: MediaStream }) => {
           //   border: '8px solid rgba(0, 0, 0, 0.7)',
         }}
       >
-        {!bool ? (
+        {stream ? (
           <video
             ref={videoRef}
-            src='http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
+            autoPlay
+            // src='http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
             style={{
               width: '100%',
               height: '100%',
               objectFit: 'cover',
               borderRadius: '10px',
             }}
-            autoPlay
           />
         ) : (
           <div

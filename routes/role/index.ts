@@ -147,7 +147,6 @@ router.post('/add_role', isAuth,async (req: IRequest, res: Response) => {
                 await serverUserRoleRepository.save(role_user)
             }
             return res.status(200).send('')
-            return 
         } catch(error){
             return res.status(400).send(error);
         }

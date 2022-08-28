@@ -186,11 +186,11 @@ io.on('connection', (socket: ISocket) => {
             author: socket.user_id,
           });
         } catch (e) {
-          console.log(e);
+          console.log(189, e);
         }
       }
     } catch (e) {
-      console.log(e);
+      console.log(193, e);
       return;
     }
 

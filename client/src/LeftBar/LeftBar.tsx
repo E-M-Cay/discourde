@@ -10,13 +10,22 @@ import { Modal } from 'antd';
 import { Server, ServerResponse } from '../types/types';
 import { serverPng } from '../profilePng/profilePng';
 import { PeerSocketContext } from '../context/PeerSocket';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { setActiveServerName } from '../redux/userSlice';
 
 export const LeftBar = (props: {
   servers: ServerResponse[];
   setServers: React.Dispatch<React.SetStateAction<ServerResponse[]>>;
 }) => {
   const { setServers } = props;
+  const dispatch = useAppDispatch();
   const { socket } = useContext(PeerSocketContext);
+  const activeServer = useAppSelector(
+    (state) => state.userReducer.activeServer
+  );
+  const activeServerName = useAppSelector(
+    (state) => state.userReducer.activeServerName
+  );
 
   const joinServer = () => {
     axios
@@ -79,10 +88,21 @@ export const LeftBar = (props: {
 
   const handleServerUpdate = useCallback(
     (server: Server) => {
+      console.log(server, 'test');
       setServers((prevState) => {
         return prevState.map((serv) => {
-          if (serv.id === server.id) {
-            return { ...serv, logo: server.main_img, name: server.name };
+          console.log(serv, 'test', server, 'test');
+          if (serv.server.id === server.id) {
+            activeServer === server.id &&
+              dispatch(setActiveServerName(server.name));
+            return {
+              ...serv,
+              server: {
+                ...serv.server,
+                main_img: server.main_img,
+                name: server.name,
+              },
+            };
           }
           return serv;
         });

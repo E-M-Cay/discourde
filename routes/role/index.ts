@@ -26,7 +26,6 @@ const RolePermissionRepository = AppDataSource.getRepository(RolePermission)
 
 router.get('/list/:server_id', isAuth, async (req: IRequest, res: Response) => {
     const server_id = Number(req.params.server_id);
-
     try {
         const role_list = await RoleRepository.findBy({
             server: { id: server_id },

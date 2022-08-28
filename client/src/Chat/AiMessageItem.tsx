@@ -29,7 +29,7 @@ export const AiMessageItem = (props: {
           <CustomImageMess
             nickname={username}
             picture={
-              username !== 'Inteligence Artificielle' ? me.picture : logo
+              username !== 'Intelligence Artificielle' ? me.picture : logo
             }
           />
         </div>

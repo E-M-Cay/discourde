@@ -14,7 +14,7 @@ import { VocalChannel } from './entities/VocalChannel';
 import { User } from './entities/User';
 import friends from './routes/friends';
 import channels from './routes/channels';
-import role from './routes/role';
+import role from './routes/role/index';
 import vocalchannels from './routes/vocalchannels';
 import users from './routes/users/index';
 import servers from './routes/servers/index';

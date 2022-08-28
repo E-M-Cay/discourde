@@ -1,22 +1,22 @@
-import { CloseOutlined, EditOutlined, SettingFilled } from '@ant-design/icons';
-import { Modal, Typography, Input, Avatar, Divider, Tabs, Button, Dropdown } from 'antd';
+import { CheckOutlined, CloseOutlined, EditOutlined, RotateLeftOutlined, SettingFilled } from '@ant-design/icons';
+import { Modal, Typography, Input, Avatar, Divider, Tabs, Button, Dropdown, Form, Space, Checkbox, Row } from 'antd';
 import axios from 'axios';
-import { useContext, useState } from 'react';
-import { NotificationsContext } from '../context/NotificationsContext';
+import { useContext, useEffect, useState } from 'react';
 import { useAppSelector } from '../redux/hooks';
-import { Channel, ServerResponse, ServerUser, VocalChan } from '../types/types';
-import { serverPng } from '../profilePng/profilePng';
-import { User } from '../types/types';
+import { Channel, ServerResponse, ServerUser, User, VocalChan } from '../types/types';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { CustomImage } from '../CustomLi/CustomLi';
+import PermModal from './PermModal';
+
 
 const { TabPane } = Tabs;
 
+let listOfRoles: Array<any> = [];
 const AdminModal = (props: {
     isModalVisibleAdmin: boolean;
-setIsAdminModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
-
-  servers: ServerResponse[];
+    setIsAdminModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    servers: ServerResponse[];
+  
 }) => {
   const {
     isModalVisibleAdmin,
@@ -24,11 +24,45 @@ setIsAdminModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
     servers,
   } = props;
 
+  const [form] = Form.useForm();
+  const [isModalVisibleRole, setisModalVisibleRole] = useState(false);
+  const [isModalVisiblePerm, setisModalVisiblePerm] = useState(false);
   const { serverUserMap } = useContext(UserMapsContext);
-
+  const { me } = useAppSelector((state) => state.userReducer);
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
   );
+
+  let userConcern: number;
+  let tmpCheckedRoles: Array<any> = [];
+  let checkedListRoles: Array<any> = [];
+
+  useEffect(() => getRolesByServer())
+  const getRolesByServer = () => {
+    console.log("SERVEUR ID GET")
+    console.log(activeServer);
+      axios
+      .get(`/role/list/${activeServer}`, {
+       headers: {
+         access_token: localStorage.getItem('token') as string,
+       },
+     })
+     .then((res) => {
+      console.log("getRoles");
+     
+      listOfRoles= res.data;
+
+     });  
+  }
+
+let serverId: any = activeServer;
+let userId: any = 0;
+
+const showPermModal = () => {
+  setisModalVisiblePerm(true);
+};
+
+
 
   const showAdminModal = () => {
     setIsAdminModalVisible(true);
@@ -45,19 +79,14 @@ setIsAdminModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
     console.log(key);
   };
   
-  const onClickUserList = (user : ServerUser) => {
-    console.log("UUSSSER")
-    console.log(user)
-  }
+
   const kickUser = (user : ServerUser) => {
     console.log("UUSSSER")
-    let serverId: any = 0;
-    let userId: any = 0;
     for (const [key, value] of Object.entries(user)) {
         if(typeof value === 'object') {
             for (const [key2, value2] of Object.entries(value)) {
-                if(key2 == 'id') {
-                    if(userId == 0) {
+                if(key2 === 'id') {
+                    if(userId === 0) {
                         userId = value2;
                     }
                     else { serverId = value2;}
@@ -67,6 +96,7 @@ setIsAdminModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
     }
     console.log("serverID" + serverId);
     console.log("userID" + userId);
+    
     axios
      .delete(`/server/${serverId}/user/${userId}`, {
       headers: {
@@ -74,15 +104,53 @@ setIsAdminModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
       },
     }); 
 }
-  
-  
+const onCreateNewRole = (values: any) => {
+  console.log("Id du role : " + values.id + values.name)
+};
+
+const setUserConcern = (selectUser: number) => {
+
+  userConcern = selectUser;
+  console.log("UserConcernOnSetUser : " + userConcern)
+  showRoleModal(userConcern);
+  return selectUser;
+}
+const showRoleModal = (idUserConcern: number) => {
+  console.log("ID USER DANS ROLE MODAL : " + idUserConcern)
+  setisModalVisibleRole(true);
+};
+const handleRoleOk = () => {
+  setisModalVisibleRole(false);
+};
+
+const handleRoleCancel = () => {
+  setisModalVisibleRole(false);
+};
+
+
+const onChangeR = (checkedValues: any) => {
+  console.log('checked = ' + checkedValues);
+  console.log("OnConcern - change : " + userConcern)
+  tmpCheckedRoles = checkedValues;
+  let okTest: number;
+  okTest = 1;
+};
+const onValidateAdmR = () => {
+  checkedListRoles = tmpCheckedRoles;
+    console.log("Id du user : " + userConcern)
+
+  console.log("Liste des roles : " +  checkedListRoles);
+  setisModalVisibleRole(false);
+}
 
   return (
+    <div>
     <Modal title="Gestion des membres" visible={isModalVisibleAdmin} onOk={handleAdminOk} onCancel={handleAdminCancel}>
         <Tabs onChange={onChange}>
           <TabPane tab='Liste des membres' key="1">
             <div>
                 {Array.from(serverUserMap.entries()).map(([id, user]) => 
+                
                 <div
                 key={id}
                 className='hoStat'
@@ -113,17 +181,60 @@ setIsAdminModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
                     ? user.nickname.slice(0, 14) + '...'
                     : user.nickname}
                 </Typography>{' '}
-                <SettingFilled style={{fontSize: 'large'}} onClick={() => onClickUserList(user)}/>
-                <CloseOutlined style={{fontSize: 'large', color: 'red'}} onClick={() => kickUser(user)}/>
+                <SettingFilled style={{fontSize: 'large', marginRight: '1vw', cursor: 'pointer'}} onClick={() => setUserConcern(user.id) }/> 
+                <CloseOutlined style={{fontSize: 'large', color: 'red', cursor: 'pointer'}} onClick={() => kickUser(user)}/>
               </div>
               )}
             </div>
             </TabPane>
             <TabPane tab='Liste des roles' key="2">
-            LISTE DES ROLES
+              {listOfRoles.map((role) => (<p> {role.name} <SettingFilled style={{fontSize: 'large', cursor: 'pointer'}} onClick={() => showPermModal()} /> </p> ) )}
+
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={onCreateNewRole}
+              >
+                <Form.Item name="newRole" label="Créer un nouveaux rôle">
+                  <Input placeholder="Nom du rôle" id='roleName' />
+                </Form.Item>
+                <Form.Item>
+                  <Space>
+                    <Button type="primary" htmlType="submit">
+                      Valider
+                    </Button>
+                  </Space>
+                </Form.Item>
+              </Form>
             </TabPane>
           </Tabs>
       </Modal>
+      <Modal title="Administration des rôles" visible={isModalVisibleRole} onOk={handleRoleOk} onCancel={handleRoleCancel}>
+        <Checkbox.Group
+            style={{
+            width: '100%',
+            }}
+            onChange={onChangeR}
+        >
+        <Row>
+          {listOfRoles.map((role) => (<Checkbox value={role.id}> {role.name} </Checkbox> ) )}
+        </Row>
+        </Checkbox.Group>
+        <Button onClick={onValidateAdmR}><CheckOutlined style={{color: 'green', fontSize: 'large'}} /></Button>
+        </Modal>
+        <PermModal 
+          isModalVisiblePerm={isModalVisiblePerm}
+          setIsPermModalVisible={setisModalVisiblePerm } 
+          servers={[]} 
+        />
+{/*       <RoleModal
+      isModalVisibleRole={isModalVisibleRole}
+      userConcern={userConcern}
+      setIsRoleModalVisible={setisModalVisibleRole } 
+      servers={[]}
+       /> */}
+      
+      </div>
   );
 };
 

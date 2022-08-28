@@ -11,7 +11,7 @@ import { Server, ServerResponse } from '../types/types';
 import { serverPng } from '../profilePng/profilePng';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setActiveServerName } from '../redux/userSlice';
+import { setActiveServer, setActiveServerName } from '../redux/userSlice';
 
 export const LeftBar = (props: {
   servers: ServerResponse[];
@@ -108,7 +108,19 @@ export const LeftBar = (props: {
         });
       });
     },
-    [setServers]
+    [setServers, dispatch, activeServer]
+  );
+
+  const handleServerDelete = useCallback(
+    (idServer: Number) => {
+      setServers((prevState) => {
+        return prevState.filter((serv) => {
+          activeServer === idServer && dispatch(setActiveServer(1));
+          return serv.server.id !== idServer;
+        });
+      });
+    },
+    [setServers, activeServer, dispatch]
   );
 
   useEffect(() => {
@@ -117,6 +129,13 @@ export const LeftBar = (props: {
       socket.off('serverupdated', handleServerUpdate);
     };
   }, [socket, handleServerUpdate]);
+
+  useEffect(() => {
+    socket.on('serverdeleted', handleServerDelete);
+    return () => {
+      socket.off('serverdeleted', handleServerDelete);
+    };
+  }, [socket, handleServerDelete]);
 
   return (
     <Sider className='site-layout-background'>

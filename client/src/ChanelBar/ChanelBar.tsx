@@ -370,7 +370,7 @@ export const ChanelBar = (props: {
   };
 
   const deleteServer = useCallback(() => {
-    axios.delete(`/server/delete_server/${activeServer}`, {
+    axios.delete(`/server/${activeServer}`, {
       headers: {
         access_token: localStorage.getItem('token') as string,
       },

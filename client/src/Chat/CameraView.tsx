@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import VideoStreamComponent from '../components/VideoStreamComponent';
 import { VocalChannelContext } from '../components/VocalChannel';
 import { useAppSelector } from '../redux/hooks';
@@ -12,6 +12,16 @@ export const CameraView = (props: {
 }) => {
   const { me } = useAppSelector((state) => state.userReducer);
   const { users, stream, streamMap, turnOnCamera } = props;
+  const [camera, setCamera] = useState(false);
+  const handleCamera = () => {
+    if (camera) {
+      turnOnCamera(false);
+      setCamera(false);
+    } else {
+      turnOnCamera(true);
+      setCamera(true);
+    }
+  };
   return (
     <>
       <div
@@ -33,8 +43,22 @@ export const CameraView = (props: {
           ) : null
         )}
       </div>
-      <button onClick={() => turnOnCamera(true)}>activer caméra</button>
-      <button onClick={() => turnOnCamera(false)}>desactiver caméra</button>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+        <button
+          style={{
+            borderRadius: 0,
+            border: 0,
+            padding: '3px 10px',
+            color: 'grey',
+            backgroundColor: '#40444b',
+            marginTop: '10px',
+            marginRight: '10px',
+          }}
+          onClick={() => handleCamera()}
+        >
+          {!camera ? 'Activer caméra' : 'Desactiver caméra'}
+        </button>
+      </div>
     </>
   );
 };

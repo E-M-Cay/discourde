@@ -207,15 +207,16 @@ router.delete(
   isAuth,
   isOwner,
   async (req: IRequest, res: Response) => {
+    // console.log(req.params.server_id);
     const server_id = Number(req.params.server_id);
     if (server_id == NaN) return res.status(400).send('Error server not found');
-
     try {
       await ServerRepository.delete(server_id);
       io.emit('serverdeleted', server_id);
       return res.status(200).send('Server Successfully deleted');
     } catch (error) {
-      return res.status(400).send({ error });
+      console.log(error);
+      return res.status(400).send('error');
     }
   }
 );

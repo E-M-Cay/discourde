@@ -144,7 +144,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
   } = sentFriendRequestActions;
 
   const deleteFriendship = (friendship: Friendship) => {
-    console.log(friendship);
+    // console.log(friendship);
     axios
       .delete(`/friends/delete/${friendship.id}/${friendship.friend.id}`, {
         headers: {

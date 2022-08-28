@@ -33,6 +33,8 @@ export const DropdownMenu = (params: {
     (state) => state.userReducer.activeServerOwner
   );
   const me = useAppSelector((state) => state.userReducer.me);
+  var idUser = -2;
+  if (me) idUser = me.id;
 
   const showNotificationModal = () => {
     setIsModalVisible(true);
@@ -78,35 +80,33 @@ export const DropdownMenu = (params: {
             ),
             key: '0',
           },
-          activeServerOwner === me?.id
-            ? {
-                label: (
-                  <li
-                    style={{
-                      fontWeight: '600',
-                      width: '100%',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      fontSize: '14px',
-                    }}
-                    key={1}
-                  >
-                    Gestion des membres
-                    <TeamOutlined
-                      style={{
-                        fontSize: '15px',
-                      }}
-                    />
-                  </li>
-                ),
-                key: '1',
-              }
-            : null,
-          {
-            type: 'divider',
-          },
-          activeServerOwner === me?.id
+          // activeServerOwner ===  idUser
+          //   ? {
+          //       label: (
+          //         <li
+          //           style={{
+          //             fontWeight: '600',
+          //             width: '100%',
+          //             display: 'flex',
+          //             justifyContent: 'space-between',
+          //             alignItems: 'center',
+          //             fontSize: '14px',
+          //           }}
+          //           key={1}
+          //         >
+          //           Gestion des membres
+          //           <TeamOutlined
+          //             style={{
+          //               fontSize: '15px',
+          //             }}
+          //           />
+          //         </li>
+          //       ),
+          //       key: '1',
+          //     }
+          //   : null,
+
+          activeServerOwner === idUser
             ? {
                 label: (
                   <li
@@ -132,31 +132,38 @@ export const DropdownMenu = (params: {
                 key: '2',
               }
             : null,
-          {
-            label: (
-              <li
-                style={{
-                  fontWeight: '600',
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  fontSize: '14px',
-                }}
-                key={3}
-                onClick={() => showModal()}
-              >
-                Créer un salon
-                <PlusCircleOutlined
-                  style={{
-                    fontSize: '15px',
-                  }}
-                />
-              </li>
-            ),
-            key: '3',
-          },
-          activeServerOwner === me?.id
+          activeServerOwner === idUser
+            ? {
+                type: 'divider',
+              }
+            : null,
+          activeServerOwner === idUser
+            ? {
+                label: (
+                  <li
+                    style={{
+                      fontWeight: '600',
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '14px',
+                    }}
+                    key={3}
+                    onClick={() => showModal()}
+                  >
+                    Créer un salon
+                    <PlusCircleOutlined
+                      style={{
+                        fontSize: '15px',
+                      }}
+                    />
+                  </li>
+                ),
+                key: '3',
+              }
+            : null,
+          activeServerOwner === idUser
             ? {
                 label: (
                   <li
@@ -216,12 +223,12 @@ export const DropdownMenu = (params: {
             ),
             key: '5',
           },
-          activeServerOwner !== me?.id && activeServerOwner !== -1
+          activeServerOwner !== idUser && activeServerOwner !== -1
             ? {
                 type: 'divider',
               }
             : null,
-          activeServerOwner !== me?.id && activeServerOwner !== -1
+          activeServerOwner !== idUser && activeServerOwner !== -1
             ? {
                 label: (
                   <li

@@ -169,7 +169,7 @@ export const ServerChannels = (props: {
             style={{ marginTop: '10px', color: '#2c2c2c', fontSize: '15px' }}
             htmlFor='scales'
           >
-            Serveur caché
+            Channel caché
           </label>
           <input
             style={{
@@ -238,7 +238,7 @@ export const ServerChannels = (props: {
             style={{ marginTop: '10px', color: '#2c2c2c', fontSize: '15px' }}
             htmlFor='scales'
           >
-            Serveur caché
+            Channel caché
           </label>
           <input
             style={{

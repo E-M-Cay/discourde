@@ -347,3 +347,9 @@ input[type='submit']:hover {
 .ant-tabs-ink-bar {
   background-color: #42464d !important;
 }
+
+.dropdownHandlerStp:hover {
+  /* color: #42464d !important; */
+  opacity: 0.6;
+  cursor: pointer;
+}

@@ -33,6 +33,8 @@ const VideoStreamComponent = (props: {
     };
   }, [stream, serverUserMap]);
 
+  console.log(serverUserMap.get(user), 'test display');
+
   return (
     <div
       style={{
@@ -52,7 +54,10 @@ const VideoStreamComponent = (props: {
           margin: '10px',
           borderRadius: '10px',
           boxSizing: 'border-box',
-          backgroundImage: `url(/profile-pictures/robot1.png)`,
+          backgroundImage: `url(${
+            serverUserMap.get(user)?.user.picture ??
+            '/profile-pictures/robot1.png'
+          })`,
           backgroundSize: '99999999px',
           //   border: '8px solid rgba(0, 0, 0, 0.7)',
         }}
@@ -79,7 +84,10 @@ const VideoStreamComponent = (props: {
             }}
           >
             <Avatar
-              src={'/profile-pictures/robot1.png'}
+              src={
+                serverUserMap.get(user)?.user.picture ??
+                '/profile-pictures/robot1.png'
+              }
               size={100}
               style={{ margin: 'auto' }}
             />

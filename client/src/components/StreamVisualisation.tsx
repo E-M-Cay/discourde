@@ -33,7 +33,7 @@ const StreamVisualisation = (props: { u: number; stream?: MediaStream }) => {
 
       callBack = setTimeout(() => {
         getAverageVolume(analyser);
-      }, 200);
+      }, 500);
     };
 
     const source = audioContext.createMediaStreamSource(stream);
@@ -51,7 +51,7 @@ const StreamVisualisation = (props: { u: number; stream?: MediaStream }) => {
     return () => {
       clearTimeout(callBack);
     };
-  }, [stream]);
+  }, [stream, audioContext]);
 
   return (
     <>

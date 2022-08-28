@@ -1,33 +1,38 @@
 import { Avatar } from 'antd';
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { UserMapsContext } from '../context/UserMapsContext';
 
-const VideoStreamComponent = (props: { stream?: MediaStream }) => {
-  const { stream } = props;
+const VideoStreamComponent = (props: {
+  stream?: MediaStream;
+  user: number;
+}) => {
+  const { stream, user } = props;
   const cam = 'jean';
   const bool = false;
+  const { serverUserMap } = useContext(UserMapsContext);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  //   stream.getVideoTracks().forEach((tr) => {
-  //     tr.addEventListener('mute')
-  //   })
+  useEffect(() => {
+    console.log(stream?.getVideoTracks().length, 'length3');
+  });
 
   useEffect(() => {
-    if (stream && videoRef.current) {
-      // videoRef.current.srcObject = stream;
-      videoRef.current.volume = 0;
-      videoRef.current?.play();
+    const videoNode = videoRef.current;
+    if (stream && videoNode) {
+      // if (stream.getVideoTracks().length > 0) {
+      videoNode.srcObject = stream;
+      // }
+      videoNode.volume = 0;
+      videoNode?.play();
     }
 
     return () => {
-      if (stream && videoRef.current) {
-        videoRef.current?.pause();
+      if (stream && videoNode) {
+        videoNode?.pause();
       }
     };
-  }, [stream]);
+  }, [stream, serverUserMap]);
 
-  // stream?.getVideoTracks().forEach((tr) => {
-  //   tr.stop();
-  // });
   return (
     <div
       style={{
@@ -52,7 +57,7 @@ const VideoStreamComponent = (props: { stream?: MediaStream }) => {
           //   border: '8px solid rgba(0, 0, 0, 0.7)',
         }}
       >
-        {videoRef.current?.srcObject !== null ? (
+        {serverUserMap.get(user)?.user.mediaStatus.camera ? (
           <video
             ref={videoRef}
             autoPlay

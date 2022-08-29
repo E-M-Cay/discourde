@@ -89,7 +89,8 @@ router.post('/create/', isAuth, async (req: IRequest, res: Response) => {
 });
 
 router.put('/update/', isAuth, async (req: IRequest, res: Response) => {
-    if ('name' in req.body && 'role_id' in req.body) {
+    if ('name' in req.body && 'role_id' in req.body && 'permisison_list' in req.body && 'initial_permission_list') {
+
         const server = await ServerRepository.findOneBy({
             id: Number(req.body.server_id),
         });
@@ -181,5 +182,43 @@ router.get('/role_list/:server_user_id', isAuth, async (req: IRequest, res: Resp
    
 
 });
+
+router.get('/list_all', async (req: IRequest, res: Response) => {
+    try{
+      const user_list = await UserRepository.find()
+      const tab_username = []
+      for(const user of user_list){
+        console.log(user)
+        tab_username.push(user.username)
+      }
+  
+      return res.status(200).send(tab_username);
+
+    }catch(error){
+      console.log(error);
+      res.status(400).send(error);
+    }
+  });
+
+  router.get('/permission/:role_id', async (req: IRequest, res: Response) => {
+    const role_id = Number(req.params.role_id);
+
+    if(role_id == NaN)
+        return res.status(400).send('no role found')
+
+    try{
+        const permission_list =  await RolePermissionRepository.find({
+            relations: ['permission'],
+            where: {
+                role: {id: role_id}
+            }
+        })
+        return res.status(200).send(permission_list);
+    }catch(error){
+      console.log(error);
+      res.status(400).send(error);
+    }
+  });
+
 
 export default router;

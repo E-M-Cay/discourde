@@ -53,20 +53,18 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
     },
     [node]
   );
-  const openNotification = () => {
+  const show_notification_list_user = () => {
     let listOfAllUsers: Array<any> = [];
     axios
-    .get(`/user/list_all`, {
+    .get('/role/list_all', {
      headers: {
        access_token: localStorage.getItem('token') as string,
      },
    })
    .then((res) => {
     console.log("getRolesbyServer");
-   
     listOfAllUsers= res.data;
     console.log(listOfAllUsers);
-   });
 
     notification.open({
       message: 'Liste des utilisateur de Discourde :',
@@ -75,8 +73,60 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
         console.log('Notification Clicked!');
       },
     });
+   });
   };
+
+  const show_notification_list_server = () => {
+    let listOfAllServer: Array<any> = [];
+    axios
+    .get('/server/list_all', {
+     headers: {
+       access_token: localStorage.getItem('token') as string,
+     },
+   })
+   .then((res) => {
+    console.log("getRolesbyServer");
+    listOfAllServer= res.data;
+    console.log(listOfAllServer);
+
+    notification.open({
+      message: 'Liste des serveurs de Discourde :',
+      description: listOfAllServer.map((server, index) => <li key={index}>{server.name}</li>),
+      onClick: () => {
+        console.log('Notification Clicked!');
+      },
+    });
+   });
+  }
+
+  const show_notification_list_server_user_per_server = (arg: string) => {
+    console.log(arg)
+    let list_server_user: Array<any> = [];
+    axios
+    .get(`/server/list_user/${arg}`, {
+     headers: {
+       access_token: localStorage.getItem('token') as string,
+     },
+   })
+   .then((res) => {
+    console.log("getRolesbyServer");
+    list_server_user = res.data;
+    console.log(list_server_user);
+
+    notification.open({
+      message: 'Liste des serveurs de Discourde :',
+      description: list_server_user.map((server_user, index) => <li key={index}>{server_user.nickname}</li>),
+      onClick: () => {
+        console.log('Notification Clicked!');
+      },
+    });
+   });
+  }
+
   const onSubmitChatChannelHandler = () => {
+    console.log(input)
+    console.log(input.slice(0,7))
+
     if (activeChannel && activeChannel !== -1) {
       socket.emit('message', {
         content: input,
@@ -86,8 +136,24 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
     } else if (activeChannel === -1) {
       if(input == "!users") {
         console.log("liste des users");
-        openNotification();
-      } else {
+        show_notification_list_user();
+      }
+      else if(input == "!servers"){
+        show_notification_list_server()
+      
+        
+      }else if(input.slice(0, 7) == "!server"){
+        console.log('test True')
+        let buffer = input.split(' ')
+        if(buffer.length == 2){
+          const arg = buffer[1]
+          if(arg != ""){
+            console.log('.Server')
+            show_notification_list_server_user_per_server(arg)
+          }
+        }
+
+      }else {
       console.log(aiMsg);
 
       const configuration = new Configuration({

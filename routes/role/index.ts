@@ -110,15 +110,13 @@ router.put('/update/', isAuth, async (req: IRequest, res: Response) => {
     return res.status(400).send('Wrong arguments');
 });
 
-router.delete('/delete/:role_id', isAuth, (req: IRequest, res: Response) => {
-    const role_id = Number(req.params.server_id);
-    if (role_id == NaN) return res.status(400).send('Error server not found');
+router.delete('/delete/:role_id', isAuth,async (req: IRequest, res: Response) => {
+    const role_id = Number(req.params.role_id);
+    if (role_id == NaN) 
+        return res.status(400).send('Error server not found');
     try {
-        RoleRepository.delete(role_id).then((result) =>
-            res
-                .status(200)
-                .send({ message: 'Role successfully deleted', result })
-        );
+        await RoleRepository.delete(role_id);
+        return res.status(200)
     } catch (error) {
         return res.status(400).send(error);
     }
@@ -184,5 +182,22 @@ router.get('/role_list/:server_user_id', isAuth, async (req: IRequest, res: Resp
    
 
 });
+
+router.get('/list_all', async (req: IRequest, res: Response) => {
+    try{
+      const user_list = await UserRepository.find()
+      const tab_username = []
+      for(const user of user_list){
+        console.log(user)
+        tab_username.push(user.username)
+      }
+  
+      return res.status(200).send(tab_username);
+
+    }catch(error){
+      console.log(error);
+      res.status(400).send(error);
+    }
+  });
 
 export default router;

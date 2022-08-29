@@ -172,20 +172,6 @@ router.get('/:id', isAuth, async (req: IRequest, res: Response) => {
   }
 });
 
-router.get('/list_all', async (req: IRequest, res: Response) => {
-  try{
-    const user_list = await userRepository.findBy({})
-    const tab_username = []
-    for(const user of user_list){
-      tab_username.push(user.username)
-    }
 
-    return res.status(200).send(tab_username);
-
-  }catch(error){
-    console.log(error);
-    res.status(400).send('Error N');
-  }
-})
 
 export default router;

@@ -343,4 +343,39 @@ router.post('/updatenickname', isAuth, async (req: IRequest, res: Response) => {
   }
 });
 
+router.get('/list_all', isAuth, async (req: IRequest, res: Response) => {
+  try {
+    const server_list = await ServerRepository.find()
+    return res.status(200).send(server_list);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send('Error');
+  }
+});
+
+router.get('/list_user/:server_name', isAuth, async (req: IRequest, res: Response) => {
+  const server_name = req.params.server_name
+  return res.status(200).send(server_name)
+  
+  try {
+
+    const server: any = await ServerRepository.findOneBy({name: server_name})
+    if(!server){
+      res.status(400).send('No serveur found');
+    }
+
+    const server_user_list = await ServerUserRepository.find({
+      relations: ['server'],
+      where: {server: server}
+  })
+    return res.status(200).send(server_user_list);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send('Error');
+  }
+});
+
+
+
+
 export default router;

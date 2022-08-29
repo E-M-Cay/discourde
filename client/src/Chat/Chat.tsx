@@ -27,18 +27,8 @@ const Chat = (props: {
   const { displayCameraView } = useContext(VocalChannelContext);
   const [name, setName] = useState('');
   const showChatBar: boolean = Boolean(
-    (isHome && activePrivateChat) || (!cameraChat && activeChannel)
+    (isHome && activePrivateChat) || (!cameraChat && activeChannel && !isHome)
   );
-
-  useEffect(() => {
-    console.log(
-      cameraChat,
-      activeChannel,
-      isHome,
-      activePrivateChat,
-      showChatBar
-    );
-  });
 
   return (
     <div className='chat'>

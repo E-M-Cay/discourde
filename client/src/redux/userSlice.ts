@@ -107,9 +107,12 @@ export const userSlice = createSlice({
       state.isMuteAudio = false;
     },
     setIsConnected: (state, action: PayloadAction<boolean>) => {
-      if (action.payload === false) {
-        state = initialUserState;
-      } else state.isConnected = action.payload;
+      state.isConnected = action.payload;
+      state.activeServer = 0;
+      state.activeChannel = 0;
+      state.activeVocalChannel = 0;
+      state.aiMsg = '';
+      state.activePrivateChat = 0;
     },
     disableCamera: (state) => {
       state.isCameraActive = false;

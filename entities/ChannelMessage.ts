@@ -15,7 +15,7 @@ export class ChannelMessage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Column({ type: 'longtext', nullable: false })
   content: string;
 
   @Column({ type: 'datetime', nullable: false })

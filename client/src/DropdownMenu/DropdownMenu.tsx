@@ -56,7 +56,7 @@ export const DropdownMenu = (params: {
         items={[
           {
             label: (
-              <li
+              <div
                 style={{
                   fontWeight: '600',
                   width: '100%',
@@ -75,14 +75,14 @@ export const DropdownMenu = (params: {
                     fontSize: '15px',
                   }}
                 />
-              </li>
+              </div>
             ),
             key: '0',
           },
           // activeServerOwner ===  idUser
           //   ? {
           //       label: (
-          //         <li
+          //         <div
           //           style={{
           //             fontWeight: '600',
           //             width: '100%',
@@ -99,7 +99,7 @@ export const DropdownMenu = (params: {
           //               fontSize: '15px',
           //             }}
           //           />
-          //         </li>
+          //         </div>
           //       ),
           //       key: '1',
           //     }
@@ -108,7 +108,7 @@ export const DropdownMenu = (params: {
           activeServerOwner === idUser
             ? {
                 label: (
-                  <li
+                  <div
                     style={{
                       fontWeight: '600',
                       width: '100%',
@@ -126,7 +126,7 @@ export const DropdownMenu = (params: {
                         fontSize: '15px',
                       }}
                     />
-                  </li>
+                  </div>
                 ),
                 key: '2',
               }
@@ -139,7 +139,7 @@ export const DropdownMenu = (params: {
           activeServerOwner === idUser
             ? {
                 label: (
-                  <li
+                  <div
                     style={{
                       fontWeight: '600',
                       width: '100%',
@@ -157,7 +157,7 @@ export const DropdownMenu = (params: {
                         fontSize: '15px',
                       }}
                     />
-                  </li>
+                  </div>
                 ),
                 key: '3',
               }
@@ -165,7 +165,7 @@ export const DropdownMenu = (params: {
           activeServerOwner === idUser
             ? {
                 label: (
-                  <li
+                  <div
                     style={{
                       fontWeight: '600',
                       width: '100%',
@@ -183,7 +183,7 @@ export const DropdownMenu = (params: {
                         fontSize: '15px',
                       }}
                     />
-                  </li>
+                  </div>
                 ),
                 key: '4',
               }
@@ -193,7 +193,7 @@ export const DropdownMenu = (params: {
           },
           {
             label: (
-              <li
+              <div
                 style={{
                   fontWeight: '600',
                   width: '100%',
@@ -218,7 +218,7 @@ export const DropdownMenu = (params: {
                     fontSize: '15px',
                   }}
                 />
-              </li>
+              </div>
             ),
             key: '5',
           },
@@ -230,7 +230,7 @@ export const DropdownMenu = (params: {
           activeServerOwner !== idUser && activeServerOwner !== -1
             ? {
                 label: (
-                  <li
+                  <div
                     style={{
                       fontWeight: '600',
                       width: '100%',
@@ -249,7 +249,7 @@ export const DropdownMenu = (params: {
                         fontSize: '15px',
                       }}
                     />
-                  </li>
+                  </div>
                 ),
                 key: '6',
               }

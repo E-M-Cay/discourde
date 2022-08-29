@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 import axios from 'axios';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
@@ -225,7 +225,7 @@ const App = () => {
 
               <div style={{ marginTop: '30px' }}>
                 {profilePng.map((png, key) => (
-                  <>
+                  <React.Fragment key={key}>
                     <Avatar
                       style={{
                         margin: '5px',
@@ -234,10 +234,10 @@ const App = () => {
                       onClick={() => setPictureLink(png)}
                       size={png === pictureLink ? 60 : 50}
                       src={png}
-                      key={png}
+                      key={key}
                     />
                     {key === 4 && <br />}
-                  </>
+                  </React.Fragment>
                 ))}
               </div>
               <span

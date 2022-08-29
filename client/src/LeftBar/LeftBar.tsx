@@ -162,7 +162,7 @@ export const LeftBar = (props: {
             }}
           >
             {serverPng.map((png, key) => (
-              <>
+              <React.Fragment key={key}>
                 <Avatar
                   style={{
                     margin: '5px',
@@ -172,10 +172,10 @@ export const LeftBar = (props: {
                   onClick={() => setServerLogo(png)}
                   size={50}
                   src={png}
-                  key={png}
+                  key={key}
                 />
                 {key === 4 && <br />}
-              </>
+              </React.Fragment>
             ))}
           </div>
           <br />

@@ -385,7 +385,7 @@ export const UserProfileModal = (props: {
               }}
               onClick={() => sendFriendRequest(user)}
             >
-              Add as friend
+              Envoyer une requête d'amis
             </button>
           )}
         {receivedFriendRequestMap.has(user.id) && (
@@ -407,21 +407,21 @@ export const UserProfileModal = (props: {
               )
             }
           >
-            Accept friend request
+            Accepter la requête d'amis
           </button>
         )}
         {sentFriendRequestMap.has(user.id) && (
           <Typography
             style={{ marginBottom: '6px', fontSize: '1rem', color: 'darkGrey' }}
           >
-            Invitation send
+            Requête d'amis envoyée
           </Typography>
         )}
         {friendMap.has(user.id) && (
           <Typography
             style={{ marginBottom: '6px', fontSize: '1rem', color: 'darkGrey' }}
           >
-            You are friends
+            Vous et {user.username} êtes amis.
           </Typography>
         )}
         {me?.id !== user.id && (

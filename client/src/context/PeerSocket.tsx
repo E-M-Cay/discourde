@@ -103,10 +103,15 @@ const PeerSocketProvider: React.FunctionComponent<Props> = ({ children }) => {
   }, [isConnected]);
 
   useEffect(() => {
+    console.log(isConnected, 'connected ?');
+  });
+
+  useEffect(() => {
     socket.on('connect', () => setIsSocketConnected(true));
     socket.on('disconnect', (reason) => {
       setIsSocketConnected(false);
       if (reason === 'io server disconnect') {
+        console.log(reason, 'reason');
         dispatch(setIsConnected(false));
       }
     });

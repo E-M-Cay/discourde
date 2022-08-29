@@ -37,6 +37,7 @@ export const CameraView = (props: {
         {users.map((u) =>
           u !== me?.id ? (
             <VideoStreamComponent
+              key={u}
               stream={streamMap.get(u) ?? undefined}
               user={u}
             />

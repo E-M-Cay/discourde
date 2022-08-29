@@ -1,7 +1,7 @@
 import { EditOutlined } from '@ant-design/icons';
 import { Modal, Typography, Input, Avatar, Divider } from 'antd';
 import axios from 'axios';
-import { useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { NotificationsContext } from '../context/NotificationsContext';
 import { useAppSelector } from '../redux/hooks';
 import { Channel, ServerResponse, VocalChan } from '../types/types';
@@ -408,7 +408,7 @@ const ServerParamsModal = (props: {
         <div style={{ marginTop: '20px', width: '100%' }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             {serverPng.map((png, key) => (
-              <>
+              <React.Fragment key={key}>
                 <Avatar
                   style={{
                     margin: '5px',
@@ -423,7 +423,7 @@ const ServerParamsModal = (props: {
                   src={png}
                 />
                 {key === 4 && <br />}
-              </>
+              </React.Fragment>
             ))}
           </div>
         </div>

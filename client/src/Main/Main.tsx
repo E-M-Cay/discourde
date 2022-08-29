@@ -15,10 +15,11 @@ export const Main = (props: {
   setServers: React.Dispatch<React.SetStateAction<ServerResponse[]>>;
   servers: ServerResponse[];
 }) => {
-  const { handleLeaveServer, setServers } = props;
+  const { handleLeaveServer, setServers, servers } = props;
   const isHome = useAppSelector((state) => state.userReducer.home);
   const [vocalChannelList, setVocalChannelList] = useState<VocalChan[]>([]);
   const [textChannelList, setTextChannelList] = useState<Channel[]>([]);
+  // const activeServerObject =
 
   return (
     <Row

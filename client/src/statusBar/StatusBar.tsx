@@ -6,7 +6,7 @@ import { CustomImage } from '../CustomLi/CustomLi';
 import { UserProfileModal } from '../Modals/Modals';
 import UserProfileSettings from '../Modals/UserProfileSettings';
 import { useAppSelector } from '../redux/hooks';
-import { User } from '../types/types';
+import { ServerResponse, User } from '../types/types';
 
 //const { Title } = Typography;
 const { Panel } = Collapse;
@@ -16,7 +16,9 @@ export const StatusBar = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisible2, setIsModalVisible2] = useState(false);
-  const { activeServer } = useAppSelector((state) => state.userReducer);
+  const { activeServer, activeServerOwner } = useAppSelector(
+    (state) => state.userReducer
+  );
   // const [selectedUser, setSelectedUser] = useState<User>();
 
   const me = useAppSelector((state) => state.userReducer.me);
@@ -69,35 +71,22 @@ export const StatusBar = () => {
             ),
           }) ||
             null,
-          {
-            key: '3',
-            label: (
-              <span
-                style={{
-                  fontWeight: '600',
-                  width: '100%',
-                  fontSize: '14px',
-                }}
-              >
-                role
-              </span>
-            ),
-          },
-          (me?.id !== user.id && {
-            key: '4',
-            label: (
-              <span
-                style={{
-                  fontWeight: '600',
-                  width: '100%',
-                  fontSize: '14px',
-                }}
-                onClick={() => kickUser(user)}
-              >
-                exclure
-              </span>
-            ),
-          }) ||
+          (me?.id !== user.id &&
+            me?.id === activeServerOwner && {
+              key: '4',
+              label: (
+                <span
+                  style={{
+                    fontWeight: '600',
+                    width: '100%',
+                    fontSize: '14px',
+                  }}
+                  onClick={() => kickUser(user)}
+                >
+                  exclure
+                </span>
+              ),
+            }) ||
             null,
           {
             key: '5',
@@ -165,34 +154,22 @@ export const StatusBar = () => {
             ),
           }) ||
             null,
-          {
-            key: '3',
-            label: (
-              <span
-                style={{
-                  fontWeight: '600',
-                  width: '100%',
-                  fontSize: '14px',
-                }}
-              >
-                role
-              </span>
-            ),
-          },
-          (me?.id !== user.id && {
-            key: '4',
-            label: (
-              <span
-                style={{
-                  fontWeight: '600',
-                  width: '100%',
-                  fontSize: '14px',
-                }}
-              >
-                exclure
-              </span>
-            ),
-          }) ||
+          (me?.id !== user.id &&
+            me?.id === activeServerOwner && {
+              key: '4',
+              label: (
+                <span
+                  style={{
+                    fontWeight: '600',
+                    width: '100%',
+                    fontSize: '14px',
+                  }}
+                  onClick={() => kickUser(user)}
+                >
+                  exclure
+                </span>
+              ),
+            }) ||
             null,
           {
             key: '5',

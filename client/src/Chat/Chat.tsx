@@ -6,7 +6,7 @@ import PrivateMessageChat from './PrivateMessageChat';
 import { Channel, VocalChan } from '../types/types';
 import { Typography } from 'antd';
 import { BorderlessTableOutlined, WechatOutlined } from '@ant-design/icons';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { VocalChannelContext } from '../components/VocalChannel';
 
 const Chat = (props: {
@@ -14,13 +14,10 @@ const Chat = (props: {
   vocalChannelList: VocalChan[];
 }) => {
   const isHome = useAppSelector((state) => state.userReducer.home);
-  const { cameraChat, activeVocalChannel } = useAppSelector(
-    (state) => state.userReducer
-  );
+  const { cameraChat, activeVocalChannel, activeChannel, activePrivateChat } =
+    useAppSelector((state) => state.userReducer);
   const { textChannelList, vocalChannelList } = props;
-  const activeChannel = useAppSelector(
-    (state) => state.userReducer.activeChannel
-  );
+
   const textChannelName = textChannelList.find(
     (chan) => chan.id === activeChannel
   );
@@ -29,6 +26,20 @@ const Chat = (props: {
   );
   const { displayCameraView } = useContext(VocalChannelContext);
   const [name, setName] = useState('');
+  const showChatBar: boolean = Boolean(
+    (isHome && activePrivateChat) || (!cameraChat && activeChannel)
+  );
+
+  useEffect(() => {
+    console.log(
+      cameraChat,
+      activeChannel,
+      isHome,
+      activePrivateChat,
+      showChatBar
+    );
+  });
+
   return (
     <div className='chat'>
       <div
@@ -78,7 +89,7 @@ const Chat = (props: {
           <Message />
         )}
       </div>
-      {(!cameraChat || isHome) && (
+      {showChatBar && (
         <div className='chatbar'>
           <ChatBar textChannelList={textChannelList} />
         </div>

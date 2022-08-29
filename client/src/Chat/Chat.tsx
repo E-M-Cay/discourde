@@ -78,7 +78,7 @@ const Chat = (props: {
           <Message />
         )}
       </div>
-      {!cameraChat && (
+      {(!cameraChat || isHome) && (
         <div className='chatbar'>
           <ChatBar textChannelList={textChannelList} />
         </div>

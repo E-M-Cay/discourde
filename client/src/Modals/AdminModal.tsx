@@ -130,7 +130,7 @@ const onCreateNewRole = (values: any) => {
      access_token: localStorage.getItem('token') as string,
    },
  })
- handleRoleCancel();
+ handleAdminOk();
  getRolesByServer();
 };
 
@@ -271,6 +271,7 @@ const updatePermServerRole = () => {
       access_token: localStorage.getItem('token') as string,
     },
   })
+  handlePermOk();
 }
 
   return (
@@ -328,13 +329,11 @@ const updatePermServerRole = () => {
                 onFinish={onCreateNewRole}
               >
                 <Form.Item name="newRole" label="Créer un nouveau rôle">
-                  <Input placeholder="Nom du rôle" id='roleName' />
+                  <Input placeholder="Nom du rôle" defaultValue="" id='roleName' />
                 </Form.Item>
                 <Form.Item>
                   <Space>
-                    <Button type="primary" htmlType="submit">
-                      Valider
-                    </Button>
+                    <Button type="primary" htmlType="submit">VALIDER</Button>
                   </Space>
                 </Form.Item>
               </Form>
@@ -353,7 +352,7 @@ const updatePermServerRole = () => {
           {listOfRoles.map((role) => (<Checkbox checked={isCheck(role.id)} value={role.id}> {role.name}</Checkbox>) )}
         
         </Checkbox.Group><br/>
-        <CheckOutlined style={{color: 'lightGreen', fontSize: 'large', float: 'right'}} onClick={onValidateAdmR}/>
+        <Button type='primary' onClick={onValidateAdmR}>VALIDER</Button>
         </Modal>
         <Modal title="Gestion des permissions" visible={isModalVisiblePerm} onOk={handlePermOk} onCancel={handlePermCancel} footer={null}>
         

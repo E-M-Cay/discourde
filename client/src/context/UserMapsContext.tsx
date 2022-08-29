@@ -539,6 +539,23 @@ const UserMapsContextProvider = ({ children }: Props) => {
     [setServerUser, serverUserMap]
   );
 
+  const handleServerUserNicknameChange = useCallback(
+    (payload: { serverId: Number; nickname: string; id: number }) => {
+      const { serverId, nickname, id } = payload;
+      console.log('step 1', serverId, nickname, id);
+      if (activeServer === serverId) {
+        console.log('step 2');
+        const serverUser = serverUserMap.get(id);
+        if (serverUser) {
+          console.log('step 3');
+
+          setServerUser(id, { ...serverUser, nickname: nickname });
+        }
+      }
+    },
+    [setServerUser, serverUserMap, activeServer]
+  );
+
   useEffect(() => {
     socket.on('userchanged', handleUserProfileChange);
     socket.on('friendrequestrefused', handleFriendshipRefused);
@@ -553,6 +570,8 @@ const UserMapsContextProvider = ({ children }: Props) => {
     socket.on('userdnd', handleDnd);
     socket.on('useraway', handleAway);
     socket.on('mediastatus', handleMediaStatusChange);
+    socket.on('updatenickname', handleServerUserNicknameChange);
+
     return () => {
       socket.off('userchanged', handleUserProfileChange);
       socket.off('friendrequestrefused', handleFriendshipRefused);
@@ -567,6 +586,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
       socket.off('userdnd', handleDnd);
       socket.off('useraway', handleAway);
       socket.off('mediastatus', handleMediaStatusChange);
+      socket.off('updatenickname', handleServerUserNicknameChange);
     };
   }, [
     socket,

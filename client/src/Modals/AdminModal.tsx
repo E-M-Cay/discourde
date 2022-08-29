@@ -24,6 +24,8 @@ let tempoPerm: Array<any> = [];
 let checkedListPerm : Array<any> = [];
 let permAlreadyChecked: Array<any> = [];
 
+let selectedRole: string;
+
 const AdminModal = (props: {
     isModalVisibleAdmin: boolean;
     setIsAdminModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -223,7 +225,8 @@ const handlePermCancel = () => {
   setIsPermModalVisible(false);
 };
 
-const getAllPerm = async (roleId: number) => {
+const getAllPerm = async (roleId: number, roleName: string) => {
+  selectedRole = roleName;
   console.log("roleId : " + roleId )
   await axios
   .get(`/permission/list_all`, {
@@ -296,7 +299,7 @@ const delRoleByServer = (role_id: number) => {
             </TabPane>
             <TabPane tab='Liste des roles' key="2">
               {listOfRoles.map((role) => (<p> {role.name} 
-              <SettingFilled style={{fontSize: 'large', cursor: 'pointer', marginLeft: '1vw'}} onClick={() => getAllPerm(role.id)} />
+              <SettingFilled style={{fontSize: 'large', cursor: 'pointer', marginLeft: '1vw'}} onClick={() => getAllPerm(role.id, role.name)} />
               <CloseOutlined style={{fontSize: 'large', color: 'red', cursor: 'pointer'}} onClick={() => delRoleByServer(role.id)}/> </p> ) )}
               <Divider></Divider>
               <Form
@@ -333,6 +336,8 @@ const delRoleByServer = (role_id: number) => {
         <CheckOutlined style={{color: 'lightGreen', fontSize: 'large', float: 'right'}} onClick={onValidateAdmR}/>
         </Modal>
         <Modal title="Gestion des permissions" visible={isModalVisiblePerm} onOk={handlePermOk} onCancel={handlePermCancel}>
+        
+        <Input value={selectedRole} id='roleName2' />
         <Checkbox.Group
             style={{
               display: "flex",

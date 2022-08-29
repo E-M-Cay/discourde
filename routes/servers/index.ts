@@ -330,6 +330,11 @@ router.post('/updatenickname', isAuth, async (req: IRequest, res: Response) => {
       nickname: req.body.nickname,
     });
     //emit update nickname
+    io.emit('updatenickname', {
+      id: req.id,
+      nickname: req.body.nickname,
+      serverId: req.body.idserver,
+    });
     return res.status(201).send('Nickname Successfully updated');
   } catch (error) {
     console.log(error);

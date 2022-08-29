@@ -8,10 +8,11 @@ import { profilePng } from '../profilePng/profilePng';
 
 const UserProfileSettings = () => {
   const { Title } = Typography;
-  const me = useAppSelector((state) => state.userReducer.me);
+  const { me, activeServer } = useAppSelector((state) => state.userReducer);
   const dispatch = useAppDispatch();
   const [usernameInput, setUsernameInput] = useState(me?.username);
   const [pictureInput, setPictureInput] = useState(me?.picture);
+  const [serverNickname, setServerNickname] = useState<string>('');
 
   const handleProfileChange = () => {
     axios
@@ -32,6 +33,31 @@ const UserProfileSettings = () => {
       })
       .catch((err) => {
         console.log(err);
+      });
+  };
+
+  const handleNicknameChange = () => {
+    axios
+      .post(
+        'server/updatenickname',
+        {
+          idserver: activeServer,
+          nickname: serverNickname,
+        },
+        {
+          headers: {
+            access_token: localStorage.getItem('token') as string,
+          },
+        }
+      )
+      .then((res) => {
+        //console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setServerNickname('');
       });
   };
 
@@ -73,6 +99,7 @@ const UserProfileSettings = () => {
               placeholder={'Change your username'}
             />
           </div>
+
           <div
             style={{
               display: 'flex',
@@ -142,6 +169,47 @@ const UserProfileSettings = () => {
             </button>
           </div>
         </>
+        {activeServer && activeServer !== -1 ? (
+          <div
+            style={{
+              padding: '15px 0',
+              maxWidth: '80%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              flexDirection: 'column',
+              alignItems: 'center',
+              marginTop: '25px',
+              margin: 'auto',
+              borderTop: '1px solid #40444b',
+            }}
+          >
+            <label htmlFor='handleNickname'>Server nickname</label>
+            <Input
+              style={{
+                width: '70%',
+                marginTop: '20px',
+              }}
+              type={'text'}
+              id={'handleNickname'}
+              onChange={(e) => {
+                setServerNickname(e.target.value);
+              }}
+            />
+            <button
+              onClick={() => handleNicknameChange()}
+              style={{
+                borderRadius: 0,
+                border: 0,
+                marginTop: '20px',
+                padding: '3px 10px',
+                color: 'grey',
+                backgroundColor: '#40444b',
+              }}
+            >
+              Change server nickname
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );

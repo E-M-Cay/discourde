@@ -252,7 +252,7 @@ router.get('/list_all', async (req: IRequest, res: Response) => {
         })
 
         for(const sperm of permission_list){
-            tab_id.push(sperm.id)
+            tab_id.push(sperm.permission.id)
         }
 
 

@@ -26,6 +26,7 @@ let permAlreadyChecked: Array<any> = [];
 
 let selectedRole: string;
 let selectedRoleId: number;
+let newRoleName: string;
 
 const AdminModal = (props: {
     isModalVisibleAdmin: boolean;
@@ -282,14 +283,15 @@ const delRoleByServer = (role_id: number) => {
 }
 
 const updatePermServerRole = () => {
+  
   checkedListPerm = tempoPerm;
-  console.log("Nom du rôle a update : " + selectedRole)
+  console.log("Nom du rôle a update : " + newRoleName)
   console.log("id du role choisis : " + selectedRoleId);
   console.log("List des perm à attribuer : " + checkedListPerm);
 
   axios
   .put(`/role/update/`, {
-    'name': selectedRole,
+    'name': newRoleName,
     'role_id': selectedRoleId,
     'permission_list': checkedListPerm
     },{
@@ -300,6 +302,11 @@ const updatePermServerRole = () => {
     console.log(res.data)
   })
   handlePermOk();
+}
+const setNewRoleName = (newName: any) => {
+  console.log("NEWNAME")
+  console.log(newName)
+  newRoleName = newName;
 }
 
   return (
@@ -383,8 +390,8 @@ const updatePermServerRole = () => {
         <Button type='primary' onClick={onValidateAdmR}>VALIDER</Button>
         </Modal>
         <Modal title="Gestion des permissions" visible={isModalVisiblePerm} onOk={handlePermOk} onCancel={handlePermCancel} footer={null}>
-        
-        <Input addonBefore="Nom du rôle" defaultValue={selectedRole} id='roleName2'/>
+
+            <Input addonBefore="Nom du rôle" defaultValue={selectedRole} id='roleName2' name='roleName2' onChange={(event) => setNewRoleName(event.target.value)}/>
         <Divider></Divider>
         <Checkbox.Group
             style={{

@@ -145,7 +145,7 @@ const Message = () => {
             );
           })
         : aiMsg.split('"').map((item, index) => {
-            console.log(item, 'testetetete');
+            // console.log(item, 'testetetete');
             return (
               item &&
               item

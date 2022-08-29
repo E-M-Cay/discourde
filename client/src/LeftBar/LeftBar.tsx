@@ -11,7 +11,11 @@ import { Server, ServerResponse } from '../types/types';
 import { serverPng } from '../profilePng/profilePng';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setActiveServer, setActiveServerName } from '../redux/userSlice';
+import {
+  setActiveServer,
+  setActiveServerName,
+  setActiveVocalChannel,
+} from '../redux/userSlice';
 
 export const LeftBar = (props: {
   servers: ServerResponse[];
@@ -20,33 +24,11 @@ export const LeftBar = (props: {
   const { setServers } = props;
   const dispatch = useAppDispatch();
   const { socket } = useContext(PeerSocketContext);
-  const activeServer = useAppSelector(
-    (state) => state.userReducer.activeServer
+  const { activeServer, activeVocalChannelServer } = useAppSelector(
+    (state) => state.userReducer
   );
-  const activeServerName = useAppSelector(
-    (state) => state.userReducer.activeServerName
-  );
-
-  const joinServer = () => {
-    axios
-      .post(
-        '/server/add_user',
-        { server_id: serverId },
-        {
-          headers: {
-            access_token: localStorage.getItem('token') as string,
-          },
-        }
-      )
-      .then((res) => {
-        if (res.data.server) {
-          setServers((prevState) => [...prevState, res.data.server]);
-        }
-      });
-  };
 
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [serverId, setServerId] = useState(0);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -116,6 +98,8 @@ export const LeftBar = (props: {
       setServers((prevState) => {
         return prevState.filter((serv) => {
           activeServer === idServer && dispatch(setActiveServer(1));
+          activeVocalChannelServer === idServer &&
+            dispatch(setActiveVocalChannel(0));
           return serv.server.id !== idServer;
         });
       });

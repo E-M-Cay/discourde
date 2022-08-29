@@ -3,8 +3,6 @@ import { useContext, useEffect, useState } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
 import logo from '../assets/discourde.png';
 import { VocalChannelContext } from './VocalChannel';
-import Meyda from 'meyda';
-import { AudioFilled, CustomerServiceOutlined } from '@ant-design/icons';
 
 const StreamVisualisation = (props: { u: number; stream?: MediaStream }) => {
   const { serverUserMap } = useContext(UserMapsContext);

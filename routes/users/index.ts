@@ -31,6 +31,8 @@ router.post('/login', async (req: Request, res: Response) => {
       return;
     }
 
+    user.status = 1;
+
     if (await bcrypt.compare(password, user.password)) {
       let payload = {
         user: {

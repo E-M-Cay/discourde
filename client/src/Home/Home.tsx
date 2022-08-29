@@ -19,6 +19,7 @@ import { PeerSocketContext } from '../context/PeerSocket';
 export const Home = () => {
   const [servers, setServers] = useState<ServerResponse[]>([]);
   const dispatch = useAppDispatch();
+  const { socket } = useContext(PeerSocketContext);
 
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
@@ -80,22 +81,22 @@ export const Home = () => {
     };
   }, [getServers, isSocketConnected]);
 
-  const joinServer = (uuid: string) => {
-    axios
-      .post(
-        '/server/add_user',
-        { uuid },
-        {
-          headers: {
-            access_token: localStorage.getItem('token') as string,
-          },
-        }
-      )
-      .then((res) => {
-        //console.log(res, 'gdhdhdhdg');
-        // dispatch(setActiveChannel(id));
-      });
+  const handleLeftServer = (data: { user: number; server: number }) => {
+    const { user, server } = data;
+    if (user === me?.id) {
+      setServers((prevState) =>
+        prevState.filter((serv) => serv.server.id !== server)
+      );
+    }
   };
+
+  useEffect(() => {
+    socket.on('userleftserver', handleLeftServer);
+
+    return () => {
+      socket.off('userleftserver', handleLeftServer);
+    };
+  }, []);
 
   return (
     <UserMapsContextProvider>

@@ -1,13 +1,8 @@
-import {
-  AudioFilled,
-  CustomerServiceOutlined,
-  SoundOutlined,
-} from '@ant-design/icons';
-import { Avatar, Dropdown, Menu } from 'antd';
+import { SoundOutlined } from '@ant-design/icons';
+import { Dropdown, Menu } from 'antd';
 import { MediaConnection } from 'peerjs';
 import {
   createContext,
-  createRef,
   useCallback,
   useContext,
   useEffect,
@@ -19,7 +14,7 @@ import { PeerSocketContext } from '../context/PeerSocket';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { User, VocalChan } from '../types/types';
-import logo from '../assets/discourde.png';
+
 import {
   disableCamera,
   enableCamera,
@@ -30,7 +25,7 @@ import {
   setUnmute,
   setUnmuteAudio,
 } from '../redux/userSlice';
-import Meyda from 'meyda';
+
 import StreamVisualisation from './StreamVisualisation';
 import { CameraView } from '../Chat/CameraView';
 
@@ -125,7 +120,13 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
     //   video: { MediaSource: 'screen' },
     // });
     return navigator.mediaDevices
-      .getUserMedia({ audio: true, video: true })
+      .getUserMedia({
+        audio: true,
+        video: {
+          height: 480,
+          width: 720,
+        },
+      })
       .then((stream) => {
         stream.getVideoTracks().forEach((tr) => (tr.enabled = false));
         // console.log(stream.getVideoTracks().length, 'length');
@@ -140,17 +141,24 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
       });
   };
 
-  const turnOnCamera = async (state: boolean) => {
-    if (state) {
-      streamRef.current?.getVideoTracks().forEach((tr) => (tr.enabled = true));
-      socket.emit('cameraon');
-      dispatch(enableCamera());
-    } else {
-      socket.emit('cameraoff');
-      streamRef.current?.getVideoTracks().forEach((tr) => (tr.enabled = false));
-      dispatch(disableCamera());
-    }
-  };
+  const turnOnCamera = useCallback(
+    async (state: boolean) => {
+      if (state) {
+        streamRef.current
+          ?.getVideoTracks()
+          .forEach((tr) => (tr.enabled = true));
+        socket.emit('cameraon');
+        dispatch(enableCamera());
+      } else {
+        socket.emit('cameraoff');
+        streamRef.current
+          ?.getVideoTracks()
+          .forEach((tr) => (tr.enabled = false));
+        dispatch(disableCamera());
+      }
+    },
+    [dispatch]
+  );
 
   // useEffect(() => {
   //   turnOnCamera();
@@ -309,21 +317,24 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
   };
 
   const leaveVocalChannel = useCallback(() => {
+    console.log('ended ???');
     dispatch(setActiveVocalChannel(0));
     setIsStreamInitialized(false);
   }, [dispatch]);
 
   useEffect(() => {
-    streamRef.current
-      ?.getAudioTracks()[0]
-      ?.addEventListener('ended', leaveVocalChannel);
+    if (isStreamInitialized) {
+      console.log('set event');
+      streamRef.current
+        ?.getTracks()
+        .forEach((tr) => (tr.onended = leaveVocalChannel));
+    }
 
     return () => {
-      streamRef.current
-        ?.getAudioTracks()[0]
-        ?.removeEventListener('ended', leaveVocalChannel);
+      console.log('remove event');
+      streamRef.current?.getTracks().forEach((tr) => (tr.onended = null));
     };
-  }, [leaveVocalChannel]);
+  }, [leaveVocalChannel, isStreamInitialized]);
 
   useEffect(() => {
     if (!isStreamInitialized && activeVocalChannel) {
@@ -348,7 +359,7 @@ const VocalChannelContextProvider: React.FunctionComponent<Props> = ({
         setIsLeaving(true);
       }
     };
-  }, [activeVocalChannel, socket, dispatch, isStreamInitialized]);
+  }, [activeVocalChannel, socket, dispatch, isStreamInitialized, turnOnCamera]);
 
   useEffect(() => {
     if (isStreamInitialized && isMute) {

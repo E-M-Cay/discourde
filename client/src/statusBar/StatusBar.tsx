@@ -1,4 +1,5 @@
 import { Collapse, Dropdown, Menu, Modal, Typography } from 'antd';
+import axios from 'axios';
 import { useContext, useState } from 'react';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { CustomImage } from '../CustomLi/CustomLi';
@@ -15,6 +16,7 @@ export const StatusBar = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisible2, setIsModalVisible2] = useState(false);
+  const { activeServer } = useAppSelector((state) => state.userReducer);
   // const [selectedUser, setSelectedUser] = useState<User>();
 
   const me = useAppSelector((state) => state.userReducer.me);
@@ -35,7 +37,16 @@ export const StatusBar = () => {
     setIsModalVisible2(false);
   };
 
-  //antd menu for dropdown
+  const kickUser = (user: User) => {
+    console.log('kick');
+    axios
+      .delete(`/server/${activeServer}/user/${user.id}`, {
+        headers: {
+          access_token: localStorage.getItem('token') as string,
+        },
+      })
+      .catch((e) => console.log(e));
+  };
 
   const menu = (user: User) => {
     return (
@@ -81,6 +92,7 @@ export const StatusBar = () => {
                   width: '100%',
                   fontSize: '14px',
                 }}
+                onClick={() => kickUser(user)}
               >
                 exclure
               </span>

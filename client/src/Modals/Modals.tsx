@@ -493,7 +493,7 @@ export const GeneralSettings = () => {
     // wait 2 seconds
     localStorage.removeItem('token');
     setTimeout(() => {
-      dispatch(setIsConnected(false));
+      window.location.reload();
     }, 1700);
   };
 

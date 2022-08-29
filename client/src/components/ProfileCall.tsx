@@ -74,10 +74,6 @@ export const ProfileCall = (props: {
     console.log('status', status, me, 'me', inNumber, 'tmp');
   }
 
-  useEffect(() => {
-    console.log(me?.status);
-  });
-
   const menu = (
     <Menu
       style={{ width: '120px' }}
@@ -155,7 +151,6 @@ export const ProfileCall = (props: {
   );
 
   const returnColor = (status: number) => {
-    console.log(status);
     switch (status) {
       case 0:
         return 'grey';

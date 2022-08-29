@@ -106,7 +106,6 @@ export const ChanelBar = (props: {
       ) {
         new Audio('/task-completed-message-ringtone.mp3').play();
       }
-
       setVocalChannelList((prevState) => {
         return prevState.map((c) => {
           if (c.id === chan) {

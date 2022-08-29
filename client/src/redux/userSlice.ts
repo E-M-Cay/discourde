@@ -7,9 +7,9 @@ interface UserState {
   activeServerName?: string;
   activeServerOwner?: number;
   activeServer: number;
-  activeChannel?: number;
+  activeChannel: number;
   activeVocalChannel: number;
-  activePrivateChat?: number;
+  activePrivateChat: number;
   home: boolean;
   cameraChat: boolean;
   aiChat: boolean;
@@ -28,6 +28,8 @@ const initialUserState: UserState = {
     : undefined,
   activeServer: 0,
   activeVocalChannel: 0,
+  activePrivateChat: 0,
+  activeChannel: 0,
   home: false,
   isMute: false,
   aiChat: false,
@@ -37,6 +39,7 @@ const initialUserState: UserState = {
   isCameraActive: false,
   activeVocalChannelServer: 0,
   aiMsg: '',
+  me: undefined,
 };
 
 export const userSlice = createSlice({
@@ -70,8 +73,15 @@ export const userSlice = createSlice({
     },
 
     setActiveVocalChannel: (state, action: PayloadAction<number>) => {
+      if (action.payload === 0) {
+        const audio = new Audio();
+      }
       state.activeVocalChannel = action.payload;
-      state.activeVocalChannelServer = state.activeServer;
+      if (action.payload !== 0) {
+        state.activeVocalChannelServer = state.activeServer;
+      } else {
+        state.activeVocalChannelServer = 0;
+      }
     },
     setActivePrivateChat: (state, action: PayloadAction<number>) => {
       state.activePrivateChat = action.payload;
@@ -97,7 +107,9 @@ export const userSlice = createSlice({
       state.isMuteAudio = false;
     },
     setIsConnected: (state, action: PayloadAction<boolean>) => {
-      state.isConnected = action.payload;
+      if (action.payload === false) {
+        state = initialUserState;
+      } else state.isConnected = action.payload;
     },
     disableCamera: (state) => {
       state.isCameraActive = false;

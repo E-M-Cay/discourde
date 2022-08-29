@@ -119,8 +119,16 @@ router.post(
       const serverInvitation = await ServerInvitationRepository.findOneBy({
         id: req.body.serverInvitationId,
       });
-      const server = await ServerRepository.findOneBy({
-        id: req.body.serverId,
+      const server = await ServerRepository.findOne({
+        where: {
+          id: req.body.serverId,
+        },
+        relations: {
+          owner: true,
+        },
+        select: {
+          owner: { id: true },
+        },
       });
       if (!server) return res.status(401).send('Error');
       if (!user || !serverInvitation)
@@ -145,7 +153,9 @@ router.post(
         where: { id: newId },
         relations: {
           user: true,
-          server: true,
+          server: {
+            owner: true,
+          },
         },
         select: {
           user: {
@@ -156,7 +166,11 @@ router.post(
           },
         },
       });
+
       ServerInvitationRepository.delete(serverInvitation.id);
+      if (newServerUser) {
+        newServerUser.server = server;
+      }
       io.emit('userjoinedserver', newServerUser);
       // //console.log('servu:', newServerUser, 'user:', serverUser.user);
       return res.status(201).send(newServerUser);

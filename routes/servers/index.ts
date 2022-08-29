@@ -179,22 +179,34 @@ router.delete(
       relations: {
         server: { owner: true },
       },
+    });
+
+    const server = await ServerRepository.findOne({
+      where: { id: Number(req.params.server_id) },
+      relations: {
+        owner: true,
+      },
       select: {
-        server: {
-          owner: {
-            id: true,
-          },
-        },
+        owner: { id: true },
       },
     });
 
-    if (!serverUser) return res.status(400).send('Error server not found');
-    if (serverUser.server.owner?.id === req.id)
-      return res.status(401).send('cannot leave owned server');
+    if (!serverUser || !server)
+      return res.status(400).send('Error server not found');
+    if (req.id !== Number(req.params.user_id) && req.id !== server.owner.id) {
+      return res.sendStatus(401);
+    }
+
+    if (Number(req.params.user_id) === server.owner.id) {
+      return res.status(401).send('Cannot leave own server');
+    }
 
     try {
       await ServerUserRepository.delete(serverUser.id);
-      io.emit('userleftserver', Number(req.params.user_id));
+      io.emit('userleftserver', {
+        user: Number(req.params.user_id),
+        server: server.id,
+      });
       return res.sendStatus(204);
     } catch (error) {
       return res.status(400).send('Error');

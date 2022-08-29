@@ -2,7 +2,12 @@ import axios from 'axios';
 import { createContext, useCallback, useContext, useEffect } from 'react';
 import { useMap } from 'usehooks-ts';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setActivePrivateChat, setIsHome } from '../redux/userSlice';
+import {
+  setActivePrivateChat,
+  setActiveServer,
+  setActiveVocalChannel,
+  setIsHome,
+} from '../redux/userSlice';
 import {
   Friendship,
   ServerUser,
@@ -75,10 +80,10 @@ interface Props {
 
 const UserMapsContextProvider = ({ children }: Props) => {
   const dispatch = useAppDispatch();
-  const { me, token } = useAppSelector((state) => state.userReducer);
-  const activeServer = useAppSelector(
-    (state) => state.userReducer.activeServer
+  const { me, token, activeVocalChannelServer, activeServer } = useAppSelector(
+    (state) => state.userReducer
   );
+
   const { socket } = useContext(PeerSocketContext);
 
   const [friendMap, friendsActions] = useMap<number, Friendship>([]);
@@ -429,10 +434,20 @@ const UserMapsContextProvider = ({ children }: Props) => {
   );
 
   const handleUserLeftServer = useCallback(
-    (id: number) => {
-      removeServerUser(id);
+    (data: { user: number; server: number }) => {
+      const { user, server } = data;
+      console.log(user, me?.id, server, activeServer, activeVocalChannelServer);
+      if (server === activeServer) {
+        removeServerUser(user);
+      }
+      if (user === me?.id && server === activeServer) {
+        dispatch(setActiveServer(1));
+        if (activeVocalChannelServer === activeServer) {
+          dispatch(setActiveVocalChannel(0));
+        }
+      }
     },
-    [removeServerUser]
+    [removeServerUser, activeVocalChannelServer, activeServer, dispatch, me]
   );
 
   const handeUserJoinedServer = useCallback(

@@ -265,11 +265,13 @@ const updatePermServerRole = () => {
   .put(`/role/update/`, {
     'name': selectedRole,
     'role_id': selectedRoleId,
-    'permisison_list': checkedListPerm
+    'permission_list': checkedListPerm
     },{
     headers: {
       access_token: localStorage.getItem('token') as string,
     },
+  }).then((res) => {
+    console.log(res.data)
   })
   handlePermOk();
 }

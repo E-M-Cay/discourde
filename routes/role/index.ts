@@ -89,26 +89,29 @@ router.post('/create/', isAuth, async (req: IRequest, res: Response) => {
 });
 
 router.put('/update/', isAuth, async (req: IRequest, res: Response) => {
-    if ('name' in req.body && 'role_id' in req.body && 'permisison_list' in req.body) {
+    if ('name' in req.body && 'role_id' in req.body && 'permission_list' in req.body) {
         const role_id = Number(req.body.role_id)
         const permission_id_list = req.body.permission_list
         const name = req.body.name
+
+
 
         if(role_id == NaN)
             return res.status(400).send('error args')
 
 
         const role = await RoleRepository.findOneBy({id: role_id})
-        
+
         if(!role)
             return res.status(400).send('error args')
 
         try {
             for(const perm_id of [1,2,3,4,5,6,7]){
-                const role_permission = await RolePermissionRepository.findOneBy({
+                const role_permission: any = await RolePermissionRepository.findOneBy({
                     role: {id: role_id},
                     permission: {id: perm_id}
                 })
+
 
                 if(role_permission && !permission_id_list.includes(perm_id)){
                     await RolePermissionRepository.delete(role_permission.id)
@@ -118,10 +121,11 @@ router.put('/update/', isAuth, async (req: IRequest, res: Response) => {
                 if(!role_permission && !permission_id_list.includes(perm_id))
                     continue
                 
-                const permission_obj = await RoleRepository.findOneBy({id: perm_id})
+                const permission_obj = await PermissionRepository.findOneBy({id: perm_id})
 
-                if(!role || !permission_obj)
-                return res.status(400).send("role or permission not found");
+                if(!role || !permission_obj){
+                    return res.status(400).send({'message': 'error role or permobj'});
+                }
                 
                 const role_perm = RolePermissionRepository.create({
                     role: role,
@@ -137,7 +141,7 @@ router.put('/update/', isAuth, async (req: IRequest, res: Response) => {
             }
             return res.status(200).send(role);
         } catch (error) {
-            return res.status(400).send('Error');
+            return res.status(400).send(error);
         }
     }
     return res.status(400).send('Wrong arguments');

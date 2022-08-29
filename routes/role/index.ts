@@ -48,7 +48,8 @@ router.post('/create/', isAuth, async (req: IRequest, res: Response) => {
 
         try{
             const role = RoleRepository.create({
-                name: name
+                name: name,
+                server: server
             })
             await RoleRepository.save(role)
 

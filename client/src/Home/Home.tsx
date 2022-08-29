@@ -54,18 +54,8 @@ export const Home = () => {
           access_token: localStorage.getItem('token') as string,
         },
       })
-      .then((res) => {
-        if (res.status === 204) {
-          if (servers.length > 0) {
-            setServers((prevState) =>
-              prevState.filter((serv) => serv.server.id !== activeServer)
-            );
-            dispatch(setActiveServer(servers[0].server.id));
-          } else {
-            dispatch(setIsHome(true));
-          }
-        }
-      });
+      .catch((e) => console.log(e));
+
     return () => {
       setServers([]);
     };

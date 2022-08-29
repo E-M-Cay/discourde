@@ -137,7 +137,10 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
           className='inputMain'
           placeholder={`Envoyer un message ${
             isHome
-              ? `à ${privateChatMap.get(activePrivateChat ?? 0)?.username}`
+              ? `à ${
+                  privateChatMap.get(activePrivateChat ?? 0)?.username ||
+                  'ghost'
+                }`
               : `dans ${
                   activeChannel !== -1
                     ? activeChannelName

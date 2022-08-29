@@ -201,7 +201,10 @@ export const FriendPanel = (props: {
       {Array.from(friendMap.entries()).find(
         ([id, friendship]) => friendship.friend.status
       ) && (
-        <Title level={5} style={{ textAlign: 'left', color: '#99a6a0' }}>
+        <Title
+          level={5}
+          style={{ textAlign: 'left', color: '#99a6a0', marginLeft: '10px' }}
+        >
           En ligne
         </Title>
       )}
@@ -298,12 +301,21 @@ export const FriendPanel = (props: {
       {Array.from(friendMap.entries()).filter(
         ([id, friendship]) => friendship.friend.status
       ).length === friendMap.size && friendMap.size ? null : friendMap.size ? (
-        <Title level={5} style={{ textAlign: 'left', color: '#99a6a0' }}>
+        <Title
+          level={5}
+          style={{ textAlign: 'left', color: '#99a6a0', marginLeft: '10px' }}
+        >
           Tous les amis - {friendMap.size}
         </Title>
       ) : (
         <Typography
-          style={{ textAlign: 'center', color: '#99a6a0', fontSize: '15px' }}
+          style={{
+            textAlign: 'center',
+            color: '#99a6a0',
+            fontSize: '15px',
+            margin: 'auto',
+            maxWidth: '90%',
+          }}
         >
           Vous n'avez aucun ami pour le moment mais l'équipe de discourde pense
           beaucoup à vous !!
@@ -429,7 +441,12 @@ export const FriendPanel = (props: {
         {Array.from(receivedFriendRequestMap.entries()).length ? (
           <Title
             level={5}
-            style={{ textAlign: 'left', color: '#99a6a0', width: '100%' }}
+            style={{
+              textAlign: 'left',
+              color: '#99a6a0',
+              width: '100%',
+              marginLeft: '10px',
+            }}
           >
             Reçues
           </Title>
@@ -525,7 +542,12 @@ export const FriendPanel = (props: {
         {Array.from(sentFriendRequestMap.entries()).length > 0 ? (
           <Title
             level={5}
-            style={{ textAlign: 'left', color: '#99a6a0', width: '100%' }}
+            style={{
+              textAlign: 'left',
+              color: '#99a6a0',
+              width: '100%',
+              marginLeft: '10px',
+            }}
           >
             Envoyées
           </Title>
@@ -579,7 +601,10 @@ export const FriendPanel = (props: {
           </div>
         ))}
         {serverRequests.length > 0 ? (
-          <Title level={5} style={{ textAlign: 'left', color: '#99a6a0' }}>
+          <Title
+            level={5}
+            style={{ textAlign: 'left', color: '#99a6a0', marginLeft: '10px' }}
+          >
             Serveurs
           </Title>
         ) : null}

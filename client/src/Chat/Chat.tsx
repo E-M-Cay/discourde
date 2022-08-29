@@ -63,7 +63,7 @@ const Chat = (props: {
           )}
 
           {isHome
-            ? name
+            ? name || 'Home'
             : activeChannel === -1
             ? 'Ai Chat'
             : textChannelName?.name ?? 'Private Chats'}

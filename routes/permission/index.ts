@@ -24,6 +24,15 @@ const PermissionRepository = AppDataSource.getRepository(Permission)
 const serverUserRoleRepository = AppDataSource.getRepository(ServerUserRole)
 const RolePermissionRepository = AppDataSource.getRepository(RolePermission)
 
-
+router.get('/list_all', isAuth, async (req: IRequest, res: Response) => {
+    try{
+      const perm_list = await PermissionRepository.findBy({})
+      return res.status(200).send(perm_list);
+  
+    }catch(error){
+      console.log(error);
+      res.status(401).send('Error');
+    }
+  })
 
 export default router;

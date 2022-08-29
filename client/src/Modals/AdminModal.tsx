@@ -133,7 +133,20 @@ const onCreateNewRole = (values: any) => {
  handleAdminOk();
  getRolesByServer();
 };
+const getPermByServerRole = async (idRole: number) => {
+  await axios
+  .get(`/role/permission/${idRole}`, {
+    headers: {
+      access_token: localStorage.getItem('token') as string,
+    },
+  })
+  .then((res) => {
+   permAlreadyChecked = res.data;
+   console.log("permAlreadyChecked")
+   console.log(permAlreadyChecked)
+  });
 
+}
 
 const setUserConcern = async (selectUser: number) => {
 
@@ -218,6 +231,16 @@ const isCheck = (idRole: any) => {
   console.log(n)
   return n
 }
+const isCheckP = (idPerm: any) => {
+
+
+  var p = permAlreadyChecked.includes(idPerm);
+  console.log(permAlreadyChecked.includes(idPerm))
+  console.log(idPerm)
+  console.log(permAlreadyChecked)
+
+  return p
+}
 const handlePermOk = () => {
   setIsPermModalVisible(false);
 };
@@ -236,13 +259,16 @@ const getAllPerm = async (roleId: number, roleName: string) => {
      access_token: localStorage.getItem('token') as string,
    },
  })
- .then((res) => {
+ .then(async (res) => {
   console.log("getAllPerm");
  
   allPerm= res.data;
   console.log(allPerm);
+   await getPermByServerRole(roleId);
+   showPermModal();
  });
-  showPermModal();
+ 
+  
 }
 
 const delRoleByServer = (role_id: number) => {
@@ -368,7 +394,7 @@ const updatePermServerRole = () => {
             defaultValue={permAlreadyChecked}
             onChange={onChangeP}  
         >
-          {allPerm.map((perm) => (<Checkbox checked={isCheck(perm.id)} value={perm.id}>{perm.name}</Checkbox>))}
+          {allPerm.map((perm) => (<Checkbox checked={isCheckP(perm.id)} value={perm.id}>{perm.name}</Checkbox>))}
         
         </Checkbox.Group><br />
         <Button type="primary" style={{marginRight: "1vw"}} onClick={updatePermServerRole}>UPDATE</Button>

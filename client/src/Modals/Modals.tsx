@@ -6,6 +6,8 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { User } from '../types/types';
 import logo from '../assets/discourde.png';
 import { setIsConnected, setMe } from '../redux/userSlice';
+import Success from '../assets/Success';
+import { NotificationsContext } from '../context/NotificationsContext';
 
 export const ServerInvit = (props: {
   isModalVisibleInvitation: boolean;
@@ -22,6 +24,8 @@ export const ServerInvit = (props: {
     serverId,
   } = props;
   const { friendMap } = useContext(UserMapsContext);
+  const { addNotification } = useContext(NotificationsContext);
+
   const handleInviteUser = (hisId: number) => {
     axios
       .post(
@@ -37,7 +41,12 @@ export const ServerInvit = (props: {
         }
       )
       .then((res) => {
-        //console.log(res);
+        addNotification({
+          title: 'success',
+          content: 'Invitation envoyée',
+          isTmp: true,
+          picture: <Success />,
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -385,7 +394,7 @@ export const UserProfileModal = (props: {
               }}
               onClick={() => sendFriendRequest(user)}
             >
-              Envoyer une requête d'amis
+              Ajouter ami
             </button>
           )}
         {receivedFriendRequestMap.has(user.id) && (

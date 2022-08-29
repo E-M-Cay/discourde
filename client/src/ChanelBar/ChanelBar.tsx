@@ -7,7 +7,6 @@ import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
   setActiveChannel,
   setActiveVocalChannel,
-  setAiChat,
   setCameraChat,
 } from '../redux/userSlice';
 import { PeerSocketContext } from '../context/PeerSocket';
@@ -19,6 +18,7 @@ import { NotificationsContext } from '../context/NotificationsContext';
 import ServerParamsModal from '../Modals/ServerParamsModal';
 import { ProfileCall } from '../components/ProfileCall';
 import { VocalChannelContext } from '../components/VocalChannel';
+import Success from '../assets/Success';
 
 export const ChanelBar = (props: {
   vocalChannelList: VocalChan[];
@@ -340,10 +340,10 @@ export const ChanelBar = (props: {
           if ((res.status = 204)) {
             setNewTextChannelName('');
             addNotification({
-              type: 'success',
               title: 'success',
-              content: 'Channel created',
+              content: 'Salon créé',
               isTmp: true,
+              picture: <Success />,
             });
           }
           let audio = new Audio('/upset-sound-tone.mp3');

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { createContext, useCallback, useContext, useEffect } from 'react';
 import { useMap } from 'usehooks-ts';
+import Success from '../assets/Success';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import {
   setActivePrivateChat,
@@ -19,8 +20,11 @@ import {
   SentFriendRequestMap,
   ReceivedFriendRequest,
   SentFriendRequest,
+  PrivateMessage,
 } from '../types/types';
+import { NotificationsContext } from './NotificationsContext';
 import { PeerSocketContext } from './PeerSocket';
+import logo from '../assets/discourde.png';
 
 interface userMapsContext {
   serverUserMap: ServerUserMap;
@@ -80,9 +84,15 @@ interface Props {
 
 const UserMapsContextProvider = ({ children }: Props) => {
   const dispatch = useAppDispatch();
-  const { me, token, activeVocalChannelServer, activeServer } = useAppSelector(
-    (state) => state.userReducer
-  );
+  const {
+    me,
+    token,
+    activeVocalChannelServer,
+    activeServer,
+    home: isHome,
+    activePrivateChat,
+  } = useAppSelector((state) => state.userReducer);
+  const { addNotification } = useContext(NotificationsContext);
 
   const { socket } = useContext(PeerSocketContext);
 
@@ -179,6 +189,12 @@ const UserMapsContextProvider = ({ children }: Props) => {
       .then((res) => {
         if (res.status === 201) {
           const requestId = res.data.newRequest;
+          addNotification({
+            title: 'success',
+            content: ` Requête envoyée à ${user.username} !`,
+            isTmp: true,
+            picture: user.picture,
+          });
           setSentFriendRequest(user.id, {
             receiver: user,
             id: requestId,
@@ -186,6 +202,59 @@ const UserMapsContextProvider = ({ children }: Props) => {
         }
       });
   };
+
+  const maybeNotifyMessage = useCallback(
+    async (message: PrivateMessage) => {
+      const userId = message.user1.id;
+      if (userId === me?.id || (isHome && activePrivateChat === userId)) return;
+      let username = 'User';
+      let picture = '/profile-pictures/serpent.png';
+      let user: User | undefined;
+      if (!privateChatMap.has(userId)) {
+        await axios
+          .get(`user/${userId}`, {
+            headers: {
+              access_token: localStorage.getItem('token') as string,
+            },
+          })
+          .then((res) => {
+            setPrivateChat(res.data.id, res.data);
+            username = res.data.username;
+            picture = res.data.picture;
+            user = res.data;
+          });
+      } else {
+        user = privateChatMap.get(userId) as User;
+        username = user.username;
+        picture = user.picture || logo;
+      }
+      let audio = new Audio('/when-604.mp3');
+      audio.play();
+      addNotification({
+        title: username,
+        content: message.content,
+        picture: picture,
+        handlerFunction: () => openPrivateChat(user as User),
+      });
+    },
+    [
+      me,
+      addNotification,
+      activePrivateChat,
+      privateChatMap,
+      openPrivateChat,
+      isHome,
+      setPrivateChat,
+    ]
+  );
+
+  useEffect(() => {
+    socket.on(`privatemessage`, maybeNotifyMessage);
+
+    return () => {
+      socket.off(`privatemessage`, maybeNotifyMessage);
+    };
+  }, [socket, maybeNotifyMessage]);
 
   const acceptFriendRequest = (id: number, senderId: number) => {
     // //console.log('accept req', id);
@@ -383,6 +452,18 @@ const UserMapsContextProvider = ({ children }: Props) => {
 
   const handleConnection = useCallback(
     (id: number) => {
+      const friendship = friendMap.get(id);
+      if (friendship) {
+        if (!friendship.friend.status) {
+          addNotification({
+            title: 'success',
+            content: `${friendship.friend.username} est en ligne`,
+            isTmp: true,
+            picture: friendship.friend.picture,
+            handlerFunction: () => dispatch(setIsHome(true)),
+          });
+        }
+      }
       handleStatusChange(1, id);
     },
     [handleStatusChange]
@@ -406,6 +487,14 @@ const UserMapsContextProvider = ({ children }: Props) => {
     (friendRequest: ReceivedFriendRequest) => {
       let audio = new Audio('/direct-545.mp3');
       audio.play();
+      addNotification({
+        title: 'success',
+        content: `${friendRequest.sender.username} vous a envoyé une requête d'amis !`,
+        isTmp: true,
+        picture: friendRequest.sender.picture,
+        handlerFunction: () => dispatch(setIsHome(true)),
+      });
+
       setReceivedFriendRequest(friendRequest.sender.id, friendRequest);
     },
     [setReceivedFriendRequest]
@@ -413,8 +502,18 @@ const UserMapsContextProvider = ({ children }: Props) => {
 
   const handleNewFriendship = useCallback(
     (friendship: Friendship) => {
+      console.log('accept');
       removeSentFriendRequest(friendship.friend.id);
       setFriend(friendship.friend.id, friendship);
+      let audio = new Audio('/juntos-607.mp3');
+      audio.play();
+      addNotification({
+        title: 'success',
+        content: `${friendship.friend.username} a accepté votre requête d'amis !`,
+        isTmp: true,
+        picture: friendship.friend.picture,
+        handlerFunction: () => openPrivateChat(friendship.friend),
+      });
     },
     [removeSentFriendRequest, setFriend]
   );
@@ -590,7 +689,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
     return () => {
       socket.off('userchanged', handleUserProfileChange);
       socket.off('friendrequestrefused', handleFriendshipRefused);
-      socket.off('friendRequestAccepted', handleNewFriendship);
+      socket.off('friendrequestaccepted', handleNewFriendship);
       socket.off('friendrequestcanceled', handleFriendRequestCanceled);
       socket.off('friendshipremoved', handleFriendshipRemoved);
       socket.off('newfriendrequest', handleNewFriendRequest);

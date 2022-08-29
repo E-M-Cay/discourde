@@ -1,15 +1,10 @@
 import { Avatar, notification } from 'antd';
 import { User } from '../types/types';
-
-type NotificationType = 'success' | 'info' | 'warning' | 'error';
-
 export const openNotification = (
-  type: NotificationType,
   title: string,
   content: string,
-  openPrivateChat: Function,
-  picture?: string,
-  user?: User
+  handlerFunction?: () => void,
+  picture?: string | JSX.Element
 ) => {
   // notification[type]({
   // const btn = user?.username ? (
@@ -28,11 +23,11 @@ export const openNotification = (
   // ) : null;
 
   notification.open({
-    message: picture ? 'Nouveau message de ' + title : title,
+    message: title,
     description: content,
     placement: 'topRight',
     className: 'notificationHandler',
-    onClick: () => openPrivateChat(user),
+    onClick: handlerFunction,
     style: { color: '#e2e2e2' },
     icon: (
       <Avatar

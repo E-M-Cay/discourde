@@ -146,6 +146,7 @@ io.on('connection', (socket: ISocket) => {
   if (existing) {
     io.sockets.sockets.get(existing)?.disconnect();
   }
+  console.log('emit');
   io.emit('userconnected', socket.user_id);
   global.user_id_to_status.set(socket.user_id as number, 1);
   global.user_id_to_socket_id.set(socket.user_id as number, socket.id);

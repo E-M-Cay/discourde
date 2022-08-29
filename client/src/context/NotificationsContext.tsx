@@ -12,18 +12,17 @@ import { useAppSelector } from '../redux/hooks';
 import { PrivateMessage, User } from '../types/types';
 import { PeerSocketContext } from './PeerSocket';
 import { UserMapsContext } from './UserMapsContext';
+import logo from '../assets/discourde.png';
 
 type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
 interface Notification {
   id?: number;
-  type: NotificationType;
   title: string;
   content: string;
   isTmp?: boolean;
-  picture?: string;
-  user?: User;
-  openPrivateChat?: Function;
+  picture?: string | JSX.Element;
+  handlerFunction?: () => void;
 }
 interface NotificationsContextInterface {
   notifications: Notification[];
@@ -55,80 +54,21 @@ const NotificationsContextProvider: React.FunctionComponent<Props> = ({
   const [id, setId] = useState(0);
   const { socket } = useContext(PeerSocketContext);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const { privateChatMap, setPrivateChat, openPrivateChat } =
-    useContext(UserMapsContext);
 
   const addNotification = useCallback(
     (notification: Notification) => {
       !notification.isTmp &&
         setNotifications([...notifications, { ...notification, id: id }]);
       openNotification(
-        notification.type,
         notification.title,
         notification.content,
-        openPrivateChat,
-        notification.picture,
-        notification.user
+        notification.handlerFunction,
+        notification.picture ?? logo
       );
       setId(id + 1);
     },
-    [setNotifications, id, notifications, openPrivateChat]
+    [setNotifications, id, notifications]
   );
-
-  const maybeNotifyMessage = useCallback(
-    async (message: PrivateMessage) => {
-      const userId = message.user1.id;
-      if (userId === me?.id || (isHome && activePrivateChat === userId)) return;
-      let username = 'User';
-      let picture = '/profile-pictures/serpent.png';
-      let user: User | undefined;
-      if (!privateChatMap.has(userId)) {
-        await axios
-          .get(`user/${userId}`, {
-            headers: {
-              access_token: localStorage.getItem('token') as string,
-            },
-          })
-          .then((res) => {
-            setPrivateChat(res.data.id, res.data);
-            username = res.data.username;
-            picture = res.data.picture;
-            user = res.data;
-          });
-      } else {
-        username = privateChatMap.get(userId)?.username as string;
-        picture = privateChatMap.get(userId)?.picture as string;
-        user = privateChatMap.get(userId);
-      }
-      let audio = new Audio('/when-604.mp3');
-      audio.play();
-      addNotification({
-        type: 'success',
-        title: username,
-        content: message.content,
-        picture: picture,
-        user: user,
-        openPrivateChat: openPrivateChat,
-      });
-    },
-    [
-      me,
-      addNotification,
-      activePrivateChat,
-      privateChatMap,
-      openPrivateChat,
-      isHome,
-      setPrivateChat,
-    ]
-  );
-
-  useEffect(() => {
-    socket.on(`privatemessage`, maybeNotifyMessage);
-
-    return () => {
-      socket.off(`privatemessage`, maybeNotifyMessage);
-    };
-  }, [socket, maybeNotifyMessage]);
 
   const clearNotification = () => {
     setNotifications([]);

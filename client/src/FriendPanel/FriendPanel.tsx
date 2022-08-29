@@ -26,6 +26,7 @@ import {
 } from 'antd';
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
+import { NotificationsContext } from '../context/NotificationsContext';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { CustomImage, CustomImageMess } from '../CustomLi/CustomLi';
@@ -65,6 +66,7 @@ export const FriendPanel = (props: {
   }
 
   const [serverRequests, setServerRequests] = useState<ServerInvitation[]>([]);
+  const { addNotification } = useContext(NotificationsContext);
 
   useEffect(() => {
     axios
@@ -83,6 +85,15 @@ export const FriendPanel = (props: {
   }, []);
 
   const handleNewServerInvitation = (newInvit: ServerInvitation) => {
+    addNotification({
+      title: 'Nouvelle invitation',
+      content: `${newInvit.sender.username} vous invite à rejoindre  le server${newInvit.server.name} !`,
+      isTmp: true,
+      picture: newInvit.sender.picture,
+    });
+    const audio = new Audio('/mixkit-doorbell-single-press-333.wav');
+    audio.play();
+
     setServerRequests((prevState) => [...prevState, newInvit]);
   };
 
@@ -145,7 +156,6 @@ export const FriendPanel = (props: {
       });
   };
 
-  const [stateMenu, setmenuState] = useState(true);
   const menu = (friendship: Friendship) => {
     return (
       <Menu

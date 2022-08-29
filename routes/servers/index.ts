@@ -203,6 +203,14 @@ router.delete(
 
     try {
       await ServerUserRepository.delete(serverUser.id);
+      if (req.id !== Number(req.params.user_id)) {
+        const userSocket = global.user_id_to_socket_id.get(
+          Number(req.params.user_id)
+        );
+        if (userSocket) {
+          io.to(userSocket).emit('kicked', server.id);
+        }
+      }
       io.emit('userleftserver', {
         user: Number(req.params.user_id),
         server: server.id,

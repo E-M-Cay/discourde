@@ -85,7 +85,6 @@ const ServerParamsModal = (props: {
           setIsModify(0);
 
           addNotification({
-            type: 'success',
             title: 'success',
             content: 'Channel updated',
           });
@@ -148,7 +147,6 @@ const ServerParamsModal = (props: {
       .then((res) => {
         if (res.status === 200) {
           addNotification({
-            type: 'success',
             title: 'success',
             content: 'Server updated',
           });

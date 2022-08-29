@@ -12,7 +12,9 @@ import {
 } from '../redux/userSlice';
 import { ServerResponse } from '../types/types';
 import VocalChannelContextProvider from '../components/VocalChannel';
-import NotificationsContextProvider from '../context/NotificationsContext';
+import NotificationsContextProvider, {
+  NotificationsContext,
+} from '../context/NotificationsContext';
 import UserMapsContextProvider from '../context/UserMapsContext';
 import { PeerSocketContext } from '../context/PeerSocket';
 
@@ -26,6 +28,7 @@ export const Home = () => {
   );
   const me = useAppSelector((state) => state.userReducer.me);
   const { isPeerConnected, isSocketConnected } = useContext(PeerSocketContext);
+  const { addNotification } = useContext(NotificationsContext);
 
   const getServers = useCallback(() => {
     axios
@@ -87,16 +90,28 @@ export const Home = () => {
   };
 
   useEffect(() => {
+    socket.on('kicked', (serverId: number) => {
+      const server = servers.find((serv) => serv.server.id === serverId);
+      const audio = new Audio('/door-slam.mp3');
+      audio.play();
+      addNotification({
+        title: 'Exclusion',
+        content: `Vous avez été exclu du server ${server?.server.name} !`,
+        isTmp: true,
+        picture: server?.server.main_img,
+      });
+    });
     socket.on('userleftserver', handleLeftServer);
 
     return () => {
       socket.off('userleftserver', handleLeftServer);
+      socket.off('kicked');
     };
   }, []);
 
   return (
-    <UserMapsContextProvider>
-      <NotificationsContextProvider>
+    <NotificationsContextProvider>
+      <UserMapsContextProvider>
         <VocalChannelContextProvider>
           {isPeerConnected ? (
             <Row style={{ backgroundColor: '#353535' }}>
@@ -113,7 +128,7 @@ export const Home = () => {
             </Row>
           ) : null}
         </VocalChannelContextProvider>
-      </NotificationsContextProvider>
-    </UserMapsContextProvider>
+      </UserMapsContextProvider>
+    </NotificationsContextProvider>
   );
 };

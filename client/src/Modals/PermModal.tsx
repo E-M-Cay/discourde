@@ -25,18 +25,18 @@ setIsPermModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   const activeServer = useAppSelector(
     (state) => state.userReducer.activeServer
   );
-  const handleRoleOk = () => {
+  const handlePermOk = () => {
     setIsPermModalVisible(false);
   };
 
-  const handleRoleCancel = () => {
+  const handlePermCancel = () => {
     setIsPermModalVisible(false);
   };
  
 
   return (
-    <Modal title="Gestion des permissions" visible={isModalVisiblePerm} onOk={handleRoleOk} onCancel={handleRoleCancel}>
-        <p>oui</p>
+    <Modal title="Gestion des permissions" visible={isModalVisiblePerm} onOk={handlePermOk} onCancel={handlePermCancel}>
+        <p>non</p>
       </Modal>
   );
 };

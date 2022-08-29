@@ -11,12 +11,19 @@ import PermModal from './PermModal';
 
 const { TabPane } = Tabs;
 let userConcern: number;
+
 let tmpCheckedRoles: Array<any> = [];
 let checkedListRoles: Array<any> = [];
 let rolesAlreadyChecked: Array<any> = [];
-let idServer: number = -1
 
+let idServer: number = -1
+let allPerm: Array<any> = [];
 let listOfRoles: Array<any> = [];
+
+let tempoPerm: Array<any> = [];
+let checkedListPerm : Array<any> = [];
+let permAlreadyChecked: Array<any> = [];
+
 const AdminModal = (props: {
     isModalVisibleAdmin: boolean;
     setIsAdminModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,7 +38,8 @@ const AdminModal = (props: {
 
   const [form] = Form.useForm();
   const [isModalVisibleRole, setisModalVisibleRole] = useState(false);
-  const [isModalVisiblePerm, setisModalVisiblePerm] = useState(false);
+  
+  const [isModalVisiblePerm, setIsPermModalVisible] = useState(false);
   const { serverUserMap } = useContext(UserMapsContext);
   const { me } = useAppSelector((state) => state.userReducer);
   const activeServer = useAppSelector(
@@ -63,11 +71,8 @@ let serverId: any = activeServer;
 let userId: any = 0;
 
 const showPermModal = () => {
-  setisModalVisiblePerm(true);
+  setIsPermModalVisible(true);
 };
-
-
-
   const showAdminModal = () => {
     setIsAdminModalVisible(true);
   };
@@ -123,7 +128,9 @@ const onCreateNewRole = (values: any) => {
    },
  })
  handleRoleCancel();
+ getRolesByServer();
 };
+
 
 const setUserConcern = async (selectUser: number) => {
 
@@ -171,6 +178,12 @@ const onChangeR = (checkedValues: any) => {
   let okTest: number;
   okTest = 1;
 };
+
+const onChangeP = (checkedValues: any) => {
+  console.log('checked = ' + checkedValues);
+  tempoPerm = checkedValues;
+
+};
 const onValidateAdmR = () => {
   checkedListRoles = tmpCheckedRoles;
   console.log("Id du user : " + userConcern)
@@ -195,12 +208,46 @@ const onValidateAdmR = () => {
 
 const isCheck = (idRole: any) => {
 
-  
+
   var n = rolesAlreadyChecked.includes(idRole);
   console.log(rolesAlreadyChecked)
   console.log(idRole)
   console.log(n)
   return n
+}
+const handlePermOk = () => {
+  setIsPermModalVisible(false);
+};
+
+const handlePermCancel = () => {
+  setIsPermModalVisible(false);
+};
+
+const getAllPerm = async (roleId: number) => {
+  console.log("roleId : " + roleId )
+  await axios
+  .get(`/permission/list_all`, {
+   headers: {
+     access_token: localStorage.getItem('token') as string,
+   },
+ })
+ .then((res) => {
+  console.log("getAllPerm");
+ 
+  allPerm= res.data;
+  console.log(allPerm);
+ });
+  showPermModal();
+}
+
+const delRoleByServer = (role_id: number) => {
+  console.log('roleid a delete : ' + role_id)
+  axios
+  .delete(`/role/delete/${role_id}`, {
+    headers: {
+      access_token: localStorage.getItem('token') as string,
+    },
+  })
 }
 
   return (
@@ -248,7 +295,9 @@ const isCheck = (idRole: any) => {
             </div>
             </TabPane>
             <TabPane tab='Liste des roles' key="2">
-              {listOfRoles.map((role) => (<p> {role.name} <SettingFilled style={{fontSize: 'large', cursor: 'pointer', marginLeft: '1vw'}} onClick={() => showPermModal()} /> </p> ) )}
+              {listOfRoles.map((role) => (<p> {role.name} 
+              <SettingFilled style={{fontSize: 'large', cursor: 'pointer', marginLeft: '1vw'}} onClick={() => getAllPerm(role.id)} />
+              <CloseOutlined style={{fontSize: 'large', color: 'red', cursor: 'pointer'}} onClick={() => delRoleByServer(role.id)}/> </p> ) )}
               <Divider></Divider>
               <Form
                 form={form}
@@ -268,25 +317,40 @@ const isCheck = (idRole: any) => {
               </Form>
             </TabPane>
           </Tabs>
-      </Modal>
+    </Modal>
       <Modal title="Attribution des rôles" visible={isModalVisibleRole} onOk={handleRoleOk} onCancel={handleRoleCancel} footer={null}>
         <Checkbox.Group
-
+            style={{
+              display: "flex",
+              flexDirection: "column",
+            }}
             defaultValue={rolesAlreadyChecked}
-            onChange={onChangeR}
-            
+            onChange={onChangeR} 
         >
-        <Row>
-          {listOfRoles.map((role) => (<Checkbox checked={isCheck(role.id)} value={role.id}> {role.name} </Checkbox>  ) )}
-        </Row>
-        </Checkbox.Group>
+          {listOfRoles.map((role) => (<Checkbox checked={isCheck(role.id)} value={role.id}> {role.name}</Checkbox>) )}
+        
+        </Checkbox.Group><br/>
         <CheckOutlined style={{color: 'lightGreen', fontSize: 'large', float: 'right'}} onClick={onValidateAdmR}/>
         </Modal>
-        <PermModal 
+        <Modal title="Gestion des permissions" visible={isModalVisiblePerm} onOk={handlePermOk} onCancel={handlePermCancel}>
+        <Checkbox.Group
+            style={{
+              display: "flex",
+              flexDirection: "column"
+            }}
+            defaultValue={permAlreadyChecked}
+            onChange={onChangeR}  
+        >
+          {allPerm.map((perm) => (<Checkbox checked={isCheck(perm.id)} value={perm.id}>{perm.name}</Checkbox>))}
+        
+        </Checkbox.Group><br />
+        <CheckOutlined style={{color: 'lightGreen', fontSize: 'large', float: "right"}} onClick={onValidateAdmR}/>
+      </Modal>
+{/*         <PermModal 
           isModalVisiblePerm={isModalVisiblePerm}
           setIsPermModalVisible={setisModalVisiblePerm } 
           servers={[]} 
-        />
+        /> */}
 {/*       <RoleModal
       isModalVisibleRole={isModalVisibleRole}
       userConcern={userConcern}

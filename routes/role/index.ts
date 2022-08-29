@@ -110,10 +110,16 @@ router.put('/update/', isAuth, async (req: IRequest, res: Response) => {
     return res.status(400).send('Wrong arguments');
 });
 
+<<<<<<< HEAD
 router.delete('/delete/:role_id', isAuth,async (req: IRequest, res: Response) => {
     const role_id = Number(req.params.role_id);
     if (role_id == NaN) 
         return res.status(400).send('Error server not found');
+=======
+router.delete('/delete/:role_id', isAuth, async (req: IRequest, res: Response) => {
+    const role_id = Number(req.params.role_id);
+    if (role_id == NaN) return res.status(400).send('Error server not found');
+>>>>>>> fce280db72d959b2bf3f897a4011ba49b31d3686
     try {
         await RoleRepository.delete(role_id);
         return res.status(200)

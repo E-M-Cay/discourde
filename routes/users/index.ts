@@ -184,7 +184,7 @@ router.get('/list_all', async (req: IRequest, res: Response) => {
 
   }catch(error){
     console.log(error);
-    res.status(400).send('Error arthur');
+    res.status(400).send('Error N');
   }
 })
 

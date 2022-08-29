@@ -243,13 +243,20 @@ router.get('/list_all', async (req: IRequest, res: Response) => {
         return res.status(400).send('no role found')
 
     try{
+        let tab_id = []
         const permission_list =  await RolePermissionRepository.find({
             relations: ['permission'],
             where: {
                 role: {id: role_id}
             }
         })
-        return res.status(200).send(permission_list);
+
+        for(const sperm of permission_list){
+            tab_id.push(sperm.id)
+        }
+
+
+        return res.status(200).send(tab_id);
     }catch(error){
       console.log(error);
       res.status(400).send(error);

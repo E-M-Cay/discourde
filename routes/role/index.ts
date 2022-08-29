@@ -89,7 +89,8 @@ router.post('/create/', isAuth, async (req: IRequest, res: Response) => {
 });
 
 router.put('/update/', isAuth, async (req: IRequest, res: Response) => {
-    if ('name' in req.body && 'role_id' in req.body) {
+    if ('name' in req.body && 'role_id' in req.body && 'permisison_list' in req.body && 'initial_permission_list') {
+
         const server = await ServerRepository.findOneBy({
             id: Number(req.body.server_id),
         });
@@ -110,16 +111,9 @@ router.put('/update/', isAuth, async (req: IRequest, res: Response) => {
     return res.status(400).send('Wrong arguments');
 });
 
-<<<<<<< HEAD
-router.delete('/delete/:role_id', isAuth,async (req: IRequest, res: Response) => {
-    const role_id = Number(req.params.role_id);
-    if (role_id == NaN) 
-        return res.status(400).send('Error server not found');
-=======
 router.delete('/delete/:role_id', isAuth, async (req: IRequest, res: Response) => {
     const role_id = Number(req.params.role_id);
     if (role_id == NaN) return res.status(400).send('Error server not found');
->>>>>>> fce280db72d959b2bf3f897a4011ba49b31d3686
     try {
         await RoleRepository.delete(role_id);
         return res.status(200)
@@ -205,5 +199,26 @@ router.get('/list_all', async (req: IRequest, res: Response) => {
       res.status(400).send(error);
     }
   });
+
+  router.get('/permission/:role_id', async (req: IRequest, res: Response) => {
+    const role_id = Number(req.params.role_id);
+
+    if(role_id == NaN)
+        return res.status(400).send('no role found')
+
+    try{
+        const permission_list =  await RolePermissionRepository.find({
+            relations: ['permission'],
+            where: {
+                role: {id: role_id}
+            }
+        })
+        return res.status(200).send(permission_list);
+    }catch(error){
+      console.log(error);
+      res.status(400).send(error);
+    }
+  });
+
 
 export default router;

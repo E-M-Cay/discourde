@@ -442,9 +442,9 @@ const UserMapsContextProvider = ({ children }: Props) => {
       }
       if (user === me?.id && server === activeServer) {
         dispatch(setActiveServer(1));
-        if (activeVocalChannelServer === activeServer) {
-          dispatch(setActiveVocalChannel(0));
-        }
+      }
+      if (activeVocalChannelServer === server) {
+        dispatch(setActiveVocalChannel(0));
       }
     },
     [removeServerUser, activeVocalChannelServer, activeServer, dispatch, me]

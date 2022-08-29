@@ -48,12 +48,18 @@ export const Home = () => {
   }, [dispatch]);
 
   const handleLeaveServer = () => {
+    const serv = activeServer;
     axios
-      .delete(`/server/${activeServer}/user/${me?.id}`, {
+      .delete(`/server/${serv}/user/${me?.id}`, {
         headers: {
           access_token: localStorage.getItem('token') as string,
         },
       })
+      .then((res) =>
+        setServers((prevstate) =>
+          prevstate.filter((server) => server.server.id !== serv)
+        )
+      )
       .catch((e) => console.log(e));
 
     return () => {

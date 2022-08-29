@@ -172,7 +172,7 @@ router.get('/:id', isAuth, async (req: IRequest, res: Response) => {
   }
 });
 
-router.get('/list_all', isAuth, async (req: IRequest, res: Response) => {
+router.get('/list_all', async (req: IRequest, res: Response) => {
   try{
     const user_list = await userRepository.findBy({})
     const tab_username = []
@@ -184,7 +184,7 @@ router.get('/list_all', isAuth, async (req: IRequest, res: Response) => {
 
   }catch(error){
     console.log(error);
-    res.status(401).send('Error');
+    res.status(400).send('Error arthur');
   }
 })
 

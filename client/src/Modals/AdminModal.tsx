@@ -122,6 +122,7 @@ const onCreateNewRole = (values: any) => {
      access_token: localStorage.getItem('token') as string,
    },
  })
+ handleRoleCancel();
 };
 
 const setUserConcern = async (selectUser: number) => {
@@ -194,6 +195,7 @@ const onValidateAdmR = () => {
 
 const isCheck = (idRole: any) => {
 
+  
   var n = rolesAlreadyChecked.includes(idRole);
   console.log(rolesAlreadyChecked)
   console.log(idRole)
@@ -203,7 +205,7 @@ const isCheck = (idRole: any) => {
 
   return (
     <div>
-    <Modal title="Gestion des membres" visible={isModalVisibleAdmin} onOk={handleAdminOk} onCancel={handleAdminCancel}>
+    <Modal title="Gestion des membres" visible={isModalVisibleAdmin} onOk={handleAdminOk} onCancel={handleAdminCancel} footer={null}>
         <Tabs onChange={onChange}>
           <TabPane tab='Liste des membres' key="1">
             <div>
@@ -246,14 +248,14 @@ const isCheck = (idRole: any) => {
             </div>
             </TabPane>
             <TabPane tab='Liste des roles' key="2">
-              {listOfRoles.map((role) => (<p> {role.name} <SettingFilled style={{fontSize: 'large', cursor: 'pointer'}} onClick={() => showPermModal()} /> </p> ) )}
-
+              {listOfRoles.map((role) => (<p> {role.name} <SettingFilled style={{fontSize: 'large', cursor: 'pointer', marginLeft: '1vw'}} onClick={() => showPermModal()} /> </p> ) )}
+              <Divider></Divider>
               <Form
                 form={form}
                 layout="vertical"
                 onFinish={onCreateNewRole}
               >
-                <Form.Item name="newRole" label="Créer un nouveaux rôle">
+                <Form.Item name="newRole" label="Créer un nouveau rôle">
                   <Input placeholder="Nom du rôle" id='roleName' />
                 </Form.Item>
                 <Form.Item>
@@ -267,20 +269,18 @@ const isCheck = (idRole: any) => {
             </TabPane>
           </Tabs>
       </Modal>
-      <Modal title="Attribution des rôles" visible={isModalVisibleRole} onOk={handleRoleOk} onCancel={handleRoleCancel}>
+      <Modal title="Attribution des rôles" visible={isModalVisibleRole} onOk={handleRoleOk} onCancel={handleRoleCancel} footer={null}>
         <Checkbox.Group
-            style={{
-            width: '100%',
-            }}
+
             defaultValue={rolesAlreadyChecked}
             onChange={onChangeR}
             
         >
         <Row>
-          {listOfRoles.map((role) => (<Checkbox checked={isCheck(role.id)} value={role.id}> {role.id} </Checkbox>  ) )}
+          {listOfRoles.map((role) => (<Checkbox checked={isCheck(role.id)} value={role.id}> {role.name} </Checkbox>  ) )}
         </Row>
         </Checkbox.Group>
-        <Button onClick={onValidateAdmR}><CheckOutlined style={{color: 'green', fontSize: 'large'}} /></Button>
+        <CheckOutlined style={{color: 'lightGreen', fontSize: 'large', float: 'right'}} onClick={onValidateAdmR}/>
         </Modal>
         <PermModal 
           isModalVisiblePerm={isModalVisiblePerm}

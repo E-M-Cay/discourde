@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import 'antd/dist/antd.min.css';
-import { Input, Form } from 'antd';
+import { Input, Form, notification } from 'antd';
 import { PeerSocketContext } from '../context/PeerSocket';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import Picker from 'emoji-picker-react';
@@ -15,6 +15,7 @@ import { InputRef } from 'antd';
 import { UserMapsContext } from '../context/UserMapsContext';
 import { Channel } from '../types/types';
 import { setAiMsg } from '../redux/userSlice';
+import axios from 'axios';
 
 const ChatBar = (props: { textChannelList: Channel[] }) => {
   const dispatch = useAppDispatch();
@@ -52,7 +53,29 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
     },
     [node]
   );
+  const openNotification = () => {
+    let listOfAllUsers: Array<any> = [];
+    axios
+    .get(`/user/list_all`, {
+     headers: {
+       access_token: localStorage.getItem('token') as string,
+     },
+   })
+   .then((res) => {
+    console.log("getRolesbyServer");
+   
+    listOfAllUsers= res.data;
+    console.log(listOfAllUsers);
+   });
 
+    notification.open({
+      message: 'Liste des utilisateur de Discourde :',
+      description: listOfAllUsers.map((user) => <li>{user}</li>),
+      onClick: () => {
+        console.log('Notification Clicked!');
+      },
+    });
+  };
   const onSubmitChatChannelHandler = () => {
     if (activeChannel && activeChannel !== -1) {
       socket.emit('message', {
@@ -63,6 +86,7 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
     } else if (activeChannel === -1) {
       if(input == "!users") {
         console.log("liste des users");
+        openNotification();
       } else {
       console.log(aiMsg);
 

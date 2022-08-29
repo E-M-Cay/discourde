@@ -25,7 +25,7 @@ export default async function (
     // Si on a pas de token, on envoie une erreur.
 
     if (!token) {
-        return res.status(401).json({ err: 'Forbidden' });
+        return res.status(401).json({ err: 'Forbidden no token' });
     }
 
     try {

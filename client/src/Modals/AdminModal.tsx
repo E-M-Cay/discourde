@@ -1,5 +1,5 @@
 import { CheckOutlined, CloseOutlined, EditOutlined, RotateLeftOutlined, SettingFilled } from '@ant-design/icons';
-import { Modal, Typography, Input, Avatar, Divider, Tabs, Button, Dropdown, Form, Space, Checkbox, Row } from 'antd';
+import { Modal, Typography, Input, Avatar, Divider, Tabs, Button, Dropdown, Form, Space, Checkbox, Row, notification } from 'antd';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { useAppSelector } from '../redux/hooks';
@@ -26,6 +26,7 @@ let permAlreadyChecked: Array<any> = [];
 
 let selectedRole: string;
 let selectedRoleId: number;
+let newRoleName: string;
 
 const AdminModal = (props: {
     isModalVisibleAdmin: boolean;
@@ -129,11 +130,28 @@ const onCreateNewRole = (values: any) => {
    headers: {
      access_token: localStorage.getItem('token') as string,
    },
- })
+ }).then((res) => {
+  console.log(res.data)
+  openNotification("Nouveau rôle créé avec succès !")
+})
  handleAdminOk();
  getRolesByServer();
 };
+const getPermByServerRole = async (idRole: number) => {
+  await axios
+  .get(`/role/permission/${idRole}`, {
+    headers: {
+      access_token: localStorage.getItem('token') as string,
+    },
+  })
+  .then((res) => {
+   permAlreadyChecked = res.data;
+   console.log("permAlreadyChecked")
+   console.log(permAlreadyChecked)
+   showPermModal();
+  });
 
+}
 
 const setUserConcern = async (selectUser: number) => {
 
@@ -204,7 +222,10 @@ const onValidateAdmR = () => {
    headers: {
      access_token: localStorage.getItem('token') as string,
    },
- })
+ }).then((res) => {
+  
+  openNotification("Rôle attribué avec succès ! ")
+})
 
   setisModalVisibleRole(false);
 }
@@ -218,6 +239,16 @@ const isCheck = (idRole: any) => {
   console.log(n)
   return n
 }
+const isCheckP = (idPerm: any) => {
+
+
+  var p = permAlreadyChecked.includes(idPerm);
+  console.log(permAlreadyChecked.includes(idPerm))
+  console.log(idPerm)
+  console.log(permAlreadyChecked)
+
+  return p
+}
 const handlePermOk = () => {
   setIsPermModalVisible(false);
 };
@@ -229,20 +260,25 @@ const handlePermCancel = () => {
 const getAllPerm = async (roleId: number, roleName: string) => {
   selectedRoleId = roleId;
   selectedRole = roleName;
-  console.log("roleId : " + roleId )
+  newRoleName = selectedRole;
+  console.log(" selectedRole: " + selectedRole)
+  console.log("roleId : " + selectedRoleId )
   await axios
   .get(`/permission/list_all`, {
    headers: {
      access_token: localStorage.getItem('token') as string,
    },
  })
- .then((res) => {
+ .then(async (res) => {
   console.log("getAllPerm");
  
   allPerm= res.data;
   console.log(allPerm);
+   await getPermByServerRole(selectedRoleId);
+   
  });
-  showPermModal();
+ 
+  
 }
 
 const delRoleByServer = (role_id: number) => {
@@ -252,18 +288,21 @@ const delRoleByServer = (role_id: number) => {
     headers: {
       access_token: localStorage.getItem('token') as string,
     },
+  }).then((res) => {
+    openNotification("Rôle supprimé avec succès !")
   })
 }
 
 const updatePermServerRole = () => {
+  
   checkedListPerm = tempoPerm;
-  console.log("Nom du rôle a update : " + selectedRole)
+  console.log("Nom du rôle a update : " + newRoleName)
   console.log("id du role choisis : " + selectedRoleId);
   console.log("List des perm à attribuer : " + checkedListPerm);
 
   axios
   .put(`/role/update/`, {
-    'name': selectedRole,
+    'name': newRoleName,
     'role_id': selectedRoleId,
     'permission_list': checkedListPerm
     },{
@@ -272,9 +311,26 @@ const updatePermServerRole = () => {
     },
   }).then((res) => {
     console.log(res.data)
+    openNotification("Rôle modifié avec succès !")
   })
   handlePermOk();
+  handleAdminOk();
 }
+const setNewRoleName = (newName: any) => {
+  console.log("NEWNAME")
+  console.log(newName)
+  newRoleName = newName;
+}
+
+const openNotification = (messageContent: any) => {
+  notification.open({
+    message: 'Notification !',
+    description: messageContent,
+    onClick: () => {
+      console.log('Notification Clicked!');
+    },
+  });
+};
 
   return (
     <div>
@@ -357,8 +413,8 @@ const updatePermServerRole = () => {
         <Button type='primary' onClick={onValidateAdmR}>VALIDER</Button>
         </Modal>
         <Modal title="Gestion des permissions" visible={isModalVisiblePerm} onOk={handlePermOk} onCancel={handlePermCancel} footer={null}>
-        
-        <Input addonBefore="Nom du rôle" defaultValue={selectedRole} id='roleName2'/>
+
+            <Input addonBefore="Nom du rôle" defaultValue={selectedRole} id='roleName2' name='roleName2' onChange={(event) => setNewRoleName(event.target.value)}/>
         <Divider></Divider>
         <Checkbox.Group
             style={{
@@ -368,7 +424,7 @@ const updatePermServerRole = () => {
             defaultValue={permAlreadyChecked}
             onChange={onChangeP}  
         >
-          {allPerm.map((perm) => (<Checkbox checked={isCheck(perm.id)} value={perm.id}>{perm.name}</Checkbox>))}
+          {allPerm.map((perm) => (<Checkbox checked={isCheckP(perm.id)} value={perm.id}>{perm.name}</Checkbox>))}
         
         </Checkbox.Group><br />
         <Button type="primary" style={{marginRight: "1vw"}} onClick={updatePermServerRole}>UPDATE</Button>

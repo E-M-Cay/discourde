@@ -234,6 +234,7 @@ const onValidateAdmR = () => {
 })
 
   setisModalVisibleRole(false);
+  showAdminModal();
 }
 
 const isCheck = (idRole: any) => {
@@ -324,6 +325,7 @@ const updatePermServerRole = () => {
   })
   handlePermOk();
   handleAdminOk();
+  showAdminModal();
 }
 const setNewRoleName = (newName: any) => {
   console.log("NEWNAME")
@@ -344,7 +346,7 @@ const openNotification = (messageContent: any) => {
   return (
     <div>
     <Modal title="Gestion des membres" visible={isModalVisibleAdmin} onOk={handleAdminOk} onCancel={handleAdminCancel} footer={null}>
-        <Tabs onChange={onChange}>
+        <Tabs onChange={onChange} defaultActiveKey="1">
           <TabPane tab='Liste des membres' key="1">
             <div>
                 {Array.from(serverUserMap.entries()).map(([id, user]) => 

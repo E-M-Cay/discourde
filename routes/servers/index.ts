@@ -211,12 +211,19 @@ router.delete(
 
     if (!serverUser) return res.status(400).send('Error server not found');
 
+    const server_role_user_list: any = await ServerUserRoleRepository.findBy({user: {id: serverUser.id}})
+    for(const role of server_role_user_list){
+      await ServerUserRoleRepository.delete(role.id)
+    } 
+
+
     try {
       await ServerUserRepository.delete(serverUser.id);
       io.emit('userleftserver', Number(req.params.user_id));
       return res.sendStatus(204);
     } catch (error) {
-      return res.status(400).send('Error');
+
+      return res.status(400).send({error, serverUser});
     }
   }
 );

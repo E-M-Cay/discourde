@@ -263,5 +263,32 @@ router.get('/list_all', async (req: IRequest, res: Response) => {
     }
   });
 
+  router.get('/list/:server_name', async (req: IRequest, res: Response) => {
+    const server_name = req.params.server_name;
+    let tab_name = []
+    try{
+
+        const server: any = await ServerRepository.findOneBy({
+            name: server_name
+        })
+
+        if(!server)
+        res.status(400).send('No server found');
+
+
+        const list_role = await RoleRepository.findBy({server: server})
+
+        for(const role of list_role){
+            tab_name.push(role.name)
+        }
+
+
+        return res.status(200).send(tab_name);
+    }catch(error){
+      console.log(error);
+      res.status(400).send(error);
+    }
+  });
+
 
 export default router;

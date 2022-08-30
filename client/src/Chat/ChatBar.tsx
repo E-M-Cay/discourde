@@ -99,11 +99,13 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
    });
   }
 
-  const show_notification_list_server_user_per_server = (arg: string) => {
-    console.log(arg)
+  const show_notification_list_server_user_per_server_name = (arg: string) => {
+    console.log('Start')
     let list_server_user: Array<any> = [];
+
+    console.log('before request')
     axios
-    .get(`/server/list_user/${arg}`, {
+    .get(`/server/list/user/${arg}`, {
      headers: {
        access_token: localStorage.getItem('token') as string,
      },
@@ -123,9 +125,35 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
    });
   }
 
+  const show_notification_list_role_per_server_name = (arg: string) =>{
+    let list_role: Array<any> = [];
+
+    console.log('before request')
+    axios
+    .get(`/role/list/${arg}`, {
+     headers: {
+       access_token: localStorage.getItem('token') as string,
+     },
+   })
+   .then((res) => {
+    console.log("getRolesbyServer");
+    list_role = res.data;
+    console.log(list_role);
+
+    notification.open({
+      message: 'Liste des serveurs de Discourde :',
+      description: list_role.map((role, index) => <li key={index}>{role.name}</li>),
+      onClick: () => {
+        console.log('Notification Clicked!');
+      },
+    });
+   });
+  }
+
+
   const onSubmitChatChannelHandler = () => {
     console.log(input)
-    console.log(input.slice(0,7))
+    console.log(input.slice(0, 6))
 
     if (activeChannel && activeChannel !== -1) {
       socket.emit('message', {
@@ -149,11 +177,21 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
           const arg = buffer[1]
           if(arg != ""){
             console.log('.Server')
-            show_notification_list_server_user_per_server(arg)
+            show_notification_list_server_user_per_server_name(arg)
           }
         }
 
-      }else {
+      }else if(input.slice(0, 5) == "!role"){
+        console.log('test True')
+        let buffer = input.split(' ')
+        if(buffer.length == 2){
+          const arg = buffer[1]
+          if(arg != ""){
+            show_notification_list_role_per_server_name(arg)
+          }
+        }
+      }
+      else {
       console.log(aiMsg);
 
       const configuration = new Configuration({

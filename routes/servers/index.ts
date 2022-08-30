@@ -353,9 +353,8 @@ router.get('/list_all', isAuth, async (req: IRequest, res: Response) => {
   }
 });
 
-router.get('/list_user/:server_name', isAuth, async (req: IRequest, res: Response) => {
+router.get('/list/user/:server_name', isAuth, async (req: IRequest, res: Response) => {
   const server_name = req.params.server_name
-  return res.status(200).send(server_name)
   
   try {
 

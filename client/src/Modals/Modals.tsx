@@ -74,11 +74,14 @@ export const ServerInvit = (props: {
                     key={id}
                     style={{
                       display: 'flex',
-                      justifyContent: 'flex-start',
+                      justifyContent: 'space-between',
                       alignItems: 'end',
+                      width: '70%',
+                      margin: 'auto',
+                      marginTop: '20px',
                     }}
                   >
-                    <Avatar src={friendShip.friend.picture ?? logo} />
+                    <Avatar src={friendShip.friend.picture ?? logo} size={40} />
                     <span style={{ fontSize: '1.2rem', marginLeft: '10px' }}>
                       {friendShip.friend.username}
                     </span>
@@ -351,7 +354,7 @@ export const UserProfileModal = (props: {
     }
   };
   return (
-    <div style={{ height: '120px' }}>
+    <div style={{ minHeight: '150px' }}>
       <div
         style={{
           display: 'flex',

@@ -16,6 +16,7 @@ import {
   setActiveServerName,
   setActiveVocalChannel,
 } from '../redux/userSlice';
+import NotificationsContext from '../context/NotificationsContext';
 
 export const LeftBar = (props: {
   servers: ServerResponse[];

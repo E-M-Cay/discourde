@@ -80,35 +80,6 @@ export const Home = () => {
     };
   }, [getServers, isSocketConnected]);
 
-  const handleLeftServer = (data: { user: number; server: number }) => {
-    const { user, server } = data;
-    if (user === me?.id) {
-      setServers((prevState) =>
-        prevState.filter((serv) => serv.server.id !== server)
-      );
-    }
-  };
-
-  useEffect(() => {
-    socket.on('kicked', (serverId: number) => {
-      const server = servers.find((serv) => serv.server.id === serverId);
-      const audio = new Audio('/door-slam.mp3');
-      audio.play();
-      addNotification({
-        title: 'Exclusion',
-        content: `Vous avez été exclu du server ${server?.server.name} !`,
-        isTmp: true,
-        picture: server?.server.main_img,
-      });
-    });
-    socket.on('userleftserver', handleLeftServer);
-
-    return () => {
-      socket.off('userleftserver', handleLeftServer);
-      socket.off('kicked');
-    };
-  }, []);
-
   return (
     <NotificationsContextProvider>
       <UserMapsContextProvider>

@@ -208,7 +208,10 @@ router.delete(
           Number(req.params.user_id)
         );
         if (userSocket) {
-          io.to(userSocket).emit('kicked', server.id);
+          io.to(userSocket).emit('kicked', {
+            serverName: server.name,
+            serverPicture: server.main_img,
+          });
         }
       }
       io.emit('userleftserver', {

@@ -135,8 +135,11 @@ const onCreateNewRole = (values: any) => {
  }).then((res) => {
   console.log(res.data)
   openNotification("Nouveau rôle créé avec succès !")
+  
 })
- handleAdminOk();
+  handleAdminOk();
+  window.location.reload();
+  showAdminModal();
  getRolesByServer();
 };
 const getPermByServerRole = async (idRole: number) => {
@@ -231,9 +234,11 @@ const onValidateAdmR = () => {
  }).then((res) => {
   
   openNotification("Rôle attribué avec succès ! ")
+  
 })
 
   setisModalVisibleRole(false);
+  window.location.reload();
   showAdminModal();
 }
 
@@ -300,6 +305,8 @@ const delRoleByServer = (role_id: number) => {
   }).then((res) => {
     handleAdminOk();
     openNotification("Rôle supprimé avec succès !")
+    window.location.reload();
+    showAdminModal();
   })
 }
 
@@ -325,7 +332,9 @@ const updatePermServerRole = () => {
   })
   handlePermOk();
   handleAdminOk();
+  window.location.reload();
   showAdminModal();
+
 }
 const setNewRoleName = (newName: any) => {
   console.log("NEWNAME")

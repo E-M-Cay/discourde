@@ -195,14 +195,14 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
       console.log(aiMsg);
 
       const configuration = new Configuration({
-        apiKey: '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',
+        apiKey: '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',
       });
       const openai = new OpenAIApi(configuration);
 
       openai
         .createCompletion({
           model: 'text-davinci-002',
-          prompt: 'Répond à cette question : ' + aiMsg + '""Human: ' + input,
+          prompt: 'Répond à ça : ' + aiMsg + '""Human: ' + input,
           temperature: 0.7,
           max_tokens: 256,
           top_p: 1,

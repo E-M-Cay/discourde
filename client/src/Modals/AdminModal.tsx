@@ -1,5 +1,5 @@
 import { CheckOutlined, CloseOutlined, EditOutlined, RotateLeftOutlined, SettingFilled } from '@ant-design/icons';
-import { Modal, Typography, Input, Avatar, Divider, Tabs, Button, Dropdown, Form, Space, Checkbox, Row } from 'antd';
+import { Modal, Typography, Input, Avatar, Divider, Tabs, Button, Dropdown, Form, Space, Checkbox, Row, notification } from 'antd';
 import axios from 'axios';
 import { useContext, useEffect, useState } from 'react';
 import { useAppSelector } from '../redux/hooks';
@@ -130,7 +130,10 @@ const onCreateNewRole = (values: any) => {
    headers: {
      access_token: localStorage.getItem('token') as string,
    },
- })
+ }).then((res) => {
+  console.log(res.data)
+  openNotification("Nouveau rôle créé avec succès !")
+})
  handleAdminOk();
  getRolesByServer();
 };
@@ -145,6 +148,7 @@ const getPermByServerRole = async (idRole: number) => {
    permAlreadyChecked = res.data;
    console.log("permAlreadyChecked")
    console.log(permAlreadyChecked)
+   showPermModal();
   });
 
 }
@@ -218,7 +222,10 @@ const onValidateAdmR = () => {
    headers: {
      access_token: localStorage.getItem('token') as string,
    },
- })
+ }).then((res) => {
+  
+  openNotification("Rôle attribué avec succès ! ")
+})
 
   setisModalVisibleRole(false);
 }
@@ -253,7 +260,9 @@ const handlePermCancel = () => {
 const getAllPerm = async (roleId: number, roleName: string) => {
   selectedRoleId = roleId;
   selectedRole = roleName;
-  console.log("roleId : " + roleId )
+  newRoleName = selectedRole;
+  console.log(" selectedRole: " + selectedRole)
+  console.log("roleId : " + selectedRoleId )
   await axios
   .get(`/permission/list_all`, {
    headers: {
@@ -265,8 +274,8 @@ const getAllPerm = async (roleId: number, roleName: string) => {
  
   allPerm= res.data;
   console.log(allPerm);
-   await getPermByServerRole(roleId);
-   showPermModal();
+   await getPermByServerRole(selectedRoleId);
+   
  });
  
   
@@ -279,6 +288,8 @@ const delRoleByServer = (role_id: number) => {
     headers: {
       access_token: localStorage.getItem('token') as string,
     },
+  }).then((res) => {
+    openNotification("Rôle supprimé avec succès !")
   })
 }
 
@@ -300,14 +311,26 @@ const updatePermServerRole = () => {
     },
   }).then((res) => {
     console.log(res.data)
+    openNotification("Rôle modifié avec succès !")
   })
   handlePermOk();
+  handleAdminOk();
 }
 const setNewRoleName = (newName: any) => {
   console.log("NEWNAME")
   console.log(newName)
   newRoleName = newName;
 }
+
+const openNotification = (messageContent: any) => {
+  notification.open({
+    message: 'Notification !',
+    description: messageContent,
+    onClick: () => {
+      console.log('Notification Clicked!');
+    },
+  });
+};
 
   return (
     <div>

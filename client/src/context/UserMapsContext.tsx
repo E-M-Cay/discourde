@@ -190,7 +190,7 @@ const UserMapsContextProvider = ({ children }: Props) => {
         if (res.status === 201) {
           const requestId = res.data.newRequest;
           addNotification({
-            title: 'success',
+            title: 'Requête envoyée',
             content: ` Requête envoyée à ${user.username} !`,
             isTmp: true,
             picture: user.picture,
@@ -200,7 +200,15 @@ const UserMapsContextProvider = ({ children }: Props) => {
             id: requestId,
           });
         }
-      });
+      })
+      .catch((err) =>
+        addNotification({
+          title: 'Erreur',
+          content: `Impossible d'envoyer une requête à ${user.username}`,
+          isTmp: true,
+          picture: user.picture,
+        })
+      );
   };
 
   const maybeNotifyMessage = useCallback(

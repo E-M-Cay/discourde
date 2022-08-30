@@ -69,7 +69,7 @@ export const DropdownMenu = (params: {
                 key={0}
                 onClick={() => showModal2()}
               >
-                Inviter des gens
+                Inviter des amis
                 <UserAddOutlined
                   style={{
                     fontSize: '15px',

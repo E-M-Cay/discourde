@@ -8,6 +8,7 @@ import logo from '../assets/discourde.png';
 import { setIsConnected, setMe } from '../redux/userSlice';
 import Success from '../assets/Success';
 import { NotificationsContext } from '../context/NotificationsContext';
+import Failure from '../assets/Failure';
 
 export const ServerInvit = (props: {
   isModalVisibleInvitation: boolean;
@@ -27,6 +28,7 @@ export const ServerInvit = (props: {
   const { addNotification } = useContext(NotificationsContext);
 
   const handleInviteUser = (hisId: number) => {
+    const friendship = friendMap.get(hisId);
     axios
       .post(
         'serverinvitation/createInvitation',
@@ -48,8 +50,13 @@ export const ServerInvit = (props: {
           picture: <Success />,
         });
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
+        addNotification({
+          title: "Impossible d'envoyer l'invitation",
+          content: `${friendship?.friend.username} est déjà dans le serveur ou a déjà reçu une invitation`,
+          isTmp: true,
+          picture: <Failure />,
+        });
       });
   };
   return (

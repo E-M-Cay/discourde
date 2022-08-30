@@ -22,51 +22,70 @@ router.post(
   '/createInvitation',
   isAuth,
   async (req: IREQUEST, res: Response) => {
-    const user = await UserRepository.findOne({
-      where: {
-        id: req.id,
-      },
-      select: {
-        id: true,
-        username: true,
-        picture: true,
-        join_date: true,
-      },
-    });
-    const invitedUser = await UserRepository.findOne({
-      where: { id: req.body.invitedUserId },
-      select: { id: true },
-    });
-    if (!user || !invitedUser) return res.status(401).send('User not found');
-    const server = await ServerRepository.findOneBy({
-      id: req.body.server,
-    });
-    if (!server) return res.status(401).send('Server not found');
-    const invitation = await ServerInvitationRepository.findOne({
-      where: {
-        server: {
-          id: server.id,
+    try {
+      const user = await UserRepository.findOne({
+        where: {
+          id: req.id,
         },
-        receiver: {
-          id: invitedUser.id,
+        select: {
+          id: true,
+          username: true,
+          picture: true,
+          join_date: true,
         },
-      },
-    });
-    if (invitation) return res.status(401).send('Invitation already sent');
-    const serverInvitation: ServerInvitation =
-      ServerInvitationRepository.create({
-        receiver: invitedUser,
-        sender: user,
-        server: server,
       });
-    const newInvit = await ServerInvitationRepository.save(serverInvitation);
-    if (user_id_to_socket_id.has(invitedUser.id)) {
-      io.to(user_id_to_socket_id.get(invitedUser.id) as string).emit(
-        'newserverinvitation',
-        newInvit
-      );
+      const invitedUser = await UserRepository.findOne({
+        where: { id: req.body.invitedUserId },
+        select: { id: true },
+      });
+      if (!user || !invitedUser) return res.status(401).send('User not found');
+      const server = await ServerRepository.findOneBy({
+        id: req.body.server,
+      });
+
+      if (!server) throw new Error('server not found');
+
+      const exists = await ServerUserRepository.count({
+        where: {
+          server: {
+            id: server.id,
+          },
+          user: {
+            id: req.body.invitedUserId,
+          },
+        },
+      });
+      if (exists) throw new Error('user already in server');
+      if (!server) throw new Error('server not found');
+      const invitation = await ServerInvitationRepository.findOne({
+        where: {
+          server: {
+            id: server.id,
+          },
+          receiver: {
+            id: invitedUser.id,
+          },
+        },
+      });
+      if (invitation) throw new Error('already invited');
+      const serverInvitation: ServerInvitation =
+        ServerInvitationRepository.create({
+          receiver: invitedUser,
+          sender: user,
+          server: server,
+        });
+      const newInvit = await ServerInvitationRepository.save(serverInvitation);
+      if (user_id_to_socket_id.has(invitedUser.id)) {
+        io.to(user_id_to_socket_id.get(invitedUser.id) as string).emit(
+          'newserverinvitation',
+          newInvit
+        );
+      }
+      return res.status(200).send('Invitation sent');
+    } catch (e) {
+      res.status(401).send('Error');
+      console.log(e);
     }
-    return res.status(200).send('Invitation sent');
   }
 );
 

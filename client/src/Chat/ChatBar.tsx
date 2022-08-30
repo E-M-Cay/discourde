@@ -195,7 +195,7 @@ const ChatBar = (props: { textChannelList: Channel[] }) => {
       console.log(aiMsg);
 
       const configuration = new Configuration({
-        apiKey: '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',
+        apiKey: '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',
       });
       const openai = new OpenAIApi(configuration);
 

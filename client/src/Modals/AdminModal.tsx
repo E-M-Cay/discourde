@@ -118,9 +118,11 @@ const showPermModal = () => {
     }); 
 }
 const onCreateNewRole = (values: any) => {
+
   let nameNewRole: string = values.newRole;
   console.log("NameRole : " + nameNewRole)
   console.log("idServer du role : " + idServer)
+  
   
   axios
   .post(`/role/create/`, {
@@ -145,14 +147,18 @@ const getPermByServerRole = async (idRole: number) => {
     },
   })
   .then((res) => {
+    
    permAlreadyChecked = res.data;
    console.log("permAlreadyChecked")
    console.log(permAlreadyChecked)
    showPermModal();
   });
 
-}
 
+}
+const [allPerm,setAllPerm] = useState(new Array)
+console.log("ALL PERM ICI")
+console.log(allPerm)
 const setUserConcern = async (selectUser: number) => {
 
   userConcern = selectUser;
@@ -263,6 +269,8 @@ const getAllPerm = async (roleId: number, roleName: string) => {
   newRoleName = selectedRole;
   console.log(" selectedRole: " + selectedRole)
   console.log("roleId : " + selectedRoleId )
+  setAllPerm([]);
+  permAlreadyChecked = [];
   await axios
   .get(`/permission/list_all`, {
    headers: {
@@ -272,9 +280,9 @@ const getAllPerm = async (roleId: number, roleName: string) => {
  .then(async (res) => {
   console.log("getAllPerm");
  
-  allPerm= res.data;
+  setAllPerm(res.data);
   console.log(allPerm);
-   await getPermByServerRole(selectedRoleId);
+  await getPermByServerRole(selectedRoleId);
    
  });
  
@@ -289,6 +297,7 @@ const delRoleByServer = (role_id: number) => {
       access_token: localStorage.getItem('token') as string,
     },
   }).then((res) => {
+    handleAdminOk();
     openNotification("Rôle supprimé avec succès !")
   })
 }
@@ -385,6 +394,7 @@ const openNotification = (messageContent: any) => {
                 form={form}
                 layout="vertical"
                 onFinish={onCreateNewRole}
+                id='NewCreate'
               >
                 <Form.Item name="newRole" label="Créer un nouveau rôle">
                   <Input placeholder="Nom du rôle" defaultValue="" id='roleName' />
@@ -424,7 +434,7 @@ const openNotification = (messageContent: any) => {
             defaultValue={permAlreadyChecked}
             onChange={onChangeP}  
         >
-          {allPerm.map((perm) => (<Checkbox checked={isCheckP(perm.id)} value={perm.id}>{perm.name}</Checkbox>))}
+          {allPerm?.map((perm) => {return(<Checkbox checked={isCheckP(perm.id)} value={perm.id}>{perm.name}</Checkbox>)})}
         
         </Checkbox.Group><br />
         <Button type="primary" style={{marginRight: "1vw"}} onClick={updatePermServerRole}>UPDATE</Button>

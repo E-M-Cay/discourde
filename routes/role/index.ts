@@ -149,12 +149,31 @@ router.put('/update/', isAuth, async (req: IRequest, res: Response) => {
 
 router.delete('/delete/:role_id', isAuth, async (req: IRequest, res: Response) => {
     const role_id = Number(req.params.role_id);
+    const tab_debug = []
     if (role_id == NaN) return res.status(400).send('Error server not found');
     try {
+        tab_debug.push(role_id)
+        const role_permission_list: any = await RolePermissionRepository.findBy({role: {id: role_id}})
+        tab_debug.push(role_permission_list)
+        for(const role_perm of role_permission_list){
+            tab_debug.push(role_perm)
+            await RolePermissionRepository.delete(role_perm.id)
+        }
+
+        tab_debug.push(role_id)
+        tab_debug.push(role_permission_list)
+
+        const role_user_list: any = await serverUserRoleRepository.findBy({role: {id: role_id}})
+        for(const role_user of role_user_list){
+            await serverUserRoleRepository.delete(role_user.id)
+        }
+
+        tab_debug.push(role_user_list)
+
         await RoleRepository.delete(role_id);
-        return res.status(200)
+        return res.status(200).send('Ok')
     } catch (error) {
-        return res.status(400).send(error);
+        return res.status(400).send({error, tab_debug});
     }
 });
 
